@@ -30,6 +30,9 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
+#include <gconcepttree.h>
+#include <gconceptnode.h>
+#include <gconceptnodes.h>
 #include <gdoc.h>
 #include <gtopic.h>
 #include <glink.h>
@@ -38,7 +41,6 @@
 #include <gprofile.h>
 #include <gfdbk.h>
 #include <gdescriptionobject.hh>
-#include <gconcepttree.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -62,7 +64,7 @@ void GDoc::PrivateInit(void)
 
 //------------------------------------------------------------------------------
 GDoc::GDoc(GSession* session,const RURI& uri,const RString& name,GLang* lang,const RString& mime)
-	: GDescriptionObject<GDoc>(session,cNoRef,0,otDoc,name,osNew), URI(uri), Struct(0),
+	: GDescriptionObject<GDoc>(session,cNoRef,0,otDoc,name,osNew), URI(uri),
 	  Lang(lang),MIMEType(mime), Updated(RDate::GetToday()), Computed(RDate::Null),
 	  Fdbks(0), LinkSet(5,2), GroupId(0), Attached(RDate::Null),
 	  StructId(0)
@@ -79,7 +81,7 @@ GDoc::GDoc(GSession* session,const RURI& uri,const RString& name,GLang* lang,con
 
 //------------------------------------------------------------------------------
 GDoc::GDoc(GSession* session,const RURI& uri,const RString& name,size_t id,size_t blockid,size_t structid,GLang* lang,const RString& mime,size_t grpid,const RDate& c,const RDate& u,const RDate& a)
-	: GDescriptionObject<GDoc>(session,id,blockid,otDoc,name,osNew), URI(uri), Struct(0),
+	: GDescriptionObject<GDoc>(session,id,blockid,otDoc,name,osNew), URI(uri),
 	  Lang(lang),MIMEType(mime), Updated(u), Computed(c),
 	  Fdbks(0), LinkSet(5,2), GroupId(grpid), Attached(a),
 	  StructId(structid)
@@ -152,36 +154,17 @@ void GDoc::ClearInfos(bool disk)
 
 
 //------------------------------------------------------------------------------
-void GDoc::ClearStruct(bool disk)
+void GDoc::ClearTree(bool disk)
 {
-	if(Struct)
-		Struct->Clear();
 	if(disk)
 		StructId=0;
-
 }
 
 
 //------------------------------------------------------------------------------
-GConceptTree* GDoc::GetStruct(void) const
+void GDoc::LoadTree(GConceptTree* &tree) const
 {
-	if((!Struct)&&StructId)
-	{
-		GetVectors();
-		Session->LoadStruct(pDoc,const_cast<GDoc*>(this)->Struct,StructId,Id); // Load the object
-	}
-	return(Struct);
-}
-
-
-//------------------------------------------------------------------------------
-void GDoc::ReleaseStruct(void)
-{
-	if(Struct)
-	{
-		delete Struct;
-		Struct=0;
-	}
+	Session->LoadTree(pDoc,tree,StructId,Id);
 }
 
 
@@ -372,16 +355,19 @@ R::RCursor<GLink> GDoc::GetLinks(void) const
 
 
 //------------------------------------------------------------------------------
-void GDoc::Update(GLang* lang,GDescription& desc,GConceptTree& docstruct,bool ram,bool delref)
+void GDoc::Update(GLang* lang,GDescription& desc,bool ram,bool delref)
 {
 	// Look if the references must be modified
 	if(delref&&(!ram))
+	{
 		DelRefs(Session,otDoc);
+		if(Session->DoCreateIndex(pDoc))
+			Session->UpdateIndex(pDoc,desc,Id,false);
+	}
 
 	// Assign language and information
 	Lang=lang;
 	GDescription::operator=(desc);
-	desc.Clear();
 
 	if(Id!=cNoRef)
 	{
@@ -399,14 +385,13 @@ void GDoc::Update(GLang* lang,GDescription& desc,GConceptTree& docstruct,bool ra
 
 	// Look if the references must be modified
 	if(!ram)
-		AddRefs(Session,otDoc);
-
-	if(ram)
 	{
-		delete Struct;
-		Struct=0;
-		Struct=new GConceptTree(docstruct);
+		AddRefs(Session,otDoc);
+		if(Session->DoCreateIndex(pDoc))
+			Session->UpdateIndex(pDoc,desc,Id,true);
 	}
+
+	desc.Clear(); // Clear the description
 
 	// Emit an event that it was modified
 	if(Id!=cNoRef)
@@ -417,8 +402,6 @@ void GDoc::Update(GLang* lang,GDescription& desc,GConceptTree& docstruct,bool ra
 //------------------------------------------------------------------------------
 GDoc::~GDoc(void)
 {
-	delete Struct;
-
 	// Delete feedbacks vector
 	delete Fdbks;
 }

@@ -168,6 +168,12 @@ private:
 	void Create(GSession* session);
 
 	/**
+	* Disconnect the plug-ins for a given session.
+	* @param session         Pointer to the session.
+	*/
+	void Disconnect(GSession* session);
+
+	/**
 	* Delete the plug-ins.
 	*/
 	void Delete(void);
@@ -278,6 +284,11 @@ public:
 	* @param session         Pointer to the session.
 	*/
 	void Create(GSession* session);
+
+	/**
+	* Disconnect the plug-ins for a given session.
+	*/
+	void Disconnect(GSession* session);
 
 	/**
 	* Delete the plug-ins.

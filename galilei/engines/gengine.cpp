@@ -52,7 +52,7 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GEngine::GEngine(GSession* session,GPlugInFactory* fac)
-	: GPlugIn(session,fac), Weight(1)
+	: GPlugIn(session,fac), Weight(1.0)
 {
 }
 

@@ -265,18 +265,21 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 	if(delref)
 	{
 		DelRefs(session,type);
-		session->UpdateIndex(static_cast<cGroup*>(0),desc,Id,false);
+		if(session->DoCreateIndex(static_cast<cGroup*>(0)))
+			session->UpdateIndex(static_cast<cGroup*>(0),desc,Id,false);
 	}
 
 	// Assign information
 	State=osUpdated;
 	Computed.SetToday();
 	GDescription::operator=(desc);
-	desc.Clear();
 
 	// Update its references
 	AddRefs(session,type);
-   session->UpdateIndex(static_cast<cGroup*>(0),desc,Id,true);
+	if(session->DoCreateIndex(static_cast<cGroup*>(0)))
+		session->UpdateIndex(static_cast<cGroup*>(0),desc,Id,true);
+
+	desc.Clear(); // Clear the description
 
 	// Emit an event that it was modified
 	if(Data)

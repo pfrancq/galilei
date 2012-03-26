@@ -110,8 +110,9 @@ public:
 	 * tokens.
 	 * @param analyzer       Analyzer.
 	 * @param car            Character treated.
+	 * @return true if the character starts a token.
 	 */
-	virtual void TreatChar(GDocAnalyze* analyzer,const R::RChar& car)=0;
+	virtual bool TreatChar(GDocAnalyze* analyzer,const R::RChar& car)=0;
 };
 
 

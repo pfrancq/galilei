@@ -45,16 +45,9 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GClasses::GClasses(size_t max,size_t inc)
-	: RTree<GClasses,GClass,false>(max,inc), GObjects<GClass>(max,"Classes",otClass)
+GClasses::GClasses(size_t max)
+	: RTree<GClasses,GClass,false>(), GObjects<GClass>(max,"Classes",otClass)
 {
-}
-
-
-//------------------------------------------------------------------------------
-R::RCursor<GClass> GClasses::GetTopClasses(void) const
-{
-	return(R::RCursor<GClass>(GetTopNodes()));
 }
 
 
@@ -84,14 +77,6 @@ void GClasses::DeleteObj(GClass* obj)
 void GClasses::Clear(void)
 {
 	RTree<GClasses,GClass,false>::Clear();
-	GObjects<GClass>::Clear(pClass);
-}
-
-
-//-----------------------------------------------------------------------------
-void GClasses::Clear(size_t max,size_t inc)
-{
-	RTree<GClasses,GClass,false>::Clear(max,inc);
 	GObjects<GClass>::Clear(pClass);
 }
 

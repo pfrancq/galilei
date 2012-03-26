@@ -43,97 +43,127 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 
 
+//-----------------------------------------------------------------------------
+/**
+* This class represents an occurrence of a given token. It is only used by
+* GDocAnalyze.
+* @short Token Occurrence
+*/
+class GTokenOccur
+{
+	/**
+	* The corresponding token.
+	*/
+	GToken* Token;
+
+	/**
+	* The corresponding meta-vector (meta-concept).
+	*/
+	GVector* Vector;
+
+	/**
+	* Children of the occurrence.
+	*/
+	R::RContainer<GTokenOccur,false,false> Children;
+
+	/**
+	* Position of the occurrence in the document.
+	*/
+	size_t Pos;
+
+	/**
+	* Depth of the occurrence in the document.
+	*/
+	size_t Depth;
+
+	/**
+	* Syntactic position of the occurrence in the document.
+	*/
+	size_t SyntacticPos;
+
+	/**
+	* Index of the occurrence in the main container.
+	*/
+	size_t Index;
+
+	/**
+	 * Specify if the occurrence was already added to the vector.
+    */
+	bool Added;
+
+public:
+
+	/**
+	* Occurrence of a null token.
+	* @param nb       Number of possible children.
+	*/
+	GTokenOccur(size_t nb);
+
+	/**
+	* Occurrence of a token.
+	* @param token    Token associated.
+	* @param vector   Vector.
+	* @param pos      Position.
+	* @param depth    Depth.
+	* @param spos     Syntactic position.
+	* @param nb       Number of possible children.
+	*/
+	GTokenOccur(GToken* token,GVector* vector,size_t pos,size_t depth,size_t spos,size_t nb);
+
+	/**
+	* Method needed by R::RContainer. The occurrences are supposed to be
+	* ordered in ascending order of their index.
+	* @param occur           Occurrence to compare with.
+	* @return a value reflecting of a element has a smaller index or not.
+	*/
+	int Compare(const GTokenOccur& occur) const {return(Index-occur.Index);}
+
+	/**
+    * @return the corresponding token.
+    */
+	GToken* GetToken(void) const {return(Token);}
+
+	friend class GToken;
+	friend class GDocAnalyze;
+};
+
+
 //------------------------------------------------------------------------------
 /**
  * The GToken class represents a token extracted from a document. It
  * is used when a document is analyzed : the tokenizer parses the document
  * and create the corresponding tokens. These tokens are then treated by the
  * different analyzers in a specific order.
+ *
+ * It is only used by GDocAnalyze.
  * @short Document Token.
  */
 class GToken
 {
-public:
+	/**
+	 * Internal structure to search for a particular token.
+	 * @short Token Search Structure.
+	 */
+	struct Search
+	{
+		/**
+		* Token.
+		*/
+		R::RString Token;
 
 		/**
-		 * This class represents an occurrence of a token.
-		 * @param Token Occurrence
-		 */
-		class Occurrence
-		{
-			/**
-			 * The corresponding token.
-			 */
-			GToken* Token;
+		* Type of the token.
+		*/
+		tTokenType Type;
 
-			/**
-			 * The corresponding meta-vector (meta-concept).
-			 */
-			GVector* Vector;
+		/**
+		 * Constructor.
+       * @param token        Token.
+       * @param type         Type.
+       */
+		Search(R::RString token,tTokenType type);
+	};
 
-			/**
-			* Children of the occurrence.
-			*/
-			R::RContainer<Occurrence,false,false> Children;
-
-			/**
-			 * Position of the occurrence in the document.
-			 */
-			size_t Pos;
-
-			/**
-			 * Depth of the occurrence in the document.
-			 */
-			size_t Depth;
-
-			/**
-			 * Syntactic position of the occurrence in the document.
-			 */
-			size_t SyntacticPos;
-
-			/**
-			 * Index of the occurrence in the main container.
-			 */
-			size_t Index;
-
-		public:
-
-			/**
-			 * Occurrence of a null token.
-			 * @param nb       Number of possible children.
-			 */
-			Occurrence(size_t nb);
-
-			/**
-			 * Occurrence of a token.
-			 * @param token    Token associated.
-			 * @param vector   Vector.
-			 * @param pos      Position.
-			 * @param depth    Depth.
-			 * @param spos     Syntactic position.
-			 * @param nb       Number of possible children.
-			 */
-			Occurrence(GToken* token,GVector* vector,size_t pos,size_t depth,size_t spos,size_t nb);
-
-			/**
-			 * Method needed by R::RContainer. The occurrences are supposed to be
-          * ordered in ascending order of their index.
-          * @param occur  Occurrence to compare with.
-			 * @return a value reflecting of a element has a smaller index or not.
-			 */
-			int Compare(const Occurrence& occur) const {return(Index-occur.Index);}
-
-			/**
-			 * Get the token corresponding to this occurrence.
-			 * @return a pointer to GToken.
-			 */
-			GToken* GetToken(void) const {return(Token);}
-
-			friend class GToken;
-			friend class GDocAnalyze;
-		};
-
-protected:
 
 	/**
 	 * Token.
@@ -153,7 +183,7 @@ protected:
 	/**
 	 * Occurrences of the token.
 	 */
-	R::RContainer<Occurrence,false,false> Occurs;
+	R::RContainer<GTokenOccur,false,false> Occurs;
 
 	/**
 	 * Index of the token in the main container.
@@ -166,7 +196,7 @@ public:
 	 * Create a token.
 	 * @param token          String containing the token.
 	 */
-	GToken(const R::RString& token=R::RString::Null);
+	explicit GToken(const R::RString& token=R::RString::Null);
 
 	/**
 	 * Compare two tokens.
@@ -177,10 +207,10 @@ public:
 
 	/**
 	 * Compare a token with a string.
-	 * @param token          String to compare with.
+	 * @param token          Search to compare with.
 	 * @return a number usable by R::RContainer.
 	 */
-	int Compare(const R::RString& token) const;
+	int Compare(const Search& token) const;
 
 	/**
 	 * Compute the hash index of a given token.
@@ -218,7 +248,7 @@ public:
 	 * @param depth          Depth of the occurrence.
 	 * @return a pointer to the occurrence added.
 	 */
-	Occurrence* AddOccur(GVector* vector,size_t pos,size_t depth);
+	GTokenOccur* AddOccur(GVector* vector,size_t pos,size_t depth);
 
 	/**
 	 * Look if the token contains alphabetic characters only.

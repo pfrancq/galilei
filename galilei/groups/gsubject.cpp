@@ -31,6 +31,11 @@
 
 
 //------------------------------------------------------------------------------
+// include files for R Project
+#include <rnodecursor.h>
+
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gsubject.h>
 #include <gprofile.h>
@@ -147,7 +152,7 @@ void GSubject::CreateDescription(void)
 			if(GetNbSubjects())
 			{
 				// Compute the common information entities of all the children
-				RCursor<GSubject> Child(GetSubjects());
+				RNodeCursor<GSubjects,GSubject> Child(this);
 				Child.Start();
 				Child()->CreateDescription();
 				(*Vectors)=(*Child()->Vectors);
@@ -209,7 +214,7 @@ void GSubject::FillDocs(GDoc** docs,size_t& nb,size_t maxdepth)
 	nb+=CategorizedDocs.GetTab(&docs[nb]);
 	if(maxdepth&&(Depth>=maxdepth))
 	{
-		RCursor<GSubject> Cur(GetSubjects());
+		RNodeCursor<GSubjects,GSubject> Cur(this);
 		for(Cur.Start();!Cur.End();Cur.Next())
 			Cur()->FillDocs(docs,nb,maxdepth);
 	}
@@ -222,7 +227,7 @@ size_t GSubject::GetMaxDocs(size_t maxdepth)
 	size_t nb(CategorizedDocs.GetNb());
 	if(maxdepth&&(Depth>=maxdepth))
 	{
-		RCursor<GSubject> Cur(GetSubjects());
+		RNodeCursor<GSubjects,GSubject> Cur(this);
 		for(Cur.Start();!Cur.End();Cur.Next())
 			nb+=Cur()->GetMaxDocs(maxdepth);
 	}
@@ -293,7 +298,7 @@ size_t GSubject::GetNbIdealGroups(tObjType type) const
 		default:
 			ThrowGException(GetObjType(type,true,true)+" are not assigned to subjects");
 	}
-	RCursor<GSubject> Cur(GetNodes());
+	RNodeCursor<GSubjects,GSubject> Cur(this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		nb+=Cur()->GetNbIdealGroups(type);
 	return(nb);
@@ -307,7 +312,7 @@ size_t GSubject::GetNbTopicsDocs(void) const
 
 	if(Docs.GetNb())
 		nb++;
-	RCursor<GSubject> Cur(GetNodes());
+	RNodeCursor<GSubjects,GSubject> Cur(this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		nb+=Cur()->GetNbTopicsDocs();
 	return(nb);
@@ -444,7 +449,7 @@ GLang* GSubject::GuessLang(bool lookparent) const
 	if(!Langs.GetNb())
 	{
 		// Look in the children (without to search in their parents of course).
-		RCursor<GSubject> Cur(GetSubjects());
+		RNodeCursor<GSubjects,GSubject> Cur(this);
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
 			GLang* Lang(Cur()->GuessLang(false));
@@ -522,7 +527,7 @@ GSubject::~GSubject(void)
 
 //------------------------------------------------------------------------------
 GSubjects::GSubjects(size_t max)
-	: RTree<GSubjects,GSubject,true>(max), Subjects(max), SelectedDocs(0), DocsSubjects(0),
+	: RTree<GSubjects,GSubject,true>(), Subjects(max), SelectedDocs(0), DocsSubjects(0),
 	  ProfilesSubject(0), SubjectsLoaded(false), DescType(sdNames)
 {
 }

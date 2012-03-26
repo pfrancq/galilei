@@ -42,12 +42,13 @@
 #include <rrandom.h>
 #include <rindexfile.h>
 #include <rtree.h>
+#include <robject.h>
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <gdocretrieved.h>
+#include <gdocfragment.h>
 #include <gsubject.h>
 #include <gobjects.h>
 #include <gclasses.h>
@@ -62,18 +63,76 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
+ * A message associated to a session when its send a notification.
+ * @short Session Message.
+ */
+class GSessionMsg
+{
+	/**
+	 * The session sending the notification.
+	 */
+	GSession* Session;
+
+	/**
+	 * Type of the objects concerned by the message send.
+	 */
+	tObjType Type;
+
+	/**
+	 * Eventually a meta type associated to the messaged.
+	 */
+	tObjType Meta;
+
+public:
+
+	/**
+	 * Construct a session message.
+    * @param session        Session.
+    * @param type           Type of the objects.
+    */
+	GSessionMsg(GSession* session,tObjType type);
+
+	/**
+	 * Construct a session message.
+    * @param session        Session.
+    * @param type           Type of the objects.
+    * @param meta           Meta type.
+    */
+	GSessionMsg(GSession* session,tObjType type,tObjType meta);
+
+	/**
+    * @return the session associated to the message.
+    */
+	GSession* GetSession(void) const {return(Session);}
+
+	/**
+    * @return the object type associated to the message.
+    */
+	tObjType GetType(void) const {return(Type);}
+
+	/**
+    * @return the meta type associated to the message.
+    */
+	tObjType GetMeta(void) const {return(Meta);}
+};
+
+
+//------------------------------------------------------------------------------
+/**
 * The GSession provides a representation for a GALILEI session.
-* @author GALILEI Team
+*
+* The session generates several notifications, including 'Reset' and 'ResetFile'
+* and 'ForceReCompute'.
 * @short Generic Session.
 */
-class GSession : virtual public GKB, public R::RConfig, GObjects<GDoc>, GObjects<GTopic>, GObjects<GUser>, GObjects<GProfile>, GObjects<GCommunity>, public GClasses
+class GSession : public R::RObject, virtual public GKB, public R::RConfig, GObjects<GDoc>, GObjects<GTopic>, GObjects<GUser>, GObjects<GProfile>, GObjects<GCommunity>, public GClasses
 {
 public:
 
 	// Explicit use of methods from GObjects<GDoc>
    using GObjects<GDoc>::Clear;
 	using GObjects<GDoc>::DoCreateIndex;
-	using GObjects<GDoc>::DoCreateStruct;
+	using GObjects<GDoc>::DoCreateTree;
 	using GObjects<GDoc>::LoadObjs;
 	using GObjects<GDoc>::GetObj;
 	using GObjects<GDoc>::GetObjs;
@@ -85,15 +144,16 @@ public:
 	using GObjects<GDoc>::LoadDesc;
 	using GObjects<GDoc>::SaveDesc;
 	using GObjects<GDoc>::FlushDesc;
-	using GObjects<GDoc>::LoadStruct;
-	using GObjects<GDoc>::SaveStruct;
-	using GObjects<GDoc>::FlushStruct;
+	using GObjects<GDoc>::LoadTree;
+	using GObjects<GDoc>::SaveTree;
+	using GObjects<GDoc>::FlushTree;
 	using GObjects<GDoc>::UpdateIndex;
 	using GObjects<GDoc>::LoadIndex;
    using GObjects<GDoc>::BuildIndex;
 
 	// Explicit use of methods from GObjects<GTopic>
    using GObjects<GTopic>::Clear;
+	using GObjects<GTopic>::DoCreateIndex;
 	using GObjects<GTopic>::LoadObjs;
 	using GObjects<GTopic>::GetObj;
 	using GObjects<GTopic>::GetObjs;
@@ -121,6 +181,7 @@ public:
 
 	// Explicit use of methods from GObjects<GProfile>
    using GObjects<GProfile>::Clear;
+	using GObjects<GProfile>::DoCreateIndex;
 	using GObjects<GProfile>::LoadObjs;
 	using GObjects<GProfile>::GetObj;
 	using GObjects<GProfile>::GetObjs;
@@ -137,6 +198,7 @@ public:
 
 	// Explicit use of methods from GObjects<GCommunity>
    using GObjects<GCommunity>::Clear;
+	using GObjects<GCommunity>::DoCreateIndex;
 	using GObjects<GCommunity>::LoadObjs;
 	using GObjects<GCommunity>::GetObj;
 	using GObjects<GCommunity>::GetObjs;
@@ -153,6 +215,7 @@ public:
 
 	// Explicit use of methods from GClasses
    using GClasses::Clear;
+	using GClasses::DoCreateIndex;
 	using GClasses::LoadObjs;
 	using GClasses::GetObj;
 	using GClasses::GetObjs;
@@ -231,6 +294,14 @@ public:
 	* @param name            Name of the session.
 	*/
 	GSession(size_t id,const R::RString& name);
+
+	/**
+	* This method is call when no handler is founded for a notification send by
+	* the session. Actually, it does nothing.
+	* @param notification    Notification.
+	*/
+	virtual void HandlerNotFound(const R::RNotification& notification);
+
 	/**
 	 * @return the identifier of the session.
 	 */
@@ -312,6 +383,11 @@ public:
 	* @param rec             Receiver for the signals.
 	*/
 	void AnalyzeDoc(GDoc* doc,bool ram=true,GSlot* rec=0);
+
+	/**
+	 * @return the tree that was just computed (if asked).
+    */
+	const GConceptTree& GetTree(void) const {return(DocAnalyze.GetTree());}
 
 	/**
 	* Analyze the documents. At the end, all the enabled post-documents methods
@@ -547,12 +623,7 @@ public:
 	* Get a cursor over the child subjects of a given subject.
 	* @param subject            Parent subject. If null, the top subjects are returned.
 	*/
-	R::RCursor<GSubject> GetSubjects(const GSubject* subject) const;
-
-	/**
-	* @return a cursor over the top nodes.
-	*/
-	R::RCursor<GSubject> GetTopSubjects(void) const;
+	R::RNodeCursor<GSubjects,GSubject> GetSubjects(const GSubject* subject) const;
 
 	/**
 	 * Get the cost of the Up operations to move a token from a node to another

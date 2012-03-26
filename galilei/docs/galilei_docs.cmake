@@ -8,6 +8,9 @@ SET(galilei_docs_INST_INCLUDES
 	ganalyzer.h
 	gdocanalyze.h
 	gfilter.h
+	gconceptnode.h
+	gconceptnodes.h
+	gconcepttree.h
 )
 
 
@@ -21,4 +24,7 @@ SET(galilei_docs_TARGET_SOURCES
 	ganalyzer.cpp
 	gdocanalyze.cpp
 	gfilter.cpp
+	gconceptnode.cpp
+	gconceptnodes.cpp
+	gconcepttree.cpp
 )

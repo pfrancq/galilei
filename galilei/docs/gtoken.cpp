@@ -45,15 +45,29 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GToken::Occurrence::Occurrence(size_t nb)
-	: Token(0), Vector(0), Children(nb,300), Pos(cNoRef), Depth(cNoRef), Index(cNoRef)
+GTokenOccur::GTokenOccur(size_t nb)
+	: Token(0), Vector(0), Children(nb,300), Pos(cNoRef), Depth(cNoRef), Index(cNoRef), Added(false)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GToken::Occurrence::Occurrence(GToken* token,GVector* vector,size_t pos,size_t depth,size_t spos,size_t nb)
-	: Token(token), Vector(vector), Children(nb,300), Pos(pos), Depth(depth), SyntacticPos(spos), Index(cNoRef)
+GTokenOccur::GTokenOccur(GToken* token,GVector* vector,size_t pos,size_t depth,size_t spos,size_t nb)
+	: Token(token), Vector(vector), Children(nb,300), Pos(pos), Depth(depth), SyntacticPos(spos), Index(cNoRef), Added(false)
+{
+}
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GToken::Search
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GToken::Search::Search(R::RString token,tTokenType type)
+	: Token(token), Type(type)
 {
 }
 
@@ -75,15 +89,22 @@ GToken::GToken(const RString& token)
 //------------------------------------------------------------------------------
 int GToken::Compare(const GToken& token) const
 {
-	return(Token.Compare(token.Token));
+	int Res(Token.Compare(token.Token));
+	if(!Res)
+		return(Type-token.Type);
+	return(Res);
 }
 
 
 //------------------------------------------------------------------------------
-int GToken::Compare(const R::RString& token) const
+int GToken::Compare(const Search& token) const
 {
-	return(Token.Compare(token));
+	int Res(Token.Compare(token.Token));
+	if(!Res)
+		return(Type-token.Type);
+	return(Res);
 }
+
 
 //------------------------------------------------------------------------------
 size_t GToken::HashIndex(size_t idx) const
@@ -108,7 +129,7 @@ bool GToken::IsUsed(GConcept* metaconcept) const
 {
 	if(!metaconcept)
 		return(false);
-	RCursor<Occurrence> Occur(Occurs);
+	RCursor<GTokenOccur> Occur(Occurs);
 	for(Occur.Start();!Occur.End();Occur.Next())
 		if(Occur()->Vector->GetMetaConcept()==metaconcept)
 			return(true);
@@ -121,7 +142,7 @@ bool GToken::IsUsed(GConceptCat* cat) const
 {
 	if(!cat)
 		return(false);
-	RCursor<Occurrence> Occur(Occurs);
+	RCursor<GTokenOccur> Occur(Occurs);
 	for(Occur.Start();!Occur.End();Occur.Next())
 		if(Occur()->Vector->GetMetaConcept()->GetType()->GetCategory()==cat)
 			return(true);

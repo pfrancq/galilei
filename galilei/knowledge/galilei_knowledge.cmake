@@ -10,7 +10,6 @@ SET(galilei_knowledge_INST_INCLUDES
     gconceptref.h
     gvector.h
     gdescription.h
-    gconcepttree.h
     gclass.h
     gclasses.h
     gdescriptionobject.h
@@ -31,7 +30,6 @@ SET(galilei_knowledge_TARGET_SOURCES
     gconceptref.cpp
     gvector.cpp
     gdescription.cpp
-    gconcepttree.cpp
     gclass.cpp
     gclasses.cpp
 	 gobjectindex.cpp

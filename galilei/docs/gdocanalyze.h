@@ -55,7 +55,7 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
- * The GDocAnalyze class analyzes a given document. In practice, it does the
+ * The GDocAnalyze class analyzes a given document by coordinating the
  * following steps:
  * -# It determines the filter corresponding to the type of the document to
  *    analyze.
@@ -64,8 +64,31 @@ namespace GALILEI{
  * -# The tokens are then passed to the analyzers in the order specified in the
  *    configuration to be treated (stemming, filtering, etc.).
  *
- * It is supposed that each token of a document as an unique name. It is the
- * responsibility of the filter to ensure it.
+ * In practice, it manages the tokens extracted from the documents by the filter
+ * and their occurrences (position, depth and syntactic position). Once the
+ * analysis steps are finished, it build a vector and a concept tree using the
+ * tokens for which a concept is associated.
+ *
+ * It is supposed that each token of a given type in a document as an unique
+ * name and corresponds to one concept only. It is the responsibility of the
+ * filter to ensure it.
+
+ * Once a document is analyzed, it send a notification 'DocAnalyzed'. It can be
+ * catched by all classes inhereting from R::RObject that become an observator
+ * with the command (generally in the constructor):
+ * @code
+ * InsertObserver(HANDLER(TheClass::Handle),"DocAnalyzed");
+ *
+ * @endcode
+ * A method must then by created:
+ * @code
+ * void TheClass::Handle(const R::RNotification& notification)
+ *	{
+ *	   GDocAnalyze* Analyzer(GetData<GDocAnalyze*>(notification));
+ *    cout<<Analyzer->GetLang()->GetCode()<<endl;
+ * }
+ * @endcode
+ *
  * @internal
  * The class manages the list of tokens found in the current document, in the
  * container OrderTokens (where they are ordered by name) and in Tokens, as well
@@ -77,7 +100,7 @@ namespace GALILEI{
  * @author Pascal Francq
  * @short Document Analysis.
  */
-class GDocAnalyze : public R::RDownload
+class GDocAnalyze : R::RDownload
 {
 	/**
 	 * Current document analyzed.
@@ -97,7 +120,7 @@ class GDocAnalyze : public R::RDownload
 	/**
 	 * Concept Tree corresponding to the document.
 	 */
-	GConceptTree Struct;
+	GConceptTree Tree;
 
 	/**
 	 * Language associated to the document.
@@ -137,7 +160,7 @@ class GDocAnalyze : public R::RDownload
 	/**
 	 * Memory of occurrences.
 	 */
-   R::RContainer<GToken::Occurrence,true,false> MemoryOccurs;
+   R::RContainer<GTokenOccur,true,false> MemoryOccurs;
 
    /**
     * Number of occurrences from the memory used.
@@ -157,17 +180,17 @@ class GDocAnalyze : public R::RDownload
 	/**
 	 * The occurrences of the tokens.
 	 */
-	R::RContainer<GToken::Occurrence,false,false> Occurs;
+	R::RContainer<GTokenOccur,false,false> Occurs;
 
 	/**
 	 * Top occurrences.
 	 */
-	R::RContainer<GToken::Occurrence,false,false> Top;
+	R::RContainer<GTokenOccur,false,false> Top;
 
 	/**
 	 * A stack representing the "active" tokens at each depth.
 	 */
-	R::RStack<GToken::Occurrence,false,true,true> Depths;
+	R::RStack<GTokenOccur,false,true,true> Depths;
 
 	/**
 	 * Vector for which new concepts should be added.
@@ -189,11 +212,6 @@ class GDocAnalyze : public R::RDownload
     */
 	size_t CurSyntacticPos;
 
-	/**
-	 * Container of identifier representing documents.
-	 */
-	R::RNumContainer<size_t,false> Docs;
-
 	/*
 	 * Container of syntactic positions in each document of a given concept.
 	 */
@@ -214,27 +232,60 @@ public:
 	GDoc* GetDoc(void) const {return(Doc);}
 
 	/**
+	 * @return the session.
+	 */
+	GSession* GetSession(void) const {return(Session);}
+
+	/**
+	 * @return the description that was just computed.
+	 */
+   const GDescription& GetDescription(void) const {return(Description);}
+
+	/**
+	 * @return the tree that was just computed (if asked).
+    */
+	const GConceptTree& GetTree(void) const {return(Tree);}
+
+	/**
 	 * Inform the document analysis process that a potential token is skipped. In
 	 * practice, it increments the current syntactic position.
 	 *
 	 * Typically, it is called by the current tokenizer to indicate that an
 	 * existing character sequence is not considered as a valid token.
+	 * @return the syntactic position skipped.
     */
-	void SkipToken(void);
+	size_t SkipToken(void);
+
+private:
 
 	/**
-	 * Add a token to the current vector. The current syntactic position is
-	 * incremented.
+	 * Create a token with a given name and a given type. In practice, if a free
+	 * token exists, it is used.
+    * @param token          Token.
+    * @param type           Type.
+    * @return a pointer to the created token.
+    */
+	GToken* CreateToken(const R::RString& token,tTokenType type);
+
+public:
+
+	/**
+	 * Add a token to the current vector.
+	 *
+	 * The current syntactic position is incremented by one.
     * @warning This method should only be called by child classes of
     *          GTokenizer.
 	 * @param token          Token to add.
 	 * @param type           Token type.
+	 * @return the occurrence of the token added.
 	 */
-	void AddToken(const R::RString& token,tTokenType type);
+	GTokenOccur* AddToken(const R::RString& token,tTokenType type);
 
 	/**
 	 * Add a token of a given type and representing a concept. It is added to a
 	 * vector associated with a given meta-concept.
+	 *
+	 * The current syntactic position is incremented by one.
 	 * @param token          Token to add. The name must be unique for a given
 	 *                       document whatever its type.
 	 * @param type           Token type.
@@ -245,13 +296,17 @@ public:
 	 * @param depth          Depth of the concept.
 	 * @param spos           Syntactic position. If SIZE_MAX, the token is
 	 *                       supposed to be next the previous one.
+	 * @return the occurrence of the token added.
 	 */
-	void AddToken(const R::RString& token,tTokenType type,GConcept* concept,double weight,GConcept* metaconcept,size_t pos,size_t depth=0,size_t spos=SIZE_MAX);
+	GTokenOccur* AddToken(const R::RString& token,tTokenType type,GConcept* concept,double weight,GConcept* metaconcept,size_t pos,size_t depth=0,size_t spos=SIZE_MAX);
 
 	/**
 	 * Extract some tokens of a given text, and add them to a vector associated
     * with a given meta-concept.  If the vector already exists, the content is
 	 * added.
+	 *
+	 * The current syntactic position is incremented by the number of tokens
+	 * extracted.
 	 * @param text           Text to add.
 	 * @param metaconcept    Meta-concept of the vector associated to the text.
 	 * @param pos            Position of the text.
@@ -270,6 +325,9 @@ public:
 	 * The only allowed elements are: contributor, coverage, creator, date,
 	 * description, format, identifier, language, publisher, relation, rights,
 	 * source, subject, title, type.
+	 *
+	 * The current syntactic position is incremented by the number of tokens
+	 * extracted.
 	 * @param element        Element of the DCMI (without namespace and/or
 	 *                       prefix).
 	 * @param value          Value of the metadata.
@@ -284,6 +342,9 @@ public:
     * Extract some tokens from a given text, and add them to the 'body'
     * meta-concept. Each time the method is called, the content is added to the
 	 * vector corresponding to the 'body' meta-concept.
+	 *
+ 	 * The current syntactic position is incremented by the number of tokens
+	 * extracted.
     * @param content        Content.
 	 * @param pos            Position of the content.
 	 * @param depth          Depth of the content.
@@ -308,7 +369,7 @@ public:
 	 * as they appear in the document.
 	 * @return a cursor.
 	 */
-	R::RCursor<GToken::Occurrence> GetOccurs(void) const {return(R::RCursor<GToken::Occurrence>(Occurs));}
+	R::RCursor<GTokenOccur> GetOccurs(void) const {return(R::RCursor<GTokenOccur>(Occurs));}
 
 	/**
 	 * Delete a given token. In practice, it modifies its type to ttDeleted.
@@ -328,6 +389,27 @@ public:
 	void ReplaceToken(GToken* token,R::RString value);
 
 	/**
+	 * Move a token occurrence associated to a particular token to another one
+	 * given by a value. If it new value corresponds to an existing token, the
+	 * occurrence is added. If the current token has no more occurrences, its
+	 * type is set to ttDeleted.
+	 * @warning This method may modified the cursor over the tokens.
+	 * @param occur          Token occurrence to change.
+	 * @param value          New value.
+	 */
+	void MoveToken(GTokenOccur* occur,R::RString value);
+
+	/**
+	 * Move a token occurrence associated to a particular token to another
+	 * existing concept. If necessary, a new token is created. If the current
+	 * token has no more occurrences its type is set to ttDeleted.
+	 * @warning This method may modified the cursor over the tokens.
+	 * @param occur          Token occurrence to change.
+	 * @param concept        Concept.
+	 */
+	void MoveToken(GTokenOccur* occur,GConcept* concept);
+
+	/**
 	 * Get the language actually determined.
 	 */
 	GLang* GetLang(void) const {return(Lang);}
@@ -345,34 +427,18 @@ private:
      */
     void BuildTensor(void);
 
-	 /**
-	  * Read the index of a given concept in Docs and SyntacticPos. In fact, the
-	  * information related to the current document is not added in these
-	  * structures.
-     * @param concept       Concept to search for.
-     * @param read          Number of bytes read.
-     * @return true if the current document was in the index.
+    /**
+     * Build the concept tree starting with a given token occurrence.
+	  * @param parent        Parent node.
+	  * @param occur         Token occurrence.
      */
-	 bool ReadIndex(GConcept* concept,size_t& read);
-
-	 /**
-	  * Write the index of a given concept stored in Docs and SyntacticPos.
-     * @param concept       Concept for which the index should be written.
-     * @param write         Number of bytes to write.
-     */
-	 void WriteIndex(GConcept* concept,size_t write);
-
-	 /**
-	  * Update the index for the current document analyzed.
-     */
-	 void UpdateIndex(void);
+    void BuildTree(GConceptNode* parent,GTokenOccur* occur);
 
     /**
-     * Build the structure for a given token.
-	  * @param parent        Parent node.
-	  * @param token         Token.
+     * Print the concept tree starting with a given token occurrence.
+	  * @param occur         Token occurrence.
      */
-    void BuildStruct(GConceptNode* parent,GToken::Occurrence* token);
+    void Print(GTokenOccur* occur);
 
 public:
 

@@ -32,6 +32,7 @@
 #include <ui_qgobjectslist.h>
 #include <rqt.h>
 #include <rcontainer.h>
+#include <rnodecursor.h>
 #include <qgobjectslist.h>
 #include <ggalileiapp.h>
 #include <glang.h>
@@ -72,7 +73,7 @@ public:
 		GDoc* Doc;
 		GTopic* Topic;
 		GProfile* Profile;
-		GDocRetrieved* DocRetrieved;
+		GDocFragment* DocRetrieved;
 		GCommunity* Community;
 		GUser* User;
 		GSubject* Subject;
@@ -205,7 +206,7 @@ public:
 		}
 	}
 
-	QGObject(QTreeWidget* parent,GDocRetrieved* doc)
+	QGObject(QTreeWidget* parent,GDocFragment* doc)
 		: QTreeWidgetItem(parent,QStringList()<<ToQString(doc->GetTitle())<<ToQString(doc->GetURI()()))
 	{
 		Obj.DocRetrieved=doc;
@@ -290,7 +291,7 @@ void addSubject(GSubject* subject,QTreeWidget* tree,QTreeWidgetItem* parent)
 		item=new QGObject(tree,subject);
 
 	// Child subjects
- 	RCursor<GSubject> Cur(subject->GetSubjects());
+ 	RNodeCursor<GSubjects,GSubject> Cur(subject);
  	for(Cur.Start();!Cur.End();Cur.Next())
  		addSubject(Cur(),tree,item);
 }
@@ -306,7 +307,7 @@ void addClass(GClass* theclass,QTreeWidget* tree,QTreeWidgetItem* parent)
 		item=new QGObject(tree,theclass);
 
 	// Child classes
- 	RCursor<GClass> Cur(theclass->GetNodes());
+ 	RNodeCursor<GClasses,GClass> Cur(theclass);
  	for(Cur.Start();!Cur.End();Cur.Next())
  		addClass(Cur(),tree,item);
 }
@@ -443,14 +444,14 @@ void QGObjectsList::Set(GSession* session,oType type)
 		}
 		case Subjects:
 		{
-			RCursor<GSubject> Cur(session->GetTopSubjects());
+			RNodeCursor<GSubjects,GSubject> Cur(session->GetSubjects(pSubject));
 			for(Cur.Start();!Cur.End();Cur.Next())
 				addSubject(Cur(),List,0);
 			break;
 		}
 		case Classes:
 		{
-			RCursor<GClass> Cur(session->GetTopClasses());
+			RNodeCursor<GClasses,GClass> Cur(*session);
 			for(Cur.Start();!Cur.End();Cur.Next())
 				addClass(Cur(),List,0);
 			break;
@@ -623,12 +624,12 @@ void QGObjectsList::Set(oType type,GMetaEngine* engine,size_t nbres)
 	QTreeWidget* List(static_cast<Ui_QGObjectsList*>(Ui)->List);
 	List->clear();
 
-	RCursor<GDocRetrieved> Cur(engine->GetDocs());
+	RCursor<GDocFragment> Cur(engine->GetResults());
 	size_t i;
 	for(Cur.Start(),i=0;(!Cur.End())&&(i<nbres);Cur.Next(),i++)
 	{
 		QTreeWidgetItem* ptr(new QGObject(List,Cur()));
-		new QTreeWidgetItem(ptr,QStringList()<<ToQString(Cur()->GetDescription())<<"");
+		new QTreeWidgetItem(ptr,QStringList()<<ToQString(Cur()->GetFragment())<<"");
 	}
 	List->resizeColumnToContents(0);
 	List->resizeColumnToContents(1);

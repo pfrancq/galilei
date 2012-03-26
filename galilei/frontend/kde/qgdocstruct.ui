@@ -1,46 +1,52 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>QGDocStruct</class>
- <widget class="QWidget" name="QGDocStruct" >
-  <property name="geometry" >
+ <widget class="QWidget" name="QGDocStruct">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>804</width>
+    <width>918</width>
     <height>300</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" >
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QTreeWidget" name="RecsList" >
-     <property name="rootIsDecorated" >
+    <widget class="QTreeWidget" name="RecsList">
+     <property name="rootIsDecorated">
       <bool>false</bool>
      </property>
      <column>
-      <property name="text" >
+      <property name="text">
        <string>Concept</string>
       </property>
      </column>
      <column>
-      <property name="text" >
-       <string>ConceptType</string>
+      <property name="text">
+       <string>Token Type</string>
       </property>
      </column>
      <column>
-      <property name="text" >
+      <property name="text">
+       <string>Concept Type</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
        <string>Position</string>
       </property>
      </column>
      <column>
-      <property name="text" >
-       <string>Level</string>
+      <property name="text">
+       <string>Syntactic Position</string>
       </property>
      </column>
      <column>
-      <property name="text" >
-       <string>Child</string>
+      <property name="text">
+       <string>Syntactic Level</string>
       </property>
      </column>
     </widget>

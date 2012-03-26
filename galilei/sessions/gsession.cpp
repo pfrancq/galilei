@@ -41,6 +41,7 @@
 // include files for R Project
 #include <rxmlfile.h>
 #include <rdir.h>
+#include <rnodecursor.h>
 using namespace R;
 
 
@@ -56,7 +57,7 @@ using namespace R;
 #include <glink.h>
 #include <gengine.h>
 #include <gmetaengine.h>
-#include <gdocretrieved.h>
+#include <gdocfragment.h>
 #include <guser.h>
 #include <gprofile.h>
 #include <gprofilecalc.h>
@@ -83,53 +84,53 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 // define
-#define HANDLEALLEXCEPTIONS(rec,msg) 	                                       \
+#define HANDLEALLEXCEPTIONS(rec,msg) 	                                        \
 catch(GException& e)                                                           \
 {                                                                              \
-	if(rec)                                                                    \
-	{                                                                          \
-		cerr<<msg<<e.GetMsg()<<endl;                                           \
-		rec->WriteStr(msg+e.GetMsg());                                         \
-	}                                                                          \
-	else                                                                       \
-		throw GException(msg+e.GetMsg());                                      \
+	if(rec)                                                                     \
+	{                                                                           \
+		cerr<<msg<<e.GetMsg()<<endl;                                             \
+		rec->WriteStr(msg+e.GetMsg());                                           \
+	}                                                                           \
+	else                                                                        \
+		throw GException(msg+e.GetMsg());                                        \
 }                                                                              \
 catch(RIOException& e)                                                         \
 {                                                                              \
-	if(rec)                                                                    \
-	{                                                                          \
-		cerr<<e.GetMsg()<<endl;                                                \
-		rec->WriteStr(e.GetMsg());                                             \
-	}                                                                          \
-	else                                                                       \
-		throw GException(e.GetMsg());                                          \
+	if(rec)                                                                     \
+	{                                                                           \
+		cerr<<e.GetMsg()<<endl;                                                  \
+		rec->WriteStr(e.GetMsg());                                               \
+	}                                                                           \
+	else                                                                        \
+		throw GException(e.GetMsg());                                            \
 }                                                                              \
 catch(RException& e)                                                           \
 {                                                                              \
-	if(rec)                                                                    \
-	{                                                                          \
-		cerr<<msg<<e.GetMsg()<<endl;                                           \
-		rec->WriteStr(msg+e.GetMsg());                                         \
-	}                                                                          \
-	else                                                                       \
-		throw GException(msg+e.GetMsg());                                      \
+	if(rec)                                                                     \
+	{                                                                           \
+		cerr<<msg<<e.GetMsg()<<endl;                                             \
+		rec->WriteStr(msg+e.GetMsg());                                           \
+	}                                                                           \
+	else                                                                        \
+		throw GException(msg+e.GetMsg());                                        \
 }                                                                              \
 catch(exception& e)                                                            \
 {                                                                              \
-	if(rec)                                                                    \
-	{                                                                          \
-		cerr<<msg<<e.what()<<endl;                                             \
-		rec->WriteStr(msg+e.what());                                           \
-	}                                                                          \
-	else                                                                       \
-		throw GException(msg+e.what());                                        \
+	if(rec)                                                                     \
+	{                                                                           \
+		cerr<<msg<<e.what()<<endl;                                               \
+		rec->WriteStr(msg+e.what());                                             \
+	}                                                                           \
+	else                                                                        \
+		throw GException(msg+e.what());                                          \
 }                                                                              \
 catch(...)                                                                     \
 {                                                                              \
-	if(rec)                                                                    \
-		rec->WriteStr(msg+"Undefined error");                                  \
-	else                                                                       \
-		throw GException(msg+"Undefined error");                               \
+	if(rec)                                                                     \
+		rec->WriteStr(msg+"Undefined error");                                    \
+	else                                                                        \
+		throw GException(msg+"Undefined error");                                 \
 }
 
 
@@ -143,19 +144,44 @@ const size_t SizeT2=2*sizeof(size_t);
 
 //------------------------------------------------------------------------------
 //
+// GSessionMsg
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GSessionMsg::GSessionMsg(GSession* session,tObjType type)
+	: Session(session), Type(type), Meta(otNoClass)
+{
+
+}
+
+
+//------------------------------------------------------------------------------
+GSessionMsg::GSessionMsg(GSession* session,tObjType type,tObjType meta)
+	: Session(session), Type(type), Meta(meta)
+{
+
+}
+
+
+
+//------------------------------------------------------------------------------
+//
 // GSession
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 GSession::GSession(size_t id,const RString& name)
-	: RConfig("lib/galilei/sessions",name),
+	:
+	  RObject(name),
+	  RConfig("lib/galilei/sessions",name),
 	  GObjects<GDoc>(20000,"Documents",otDoc),
 	  GObjects<GTopic>(200,"Topics",otTopic),
 	  GObjects<GUser>(1000,"Users",otUser),
 	  GObjects<GProfile>(5000,"Profiles",otProfile),
 	  GObjects<GCommunity>(100,"Communities",otCommunity),
-	  GClasses(300,100),
+	  GClasses(300),
 	  Id(id), Name(name),
 	  ValidConfigFile(false), Log("/var/log/galilei/"+name+".log"),
 	  CurrentRandom(1), Random(RRandom::Good,1),
@@ -165,6 +191,12 @@ GSession::GSession(size_t id,const RString& name)
 {
 	// Log files
 	Log.Open(RIO::Append);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::HandlerNotFound(const R::RNotification& /*notification*/)
+{
 }
 
 
@@ -240,7 +272,7 @@ void GSession::AnalyzeDocs(bool ram,GSlot* rec)
 
 	 // Force to save all document descriptions and structures
 	FlushDesc(pDoc);
-	FlushStruct(pDoc);
+	FlushTree(pDoc);
 }
 
 
@@ -506,6 +538,10 @@ void GSession::Reset(tObjType type)
 		default:
 			ThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
+
+	// Send a notification
+	GSessionMsg Msg(this,type);
+	PostNotification<GSessionMsg&>("Reset",Msg);
 }
 
 
@@ -521,9 +557,9 @@ void GSession::ResetFile(tObjType type,tObjType meta)
 					if(GObjects<GDoc>::Desc)
 						GObjects<GDoc>::Desc->Clear();
 					break;
-				case otStructFile:
-					if(GObjects<GDoc>::Struct)
-						GObjects<GDoc>::Struct->Clear();
+				case otTreeFile:
+					if(GObjects<GDoc>::Tree)
+						GObjects<GDoc>::Tree->Clear();
 					break;
 				case otIndexFile:
 					if(GObjects<GDoc>::Index)
@@ -601,6 +637,10 @@ void GSession::ResetFile(tObjType type,tObjType meta)
 		default:
 			ThrowGException(GetObjType(type,true,true)+" have no files associated");
 	}
+
+		// Send a notification
+	GSessionMsg Msg(this,type,meta);
+	PostNotification<GSessionMsg&>("ResetFile",Msg);
 }
 
 
@@ -616,7 +656,7 @@ void GSession::ForceReCompute(tObjType type)
 			for(Doc.Start();!Doc.End();Doc.Next())
 			{
 				Doc()->ClearInfos(SaveResults);
-				Doc()->ClearStruct(SaveResults);
+				Doc()->ClearTree(SaveResults);
 				if(SaveResults)
 					Storage->SaveObj(Doc());
 			}
@@ -624,7 +664,7 @@ void GSession::ForceReCompute(tObjType type)
 			{
 				ResetFile(otDoc,otDescFile);
 				ResetFile(otDoc,otIndexFile);
-				ResetFile(otDoc,otStructFile);
+				ResetFile(otDoc,otTreeFile);
 			}
 			ClearRefs(this,otDoc);
 			ClearIndex(this,otDoc);
@@ -674,6 +714,10 @@ void GSession::ForceReCompute(tObjType type)
 		default:
 			ThrowGException(GetObjType(type,true,true)+" are not allowed");
 	}
+
+	// Send a notification
+	GSessionMsg Msg(this,type);
+	PostNotification<GSessionMsg&>("ForceReCompute",Msg);
 }
 
 
@@ -712,7 +756,7 @@ size_t GSession::GetNbObjs(tObjType type) const
 			return(GObjects<GTopic>::Objects.GetNb());
 		case otSubject:
 			LoadSubjects();
-			return(Subjects.GetNb());
+			return(Subjects.GetNbNodes());
 		default:
 			ThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
@@ -832,7 +876,7 @@ size_t GSession::GetNbIdealGroups(tObjType type) const
 {
 	LoadSubjects();
 	size_t nb(0);
-	RCursor<GSubject> Cur(Subjects.GetTopNodes());
+	RNodeCursor<GSubjects,GSubject> Cur(Subjects);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		nb+=Cur()->GetNbIdealGroups(type);
 	return(nb);
@@ -855,7 +899,7 @@ size_t GSession::GetNbTopicsDocs(void) const
 {
 	LoadSubjects();
 	size_t nb(0);
-	RCursor<GSubject> Cur(Subjects.GetTopNodes());
+	RNodeCursor<GSubjects,GSubject> Cur(Subjects);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		nb+=Cur()->GetNbTopicsDocs();
 	return(nb);
@@ -929,7 +973,7 @@ const GSubject* GSession::GetSubject(GProfile* prof) const
 RCursor<GSubject> GSession::GetSubjects(void) const
 {
 	LoadSubjects();
-	return(Subjects.GetNodes());
+	return(Subjects.GetSubjects());
 }
 
 
@@ -945,18 +989,12 @@ R::RCursor<GSubject> GSession::GetSubjects(GDoc* doc) const
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GSubject> GSession::GetSubjects(const GSubject* subject) const
+RNodeCursor<GSubjects,GSubject> GSession::GetSubjects(const GSubject* subject) const
 {
 	LoadSubjects();
-	return(Subjects.GetNodes(subject));
-}
-
-
-//------------------------------------------------------------------------------
-RCursor<GSubject> GSession::GetTopSubjects(void) const
-{
-	LoadSubjects();
-	return(Subjects.GetTopNodes());
+	if(subject)
+		return(RNodeCursor<GSubjects,GSubject>(subject));
+	return(RNodeCursor<GSubjects,GSubject>(Subjects));
 }
 
 
@@ -1183,7 +1221,7 @@ void GSession::ReInit(void)
 
 	// Re-initialize the subjects
 	LoadSubjects();
-	RCursor<GSubject> Subject(Subjects.GetNodes());
+	RNodeCursor<GSubjects,GSubject> Subject(Subjects);
 	for(Subject.Start();!Subject.End();Subject.Next())
 		Subject()->ReInit();
 
@@ -1249,7 +1287,7 @@ void GSession::TestSubjects(void)
 		{
 			// If no child subjects have documents or children -> it is OK.
 			bool OK(true);
-			RCursor<GSubject> Cur2(Subject->GetSubjects());
+			RNodeCursor<GSubjects,GSubject> Cur2(Subject);
 			for(Cur2.Start();(!Cur2.End())&&OK;Cur2.Next())
 				if(Cur2()->GetNbSubjects()||Cur2()->CategorizedDocs.GetNb())
 					OK=false;
@@ -1258,7 +1296,7 @@ void GSession::TestSubjects(void)
 				NbNoLeaf++;
 
 				// Create a new subject
-				GSubject* NewSubject(new GSubject(this,Subjects.GetNb()+NbNoLeaf,Subject->Name+" general",true));
+				GSubject* NewSubject(new GSubject(this,Subjects.GetNbNodes()+NbNoLeaf,Subject->Name+" general",true));
 				ToIns.InsertPtr(new NewGenericSubject(NewSubject,Cur()));
 
 				// Transfer all the document from Cur() to subject

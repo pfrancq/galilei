@@ -30,6 +30,7 @@
 //------------------------------------------------------------------------------
 // include files for R Project
 #include <rcursor.h>
+#include <rnodecursor.h>
 #include <rqt.h>
 using namespace R;
 using namespace std;
@@ -45,6 +46,8 @@ using namespace std;
 #include <ggalileiapp.h>
 #include <gsession.h>
 #include <gstorage.h>
+
+#include "gconceptnode.h"
 using namespace GALILEI;
 
 
@@ -63,6 +66,49 @@ QGDocStruct::QGDocStruct(QWidget* parent)
 }
 
 
+//------------------------------------------------------------------------------
+void QGDocStruct::Display(GSession* session,GConceptNode* node)
+{
+	QTreeWidget* RecsList(static_cast<Ui_QGDocStruct*>(Ui)->RecsList);
+	QString name(ToQString(session->GetStorage()->LoadConcept(node->GetConceptId())));
+	QString ConceptType(ToQString(session->GetConcept(node->GetConceptId())->GetType()->GetDescription()));
+	QString TokenType;
+	switch(node->GetType())
+	{
+		case ttUnknown:
+			TokenType="Unknown";
+			break;
+		case ttDeleted:
+			TokenType="Deleted";
+		case ttText:
+			TokenType="Textual";
+			break;
+		case ttSemantic:
+			TokenType="Semantic";
+			break;
+		case ttDivision:
+			TokenType="Division";
+			break;
+		case ttMetadata:
+			TokenType="Metadata";
+			break;
+		case ttAttribute:
+			TokenType="Attribute";
+			break;
+		case ttLink:
+			TokenType="Link";
+			break;
+		case ttURI:
+			TokenType="URI";
+			break;
+	}
+	new QTreeWidgetItem(RecsList,QStringList()<<name<<TokenType<<ConceptType<<QString::number(node->GetPos())<<QString::number(node->GetSyntacticPos())<<QString::number(node->GetSyntacticDepth()));
+
+	RNodeCursor<GConceptTree,GConceptNode> Node(node);
+	for(Node.Start();!Node.End();Node.Next())
+		Display(session,Node());
+}
+
 
 //------------------------------------------------------------------------------
 void QGDocStruct::Set(GDoc* obj)
@@ -70,30 +116,28 @@ void QGDocStruct::Set(GDoc* obj)
 	if(!obj) return;
 
 	// Init
-	QTreeWidget* RecsList(static_cast<Ui_QGDocStruct*>(Ui)->RecsList);
 	GSession* Session=obj->GetSession();
+	QTreeWidget* RecsList(static_cast<Ui_QGDocStruct*>(Ui)->RecsList);
 	RecsList->clear();
 
-
-	// Show the information entities
-	GConceptTree* xml(obj->GetStruct());
-	if(!xml)
-		return;
-	R::RCursor<GConceptNode> Nodes(xml->GetNodes());
-	for(Nodes.Start();!Nodes.End();Nodes.Next())
+	// Show the tree
+	if(obj->GetId()==cNoRef)
 	{
-		QString name;
-		name=ToQString(Session->GetStorage()->LoadConcept(Nodes()->GetConcept()->GetId()));
-		QString type=ToQString(Nodes()->GetConcept()->GetType()->GetDescription());
-		QString Child;
-		size_t child(xml->GetFirstChild(Nodes()));
-		if(child==cNoRef)
-			Child="-1";
-		else
-			Child.setNum(child);
-		new QTreeWidgetItem(RecsList,QStringList()<<name<<type<<QString::number(Nodes()->GetPos())<<QString::number(Nodes()->GetDepth())<<Child);
+		// Get the latest tree computed
+		RNodeCursor<GConceptTree,GConceptNode> Node(Session->GetTree());
+		for(Node.Start();!Node.End();Node.Next())
+			Display(Session,Node());
 	}
-	obj->ReleaseStruct();
+	else
+	{
+		// Load the tree and remove it after
+		GConceptTree* tree(0);
+		obj->LoadTree(tree);
+		RNodeCursor<GConceptTree,GConceptNode> Node(*tree);
+		for(Node.Start();!Node.End();Node.Next())
+			Display(Session,Node());
+		delete tree;
+	}
 
 	RecsList->resizeColumnToContents(0);
 	RecsList->resizeColumnToContents(1);

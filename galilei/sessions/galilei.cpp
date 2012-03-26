@@ -51,6 +51,7 @@ const GTopic* GALILEI::pTopic(0);
 const GUser* GALILEI::pUser(0);
 const GProfile* GALILEI::pProfile(0);
 const GCommunity* GALILEI::pCommunity(0);
+const GSubject* GALILEI::pSubject(0);
 
 
 
@@ -148,10 +149,10 @@ RString GALILEI::GetObjType(tObjType type,bool upper,bool plural)
 			if(plural)
 				return(Str("classes",upper));
 			return(Str("class",upper));
-		case otDocStruct:
+		case otTree:
 			if(plural)
-				return(Str("document structures",upper));
-			return(Str("document structure",upper));
+				return(Str("concept trees",upper));
+			return(Str("concept tree",upper));
 		case otSuggestion:
 			if(plural)
 				return(Str("suggestions",upper));
@@ -164,10 +165,10 @@ RString GALILEI::GetObjType(tObjType type,bool upper,bool plural)
 			if(plural)
 				return(Str("description files",upper));
 			return(Str("description file",upper));
-		case otStructFile:
+		case otTreeFile:
 			if(plural)
-				return(Str("structure files",upper));
-			return(Str("structure file",upper));
+				return(Str("concept tree files",upper));
+			return(Str("concept tree file",upper));
 		case otIndexFile:
 			if(plural)
 				return(Str("index files",upper));

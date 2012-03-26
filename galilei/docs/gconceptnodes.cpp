@@ -2,13 +2,11 @@
 
 	GALILEI Research Project
 
-	GDocRetrieved.cpp
+	GConceptNodes.cpp
 
-	Relevant Document for a Search - Implementation.
+	Concept Node Container - Implementation.
 
-   Copyright 2003-2012 by Pascal Francq.
-	Copyright 2003-2004 by Valery Vandaele.
-	Copyright 2003-2008 Université Libre de Bruxelles (ULB).
+	Copyright 2011-2012 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -30,17 +28,9 @@
 
 
 //------------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <stdio.h>
-#include <iostream>
-#include <cstdlib>
-
-
-//------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gdocretrieved.h>
-#include <gdoc.h>
-#include <gsession.h>
+#include <gconceptnodes.h>
+#include <gconceptnode.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -49,47 +39,40 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 //
-// class GDocRetrieved
+//  GConceptNodes
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocRetrieved::GDocRetrieved(size_t docid,const R::RString uri,const R::RString title,const RString description,double ranking,const RString engine)
-	: DocId(docid), URI(uri), Title(title), Description(description), Ranking(0), Rankings(10,5)
+GConceptNodes::GConceptNodes(size_t conceptid)
+	: RContainer<GConceptNode,false,true>(2000), ConceptId(conceptid)
 {
-	Rankings.InsertPtr(new GDocRanking(DocId,ranking,engine));
 }
 
 
 //------------------------------------------------------------------------------
-int GDocRetrieved::Compare(const GDocRetrieved& d) const
+GConceptNodes::GConceptNodes(size_t conceptid,size_t max)
+	: RContainer<GConceptNode,false,true>(max), ConceptId(conceptid)
 {
-	return(URI.Compare(d.URI));
 }
 
 
 //------------------------------------------------------------------------------
-int GDocRetrieved::Compare(const RString& uri) const
+GConceptNodes::GConceptNodes(const GConceptNodes& nodes)
+	: RContainer<GConceptNode,false,true>(nodes), ConceptId(nodes.ConceptId)
 {
-	return(URI.Compare(uri));
 }
 
 
 //------------------------------------------------------------------------------
-void GDocRetrieved::AddRanking(double ranking,const R::RString engine)
+int GConceptNodes::Compare(const GConceptNodes& node) const
 {
-	Rankings.InsertPtr(new GDocRanking(DocId,ranking,engine));
-}
-
-
-//-----------------------------------------------------------------------------
-R::RCursor<GDocRanking> GDocRetrieved::GetRankings(void) const
-{
-	return(R::RCursor<GDocRanking>(Rankings));
+	return(CompareIds(ConceptId,node.ConceptId));
 }
 
 
 //------------------------------------------------------------------------------
-GDocRetrieved::~GDocRetrieved(void)
+int GConceptNodes::Compare(const size_t conceptid) const
 {
+	return(CompareIds(ConceptId,conceptid));
 }

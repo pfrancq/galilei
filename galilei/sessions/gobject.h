@@ -89,6 +89,7 @@ public:
 	 * @param obj            Original object.
 	 */
 	GObject(const GObject* obj);
+
 	/**
 	 * Defines if the objects have a description.
 	 * @return false.
@@ -96,10 +97,10 @@ public:
 	static inline bool HasDesc(void) {return(false);}
 
 	/**
-	 * Defines of the objects have a structure.
+	 * Defines of the objects have a concept tree.
 	 * @return false.
 	 */
-	static inline bool HasStruct(void){return(false);}
+	static inline bool HasTree(void){return(false);}
 
 	/**
 	* @return the session of the object.
@@ -151,6 +152,8 @@ public:
 
 	friend class GObjects<GTopic>;
 	friend class GObjects<GCommunity>;
+	friend class GObjects<GDoc>;
+	friend class GObjects<GProfile>;
 };
 
 

@@ -421,7 +421,7 @@ public:
 	 * @param doc             Document to analyze.
 	 * @return the filter needed to analyze the document.
 	 */
-	GFilter* FindMIMEType(GDoc* doc);
+	GFilter* FindMIMEType(GDoc* doc) const;
 
 	/**
 	* Add a pair (MIME type,filter).

@@ -109,6 +109,18 @@ void GPlugInList::Create(GSession* session)
 
 
 //-----------------------------------------------------------------------------
+void GPlugInList::Disconnect(GSession*)
+{
+	RCursor<GPlugInFactory> Cur(Factories);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		if(Cur()->Plugin)
+			Cur()->Plugin->Done();
+	}
+}
+
+
+//-----------------------------------------------------------------------------
 void GPlugInList::Delete(void)
 {
 	RCursor<GPlugInFactory> Cur(Factories);
@@ -225,6 +237,20 @@ void GPlugInManager::Create(GSession* session)
 	}
 	else
 		Data.List->Create(session);
+}
+
+
+//-----------------------------------------------------------------------------
+void GPlugInManager::Disconnect(GSession* session)
+{
+	if(PluginsType==ptListSelect)
+	{
+		RCursor<GPlugInList> Cur(*Data.Lists);
+		for(Cur.Start();!Cur.End();Cur.Next())
+			Cur()->Disconnect(session);
+	}
+	else
+		Data.List->Disconnect(session);
 }
 
 

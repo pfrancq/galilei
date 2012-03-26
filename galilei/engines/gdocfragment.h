@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GDocRetrieved.h
+	GDocFragment.h
 
 	Relevant Document for a Search - Header.
 
@@ -30,8 +30,8 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GDocRetrievedH
-#define GDocRetrievedH
+#ifndef GDocFragmentH
+#define GDocFragmentH
 
 
 //------------------------------------------------------------------------------
@@ -59,24 +59,62 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GDocRetrieved class provides a representation for a document proposed by a
-* search engine (with its ranking).
-* @short Document Retrieved
+* The GDocFragment class provides a representation for a fragment of a document
+* proposed by a search engine (with its ranking).
+* @short Document Fragment Retrieved
 */
-class GDocRetrieved
+class GDocFragment
 {
-private:
+	/*
+	 * Search structure needed to compare to document fragment.
+	 */
+	struct Search
+	{
+		/**
+		* URI of the document.
+		*/
+		const R::RURI& URI;
+
+		/**
+		* Position of the fragment.
+		*/
+		size_t Pos;
+
+		/**
+		* Position of the first query concept found.
+		*/
+		size_t First;
+
+		/**
+		* Position of the last query concept found.
+		 */
+		size_t Last;
+
+		/**
+		* Constructor.
+		* @param uri             URI of the document.
+		* @param pos             Position in the document.
+		* @param first           First concept found.
+		* @param last            Last concept found.
+		*/
+		Search(const R::RURI& uri,size_t pos,size_t first,size_t last);
+	};
 
 	/**
-	* The identifier of the document (may be null for an unknown document by the
+	 * Meta-engine owning this document fragment.
+	 */
+	GMetaEngine* Owner;
+
+	/**
+	* Pointer to the document (may be null for an unknown document by the
 	 * system).
 	*/
-	size_t DocId;
+	GDoc* Doc;
 
 	/**
 	 * URI of the document.
 	 */
-	R::RString URI;
+	R::RURI URI;
 
 	/**
 	 * Title of the document.
@@ -84,9 +122,24 @@ private:
 	R::RString Title;
 
 	/**
-	* The description of the resulting page.
+	* The fragment.
 	*/
-	R::RString Description;
+	R::RString Fragment;
+
+	/**
+	 * Starting position of the fragment.
+	 */
+	size_t Pos;
+
+	/**
+	 * Position of the first query concept found.
+	 */
+	size_t First;
+
+	/**
+	 * Position of the last query concept found.
+	 */
+	size_t Last;
 
 	/**
 	* The global ranking for the current document
@@ -101,39 +154,50 @@ private:
 public:
 
 	/**
-	* Constructor of a document retrieved.
-	* @param docid           Identifier of the document.
+	* Constructor of a document fragment retrieved.
+	* @param owner           Meta-engine.
+	* @param doc             Document.
+	* @param pos             Position in the document.
+	* @param first           First concept found.
+	* @param last            Last concept found.
+	* @param engine          Name of the engine that retrieves it.
+	*/
+	GDocFragment(GMetaEngine* owner,GDoc* doc,size_t pos,size_t first,size_t last,double ranking,const R::RString& engine);
+
+	/**
+	* Constructor of a document fragment retrieved.
+	* @param owner           Meta-engine.
 	* @param uri             URI of the document.
 	* @param title           Title of the document.
-	* @param description     Description of the document.
+	* @param fragment        Fragment.
 	* @param ranking         Ranking of the document.
 	* @param engine          Name of the engine that retrieves it.
 	*/
-	GDocRetrieved(size_t docid,const R::RString uri,const R::RString title,const R::RString description,double ranking,const R::RString engine);
+	GDocFragment(GMetaEngine* owner,const R::RString& uri,const R::RString& title,const R::RString& fragment,double ranking,const R::RString& engine);
 
 	/**
 	* Method to compare document retrieved based on their URI.
 	* @param d               Document retrieved to compare with.
 	*/
-	int Compare(const GDocRetrieved& d) const;
+	int Compare(const GDocFragment& d) const;
 
 	/**
-	* Method to a document retrieved with an URI.
-	* @param uri             URI to compare with.
+	* Method to a document retrieved with a search structure.
+	* @param search          Search.
 	*/
-	int Compare(const R::RString& uri) const;
+	int Compare(const Search& search) const;
 
 	/**
-	 * Get the identifier of the document. If it is null, the URI is considered
+	 * Get the the document. If it is null, the URI is considered
 	 * as unknown in the session
-	 * @return the identifier of the document.
+	 * @return the pointer to the document.
 	 */
-	size_t GetDocId(void) const {return(DocId);}
+	GDoc* GetDoc(void) const {return(Doc);}
 
 	/**
     * @return the document URI.
     */
-	R::RString GetURI(void) const {return(URI);}
+	R::RURI GetURI(void) const {return(URI);}
 
 	/**
     * @return the document title.
@@ -141,9 +205,24 @@ public:
 	R::RString GetTitle(void) const {return(Title);}
 
 	/**
-	* Get the description of the document
+	 * @return the starting position of the fragment.
+	 */
+	size_t GetPos(void) const {return(Pos);}
+
+	/**
+	 * @return the position of the first query concept found.
+	 */
+	size_t GetFirst(void) const {return(First);}
+
+	/**
+	 * @return the position of the last query concept found.
+	 */
+	size_t GetLast(void) const {return(Last);}
+
+	/**
+	* @return the fragment of the document.
 	*/
-	R::RString GetDescription(void) const {return(Description);}
+	R::RString GetFragment(void);
 
 	/**
 	* Get the global ranking associated to this document.
@@ -165,7 +244,7 @@ public:
 	/**
 	* Destruct.
 	*/
-	virtual ~GDocRetrieved(void);
+	virtual ~GDocFragment(void);
 
 	friend class GMetaEngine;
 };

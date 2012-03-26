@@ -1,0 +1,194 @@
+/*
+
+	GALILEI Research Project
+
+	GConceptTree.h
+
+	Concepts Tree - Header.
+
+	Copyright 2008-2012 by Pascal Francq (pascal@francq.info).
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Library General Public
+	License as published by the Free Software Foundation; either
+	version 2.0 of the License, or (at your option) any later version.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	Library General Public License for more details.
+
+	You should have received a copy of the GNU Library General Public
+	License along with this library, as a file COPYING.LIB; if not, write
+	to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+	Boston, MA  02111-1307  USA
+
+*/
+
+
+
+//------------------------------------------------------------------------------
+#ifndef GConceptTreeH
+#define GConceptTreeH
+
+
+//------------------------------------------------------------------------------
+// include files for R Project
+#include <rtree.h>
+
+
+//------------------------------------------------------------------------------
+// include files for GALILEI
+#include <galilei.h>
+
+
+//------------------------------------------------------------------------------
+namespace GALILEI{
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+/**
+ * The GConceptTree implements a tree of concepts, each concept may appear at
+ * multiple depths in the tree. It means to represent documents which have, by
+ * nature, a structured organization. A XML documents for example is a tree of
+ * tags, attributes and texts.
+ *
+ * In practice, the internal implementation supposes that:
+ * - Each node (GConceptNode) represents a concept occurrence at a given
+ *   position and a given depth in the object represented.
+ * - A container stores all created nodes. It is responsible for the allocation
+ *   and deallocation of the nodes. The idea is that the created nodes are only
+ *   deallocated in the destructor.
+ * - A container where the nodes are ordered by syntactic positions.
+ * - A container stores all concepts appearing in a document and a pointer to
+ *   all occurrences.
+ * @short Concepts Tree.
+ */
+class GConceptTree : R::RTree<GConceptTree,GConceptNode,false>, R::RContainer<GConceptNode,true,false>
+{
+	/**
+	 * Concept ordered by syntactic positions.
+	 */
+	R::RContainer<GConceptNode,false,false> Pos;
+
+	/**
+	 * Concept references.
+	 */
+	R::RContainer<GConceptNodes,true,true> Refs;
+
+	/**
+	 * Document identifier.
+	 */
+	size_t DocId;
+
+public:
+
+	/**
+	 * constructor.
+	 * @param docid          Document identifier.
+	 * @param max            Maximum number of initial nodes to create.
+	 * @param nb             Initial size of the concept reference container.
+	 */
+	GConceptTree(size_t docid,size_t max,size_t nb);
+
+	/**
+	 * Verify that the container may hold a given number of nodes and concept
+	 * references. The structure is also emptied.
+	 * @param docid          Document identifier.
+	 * @param max            Number of nodes.
+	 * @param nb             Number of the concept references.
+	*/
+	void Verify(size_t docid,size_t max,size_t nb);
+
+	/**
+	 * Insert a node in the tree.
+	 * @param parent         Parent node. If Null, it is supposed to be a top
+	 *                       node.
+	 * @param type           Type of the token.
+	 * @param conceptid      Concept identifier associated with the node.
+	 * @param synpos         Syntactic position.
+	 * @param pos            Position in the object.
+	 * @param depth          Depth of the concept.
+	 * @return Pointer to a node created.
+	 */
+	GConceptNode* InsertNode(GConceptNode* parent,tTokenType type,size_t conceptid,size_t synpos,size_t pos,size_t depth);
+
+	/**
+	 * Clear the structure (but the main container).
+	 */
+	virtual void Clear(void);
+
+	/**
+    * @return the identifier of the document.
+    */
+	size_t GetDocId(void) const {return(DocId);}
+
+	/**
+	* @return the total number of nodes in the tree.
+	*/
+	size_t GetNbNodes(void) const {return(R::RTree<GConceptTree,GConceptNode,false>::GetNbNodes());}
+
+	/**
+	* @return the total number of top nodes in the tree.
+	*/
+	size_t GetNbTopNodes(void) const {return(R::RTree<GConceptTree,GConceptNode,false>::GetNbTopNodes());}
+
+	/**
+	* @return the total number of concepts references.
+	*/
+	size_t GetNbRefs(void) const {return(Refs.GetNb());}
+
+	/**
+	 * Get all the nodes representing the occurrences of a given concept.
+	 * @param concept        Concept.
+	 * @return a cursor over the nodes.
+    */
+	R::RCursor<GConceptNode> GetNodes(GConcept* concept) const;
+
+	/**
+	 * Get all the nodes ordered by syntactic position.
+	 * @param min            Minimum position of the elements to iterate.
+	 * @param max            Maximum position of the elements to iterate (included max).
+	 *                       If SIZE_MAX, iterate until the end of the container.
+	 * @return a cursor over the nodes.
+    */
+	R::RCursor<GConceptNode> GetNodes(size_t min=0,size_t max=SIZE_MAX) const;
+
+	/**
+	 * Get the node at a given syntactic position.
+    * @param pos             Syntactic position.
+    * @return a pointer or null if the position is outside the tree.
+    */
+	const GConceptNode* GetNode(size_t pos) const {return(Pos.GetPtrAt(pos));}
+
+	/**
+	 * Find the root node (the most common highest node) of two nodes.
+	 * @param node1          First node.
+	 * @param node2          Second node.
+	 * @return the root node of 0 if both nodes are top nodes.
+    */
+	GConceptNode* FindRoot(GConceptNode* node1,GConceptNode* node2) const;
+
+	/**
+	 * Simply print the information of all nodes on the screen;
+	 */
+	void Print(void) const;
+
+	/**
+	 * Destructor.
+	 */
+	~GConceptTree(void);
+
+	friend class GConceptNode;
+	friend class R::RNode<GConceptTree,GConceptNode,false>;
+	friend class R::RTree<GConceptTree,GConceptNode,false>;
+	friend class R::RNodeCursor<GConceptTree,GConceptNode>;
+};
+
+
+}  //-------- End of namespace GALILEI -----------------------------------------
+
+
+//------------------------------------------------------------------------------
+#endif

@@ -79,6 +79,7 @@ int GPlugInFactory::Compare(const size_t level) const
 	return(Level-level);
 }
 
+
 //-----------------------------------------------------------------------------
 void GPlugInFactory::Create(GSession* session)
 {
@@ -245,6 +246,12 @@ void GPlugIn::CreateConfig(void)
 
 //------------------------------------------------------------------------------
 void GPlugIn::Init(void)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GPlugIn::Done(void)
 {
 }
 

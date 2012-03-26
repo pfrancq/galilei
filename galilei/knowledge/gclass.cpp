@@ -104,16 +104,19 @@ void GClass::Update(GDescription& desc)
 {
 	// Remove its references
 	DelRefs(Session,otClass);
-	Session->UpdateIndex(pClass,desc,Id,false);
+	if(Session->DoCreateIndex(pClass))
+		Session->UpdateIndex(pClass,desc,Id,false);
 
 	// Assign information
 	State=osUpdated;
 	GDescription::operator=(desc);
-	desc.Clear();
 
 	// Update its references
 	AddRefs(Session,otClass);
-	Session->UpdateIndex(pClass,desc,Id,true);
+	if(Session->DoCreateIndex(pClass))
+		Session->UpdateIndex(pClass,desc,Id,true);
+
+	desc.Clear(); // Clear the description
 
 	// Emit an event that it was modified
 	Emit(GEvent::eObjModified);

@@ -416,7 +416,9 @@ public:
 	void GetCategories(R::RContainer<R::RString,true,false>& cats);
 
 	/**
-	 * Initialize the plug-in. This method is called after a first call to ApplyConfig.
+	 * Initialize the plug-in. This method is called each time a session is
+	 * opened. A first call to ApplyConfig was already done and the session
+	 * dictionaries were loaded.
 	 */
 	virtual void Init(void);
 
@@ -456,6 +458,11 @@ public:
 	 * Get the session associated with the plug-in.
 	 */
 	GSession* GetSession(void) const {return(Session);}
+
+	/**
+	 * The method is called each time a session is closed.
+    */
+	virtual void Done(void);
 
 	/**
 	* Destruct of the plug-in.

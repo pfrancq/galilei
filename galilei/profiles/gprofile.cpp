@@ -288,21 +288,24 @@ void GProfile::Update(GSession* session,GDescription& desc,bool delref)
 	if(delref)
 	{
 		DelRefs(Session,otProfile);
-		session->UpdateIndex(pProfile,desc,Id,false);
+		if(Session->DoCreateIndex(pProfile))
+			session->UpdateIndex(pProfile,desc,Id,false);
 	}
 
 	// Assign information
 	State=osUpdated;
 	Computed.SetToday();
 	GDescription::operator=(desc);
-	desc.Clear();
 
 	// Update the group were it belongs
 	Session->UpdateCommunity(this);
 
 	// Update its references
 	AddRefs(Session,otProfile);
-	session->UpdateIndex(pProfile,desc,Id,true);
+	if(Session->DoCreateIndex(pProfile))
+		session->UpdateIndex(pProfile,desc,Id,true);
+
+	desc.Clear(); // Clear the description
 
 	// Emit an event that it was modified
 	Emit(GEvent::eObjModified);

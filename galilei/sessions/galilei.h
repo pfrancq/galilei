@@ -59,6 +59,7 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 /**
 * Types of GALILEI objects.
+* @short Object Type.
 */
 enum tObjType
 {
@@ -77,15 +78,15 @@ enum tObjType
 	otEngineDoc              /** Document proposed by a search engine.*/,
 	otConcept                /** Concept.*/,
 	otConceptType            /** Concept Type.*/,
-   otConceptCat            /** Concept Category.*/,
+	otConceptCat             /** Concept Category.*/,
 	otPredicate              /** Predicate.*/,
-	otStatement 	         /** Statement.*/,
+	otStatement              /** Statement.*/,
 	otClass                  /** Class.*/,
-	otDocStruct              /** Document structure. */,
+	otTree                   /** Concept Tree. */,
 	otSuggestion             /** Suggestion.*/,
 	otDocRanking             /** Document ranking.*/,
 	otDescFile               /** Description file.*/,
-	otStructFile             /** Structure file.*/,
+	otTreeFile               /** Concept tree file.*/,
 	otIndexFile              /** Index file.*/,
 	otReference              /** Reference.*/
 };
@@ -140,12 +141,16 @@ R::RString GetState(tObjState state,bool upper);
  */
 enum tTokenType
 {
-	 ttUnknown               /** Unknown type.*/,
-	 ttDeleted               /** A deleted token.*/,
-	 ttText                  /** Text.*/,
-	 ttDivision              /** Document part, chapter, section, etc.*/,
-	 ttXMLTag                /** An XML tag.*/,
-	 ttXMLAttr               /** An XML attribute.*/
+	ttUnknown                /** Unknown type.*/,
+	ttDeleted                /** Deleted token.*/,
+	ttText                   /** Textual token.*/,
+	ttSemantic               /** Semantic token (for example a XML tag).*/,
+	ttDivision               /** Document part, chapter, section, paragraph, etc.*/,
+	ttMetadata               /** Metadata token (for example author), the value
+	                           * being made of textual tokens.*/,
+	ttAttribute              /** Attribute token (for example a XML attribute).*/,
+	ttLink                   /** Link token (for example an <a> tag in HTML.*/,
+	ttURI                    /** URI token.*/
 };
 
 
@@ -189,10 +194,10 @@ enum tProfileType
 {
 	ptUnknown                /** Unknown profile type.*/,
 	ptInterest               /** Profile representing an interest of a user
-	                             expressed through a set of feedbacks on
-	                             documents.*/,
+	                           * expressed through a set of feedbacks on
+	                           * documents.*/,
 	ptExpertise              /** Profile representing a particular expertise of
-	                             a user.*/
+	                           * a user.*/
 };
 
 
@@ -201,7 +206,7 @@ enum tProfileType
 * @return a string representing a profile type.
 * @param type                Profile type.
 * @param upper               First letter in uppercase ?
-* @param plural             Plural ?
+* @param plural              Plural ?
 */
 R::RString GetProfileType(tProfileType type,bool upper,bool plural);
 
@@ -221,8 +226,8 @@ tProfileType GetProfileType(unsigned int type);
  */
 enum tSubjectDesc
 {
-	sdNames                 /** Names of the subjects are used.*/,
-	sdDocs		            /** Selected documents are used.*/
+	sdNames                  /** Names of the subjects are used.*/,
+	sdDocs		             /** Selected documents are used.*/
 };
 
 
@@ -238,7 +243,7 @@ public:
 
 	/**
 	* Construct an exception.
-	* @param str                      Message of the error.
+	* @param str             Message of the error.
 	*/
 	GException(const char* str) throw()
 		: R::RException(str) {}
@@ -250,16 +255,16 @@ public:
 	* 	throw GException(__PRETTY_FUNCTION__,__LINE__,"ptr cannot be a null pointer");
 	* @endcode
 	* @see The ThrowGException marco.
-	* @param func                     Function producing the error.
-	* @param where                    Line position of the error.
-	* @param str                      Message of the error.
+	* @param func            Function producing the error.
+	* @param where           Line position of the error.
+	* @param str             Message of the error.
 	*/
 	GException(const char* func,long where,const char* str) throw()
 		: R::RException(func,where,str) {}
 
 	/**
 	* Construct an exception.
-	*///------------------------------------------------------------------------------
+	*/
 	GException(void) throw()
 		: R::RException() {}
 };
@@ -282,8 +287,6 @@ class GConceptRef;
 class GVector;
 class GDescription;
 class GDescriptionSet;
-class GConceptNode;
-class GConceptTree;
 template<class C> class GDescriptionObject;
 class GClass;
 class GClasses;
@@ -299,12 +302,16 @@ class GDocAnalyze;
 class GFilter;
 class GTokenizer;
 class GAnalyzer;
+class GTokenOccur;
 class GToken;
+class GConceptNode;
+class GConceptNodes;
+class GConceptTree;
 
 
 //------------------------------------------------------------------------------
 // forward class declaration - Engines Part
-class GDocRetrieved;
+class GDocFragment;
 class GDocRanking;
 class GSuggestion;
 class GSugs;
@@ -378,6 +385,8 @@ extern const GUser* pUser;
 extern const GProfile* pProfile;
 /** Null pointer for GCommunity.*/
 extern const GCommunity* pCommunity;
+/** Null pointer for GSubject.*/
+extern const GSubject* pSubject;
 
 
 //------------------------------------------------------------------------------

@@ -69,6 +69,17 @@ public:
 	 */
 	QGDocStruct(QWidget* parent);
 
+private:
+
+	/**
+	 * Display a node and its child nodes.
+	 * @param session        Session.
+    * @param node           Node to display.
+    */
+	void Display(GSession* session,GConceptNode* node);
+
+public:
+
 	/**
 	 * Set the current object to display. The widget is redraw.
 	 * @param obj            Object to display.

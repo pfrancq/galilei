@@ -34,11 +34,6 @@
 
 
 //------------------------------------------------------------------------------
-// include files for R
-#include <rsparsevector.h>
-
-
-//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 #include <gconceptref.h>

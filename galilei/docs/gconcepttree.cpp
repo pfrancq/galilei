@@ -1,0 +1,170 @@
+/*
+
+	GALILEI Research Project
+
+	GConceptTree.cpp
+
+	Concepts Tree - Implementation.
+
+	Copyright 2008-2012 by Pascal Francq (pascal@francq.info).
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Library General Public
+	License as published by the Free Software Foundation; either
+	version 2.0 of the License, or (at your option) any later version.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	Library General Public License for more details.
+
+	You should have received a copy of the GNU Library General Public
+	License along with this library, as a file COPYING.LIB; if not, write
+	to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+	Boston, MA  02111-1307  USA
+
+*/
+
+
+
+//------------------------------------------------------------------------------
+// include files for R Project
+#include <rnodecursor.h>
+
+
+//------------------------------------------------------------------------------
+// include files for GALILEI
+#include <gconcepttree.h>
+#include <gconceptnode.h>
+#include <gconceptnodes.h>
+#include <gconceptref.h>
+#include <gconcepttype.h>
+using namespace GALILEI;
+using namespace R;
+using namespace std;
+
+
+
+//------------------------------------------------------------------------------
+//
+//  GConceptTree
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GConceptTree::GConceptTree(size_t docid,size_t max,size_t nb)
+	: RTree<GConceptTree,GConceptNode,false>(), RContainer<GConceptNode,true,false>(max),
+	  Pos(max), Refs(nb), DocId(docid)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GConceptTree::Verify(size_t docid,size_t max,size_t nb)
+{
+	RTree<GConceptTree,GConceptNode,false>::Clear();
+	RContainer<GConceptNode,true,false>::VerifyTab(max);
+	Pos.Clear(nb);
+	Refs.Clear(nb);
+	DocId=docid;
+}
+
+
+//------------------------------------------------------------------------------
+GConceptNode* GConceptTree::InsertNode(GConceptNode* parent,tTokenType type,size_t conceptid,size_t synpos,size_t pos,size_t depth)
+{
+	GConceptNode* Node;
+	if(GetNbNodes()>=GetNb())
+	{
+		InsertPtr(Node=new GConceptNode(type,conceptid,synpos,pos,depth));
+		Node->Index=GetNb()-1;
+	}
+	else
+	{
+		Node=(*this)[GetNbNodes()];
+		Node->ConceptId=conceptid;
+		Node->Pos=pos;
+		Node->SyntacticPos=synpos;
+		Node->SyntacticDepth=depth;
+	}
+
+	// Insert the node
+	RTree<GConceptTree,GConceptNode,false>::InsertNode(parent,Node);
+	GConceptNodes* Ref(Refs.GetInsertPtr(conceptid));
+	Ref->InsertPtr(Node);
+	Pos.VerifyTab(synpos);
+	Pos.InsertPtrAt(Node,synpos,true);
+
+	// Return
+	return(Node);
+}
+
+
+//------------------------------------------------------------------------------
+void GConceptTree::Clear(void)
+{
+	RTree<GConceptTree,GConceptNode,false>::Clear();
+	Pos.Clear();
+	Refs.Clear();
+}
+
+
+//------------------------------------------------------------------------------
+RCursor<GConceptNode> GConceptTree::GetNodes(GConcept* concept) const
+{
+	GConceptNodes* Nodes(Refs.GetPtr(concept->GetId()));
+	if(Nodes)
+		return(RCursor<GConceptNode>(*Nodes));
+	return(RCursor<GConceptNode>());
+}
+
+
+//------------------------------------------------------------------------------
+RCursor<GConceptNode> GConceptTree::GetNodes(size_t min,size_t max) const
+{
+	return(RCursor<GConceptNode>(Pos,min,max));
+}
+
+
+//------------------------------------------------------------------------------
+GConceptNode* GConceptTree::FindRoot(GConceptNode* node1,GConceptNode* node2) const
+{
+	GConceptNode* Node1(node1);
+	GConceptNode* Node2(node2);
+
+	// Put Node1 on the same depth than Node2
+	while(Node1&&(Node1->GetDepth()>Node2->GetDepth()))
+		Node1=Node1->GetParent();
+
+	// Put Node2 on the same depth than Node1
+	size_t RefDepth(0);
+	if(Node1)
+		RefDepth=Node1->GetDepth();
+	while(Node2&&(Node2->GetDepth()>RefDepth))
+		Node2=Node2->GetParent();
+
+	// The two nodes are on the same depth
+	// While they are not equal goes higher in the hierarchy
+	while(Node1!=Node2)
+	{
+		Node1=Node1->GetParent();
+		Node2=Node2->GetParent();
+	}
+
+	return(Node1);
+}
+
+
+//------------------------------------------------------------------------------
+void GConceptTree::Print(void) const
+{
+	RNodeCursor<GConceptTree,GConceptNode> Children(*this);
+	for(Children.Start();!Children.End();Children.Next())
+		Children()->Print();
+}
+
+
+//------------------------------------------------------------------------------
+GConceptTree::~GConceptTree(void)
+{
+}

@@ -58,21 +58,14 @@ class GClasses : public R::RTree<GClasses,GClass,false>, public GObjects<GClass>
 {
 	using GObjects<GClass>::InsertObj;
 	using GObjects<GClass>::DeleteObj;
-   //using R::RTree<GClasses,GClass,false>::Clear;
 
 public:
 
 	/**
 	* Construct a tree of classes.
-	* @param max             Initial size of the array of top nodes.
-	* @param inc             Increment size of the array.
+	* @param max             Initial size of the container.
 	*/
-	GClasses(size_t max,size_t inc);
-
-	/**
-	* @return a cursor on the top classes.
-	*/
-	R::RCursor<GClass> GetTopClasses(void) const;
+	GClasses(size_t max);
 
 	/**
 	 * @return Pointer to the class.
@@ -96,11 +89,6 @@ public:
 	* Clear the classes.
 	*/
   virtual void Clear(void);
-
-   /**
-	 * Clear the classes.
-	 */
-	virtual void Clear(size_t max,size_t inc=0);
 
    /**
 	* Clear the classes.

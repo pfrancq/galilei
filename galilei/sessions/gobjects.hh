@@ -25,11 +25,16 @@
 
 */
 
+
+
 //------------------------------------------------------------------------------
 // Const
 const size_t SizeRecDesc=sizeof(size_t)+sizeof(double);
-const size_t SizeRecStruct=sizeof(size_t)+sizeof(char)+sizeof(size_t)+sizeof(char)+sizeof(size_t);
+const size_t SizeRecNode=sizeof(tTokenType)+sizeof(size_t)+sizeof(size_t)+sizeof(size_t)+sizeof(size_t)+sizeof(size_t);
+const size_t SizeT=sizeof(size_t);
 const size_t SizeT2=2*sizeof(size_t);
+const size_t SizeT3=3*sizeof(size_t);
+
 
 
 //-----------------------------------------------------------------------------
@@ -42,7 +47,7 @@ const size_t SizeT2=2*sizeof(size_t);
 template<class C>
 	GObjects<C>::GObjects(size_t size,const R::RString& name,tObjType type)
 		: R::RObjectContainer<C,true>(1,size), ObjName(name), Type(type),
-		  Desc(0), Index(0), Struct(0), tmpRefs(size/2), Loaded(false), MaxObjs(0)
+		  Desc(0), Index(0), Tree(0), tmpRefs(size/2), Loaded(false), MaxObjs(0)
 {
 }
 
@@ -67,13 +72,13 @@ template<class C>
 		config->InsertParam(new R::RParamValue("Type",R::RBlockFile::WriteBack),"Indexer",ObjName,"Index");
 	}
 
-	if(C::HasStruct())
+	if(C::HasTree())
 	{
-		config->InsertParam(new R::RParamValue("CreateStruct",false),"Indexer",ObjName,"Structure");
-		config->InsertParam(new R::RParamValue("BlockSize",4096),"Indexer",ObjName,"Structure");
-		config->InsertParam(new R::RParamValue("Tolerance",40),"Indexer",ObjName,"Structure");
-		config->InsertParam(new R::RParamValue("CacheSize",20),"Indexer",ObjName,"Structure");
-		config->InsertParam(new R::RParamValue("Type",R::RBlockFile::WriteBack),"Indexer",ObjName,"Structure");
+		config->InsertParam(new R::RParamValue("CreateTree",false),"Indexer",ObjName,"Tree");
+		config->InsertParam(new R::RParamValue("BlockSize",4096),"Indexer",ObjName,"Tree");
+		config->InsertParam(new R::RParamValue("Tolerance",40),"Indexer",ObjName,"Tree");
+		config->InsertParam(new R::RParamValue("CacheSize",20),"Indexer",ObjName,"Tree");
+		config->InsertParam(new R::RParamValue("Type",R::RBlockFile::WriteBack),"Indexer",ObjName,"Tree");
 	}
 }
 
@@ -113,21 +118,21 @@ template<class C>
 			CreateIndex=false;
 
 		// Look if the structure file must be created
-		if(C::HasStruct())
+		if(C::HasTree())
 		{
-			CreateStruct=config->GetBool("CreateStruct","Indexer",ObjName,"Structure");
-			if(CreateStruct)
+			CreateTree=config->GetBool("CreateTree","Indexer",ObjName,"Tree");
+			if(CreateTree)
 			{
-				Struct=new R::RIndexFile(Dir+"Documents.struct",
-						config->GetUInt("BlockSize","Indexer",ObjName,"Structure"),
-						config->GetUInt("CacheSize","Indexer",ObjName,"Structure"),
-						config->GetUInt("Tolerance","Indexer",ObjName,"Structure"));
-				Struct->Open();
-				Struct->SetCacheType(static_cast<R::RBlockFile::CacheType>(config->GetInt("Type","Indexer","Documents","Structure")));
+				Tree=new R::RIndexFile(Dir+"Documents.tree",
+						config->GetUInt("BlockSize","Indexer",ObjName,"Tree"),
+						config->GetUInt("CacheSize","Indexer",ObjName,"Tree"),
+						config->GetUInt("Tolerance","Indexer",ObjName,"Tree"));
+				Tree->Open();
+				Tree->SetCacheType(static_cast<R::RBlockFile::CacheType>(config->GetInt("Type","Indexer","Documents","Tree")));
 			}
 		}
 		else
-			CreateStruct=false;
+			CreateTree=false;
 	}
 	catch(...)
 	{
@@ -140,15 +145,15 @@ template<class C>
 template<class C>
 	bool GObjects<C>::DoCreateIndex(const C*) const
 {
-		return(CreateIndex);
+	return(CreateIndex);
 }
 
 
 //-----------------------------------------------------------------------------
 template<class C>
-	bool GObjects<C>::DoCreateStruct(const C*) const
+	bool GObjects<C>::DoCreateTree(const C*) const
 {
-	return(CreateStruct);
+	return(CreateTree);
 }
 
 
@@ -412,8 +417,6 @@ template<class C>
 {
 	if(!Index)
 		ThrowGException(GetObjType(Type,true,true)+" do not have index");
-	if(Type==otDoc)
-		ThrowGException("Method doesn't manage occurrence information");
 
 	// Go trough each vector
 	R::RCursor<GVector> Vector(desc.GetVectors());
@@ -455,8 +458,6 @@ template<class C>
 {
 	if(!Index)
 		ThrowGException(GetObjType(Type,true,true)+" do not have index");
-	if(Type==otDoc)
-		ThrowGException("Method doesn't manage occurrence information");
 
 	// Clear the file and put all block identifier of concepts to 0.
 	Index->Clear();
@@ -527,45 +528,79 @@ template<class C>
 
 //------------------------------------------------------------------------------
 template<class C>
-	void GObjects<C>::LoadStruct(const C*,GConceptTree* &docstruct,size_t blockid,size_t id)
+	void GObjects<C>::LoadNode(GConceptTree* tree,GConceptNode* parent)
 {
-	if(!Struct)
-		ThrowGException(GetObjType(Type,true,true)+" do not have structures");
+	// Load the information concerning the current node
+	tTokenType type;
+	Tree->Read((char*)&type,sizeof(tTokenType));
+	size_t children,concept,pos,synpos,depth;
+	Tree->Read((char*)&concept,sizeof(size_t));
+	Tree->Read((char*)&synpos,sizeof(size_t));
+	Tree->Read((char*)&pos,sizeof(size_t));
+	Tree->Read((char*)&depth,sizeof(size_t));
+	Tree->Read((char*)&children,sizeof(size_t));
+
+	// Create the node
+	GConceptNode* Node(tree->InsertNode(parent,type,concept,synpos,pos,depth));
+
+	// Load its children
+	for(size_t i=children+1;--i;)
+		LoadNode(tree,Node);
+}
+
+
+//------------------------------------------------------------------------------
+template<class C>
+	void GObjects<C>::SaveNode(GConceptNode* node)
+{
+	// Save the information concerning the current node
+	tTokenType type(node->GetType());
+	Tree->Write((char*)&type,sizeof(tTokenType));
+	size_t nb;
+	nb=node->GetConceptId();
+	Tree->Write((char*)&nb,sizeof(size_t));
+	nb=node->GetSyntacticPos();
+	Tree->Write((char*)&nb,sizeof(size_t));
+	nb=node->GetPos();
+	Tree->Write((char*)&nb,sizeof(size_t));
+	nb=node->GetSyntacticDepth();
+	Tree->Write((char*)&nb,sizeof(size_t));
+	nb=node->GetNbNodes();
+	Tree->Write((char*)&nb,sizeof(size_t));
+
+	// Save each of its children
+	R::RNodeCursor<GConceptTree,GConceptNode> Node(node);
+	for(Node.Start();!Node.End();Node.Next())
+		SaveNode(Node());
+}
+
+
+//------------------------------------------------------------------------------
+template<class C>
+	void GObjects<C>::LoadTree(const C*,GConceptTree* &tree,size_t blockid,size_t id)
+{
+	if(!Tree)
+		ThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
 
 	try
 	{
 		// Position the file to correct block
-		Struct->Seek(blockid,id);
+		Tree->Seek(blockid,id);
 
-		// Read the number of nodes and number of local caches
-		size_t nbrecs,nblcs;
-		Struct->Seek(blockid,id);
-		Struct->Read((char*)&nbrecs,sizeof(size_t));
-		Struct->Read((char*)&nblcs,sizeof(size_t));
-		if(!docstruct)
-			docstruct=new GConceptTree(nbrecs,nblcs);
+		// Read the number of nodes, references and top nodes.
+		size_t nbnodes,nbrefs,topnodes;
+		Tree->Seek(blockid,id);
+		Tree->Read((char*)&nbnodes,sizeof(size_t));
+		Tree->Read((char*)&nbrefs,sizeof(size_t));
+		Tree->Read((char*)&topnodes,sizeof(size_t));
+		if(!tree)
+			tree=new GConceptTree(id,nbnodes,nbrefs);
 		else
-			docstruct->SetSizes(nbrecs,nblcs);
-
-		// Read the LCs
-		for(size_t i=0;i<nblcs;i++)
-		{
-			size_t nb;
-			Struct->Read((char*)&nb,sizeof(size_t));
-			docstruct->SetNbLCEntries(i,nb);
-		}
+			tree->Verify(id,nbnodes,nbrefs);
 
 		// Read the nodes
-		for(size_t i=0;i<nbrecs;i++)
-		{
-			size_t concept,pos,nbchild;
-			char depth;
-			Struct->Read((char*)&concept,sizeof(size_t));
-			Struct->Read((char*)&pos,sizeof(size_t));
-			Struct->Read((char*)&depth,sizeof(char));
-			Struct->Read((char*)&nbchild,sizeof(size_t));
-			docstruct->AddNode(GetConcept(concept),pos,depth,nbchild);
-		}
+		for(size_t i=topnodes+1;--i;)
+			LoadNode(tree,0);
 	}
 	catch(R::RIOException e)
 	{
@@ -577,50 +612,35 @@ template<class C>
 
 //------------------------------------------------------------------------------
 template<class C>
-	void GObjects<C>::SaveStruct(const C*,const GConceptTree& docstruct,size_t& blockid,size_t id)
+	void GObjects<C>::SaveTree(const C*,const GConceptTree& tree,size_t& blockid,size_t id)
 {
-	if(!CreateStruct)
+	if(!CreateTree)
 		return;
 
-	if(!Struct)
-		ThrowGException(GetObjType(Type,true,true)+" do not have structures");
+	if(!Tree)
+		ThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
 
 	try
 	{
-	    if(!docstruct.GetNbNodes())
+	    if(!tree.GetNbNodes())
 			return;
 
 		// Position the file to correct block and announce that a given number of bytes will be written
-	    size_t nbrecs(docstruct.GetNbNodes()),nblcs(docstruct.GetNbLCs());
-	    size_t size(SizeT2+(nblcs*sizeof(size_t))+(nbrecs*SizeRecStruct));
-	    Struct->Seek(blockid,id,size);
+	    size_t size(SizeT3+(tree.GetNbNodes()*SizeRecNode));
+	    Tree->Seek(blockid,id,size);
 
-		// Save the size of the number of nodes and the number of LCs
-		Struct->Write((char*)&nbrecs,sizeof(size_t));
-		Struct->Write((char*)&nblcs,sizeof(size_t));
-
-		// Save LCs
-		for(size_t i=0;i<nblcs;i++)
-		{
-			size_t nb(docstruct.GetNbLCEntries(i));
-			Struct->Write((char*)&nb,sizeof(size_t));
-		}
+		// Save the number of nodes, references and top nodes.
+		size_t nb(tree.GetNbNodes());
+		Tree->Write((char*)&nb,sizeof(size_t));
+		nb=tree.GetNbRefs();
+		Tree->Write((char*)&nb,sizeof(size_t));
+		nb=tree.GetNbTopNodes();
+		Tree->Write((char*)&nb,sizeof(size_t));
 
 		// Save the nodes
-		R::RCursor<GConceptNode> Recs(docstruct.GetNodes());
-		for(Recs.Start();!Recs.End();Recs.Next())
-		{
-			size_t nb;
-			char car;
-			nb=Recs()->GetConcept()->GetId();
-			Struct->Write((char*)&nb,sizeof(size_t));
-			nb=Recs()->GetPos();
-			Struct->Write((char*)&nb,sizeof(size_t));
-			car=Recs()->GetDepth();
-			Struct->Write((char*)&car,sizeof(char));
-			nb=docstruct.GetFirstChild(Recs());
-			Struct->Write((char*)&nb,sizeof(size_t));
-		}
+		R::RNodeCursor<GConceptTree,GConceptNode> Node(tree);
+		for(Node.Start();!Node.End();Node.Next())
+			SaveNode(Node());
 	}
 	catch(R::RIOException e)
 	{
@@ -632,14 +652,14 @@ template<class C>
 
 //------------------------------------------------------------------------------
 template<class C>
-	void GObjects<C>::FlushStruct(const C*)
+	void GObjects<C>::FlushTree(const C*)
 {
-	if(!CreateStruct)
+	if(!CreateTree)
 		return;
 
-	if(!Struct)
-		ThrowGException(GetObjType(Type,true,true)+" do not have descriptions");
-	Struct->Flush();
+	if(!Tree)
+		ThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
+	Tree->Flush();
 }
 
 
@@ -672,5 +692,5 @@ template<class C>
 {
 	delete Desc;
 	delete Index;
-	delete Struct;
+	delete Tree;
 }

@@ -93,7 +93,7 @@ protected:
 public:
 
 	/**
-	 * Defines if the objects have a description.
+	 * Defines if the objects have descriptions.
 	 * @return true.
 	 */
 	static inline bool HasDesc(void) {return(true);}

@@ -1,6 +1,6 @@
 SET(galilei_engines_INST_INCLUDES
 	gdocranking.h
-	gdocretrieved.h
+	gdocfragment.h
 	gengine.h
 	gmetaengine.h
 	gsugs.h
@@ -10,7 +10,7 @@ SET(galilei_engines_INST_INCLUDES
 
 SET(galilei_engines_TARGET_SOURCES
 	gdocranking.cpp
-	gdocretrieved.cpp
+	gdocfragment.cpp
 	gengine.cpp
 	gmetaengine.cpp
 	gsugs.cpp

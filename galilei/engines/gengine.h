@@ -43,7 +43,7 @@
 //include file for GALILEI
 #include <gplugin.h>
 #include <gpluginmanager.h>
-#include <gdocretrieved.h>
+#include <gdocfragment.h>
 
 
 //------------------------------------------------------------------------------

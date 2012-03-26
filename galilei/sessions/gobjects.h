@@ -38,6 +38,7 @@
 #include <rconfig.h>
 #include <rdir.h>
 #include <robjectcontainer.h>
+#include <rnodecursor.h>
 
 
 //------------------------------------------------------------------------------
@@ -46,6 +47,7 @@
 #include <gstorage.h>
 #include <ggalileiapp.h>
 #include <gdescriptionobject.h>
+#include <gconceptnode.h>
 #include <gconcepttree.h>
 
 
@@ -64,7 +66,7 @@ namespace GALILEI{
  * the class representing the elements (class C):
  * @code
  * static inline bool C::HasDesc(void);
- * static inline bool C::HasStruct(void);
+ * static inline bool C::HasTree(void);
  * @endcode
  *
  * The first one specifies if the corresponding objects have descriptions (such
@@ -118,14 +120,14 @@ protected:
 	R::RIndexFile* Index;
 
 	/**
-	 * Create the structures?
+	 * Create the tree concepts?
 	 */
-	bool CreateStruct;
+	bool CreateTree;
 
 	/**
-	 * Structures of the objects.
+	 * Tree concepts of the objects.
 	 */
-	R::RIndexFile* Struct;
+	R::RIndexFile* Tree;
 
 	/**
 	 * Temporary vector of references.
@@ -172,10 +174,10 @@ public:
 	inline bool DoCreateIndex(const C* obj) const;
 
 	 /**
-	 * @return if the structures are created.
+	 * @return if the concept trees are created.
     * @param obj            Pseudo-parameter.
     */
-	inline bool DoCreateStruct(const C* obj) const;
+	inline bool DoCreateTree(const C* obj) const;
 
 	/**
 	* Insert an object.
@@ -314,32 +316,49 @@ public:
 	 */
 	void BuildIndex(const C* obj);
 
-	/**
-	 * Load the structure of a given object.
-	 * @param obj            Pseudo-parameter.
-	 * @param docstruct      Structure. If null,it is created.
-	 * @param blockid        Identifier of the block of the object.
-	 * @param id             Identifier of the object.
-	 */
-	void LoadStruct(const C* obj,GConceptTree* &docstruct,size_t blockid,size_t id);
+private:
 
 	/**
-	 * Save the structure of a given object.
+	 * Load the next node in the file into a given tree. The method loads first
+	 * the node information and then the method is called for its children.
+    * @param tree           Tree that will contain the new node.
+    * @param parent         Parent node of the one to load.
+    */
+	void LoadNode(GConceptTree* tree,GConceptNode* parent);
+
+	/**
+	 * Save a node in the file. The method saves first the node information and
+	 * then calls the method for its children.
+    * @param node           Node to save.
+    */
+	void SaveNode(GConceptNode* node);
+
+public:
+
+	/**
+	 * Load the concept tree of a given document.
 	 * @param obj            Pseudo-parameter.
-	 * @param docstruct      Structure of the document.
-	 * @param blockid        Identifier of the block of the object (0 means the
+	 * @param tree           Concept tree. If null,it is created.
+	 * @param blockid        Identifier of the block of the document.
+	 * @param id             Identifier of the document.
+	 */
+	void LoadTree(const C* obj,GConceptTree* &tree,size_t blockid,size_t id);
+
+	/**
+	 * Save the concept tree of a given document.
+	 * @param obj            Pseudo-parameter.
+	 * @param tree           Concept tree to save.
+	 * @param blockid        Identifier of the block of the document (0 means the
 	 *                       block will be found).
-	 * @param id             Identifier of the object.
+	 * @param id             Identifier of the document.
 	 */
-	void SaveStruct(const C* obj,const GConceptTree& docstruct,size_t& blockid,size_t id);
+	void SaveTree(const C* obj,const GConceptTree& tree,size_t& blockid,size_t id);
 
 	/**
-	 * Flush the structures of the objects of a given type.
+	 * Flush the file storing the concept trees of the documents.
 	 * @param obj            Pseudo-parameter.
-	 * The reason for this trick is that C++ does not managed methods with the
-	 * same name, the same parameters but different return types.
 	 */
-	void FlushStruct(const C* obj);
+	void FlushTree(const C* obj);
 
 	/**
 	 * Destructor.

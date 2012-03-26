@@ -47,6 +47,7 @@
 #include <ganalyzer.h>
 #include <rtextfile.h>
 #include <gconcepttree.h>
+#include <gconceptnode.h>
 using namespace std;
 using namespace R;
 using namespace GALILEI;
@@ -55,8 +56,7 @@ using namespace GALILEI;
 
 //------------------------------------------------------------------------------
 // Constant
-const size_t MaxWordLen=50;
-const bool Debug=false;
+bool Debug=false;
 
 
 
@@ -68,34 +68,58 @@ const bool Debug=false;
 
 //------------------------------------------------------------------------------
 GDocAnalyze::GDocAnalyze(GSession* session)
-	: RDownload(), Session(session), Description(), Struct(), Tokenizer(0),
-	 DCMI(0), Body(0), MemoryTokens(500), MemoryOccurs(20000),
+	: RDownload(), Session(session), Description(), Tree(0,20000,2000), Tokenizer(0),
+	  DCMI(0), Body(0), MemoryTokens(500), MemoryOccurs(20000),
 	  OrderTokens(27,27,50,20), Tokens(500), Occurs(20000), Top(200), Depths(100,50),
-		  Docs(20), SyntacticPos(20)
+	  SyntacticPos(20)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GDocAnalyze::SkipToken(void)
+size_t GDocAnalyze::SkipToken(void)
 {
-	CurSyntacticPos++;
+	return(CurSyntacticPos++);
 }
 
 
 //------------------------------------------------------------------------------
-void GDocAnalyze::AddToken(const RString& token,tTokenType type)
+GToken* GDocAnalyze::CreateToken(const R::RString& token,tTokenType type)
+{
+	GToken* Token;
+
+	if(MemoryTokens.GetNb()<=NbMemoryTokensUsed)
+	{
+		// A new token must be allocated
+		MemoryTokens.InsertPtr(Token=new GToken(token));
+		NbMemoryTokensUsed++;
+	}
+	else
+	{
+		// Get a free existing token
+		Token=MemoryTokens[NbMemoryTokensUsed++];
+		Token->Occurs.Clear();
+		Token->Token=token;
+		Token->Concept=0;
+	}
+	Token->Type=type;
+	return(Token);
+}
+
+
+//------------------------------------------------------------------------------
+GTokenOccur* GDocAnalyze::AddToken(const RString& token,tTokenType type)
 {
 	// Verify that is not a null token
 	if(token==RString::Null)
-		return;
+		return(0);
 
 	// Search for the token
 	GToken* Token;
 	size_t Idx1(token.HashIndex(1)), Idx2(token.HashIndex(2));
 	bool Find;
 	RDblHashContainer<GToken,false>::Hash2* Hash2((*OrderTokens[Idx1])[Idx2]);
-	size_t Idx(Hash2->GetIndex(token,Find));
+	size_t Idx(Hash2->GetIndex(GToken::Search(token,type),Find));
 
 	// Create the token (if necessary)
 	if(Find)
@@ -106,32 +130,20 @@ void GDocAnalyze::AddToken(const RString& token,tTokenType type)
 	}
 	else
 	{
-		if(MemoryTokens.GetNb()<=NbMemoryTokensUsed)
-		{
-			MemoryTokens.InsertPtr(Token=new GToken(token));
-			NbMemoryTokensUsed++;
-		}
-		else
-		{
-			Token=MemoryTokens[NbMemoryTokensUsed++];
-			Token->Occurs.Clear();
-			Token->Token=token;
-			Token->Concept=0;
-		}
-		Token->Type=type;
+		Token=CreateToken(token,type);
 		Hash2->InsertPtrAt(Token,Idx,false);
 		Token->Index=Tokens.GetNb();
 		Tokens.InsertPtr(Token);
 	}
 
 	// Add a new occurrence
-	GToken::Occurrence* Occur;
+	GTokenOccur* Occur;
 	if(MemoryOccurs.GetNb()<=NbMemoryOccursUsed)
 	{
 		size_t nb(0);
-		if(Session->DoCreateStruct(pDoc))
+		if(Session->DoCreateTree(pDoc))
 			nb=2000;
-		MemoryOccurs.InsertPtr(Occur=new GToken::Occurrence(Token,CurVector,CurPos,CurDepth,CurSyntacticPos,nb));
+		MemoryOccurs.InsertPtr(Occur=new GTokenOccur(Token,CurVector,CurPos,CurDepth,CurSyntacticPos,nb));
 		NbMemoryOccursUsed++;
 	}
 	else
@@ -143,7 +155,10 @@ void GDocAnalyze::AddToken(const RString& token,tTokenType type)
 		Occur->Depth=CurDepth;
 		Occur->SyntacticPos=CurSyntacticPos;
 		Occur->Children.Clear();
+		Occur->Added=false;
 	}
+	if(Debug)
+		cout<<"  "<<Occur->Pos<<endl;
 	Occur->Index=Occurs.GetNb();
 	Occurs.InsertPtr(Occur);
 	Token->Occurs.InsertPtr(Occur);
@@ -155,9 +170,9 @@ void GDocAnalyze::AddToken(const RString& token,tTokenType type)
 	// Look for a parent and make this token becomes the leading token of its depth
 	if(Depths.GetNb())
 	{
-		GToken::Occurrence* Parent(Depths());
+		GTokenOccur* Parent(Depths());
 		if(Parent->Depth<Occur->Depth-1)
-			cerr<<"Problem"<<endl;
+			ThrowGException("Token depths are not synchronized");
 		 Parent->Children.InsertPtr(Occur);
 	}
 	else
@@ -166,15 +181,17 @@ void GDocAnalyze::AddToken(const RString& token,tTokenType type)
 
 	// Increment the syntactic position
 	CurSyntacticPos++;
+
+	return(Occur);
 }
 
 
 //------------------------------------------------------------------------------
-void GDocAnalyze::AddToken(const R::RString& token,tTokenType type,GConcept* concept,double weight,GConcept* metaconcept,size_t pos,size_t depth,size_t spos)
+GTokenOccur* GDocAnalyze::AddToken(const R::RString& token,tTokenType type,GConcept* concept,double weight,GConcept* metaconcept,size_t pos,size_t depth,size_t spos)
 {
 	// Verify that is not a null concept
 	if(!concept)
-		return;
+		return(0);
 
 	// Get the vector associated with the concept
 	CurVector=Description.GetInsertVector(metaconcept);
@@ -182,11 +199,23 @@ void GDocAnalyze::AddToken(const R::RString& token,tTokenType type,GConcept* con
 	CurPos=pos;
 	if(spos!=SIZE_MAX)
 		CurSyntacticPos=spos;
-	AddToken(token,type);
+	if(Debug)
+		cout<<"Treat *"+token+"*"<<endl;
+	GTokenOccur* Occur(AddToken(token,type));
+	if(Occur->Token->Concept)
+	{
+		if(Occur->Token->Concept!=concept)
+			ThrowGException("Token  '"+token+"' associated to multiple concepts");
+	}
+	else
+		Occur->Token->Concept=concept;
 
 	// Get the concept
 	GConceptRef* Ref(CurVector->GetRef(concept));
 	(*Ref)+=weight;
+	Occur->Added=true;
+
+	return(Occur);
 }
 
 
@@ -205,13 +234,16 @@ void GDocAnalyze::ExtractTextual(const R::RString& text,GConcept* metaconcept,si
 		cout<<"Treat *"+text+"*"<<endl;
 	const RChar* Car(text());
 	Tokenizer->Start();  // Make sure previous stuff is cleaned
+	size_t Read(CurPos);
 	while(!Car->IsNull())
 	{
-		Tokenizer->TreatChar(this,*Car);
+		if(Tokenizer->TreatChar(this,*Car))
+			CurPos=Read;
 		Car++;
-		CurPos++;
+		Read++;
 	}
 	Tokenizer->TreatChar(this,0); // Be sure to terminate with the zero character.
+	CurPos=Read;
 }
 
 
@@ -274,7 +306,7 @@ void GDocAnalyze::AssignPlugIns(void)
 void GDocAnalyze::DeleteToken(GToken* token)
 {
 	// Delete the occurrences and the token from the containers.
-	RCursor<GToken::Occurrence> TokenOccur(token->Occurs);
+	RCursor<GTokenOccur> TokenOccur(token->Occurs);
 	for(TokenOccur.StartFromEnd();!TokenOccur.Begin();TokenOccur.Prev())
 		Occurs.DeletePtrAt(TokenOccur()->Index,false);  // Don't shif them
 	token->Type=ttDeleted;
@@ -294,20 +326,22 @@ void GDocAnalyze::ReplaceToken(GToken* token,RString value)
 	size_t Idx1(value.HashIndex(1)), Idx2(value.HashIndex(2));
 	bool Find;
 	RDblHashContainer<GToken,false>::Hash2* Hash2((*OrderTokens[Idx1])[Idx2]);
-	size_t Idx(Hash2->GetIndex(value,Find));
+	size_t Idx(Hash2->GetIndex(GToken::Search(value,token->Type),Find));
 
 	if(Find)
 	{
-		// Merge the two tokens occurrences by ascending order of index in Occurs
+		// Merge the two token occurrences.
 		GToken* NewToken((*Hash2)[Idx]);
 		if(NewToken->Type==ttDeleted)
 			NewToken->Type=token->Type;
-		RCursor<GToken::Occurrence> Occur(token->Occurs);
+		RCursor<GTokenOccur> Occur(token->Occurs);
 		for(Occur.Start();!Occur.End();Occur.Next())
 		{
 			NewToken->Occurs.InsertPtr(Occur());
 			Occur()->Token=NewToken;
 		}
+
+		// Ensure that the ascending order of index in Occurs is respected
 		NewToken->Occurs.ReOrder();
 
 		// Considered it as deleted
@@ -325,6 +359,141 @@ void GDocAnalyze::ReplaceToken(GToken* token,RString value)
 
 
 //------------------------------------------------------------------------------
+void GDocAnalyze::MoveToken(GTokenOccur* occur,R::RString value)
+{
+	if(!occur)
+		ThrowGException("Null token occurrence");
+
+	// If current token has the value -> nothing to do
+	GToken* Token(occur->Token);
+	if(Token->GetToken()==value)
+		return;
+
+	// Look first if another token already exist with that value
+	// Search for that token
+	size_t Idx1(value.HashIndex(1)), Idx2(value.HashIndex(2));
+	bool Find;
+	RDblHashContainer<GToken,false>::Hash2* Hash2((*OrderTokens[Idx1])[Idx2]);
+	size_t Idx(Hash2->GetIndex(GToken::Search(value,Token->Type),Find));
+
+	if(Find)
+	{
+		// Copy the occurrence from one token to another.
+		GToken* NewToken((*Hash2)[Idx]);
+		if(NewToken->Type==ttDeleted)
+			NewToken->Type=occur->Token->Type;
+		Token->Occurs.DeletePtr(*occur);
+		NewToken->Occurs.InsertPtr(occur);
+		occur->Token=NewToken;
+
+		// Ensure that the ascending order of index in Occurs is respected
+		NewToken->Occurs.ReOrder();
+
+		// Considered it as deleted if no more occurrences
+		if(!Token->Occurs.GetNb())
+		{
+			Token->Occurs.Clear();
+			Token->Type=ttDeleted;
+		}
+	}
+	else
+	{
+		if(Token->Occurs.GetNb()==1)
+		{
+			// Replace the token : Simply replace it in OrderTokens.
+			OrderTokens.DeletePtr(*Token);
+			Token->Token=value;
+			OrderTokens.InsertPtr(Token);
+		}
+		else
+		{
+			// A new token must be created
+			GToken* NewToken(CreateToken(value,Token->Type));
+			OrderTokens.InsertPtr(NewToken);
+			NewToken->Index=Tokens.GetNb();
+			Tokens.InsertPtr(NewToken);
+
+			// Move the occurrence to it
+			Token->Occurs.DeletePtr(*occur);
+			NewToken->Occurs.InsertPtr(occur);
+			occur->Token=NewToken;
+		}
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GDocAnalyze::MoveToken(GTokenOccur* occur,GConcept* concept)
+{
+	if(!occur)
+		ThrowGException("Null token occurrence");
+	if(!concept)
+		ThrowGException("Null concept");
+
+	// If current token has the concept -> nothing to do
+	GToken* Token(occur->Token);
+	if(Token->Concept==concept)
+		return;
+
+	// Look first if another token already exist with that concept
+	// Search for that token
+	RString Value(concept->GetName());
+	size_t Idx1(Value.HashIndex(1)), Idx2(Value.HashIndex(2));
+	bool Find;
+	RDblHashContainer<GToken,false>::Hash2* Hash2((*OrderTokens[Idx1])[Idx2]);
+	size_t Idx(Hash2->GetIndex(GToken::Search(Value,Token->Type),Find));
+
+	if(Find)
+	{
+		// Copy the occurrence from one token to another.
+		GToken* NewToken((*Hash2)[Idx]);
+		if(NewToken->Concept!=concept)
+			ThrowGException("Token '"+Value+"' associated to multiple concepts");
+		if(NewToken->Type==ttDeleted)
+			NewToken->Type=occur->Token->Type;
+		Token->Occurs.DeletePtr(*occur);
+		NewToken->Occurs.InsertPtr(occur);
+		occur->Token=NewToken;
+
+		// Ensure that the ascending order of index in Occurs is respected
+		NewToken->Occurs.ReOrder();
+
+		// Considered it as deleted if no more occurrences
+		if(!Token->Occurs.GetNb())
+		{
+			Token->Occurs.Clear();
+			Token->Type=ttDeleted;
+		}
+	}
+	else
+	{
+		if(Token->Occurs.GetNb()==1)
+		{
+			// Replace the token : Simply replace the concept
+			OrderTokens.DeletePtr(*Token);
+			Token->Token=Value;
+			Token->Concept=concept;
+			OrderTokens.InsertPtr(Token);
+		}
+		else
+		{
+			// A new token must be created
+			GToken* NewToken(CreateToken(Value,Token->Type));
+			OrderTokens.InsertPtr(NewToken);
+			NewToken->Index=Tokens.GetNb();
+			Tokens.InsertPtr(NewToken);
+			NewToken->Concept=concept;
+
+			// Move the occurrence to it
+			Token->Occurs.DeletePtr(*occur);
+			NewToken->Occurs.InsertPtr(occur);
+			occur->Token=NewToken;
+		}
+	}
+}
+
+
+//------------------------------------------------------------------------------
 void GDocAnalyze::SetLang(GLang* lang)
 {
 	Lang=lang;
@@ -335,9 +504,13 @@ void GDocAnalyze::SetLang(GLang* lang)
 void GDocAnalyze::BuildTensor(void)
 {
 	// For each token, add the occurrences for a given vector
-	RCursor<GToken::Occurrence> Occur(Occurs);
+	RCursor<GTokenOccur> Occur(Occurs);
 	for(Occur.Start();!Occur.End();Occur.Next())
 	{
+		// If already added -> Skip it
+		if(Occur()->Added)
+			continue;
+
 		// Never treat a deleted token
 		if(Occur()->Token->Type==ttDeleted)
 			continue;
@@ -365,158 +538,37 @@ void GDocAnalyze::BuildTensor(void)
 
 
 //------------------------------------------------------------------------------
-bool GDocAnalyze::ReadIndex(GConcept* concept,size_t& read)
-{
-	RIndexFile* Index(Session->GObjects<GDoc>::Index);
-	RNumContainer<size_t,false>* CurPos;
-	size_t nb,id,nbpos,pos;
-
-	// Load in Docs the identifier of documents, and in Pos their positions.
-	bool Found(false);
-	read=0;
-	Docs.Clear();
-	size_t BlockId(concept->GetIndex(otDoc));
-	if(BlockId)
-	{
-		// Position the block file to the correct position
-		Index->Seek(BlockId,concept->GetId());
-
-		// Read the number of documents
-		Index->Read((char*)&nb,sizeof(size_t));
-		read+=sizeof(size_t);
-
-		// Read the details
-		for(size_t i=0;i<nb;i++)
-		{
-			// Read the identifier of the documents
-			Index->Read((char*)&id,sizeof(size_t));
-			Index->Read((char*)&nbpos,sizeof(size_t));
-
-			if(id==Doc->GetId())
-			{
-				Found=true;
-				for(size_t j=0;j<nbpos;j++)
-					Index->Read((char*)&pos,sizeof(size_t));
-			}
-			else
-			{
-				read+=(nbpos+2)*sizeof(size_t);
-				Docs.Insert(id);
-				SyntacticPos.InsertPtrAt(CurPos=new RNumContainer<size_t,false>(nbpos),i);
-
-				for(size_t j=0;j<nbpos;j++)
-				{
-					Index->Read((char*)&pos,sizeof(size_t));
-					CurPos->Insert(pos);
-				}
-			}
-		}
-	}
-	return(Found);
-}
-
-
-//------------------------------------------------------------------------------
-void GDocAnalyze::WriteIndex(GConcept* concept,size_t write)
-{
-	RIndexFile* Index(Session->GObjects<GDoc>::Index);
-	RNumContainer<size_t,false>* CurPos;
-	size_t nb,id,nbpos,pos;
-
-	// Prepare the writing
-	size_t BlockId(concept->GetIndex(otDoc));
-	Index->Seek(BlockId,concept->GetId(),write);
-	nb=Docs.GetNb();
-	Index->Write((char*)&nb,sizeof(size_t));
-	RNumCursor<size_t> Doc(Docs);
-	for(Doc.Start();!Doc.End();Doc.Next())
-	{
-		CurPos=SyntacticPos[Doc.GetPos()];
-		id=Doc();
-		nbpos=CurPos->GetNb();
-		Index->Write((char*)&id,sizeof(size_t));
-		Index->Write((char*)&nbpos,sizeof(size_t));
-		RNumCursor<size_t> Occur(*CurPos);
-		for(Occur.Start();!Occur.End();Occur.Next())
-		{
-			pos=Occur();
-			Index->Write((char*)&pos,sizeof(size_t));
-		}
-	}
-	concept->SetIndex(otDoc,BlockId);
-}
-
-
-//------------------------------------------------------------------------------
-void GDocAnalyze::UpdateIndex(void)
-{
-	// Remove information for the older Document information
-	R::RCursor<GVector> Vector(Doc->GetVectors());
-	for(Vector.Start();!Vector.End();Vector.Next())
-	{
-		// Update the index for all concepts
-		// 1. Read all the information related to the documents indexed except the current one.
-		// 2. Simply rewrite the information
-		R::RCursor<GConceptRef> Cur(Vector()->GetRefs());
-		for(Cur.Start();!Cur.End();Cur.Next())
-		{
-			size_t ToWrite;
-			if(ReadIndex(Cur()->GetConcept(),ToWrite))
-				WriteIndex(Cur()->GetConcept(),ToWrite);
-		}
-	}
-
-	// Add information from current analysis.
-	// 1. Read the existing document information.
-	// 2. Add the information for the current one
-	// 3. Write the whole thing back
-	RCursor<GToken> Token(Tokens);
-	for(Token.Start();!Token.End();Token.Next())
-	{
-		// Never treat a deleted token
-		if(Token()->Type==ttDeleted)
-			continue;
-
-		if(!Token()->Concept)
-			continue;
-		size_t ToWrite;
-		if(ReadIndex(Token()->GetConcept(),ToWrite))
-			ThrowGException("Big problem for concept "+RString::Number(Token()->GetConcept()->GetId()));
-
-		ToWrite+=(Token()->Occurs.GetNb()+3)*sizeof(size_t);
-		Docs.Insert(Doc->GetId());
-		Docs.ReOrder(); // ReOrder the documents
-		bool Find;
-		size_t Pos(Docs.GetId(Doc->GetId(),Find));
-		RNumContainer<size_t,false>* CurPos(new RNumContainer<size_t,false>(Token()->Occurs.GetNb()));
-		SyntacticPos.InsertPtrAt(CurPos,Pos,false);
-		RCursor<GToken::Occurrence> Occur(Token()->Occurs);
-		for(Occur.Start();!Occur.End();Occur.Next())
-			CurPos->Insert(Occur()->SyntacticPos);
-		CurPos->ReOrder();
-		WriteIndex(Token()->GetConcept(),ToWrite);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GDocAnalyze::BuildStruct(GConceptNode* parent,GToken::Occurrence* token)
+void GDocAnalyze::BuildTree(GConceptNode* parent,GTokenOccur* occur)
 {
 	// Never treat a deleted token
-	if(token->Token->Type==ttDeleted)
+	if(occur->Token->Type==ttDeleted)
 		return;
 
 	// Is the token a valid concept
-	GConcept* Concept(token->Token->Concept);
+	GConcept* Concept(occur->Token->Concept);
 	if(!Concept)
 		return;
 
 	// Create a node
+	GConceptNode* Node(Tree.InsertNode(parent,occur->Token->Type,occur->Token->Concept->GetId(),occur->SyntacticPos,occur->Pos,occur->Depth));
 
 	// Treat its children
-//	RCursor<GToken::Occurrence> Occur(token->Children);
-//	for(Occur.Start();!Occur.End();Occur.Next())
-//		BuildStruct(token,Occur());
+	RCursor<GTokenOccur> Occur(occur->Children);
+	for(Occur.Start();!Occur.End();Occur.Next())
+		BuildTree(Node,Occur());
+}
+
+
+//------------------------------------------------------------------------------
+void GDocAnalyze::Print(GTokenOccur* occur)
+{
+	if(Debug)
+		cout<<"Create node "<<occur->Token->Token<<","<<occur->Pos<<endl;
+
+	// Treat its children
+	RCursor<GTokenOccur> Occur(occur->Children);
+	for(Occur.Start();!Occur.End();Occur.Next())
+		Print(Occur());
 }
 
 
@@ -537,10 +589,11 @@ void GDocAnalyze::Analyze(GDoc* doc,bool ram)
 	if((!Tokenizer)||(!Analyzers.GetNb()))
 		AssignPlugIns();
 	Description.Clear();
-	Struct.Clear();
+	Tree.Clear();
 	OrderTokens.Clear();
 	Tokens.Clear();
 	Occurs.Clear();
+	Top.Clear();
 	Depths.Clear();
 
 	// Find the filter for this document
@@ -564,25 +617,34 @@ void GDocAnalyze::Analyze(GDoc* doc,bool ram)
 	for(Analyzers.Start();!Analyzers.End();Analyzers.Next())
 		Analyzers()->TreatTokens(this);
 
-	// Set the information to the document
+	// Build the representations and set them for the document
 	BuildTensor();
-	UpdateIndex();
-	doc->Update(Lang,Description,Struct,ram||(!Save),DelRefs);
-	RCursor<GToken::Occurrence> Occur(Top);
-	for(Occur.Start();!Occur.End();Occur.Next())
-		BuildStruct(0,Occur());
+	if(Session->DoCreateTree(pDoc))
+	{
+		// Build only the tree if necessary
+		RCursor<GTokenOccur> Occur(Top);
+		for(Occur.Start();!Occur.End();Occur.Next())
+			BuildTree(0,Occur());
+
+		if(Debug)
+			Tree.Print();
+	}
+	doc->Update(Lang,Description,ram||(!Save),DelRefs);
 
 	// Save the information related to the object
 	if(Save&&(!ram))
 	{
 		if(doc->IsDefined())
 			doc->SaveDesc();
-		if(Session->DoCreateStruct(pDoc))
-			Session->SaveStruct(pDoc,Struct,doc->StructId,doc->Id);
+		if(Session->DoCreateTree(pDoc))
+			Session->SaveTree(pDoc,Tree,doc->StructId,doc->Id);
 		Session->Storage->SaveObj(doc);
 		if(ram)
 			doc->SetState(osSaved);
 	}
+
+	// Send a notification
+	R::NotificationCenter.PostNotification<GDocAnalyze*>("DocAnalyzed",this);
 }
 
 

@@ -31,6 +31,11 @@
 
 
 //------------------------------------------------------------------------------
+// include files for R Project
+#include <rnodecursor.h>
+
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gsimulator.h>
 #include <gsubject.h>
@@ -895,7 +900,7 @@ void GSimulator::BuildClass(GSubject* subject,GClass* parent)
 	Session->Assign(Class,*subject);
 
 	// Create sub-classes
-	RCursor<GSubject> Cur(subject->GetSubjects());
+	RNodeCursor<GSubjects,GSubject> Cur(subject);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		BuildClass(Cur(),Class);
 }
@@ -997,7 +1002,7 @@ void GSimulator::BuildIdealClasses(void)
 
 	// Clear current classes
 	Session->ForceReCompute(otClass);
-	RCursor<GSubject> Top(Session->GetTopSubjects());
+	RNodeCursor<GSubjects,GSubject> Top(Session->GetSubjects(pSubject));
 	for(Top.Start();!Top.End();Top.Next())
 		BuildClass(Top(),0);
 }
@@ -1010,7 +1015,7 @@ void GSimulator::BuildIdealDocsClasses(void)
 
 	// Clear current classes
 	Session->ForceReCompute(otClass);
-	RCursor<GSubject> Top(Session->GetTopSubjects());
+	RNodeCursor<GSubjects,GSubject> Top(Session->GetSubjects(pSubject));
 	for(Top.Start();!Top.End();Top.Next())
 		BuildClass(Top(),0);
 }

@@ -30,18 +30,12 @@
 
 
 //------------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <stdio.h>
-#include <iostream>
-#include <cstdlib>
-
-
-//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gengine.h>
 #include <gdoc.h>
 #include <gsession.h>
 #include <gmetaengine.h>
+#include <gfilter.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -56,80 +50,92 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GMetaEngine::GMetaEngine(GSession* session,GPlugInFactory* fac)
-	: GPlugIn(session,fac), Results(200)
+	: GPlugIn(session,fac), RDownload(), Results(200)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GMetaEngine::AddResult(size_t docid,const RString desc,double ranking,const GEngine* engine)
+RString GMetaEngine::GetTextFragment(GDocFragment* fragment)
+{
+	if(!fragment->GetDoc())
+		ThrowGException("Invalid document passed");
+
+	// Find the filter for this document
+	R::RSmartTempFile TmpFile;
+	RURI File;
+	GFilter* Filter(GALILEIApp->FindMIMEType(fragment->GetDoc()));
+
+	// If it is not a local	file -> Download it
+	if(fragment->GetURI().GetScheme()!="file")
+	{
+		File=TmpFile.GetName();
+		DownloadFile(fragment->GetDoc()->GetURI(),File);
+	}
+	else
+		File=fragment->GetDoc()->GetURI();
+
+	return(Filter->GetTextFragment(fragment));
+}
+
+
+//------------------------------------------------------------------------------
+void GMetaEngine::AddResult(size_t docid,size_t pos,size_t first,size_t last,double ranking,const GEngine* engine)
 {
 	if((ranking<0)||(ranking>1))
 		ThrowGException("Ranking must be included in [0,1]");
 
 	GDoc* Doc(Session->GetObj(pDoc,docid));
-	RString URI(Doc->GetURI()());
+	RURI URI(Doc->GetURI());
 
 	// Test if URI is already there
 	bool Find;
-	size_t idx(Results.GetIndex(URI,Find));
+	size_t idx(Results.GetIndex(GDocFragment::Search(URI,pos,first,last),Find));
 
 	if(Find)
 		Results[idx]->AddRanking(ranking,engine->GetName());
 	else
-		Results.InsertPtrAt(new GDocRetrieved(docid,URI,Doc->GetName(),desc,ranking,engine->GetName()),idx,false);
+		Results.InsertPtrAt(new GDocFragment(this,Doc,pos,first,last,ranking,engine->GetName()),idx,false);
 }
 
 
 //------------------------------------------------------------------------------
-void GMetaEngine::AddResult(const RString& uri,const RString& title,const RString desc,double ranking,const GEngine* engine)
+void GMetaEngine::AddResult(const RString& uri,const RString& title,const RString fragment,double ranking,const GEngine* engine)
 {
 	if((ranking<0)||(ranking>1))
 		ThrowGException("Ranking must be included in [0,1]");
 
 	// Test if URI is already there
 	bool Find;
-	size_t idx(Results.GetIndex(uri,Find));
+	size_t idx(Results.GetIndex(GDocFragment::Search(uri,0,0,cNoRef),Find));
 
 	if(Find)
+	{
 		Results[idx]->AddRanking(ranking,engine->GetName());
+	}
 	else
-		Results.InsertPtrAt(new GDocRetrieved(0,uri,title,desc,ranking,engine->GetName()),idx,false);
+		Results.InsertPtrAt(new GDocFragment(this,uri,title,fragment,ranking,engine->GetName()),idx,false);
 }
 
 
 //------------------------------------------------------------------------------
-void GMetaEngine::SetRanking(GDocRetrieved* doc,double ranking)
+void GMetaEngine::SetRanking(GDocFragment* doc,double ranking)
 {
 	doc->Ranking=ranking;
 }
 
 
-//------------------------------------------------------------------------------
-void GMetaEngine::SetRanking(size_t docid,double ranking)
+//-----------------------------------------------------------------------------
+R::RCursor<GDocFragment> GMetaEngine::GetResults(void)
 {
-	GDoc* TheDoc(Session->GetObj(pDoc,docid));
-	GDocRetrieved* Doc(Results.GetPtr(TheDoc->GetURI()()));
-	if(!Doc)
-		ThrowGException("Document with identifier '"+RString::Number(docid)+"' was not retrieved.");
-	Doc->Ranking=ranking;
-}
-
-
-//------------------------------------------------------------------------------
-void GMetaEngine::SetRanking(const RString& uri,double ranking)
-{
-	GDocRetrieved* Doc(Results.GetPtr(uri));
-	if(!Doc)
-		ThrowGException("Document '"+uri+"' was not retrieved.");
-	Doc->Ranking=ranking;
+	return(R::RCursor<GDocFragment>(Results));
 }
 
 
 //-----------------------------------------------------------------------------
-R::RCursor<GDocRetrieved> GMetaEngine::GetDocs(void)
+size_t GMetaEngine::GetNbResults(void) const
 {
-	return(R::RCursor<GDocRetrieved>(Results));
+	return(Results.GetNb());
 }
 
 

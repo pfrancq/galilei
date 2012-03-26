@@ -52,12 +52,11 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 /**
 * The GDoc class provides a representation of a analyzed document. In fact, a
-* document is represented as a set of vectors and, eventually, its structure
-* (the positions and the depths of each concepts contained).
+* document is represented as a set of vectors and, eventually, its concept tree
+* (the positions and the depths of each concept occurrence).
 *
-* @warning Since the structure is memory consuming, it is not loaded by default
-* and it is recommended it to release it when not used anymore.
-* @author Pascal Francq
+* @warning Since the concept tree is memory consuming, it is not associated with
+* the document and must be managed by the developer.
 * @short Document.
 */
 class GDoc : public GDescriptionObject<GDoc>
@@ -68,11 +67,6 @@ protected:
 	* URI of the document.
 	*/
 	R::RURI URI;
-
-	/**
-	 * Structure of the document.
-	 */
-	GConceptTree* Struct;
 
 	/**
 	* Language of the description.
@@ -154,10 +148,10 @@ public:
 	GDoc(GSession* session,const R::RURI& uri,const R::RString& name,size_t id,size_t blockid,size_t structid,GLang* lang,const R::RString& mime,size_t grpid,const R::RDate& c,const R::RDate& u,const R::RDate& a);
 
 	/**
-	 * Defines if the documents have a structure.
+	 * Defines that the documents have concept trees.
 	 * @return true.
 	 */
-	static inline bool HasStruct(void){return(true);}
+	static inline bool HasTree(void){return(true);}
 
 	/**
 	 * Get a string that represents the object when a search has to be
@@ -206,21 +200,18 @@ public:
 	void ClearInfos(bool disk);
 
 	/**
-	 * Clear the structure associated with the document.
+	 * Clear the concept tree associated with the document.
 	 * @param disk            Clear the reference to the corresponding block on
 	 *                        disk.
 	 */
-	void ClearStruct(bool disk);
+	void ClearTree(bool disk);
 
 	/**
-	 * Get the structure of the document.
+	 * Load the concept tree of the document.
+	 * @param tree           Reference to a pointer to the tree. If null, the
+	 *                       tree is created.
 	 */
-	GConceptTree* GetStruct(void) const;
-
-	/**
-	 * Release the structure of a document from the memory.
-	 */
-	void ReleaseStruct(void);
+	void LoadTree(GConceptTree* &tree) const;
 
 	/**
 	* Get the URL.
@@ -373,7 +364,7 @@ private:
 	*                        document has already a description).
 	* \warning The description is cleared by this method.
 	*/
-	void Update(GLang* lang,GDescription& desc,GConceptTree& docstruct,bool ram,bool delref);
+	void Update(GLang* lang,GDescription& desc,bool ram,bool delref);
 
 public:
 

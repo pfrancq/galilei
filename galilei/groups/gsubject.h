@@ -164,11 +164,6 @@ public:
 	GSubject(GSession* session,size_t id,const R::RString& name,bool u);
 
 	/**
-	* Get a cursor over all the child subjects.
-	*/
-	inline R::RCursor<GSubject> GetSubjects(void) const {return(GetNodes());}
-
-	/**
 	* @return number of child subjects.
 	*/
 	inline size_t GetNbSubjects(void) const {return(GetNbNodes());}
@@ -441,6 +436,7 @@ public:
 	friend class GSession;
 	friend class R::RTree<GSubjects,GSubject,true>;
 	friend class R::RNode<GSubjects,GSubject,true>;
+	friend class R::RNodeCursor<GSubjects,GSubject>;
 	friend class GSimulator;
 };
 
@@ -495,11 +491,28 @@ public:
 	*/
 	GSubjects(size_t max);
 
+private:
+
+	/**
+	 * Fill an array with all the subjects.
+    * @param subjects       Array to fill.
+    * @return the number of subjects.
+    */
+	inline size_t GetTab(GSubject** subjects) {return(Subjects.GetTab(subjects));}
+
+	/**
+    * @return  a cursor over the subjects.
+    */
+	R::RCursor<GSubject> GetSubjects(void) const {return(R::RCursor<GSubject>(Subjects));}
+
    /**
     * Clear the tree.
     */
    virtual void Clear(void);
 
+	friend class R::RTree<GSubjects,GSubject,true>;
+	friend class R::RNode<GSubjects,GSubject,true>;
+	friend class R::RNodeCursor<GSubjects,GSubject>;
 	friend class GSubject;
 	friend class GSession;
 };

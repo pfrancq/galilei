@@ -38,7 +38,7 @@
 // include file for GALILEI
 #include <gplugin.h>
 #include <gpluginmanager.h>
-#include <gdocretrieved.h>
+#include <gdocfragment.h>
 
 
 //------------------------------------------------------------------------------
@@ -48,19 +48,22 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GMetaEngine class provides a representation for a generic results extractor
-* for different Search Engines
-* @author Valery Vandaele
-* @short Generic results extractor for different search engines
+* The GMetaEngine class provides a representation for a generic meta-search
+* engine. In practice, it manages a set of results (document fragments) for a
+* given query passed by the user.
+*
+* It is the role of inheriting classes to ensure that the query submitted to the
+* engines respects their constraints.
+* @short Meta-search Engine
 */
-class GMetaEngine : public GPlugIn
+class GMetaEngine : public GPlugIn, R::RDownload
 {
 protected:
 
 	/**
-	* Container of results (instance of class GDocRetrieved).
+	* Container of results (instance of class GDocFragment).
 	*/
-	R::RContainer<GDocRetrieved,true,true> Results;
+	R::RContainer<GDocFragment,true,true> Results;
 
 public:
 
@@ -72,27 +75,37 @@ public:
 	GMetaEngine(GSession* session,GPlugInFactory* fac);
 
 	/**
-	* Add a known document as result to the meta-engine. In practice, it adds an
-	* entry to the container of results.
+	 * Extract a text fragment from a document. In practice, it calls the
+	 * corresponding method of the right filter.
+	 * @param fragment       Fragment to extract.
+    * @return a string containing the text fragment.
+    */
+	R::RString GetTextFragment(GDocFragment* fragment);
+
+	/**
+	* Add a fragment from a known document as result to the meta-engine. In
+	* practice, it adds an entry to the container of results.
 	* @param docid           Identifier of the document.
-	* @param desc            Description of the document (such as an extract).
+	* @param pos             Position to the fragment to extract.
+	* @param first           First concept found.
+	* @param last            Last concept found.
 	* @param ranking         Ranking of the document given by the engine
 	*                        (\f$0\leq ranking \leq 1\f$).
 	* @param engine          Engine from which the result come.
 	*/
-	virtual void AddResult(size_t DocId,const R::RString desc,double ranking,const GEngine* engine);
+	virtual void AddResult(size_t docid,size_t pos,size_t first,size_t last,double ranking,const GEngine* engine);
 
 	/**
-	* Add an unknown document as result to the meta-engine. In practice, it adds
-	* an entry to the container of results.
+	* Add a fragment from an unknown document as result to the meta-engine. In
+	* practice, it adds an entry to the container of results.
 	* @param uri             URI of the document.
 	* @param title           Title of the document.
-	* @param desc            Description of the document (such as an extract).
+	* @param fragment        Fragment from the document.
 	* @param ranking         Ranking of the document given by the engine.
 	*                        (\f$0\leq ranking \leq 1\f$).
 	* @param engine          Engine from which the result come.
 	*/
-	virtual void AddResult(const R::RString& uri,const R::RString& title,const R::RString desc,double ranking,const GEngine* engine);
+	virtual void AddResult(const R::RString& uri,const R::RString& title,const R::RString fragment,double ranking,const GEngine* engine);
 
 	/**
 	* Send a query to the meta-search engine. It should:
@@ -108,26 +121,17 @@ public:
 	* @param doc                   Document retrieved.
 	* @param ranking               Global ranking.
 	*/
-	void SetRanking(GDocRetrieved* doc,double ranking);
-
-	/**
-	* Set the global ranking for a document.
-	* @param docid                 Identifier of the document retrieved.
-	* @param ranking               Global ranking.
-	*/
-	void SetRanking(size_t docid,double ranking);
-
-	/**
-	* Set the global ranking for a document.
-	* @param uri                   URI of the document retrieved.
-	* @param ranking               Global ranking.
-	*/
-	void SetRanking(const R::RString& uri,double ranking);
+	void SetRanking(GDocFragment* doc,double ranking);
 
 	/**
 	* @return a cursor of the documents retrieved by the meta-search engine.
 	*/
-	virtual R::RCursor<GDocRetrieved> GetDocs(void);
+	virtual R::RCursor<GDocFragment> GetResults(void);
+
+	/**
+	 * @return the number of results.
+    */
+	virtual size_t GetNbResults(void) const;
 
 	/**
 	* Destructor of the meta-engine.

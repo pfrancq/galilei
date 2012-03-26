@@ -49,6 +49,7 @@ using namespace std;
 // include files for R
 #include <rxmlstruct.h>
 #include <rxmlfile.h>
+#include <rnodecursor.h>
 using namespace R;
 using namespace std;
 
@@ -180,12 +181,12 @@ GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
 		RXMLTag* Types=xml.GetTag("mimeTypes");
 		if(!Types)
 			ThrowGException("MIME type file \"/etc/galilei/galilei.mimes\" is invalid");
-		R::RCursor<RXMLTag> Cur(Types->GetNodes());
+		RNodeCursor<RXMLStruct,RXMLTag> Cur(Types);
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
 			RString MIME(Cur()->GetAttrValue("code"));
 			// Go through all file extension
-			R::RCursor<RXMLTag> Cur2(Cur()->GetNodes());
+			RNodeCursor<RXMLStruct,RXMLTag> Cur2(Cur());
 			for(Cur2.Start();!Cur2.End();Cur2.Next())
 				Exts.InsertPtr(new GMIMEExt(MIME,Cur2()->GetAttrValue("ext")));
 		}
@@ -297,6 +298,9 @@ void GGALILEIApp::DeleteSession(GSession* session)
 {
 	if(!session)
 		return;
+	RCursor<GPlugInManager> Cur(*this);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->Disconnect(session);
 	Sessions.DeletePtr(session);
 }
 
@@ -528,8 +532,11 @@ void GGALILEIApp::RunPrg(GSlot* rec,const RString& filename)
 
 
 //------------------------------------------------------------------------------
-GFilter* GGALILEIApp::FindMIMEType(GDoc* doc)
+GFilter* GGALILEIApp::FindMIMEType(GDoc* doc) const
 {
+	if(!doc)
+		ThrowGException("Invalid document passed");
+
 	// Guess the MIME type if necessary
 	if(doc->GetMIMEType().IsEmpty())
 	{
