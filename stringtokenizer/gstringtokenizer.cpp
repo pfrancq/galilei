@@ -89,8 +89,10 @@ void GStringTokenizer::Start(void)
 
 
 //------------------------------------------------------------------------------
-void GStringTokenizer::TreatChar(GDocAnalyze* analyzer,const R::RChar& car)
+bool GStringTokenizer::TreatChar(GDocAnalyze* analyzer,const R::RChar& car)
 {
+	bool TokenStart(false);
+
 	if((!car)||(car.IsSpace()))
 	{
 		// if Leading -> skip it
@@ -153,6 +155,9 @@ void GStringTokenizer::TreatChar(GDocAnalyze* analyzer,const R::RChar& car)
 		}
 		else
 		{
+			if(State==StartToken)
+				TokenStart=true;
+			
 			// Treat non-alphabetical characters
 			if(!car.IsAlpha())
 			{
@@ -191,6 +196,7 @@ void GStringTokenizer::TreatChar(GDocAnalyze* analyzer,const R::RChar& car)
 			analyzer->SkipToken();
 		Start();
 	}
+	return(TokenStart);
 }
 
 
