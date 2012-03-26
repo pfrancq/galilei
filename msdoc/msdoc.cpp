@@ -220,6 +220,14 @@ void GFilterMSDoc::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file
 
 
 //------------------------------------------------------------------------------
+R::RString GFilterMSDoc::GetTextFragment(GDocFragment*)
+{
+	return("Cannot extract text fragment");
+}
+
+
+
+//------------------------------------------------------------------------------
 
 //methods for SubDocument Handler.
 

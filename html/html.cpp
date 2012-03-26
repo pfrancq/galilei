@@ -44,7 +44,7 @@
 
 //------------------------------------------------------------------------------
 GFilterHTML::GFilterHTML(GSession* session,GPlugInFactory* fac)
-	: GFilter(session,fac), RXMLParser(), DivisionTags(10), Divisions(30,20)
+	: GFilter(session,fac), GXMLParser(), DivisionTags(10), Divisions(30,20)
 {
 	AddMIME("text/html");
 	SetHTMLMode(true);
@@ -76,6 +76,13 @@ void GFilterHTML::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 	BodyTag=TitleTag=MetaTag=false;
 	Open(file);
 	Close();
+}
+
+
+//------------------------------------------------------------------------------
+RString GFilterHTML::GetTextFragment(GDocFragment* fragment)
+{
+	return(GetFragment(fragment));
 }
 
 

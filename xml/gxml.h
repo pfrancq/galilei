@@ -35,12 +35,16 @@
 
 //------------------------------------------------------------------------------
 // include files for R/GALILEI Projects
-#include <rxmlparser.h>
 #include <gfilter.h>
 #include <rstack.h>
 using namespace R;
 using namespace GALILEI;
 using namespace std;
+
+
+//------------------------------------------------------------------------------
+// include files for current project
+#include <../shared/gxmlparser.h>
 
 
 //-----------------------------------------------------------------------------
@@ -121,12 +125,12 @@ public:
  */
 class XMLTag
 {
-	 /**
-	  * Concept associated to the tag.
-	  */
-	 GConcept* Concept;
-
 public:
+
+	/**
+	 * Concept associated to the tag.
+	 */
+	GConcept* Concept;
 
 	/**
 	 * The tag.
@@ -265,24 +269,17 @@ public:
 	 XMLContent* Content;
 
 	 /**
-	  * The position of the tag occurrence in the document.
+	  * The corresponding token occurrence.
 	  */
-	 size_t Pos;
-
-	 /**
-	  * The depth of the tag occurrence in the XML tree.
-	  */
-	 size_t Depth;
+	 GTokenOccur* Occur;
 
 	 /**
 	  * Constructor.
 	  * @param tag           Tag.
 	  * @param content       Content.
-	  * @param pos           Position.
-	  * @param depth         Depth.
 	  */
-	 XMLTagOccur(XMLTag* tag,XMLContent* content,size_t pos,size_t depth)
-	 	: Tag(tag), Content(content), Pos(pos), Depth(depth) {}
+	 XMLTagOccur(XMLTag* tag,XMLContent* content)
+	 	: Tag(tag), Content(content), Occur(0) {}
 
 	 /**
 	  * Compare method needed by R::RContainer.
@@ -302,7 +299,7 @@ public:
  * @short XML Documents Analyze.
  * @article Document_Description
  */
-class GXML : public GFilter, public RXMLParser
+class GXML : public GFilter, public GXMLParser
 {
 	/**
 	 * Analyzer that has called the XML filter.
@@ -424,6 +421,8 @@ public:
 	virtual void ResolveNamespace(const RString& namespaceURI);
 	virtual void EndTag(const RString& namespaceURI,const RString& lName,const RString& name);
 	virtual void Text(const RString& text);
+	virtual void AddAttribute(const RString& namespaceURI,const RString& lName,const RString& name);
+	virtual void Value(const RString& value);
 
 	/**
 	 * Transform a code into a character. It call first the valid codes for
@@ -441,6 +440,14 @@ public:
 	*                        remote document).
 	*/
 	virtual void Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file);
+
+	/**
+	 * Extract a text fragment from a file with a given URI. This method should
+	 * be re-implemented by filters.
+	 * @param fragment       Fragment to extract.
+    * @return a string containing the text fragment.
+    */
+	virtual R::RString GetTextFragment(GDocFragment* fragment);
 
 	/**
 	* Create the parameters.

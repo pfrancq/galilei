@@ -102,7 +102,7 @@ GConcept* XMLTag::GetConcept(void)
 // Skip ending '/' if necessary
 RString AdaptNamespace(const RString& name)
 {
-	if(name[name.GetLen()-1]=='/')
+	if((name.GetLen())&&(name[name.GetLen()-1]=='/'))
 	{
 		return(name.Mid(0,name.GetLen()-1));
 	}
@@ -142,7 +142,7 @@ int XMLSchema::Compare(const RString& uri)
 
 //-----------------------------------------------------------------------------
 GXML::GXML(GSession* session,GPlugInFactory* fac)
-	: GFilter(session,fac), RXMLParser(), MetadataTags(50), ExcludeTags(50), Schemas(50),
+	: GFilter(session,fac), GXMLParser(), MetadataTags(50), ExcludeTags(50), Schemas(50),
 	  Tags(30,20), Semantic(0)
 {
 	AddMIME("text/xml");
@@ -159,7 +159,7 @@ void GXML::ApplyConfig(void)
 	ExtractMetadata=FindParam<RParamValue>("ExtractMetadata")->GetBool();
 	MetadataMaxTerms=FindParam<RParamValue>("MetadataMaxTerms")->GetUInt();
 	MetadataMaxOccurs=FindParam<RParamValue>("MetadataMaxOccurs")->GetUInt();
-	MetadataMaxDepth=static_cast<char>(FindParam<RParamValue>("MetadataMaxDepth")->GetUInt());
+	MetadataMaxDepth=FindParam<RParamValue>("MetadataMaxDepth")->GetUInt();
 	MetadataChildTags=FindParam<RParamValue>("MetadataChildTags")->GetBool();
 	UseDefaultNamespace=FindParam<RParamValue>("UseDefaultNamespace")->GetBool();
 	DefaultNamespace=AdaptNamespace(FindParam<RParamValue>("DefaultNamespace")->Get());
@@ -181,7 +181,7 @@ void GXML::ApplyConfig(void)
 		for(Schema.Start();!Schema.End();Schema.Next())
 		{
 			RCursor<XMLTag> Tag(Schema()->Tags);
-			for(Tag.Start();Tag.End();Tag.Next())
+			for(Tag.Start();!Tag.End();Tag.Next())
 				Tag()->Type=XMLTag::Undefined;
 		}
 	}
@@ -198,6 +198,15 @@ void GXML::Init(void)
 void GXML::Clear(void)
 {
 	Tags.Clear();
+
+	// Remove the content of the tags
+	RCursor<XMLSchema> Schema(Schemas);
+	for(Schema.Start();!Schema.End();Schema.Next())
+	{
+		RCursor<XMLTag> Tag(Schema()->Tags);
+		for(Tag.Start();!Tag.End();Tag.Next())
+			Tag()->Content.Clear();
+	}
 }
 
 
@@ -270,6 +279,10 @@ XMLTag* GXML::GetXMLTag(const RString& namespaceURI,const RString& lName)
 				}
 			}
 		}
+
+		// Create a concept for that tag
+		if(ExtractSemantic)
+			Tag->Concept=Schema->Type->GetInsertConcept(Tag->Tag);
 	}
 	return(Tag);
 }
@@ -279,13 +292,25 @@ XMLTag* GXML::GetXMLTag(const RString& namespaceURI,const RString& lName)
 void GXML::BeginTag(const RString& namespaceURI,const RString& lName,const RString&)
 {
 	if(GetSection()!=RXMLParser::Body)
+	{
+		Analyzer->SkipToken();
 		return;
+	}
+
 	// Get the tag and add a occurrences of it
 	XMLTag* Tag(GetXMLTag(namespaceURI,lName));
 	Tag->NbOccurs++;
 	XMLContent* Content(new XMLContent());
 	Tag->Content.InsertPtr(Content);
-	Tags.Push(new XMLTagOccur(Tag,Content,GetLastTokenPos(),GetCurrentDepth()));
+	XMLTagOccur* Occur(new XMLTagOccur(Tag,Content));
+	Tags.Push(Occur);
+
+	if(ExtractSemantic)
+	{
+		if(Debug)
+			cout<<"  Add Tag "<<Tag->Schema->URI+":"+Tag->Tag<<endl;
+		Occur->Occur=Analyzer->AddToken(Tag->Schema->URI+":"+Tag->Tag,ttSemantic,Tag->GetConcept(),1.0,Tag->Schema->MetaConcept,GetLastTokenPos(),GetCurrentDepth());
+	}
 }
 
 
@@ -305,10 +330,15 @@ void GXML::ResolveNamespace(const RString& namespaceURI)
 		XMLTag* Tag(GetXMLTag(namespaceURI,Occur->Tag->Tag));
 		if(Occur->Tag!=Tag)
 		{
+			// Name of the tag (including its namespace) has changed
 			Occur->Tag=Tag;
 			XMLContent* Content(new XMLContent());
 			Tag->Content.InsertPtr(Content);
 			Tag->NbOccurs++;
+
+			// Change also its token if necessary
+			if(ExtractSemantic)
+				Analyzer->MoveToken(Occur->Occur,Tag->Concept);
 		}
 	}
 }
@@ -317,14 +347,10 @@ void GXML::ResolveNamespace(const RString& namespaceURI)
 //-----------------------------------------------------------------------------
 void GXML::EndTag(const RString&, const RString& /*lName*/, const RString&)
 {
+	// Skip the tag as token
 	if(GetSection()!=RXMLParser::Body)
 		return;
 
-	if(ExtractSemantic)
-	{
-		XMLTagOccur* Occur(Tags());
-		Analyzer->AddToken(Occur->Tag->Schema->URI+":"+Occur->Tag->Tag,ttXMLTag,Occur->Tag->GetConcept(),1.0,Occur->Tag->Schema->MetaConcept,Occur->Pos,Occur->Depth);
-	}
 	Tags.Pop();
 }
 
@@ -332,8 +358,15 @@ void GXML::EndTag(const RString&, const RString& /*lName*/, const RString&)
 //-----------------------------------------------------------------------------
 void GXML::Text(const RString& text)
 {
-	if(GetSection()!=RXMLParser::Body)
+	// Nothing to do if empty text
+	if(text.ContainOnlySpaces())
 		return;
+
+	if(GetSection()!=RXMLParser::Body)
+	{
+		Analyzer->SkipToken();
+		return;
+	}
 
 	XMLTagOccur* Occur(Tags());
 	switch(Occur->Tag->Type)
@@ -345,16 +378,17 @@ void GXML::Text(const RString& text)
 				Analyzer->ExtractTextual(text,Occur->Tag->GetConcept(),GetLastTokenPos(),GetCurrentDepth());
 			break;
 		case XMLTag::Text:
-				if(Debug)
-					cout<<"    Add textual "<<text<<endl;
+			if(Debug)
+				cout<<"    Add textual "<<text<<endl;
 			Analyzer->ExtractBody(text,GetLastTokenPos(),GetCurrentDepth());
 			break;
 		case XMLTag::Unknown:
 			// We must guess if it is a metadata tag
-			if((GetCurrentDepth()>MetadataMaxDepth)||(Occur->Tag->NbOccurs>MetadataMaxOccurs))
+			if((!DetectMetadataTag) || (DetectMetadataTag&&((GetCurrentDepth()>MetadataMaxDepth)||(Occur->Tag->NbOccurs>MetadataMaxOccurs))))
 			{
 				if(Debug)
 					cout<<"    Add textual "<<text<<endl;
+
 				// We are sure that isn't a metadata -> Add normal text
 				Analyzer->ExtractBody(text,GetLastTokenPos(),GetCurrentDepth());
 			}
@@ -362,6 +396,7 @@ void GXML::Text(const RString& text)
 			{
 				if(Debug)
 					cout<<"    delay "<<text<<endl;
+
 				// We must delay the decision
 				Occur->Content->InsertPtr(new XMLText(text,GetLastTokenPos(),GetCurrentDepth()));
 			}
@@ -369,6 +404,22 @@ void GXML::Text(const RString& text)
 		default:
 			break;
 	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GXML::AddAttribute(const RString& /*namespaceURI*/,const RString& /*lName*/,const RString& /*name*/)
+{
+	// Simply skip the token
+	Analyzer->SkipToken();
+}
+
+
+//-----------------------------------------------------------------------------
+void GXML::Value(const RString& /*value*/)
+{
+	// Simply skip the token
+	Analyzer->SkipToken();
 }
 
 
@@ -408,6 +459,7 @@ void GXML::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 			{
 				if(Debug)
 					cout<<"   Tag status is unknown"<<endl;
+
 				// If the tag appears more than MaxOccurs -> Is is certainly text
 				bool SureText(Tag()->NbOccurs>MetadataMaxOccurs);
 				RCursor<XMLContent> Content(Tag()->Content);
@@ -429,6 +481,13 @@ void GXML::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 			Tag()->NbOccurs=0;
 		}
 	}
+}
+
+
+//------------------------------------------------------------------------------
+RString GXML::GetTextFragment(GDocFragment* fragment)
+{
+	return(GetFragment(fragment));
 }
 
 

@@ -37,6 +37,7 @@
 //------------------------------------------------------------------------------
 // include files for R/GALILEI
 #include <gplugin.h>
+#include <rnodecursor.h>
 #include <rqt.h>
 #include <gxml_kde.h>
 #include <rxmlstruct.h>
@@ -154,7 +155,7 @@ void Config::importFile(void)
 		RXMLTag* Root(Tags.GetTag("tags"));
 		if(!Root)
 			throw bad_alloc();
-		RCursor<RXMLTag> Tag(Root->GetNodes());
+		RNodeCursor<RXMLStruct,RXMLTag> Tag(Root);
 		for(Tag.Start();!Tag.End();Tag.Next())
 		{
 			if(Tag()->GetName()=="metadata")

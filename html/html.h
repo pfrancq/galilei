@@ -38,15 +38,19 @@
 // include files for GALILEI
 #include <gfilter.h>
 #include <rstack.h>
-#include <rxmlparser.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
 
 
+//------------------------------------------------------------------------------
+// include files for current project
+#include <../shared/gxmlparser.h>
+
+
 //-----------------------------------------------------------------------------
 /**
- * The DivisionTag provides a reprsentation for tags representing document
+ * The DivisionTag provides a representation for tags representing document
  * divisions. In practice, these tags are: <html>, <body>, <h1>, <h2>, <h3>,
  * <h4>, <h5>, <h6> and <p>.
  * @author Pascal Francq.
@@ -127,7 +131,7 @@ public:
 * @author Pascal Francq
 * @short HTML's Filter.
 */
-class GFilterHTML : public GFilter, public RXMLParser
+class GFilterHTML : public GFilter, public GXMLParser
 {
 	 /**
 	  * Detect the document divisions.
@@ -196,6 +200,14 @@ public:
 	*                        remote document).
 	*/
 	virtual void Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file);
+
+	/**
+	 * Extract a text fragment from a file with a given URI. This method should
+	 * be re-implemented by filters.
+	 * @param fragment       Fragment to extract.
+    * @return a string containing the text fragment.
+    */
+	virtual R::RString GetTextFragment(GDocFragment* fragment);
 
 	/**
 	* Function called each time a tag will be treated when reading a XML file.
