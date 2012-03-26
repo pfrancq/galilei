@@ -2,14 +2,13 @@
 
 	GALILEI Research Project
 
-	GXMLEngine
+	GEngineXML.cpp
 
-	Extractor of results from the Google search engine - Implementation.
+	XML Search Engine - Implementation.
 
-	Copyright 2004-2009 by the Universit�Libre de Bruxelles.
-
-	Authors:
-		Faïza Abbaci (fabbaci@ulb.ac.be)
+	Copyright 2004-2012 by Pascal Francq.
+   Copyright 2004-2005 by Jean-Baptiste Valsamis.
+	Copyright 2005-2009 by Faïza Abbaci.
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -32,31 +31,139 @@
 
 //-----------------------------------------------------------------------------
 // include files for ANSI C/C++
-#include <ctype.h>
-#include <iostream>
-#include <ctime>
+#include <math.h>
+
 
 //-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <genginexml.h>
+// include files for R/GALILEI Projects
 #include <gsession.h>
-#include <gstorage.h>
-#include <xanalyser.h>
 #include <gmetaengine.h>
-#include <gplugin.h>
-#include <ggalileiapp.h>
-using namespace R;
-using namespace GALILEI;
-using namespace std;
+#include <rpromcriterion.h>
+#include <gdoc.h>
+#include <gdocanalyze.h>
+#include <rbinaryfile.h>
 
-#include "xsqlcmd.h"
 
-//______________________________________________________________________________
+//-----------------------------------------------------------------------------
+// include files for current project
+#include <genginexml.h>
+#include <gquery.h>
+#include <gqueryres.h>
+#include <gprom.h>
+
+
+
 //------------------------------------------------------------------------------
-void fct_print(const char *str)
+// Constant
+const bool Debug=false;
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GEngineXML::cTreeRef
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class GEngineXML::cTreeRef
 {
-	cout << str << endl;
-}
+public:
+	GConceptTree* Tree;
+	size_t DocId;
+	size_t NbAccess;
+	bool Use;
+
+	cTreeRef(size_t docid)
+		: Tree(0), DocId(docid), NbAccess(1), Use(true)
+	{
+
+	}
+
+	int Compare(const cTreeRef& tree) const {return(CompareIds(DocId,tree.DocId));}
+	int Compare(size_t docid) const {return(CompareIds(DocId,docid));}
+	~cTreeRef(void)
+	{
+		delete Tree;
+	}
+};
+
+
+
+//------------------------------------------------------------------------------
+//
+// class cKeyword
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class cKeyword
+{
+public:
+	size_t Id;
+	size_t NbRef;
+	double Iff;
+
+	cKeyword(size_t id) : Id(id), NbRef(0), Iff(NAN) {}
+	int Compare(const cKeyword& keyword) const
+	{
+		return(CompareIds(Id,keyword.Id));
+	}
+	int Compare(const size_t id) const
+	{
+		return(CompareIds(Id,id));
+	}
+};
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GEngineXML::cIff
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class GEngineXML::cIff
+{
+public:
+
+	size_t Id;
+	size_t NbRef;
+	RContainer<cKeyword,true,true> Children;
+
+	cIff(size_t id) : Id(id), NbRef(0), Children(2000) {}
+	int Compare(const cIff&) const {return(-1);}
+};
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GEngineXML::cRef
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class GEngineXML::cRef
+{
+public:
+	enum tType {Text,Semantic};
+
+	tType Type;
+	RNumContainer<size_t,true> Parents;
+	size_t Nb;
+
+	cRef(tType type) : Type(type), Parents(200), Nb(0) {}
+
+	int Compare(const cRef&) const {return(-1);}
+	inline void Clear(void)
+	{
+		Parents.Clear();
+		Nb=0;
+	}
+};
+
 
 
 //------------------------------------------------------------------------------
@@ -64,200 +171,439 @@ void fct_print(const char *str)
 // class GEngineXML
 //
 //------------------------------------------------------------------------------
-GEngineXML::GEngineXML(GFactoryEngine *fac) : GEngine(fac), Name(""), NbResults(40), Weight(1.0)
+
+//------------------------------------------------------------------------------
+GEngineXML::GEngineXML(GSession* session,GPlugInFactory* fac) :
+	GEngine(session,fac), TfIdf(0), Distance(0), Specificity(0), TfIff(0),
+	NbResults(40), Trees(1000), Iffs(10000), IffsDirty(false), Text(0),
+	TmpRefs(10000)
 {
+	InsertObserver(HANDLER(GEngineXML::HandleDocAnalyzed),"DocAnalyzed");
+	InsertObserver(HANDLER(GEngineXML::HandleForceReCompute),"ForceReCompute",session);
+	InsertObserver(HANDLER(GEngineXML::HandleResetFile),"ResetFile",session);
 }
 
-//______________________________________________________________________________
+
+//------------------------------------------------------------------------------
+void GEngineXML::Init(void)
+{
+	// Verify the size of the array
+	Iffs.VerifyTab(Session->GetNbConcepts()+1);
+	SaveIffs=false;
+
+	// Look if a binary file exists ?
+	const RURI uri(GALILEIApp->GetIndexDir()+RFile::GetDirSeparator()+Session->GetName()+RFile::GetDirSeparator()+"GEngineXML.bin");
+	if(!RFile::Exists(uri))
+	{
+		// No -> We may suppose that the Iffs must be recomputed
+		IffsDirty=true;
+		return;
+	}
+
+	// Yes -> Load the existing number of references
+	IffsDirty=false;
+	RBinaryFile File(uri);
+	File.Open(RIO::Read);
+	while(true)
+	{
+		size_t Id,Nb;
+		File>>Id;
+		if(!Id)  // End of file
+			break;
+		cIff* Ref(new cIff(Id));
+		Iffs.InsertPtrAt(Ref,Id,true);
+		File>>Ref->NbRef>>Nb;
+		Ref->Children.VerifyTab(Nb);
+		for(size_t i=0;i<Nb;i++)
+		{
+			File>>Id;
+			cKeyword* Keyword(new cKeyword(Id));
+			File>>Keyword->NbRef;
+			Ref->Children.InsertPtrAt(Keyword,i,true);
+		}
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GEngineXML::Done(void)
+{
+	// Look if something to save
+	if((!Session->MustSaveResults())||IffsDirty||(!SaveIffs))
+		return;
+
+	// Save the factors
+	const RURI uri(GALILEIApp->GetIndexDir()+RFile::GetDirSeparator()+Session->GetName()+RFile::GetDirSeparator()+"GEngineXML.bin");
+	RBinaryFile File(uri);
+   File.Open(RIO::Create);
+	RCursor<cIff> Cur(Iffs);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		File<<Cur()->Id<<Cur()->NbRef<<Cur()->Children.GetNb();
+		RCursor<cKeyword> Cur2(Cur()->Children);
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
+			File<<Cur2()->Id<<Cur2()->NbRef;
+	}
+	File<<size_t(0); // End of the file
+	Iffs.Clear();
+}
+
+
+//------------------------------------------------------------------------------
+void GEngineXML::CreateConfig(void)
+{
+	InsertParam(new RParamValue("NbResults",40,"Number of chunks to retrieve."));
+	InsertParam(new RParamValue("Weight",1.0,"Weight of the engine."));
+	InsertParam(RPromLinearCriterion::CreateParam("TfIdf","Tf/Idf Criterion"));
+	InsertParam(RPromLinearCriterion::CreateParam("Type","Type Criterion"));
+	InsertParam(RPromLinearCriterion::CreateParam("Distance","Distance Criterion"));
+	InsertParam(RPromLinearCriterion::CreateParam("Specificity","Specificity Criterion"));
+	InsertParam(RPromLinearCriterion::CreateParam("TfIff","Tf/Iff Criterion"));
+}
+
+
 //------------------------------------------------------------------------------
 void GEngineXML::ApplyConfig()
 {
-	Name=Factory->Get("Name");
-	NbResults = Factory->GetUInt("NbResults");
-	Weight = Factory->GetDouble("Weight");
-	ask_update = Factory->GetBool("Update");
-	ask_reset = ask_update && Factory->GetBool("Reset");
-	cout<<"update? "<<ask_update<<" reset? "<<Factory->GetBool("Reset")<<" nbres? "<<NbResults<<" weight? "<<Weight<<endl;
-		Params.ParamsDocSc=Factory->FindParam<RParamStruct>("DocSc Criterion");
-		//Params->ParamsType.Set(Factory->FindParam<RParamStruct>("Type Criterion"));
-		Params.ParamsDis=Factory->FindParam<RParamStruct>("Distance Criterion");
-		//Params->ParamsOcc.Set(Factory->FindParam<RParamStruct>("Occurrence Criterion"));
-		Params.ParamsSpecif=Factory->FindParam<RParamStruct>("Specificity Criterion");
-		Params.ParamsTfief=Factory->FindParam<RParamStruct>("Tfief Criterion");
+	NbResults=FindParam<RParamValue>("NbResults")->GetUInt();
+	Weight=FindParam<RParamValue>("Weight")->GetDouble();
+	TfIdf=FindParam<RParamStruct>("TfIdf");
+	Type=FindParam<RParamStruct>("Type");
+	Distance=FindParam<RParamStruct>("Distance");
+	Specificity=FindParam<RParamStruct>("Specificity");
+	TfIff=FindParam<RParamStruct>("TfIff");
 }
 
-//______________________________________________________________________________
+
 //------------------------------------------------------------------------------
-void GEngineXML::Connect(GSession *session) throw(GException)
+void GEngineXML::HandleDocAnalyzed(const RNotification& notification)
 {
-	if(Session)
+	GDocAnalyze* Analyzer(GetData<GDocAnalyze*>(notification));
+	if(Analyzer->GetSession()!=Session)
 		return;
-	GEngine::Connect(session);
-	XSQLCmd::Init();
-}
 
-//______________________________________________________________________________
-//------------------------------------------------------------------------------
-void GEngineXML::Disconnect(GSession *session) throw(GException)
-{
-	if(!Session)
+	// If the references are dirty -> wait to recompute everything if needed
+	if(IffsDirty)
 		return;
-	GEngine::Disconnect(session);
 
+	// Verify and clear
+	Iffs.VerifyTab(Session->GetNbConcepts()+1);
+
+	// First remove the references of the previous description
+	GConceptTree* Tree(0);
+	Analyzer->GetDoc()->LoadTree(Tree);
+	UpdateRefs(Tree,false);
+	delete Tree;
+
+	// Update the references for the document just analyzed
+	UpdateRefs(&Analyzer->GetTree(),true);
 }
 
-//______________________________________________________________________________
+
 //------------------------------------------------------------------------------
-void GEngineXML::UpdateDb()
+void GEngineXML::HandleForceReCompute(const R::RNotification& notification)
 {
-	RString paths;
-	RCursor<RString> curs;
-	RContainer<RString, true, false> pathlist(10);
-	XAnalyser analyser(Session->GetStorage(), fct_print);
-
-	paths = Factory->Get("Paths");
-	paths.Split(pathlist, '.');
-	curs.Set(pathlist);
-	for (curs.Start(); !curs.End(); curs.Next())
-		analyser.AddPath(curs()->Mid(1), curs()->Mid(0, 1) == "1");
-	analyser.Update();
-}
-
-//______________________________________________________________________________
-//------------------------------------------------------------------------------
-RString GEngineXML::ConstructQuery(RContainer<RString, false, false> &keyWords)
-{
-	RCursor<RString> cstr(keyWords);
-	RString curr_exp, buff, res;
-	RCharCursor curs;
-	bool exp_end = false;														// Tells if it is end of curr_exp
-
-	for (cstr.Start(); !cstr.End(); cstr.Next())
+	GSessionMsg& Msg(GetData<GSessionMsg&>(notification));
+	if(Msg.GetType()==otDoc)
 	{
-		curs.Set(*cstr());
-		for (curs.Start(); !curs.End(); curs.Next())							// Looks in the string
+		// ForceReCompute IFF
+		IffsDirty=true;
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GEngineXML::HandleResetFile(const R::RNotification& notification)
+{
+	GSessionMsg& Msg(GetData<GSessionMsg&>(notification));
+	if((Msg.GetType()==otDoc)&&(Msg.GetMeta()==otDescFile))
+	{
+		// Remove the file
+		const RURI uri(GALILEIApp->GetIndexDir()+RFile::GetDirSeparator()+Session->GetName()+RFile::GetDirSeparator()+"GEngineXML.bin");
+		RFile::RemoveFile(uri);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+ void GEngineXML::Request(GMetaEngine* caller,const RString& query)
+ {
+	// Initialize text if necessary
+	if(!Text)
+		Text=Session->GetConceptCat("Text",false);
+
+	// Recompute References if necessary
+	if(IffsDirty)
+		RecomputeRefs();
+
+	 // Make all the loaded trees unused
+	 RCursor<cTreeRef> Tree(Trees);
+	 for(Tree.Start();!Tree.End();Tree.Next())
+		 Tree()->Use=false;
+
+	 // Construct the query
+	 GQuery Req(this,query);
+	 if(Debug)
+		Req.Print(0);
+
+	 // Retrieve all relevant nodes and get the results
+	 Req.Perform(0);
+	 const GQueryRes* Res(Req.GetResult());
+	 if((!Res)||(!Res->GetNb()))
+		 return;
+	 if(Debug)
+		Res->Print();
+
+	// Create a PROMETHEE kernel and a solution for each fragment
+	GProm Prom(this,&Req);
+	RCursor<GResNodes> Docs(Res->GetDocs());
+	for(Docs.Start();!Docs.End();Docs.Next())
+	{
+		RCursor<GResNode> Node(Docs()->GetNodes());
+		for(Node.Start();!Node.End();Node.Next())
+			Prom.Add(Node());
+	}
+
+	// Perform a PROMETHEE ranking on each document fragment and insert them in
+	// the meta-search engine
+	// Make their ranking ranging from [0,1]
+	RCursor<RPromSol> Sol(Prom.Compute());
+	double Min(Prom.GetMinFi());
+	double Max(Prom.GetMaxFi());
+	for(Sol.Start();!Sol.End();Sol.Next())
+	{
+		GPromSol* Fragment(dynamic_cast<GPromSol*>(Sol()));
+		double Ranking((Sol()->GetFi()-Min)/(Max-Min));
+		size_t DocId(Fragment->Node->GetParent()->GetDocId());
+		const GConceptTree* Tree(GetTree(DocId));
+		caller->AddResult(
+			DocId,
+			Fragment->Node->GetNode()->GetPos(),
+			Tree->GetNode(Fragment->Node->GetMinPos())->GetPos(),
+			Tree->GetNode(Fragment->Node->GetMaxPos())->GetPos(),
+			Ranking,
+			this);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+int GEngineXML::sortOrderAccess(const void* a,const void* b)
+{
+	size_t af((*((cTreeRef**)(a)))->NbAccess);
+	size_t bf((*((cTreeRef**)(b)))->NbAccess);
+
+	if(af==bf) return(0);
+	if(af>bf)
+		return(-1);
+	else
+		return(1);
+}
+
+
+//------------------------------------------------------------------------------
+const GConceptTree* GEngineXML::GetTree(size_t docid)
+{
+	// Look if the tree is already loaded
+	cTreeRef* Tree(Trees.GetPtr(docid));
+	if(Tree)
+	{
+		Tree->NbAccess++;
+		return(Tree->Tree);
+	}
+
+	// Look if the container is full and remove the less used structure
+	if(Trees.GetNb()==Trees.GetMaxNb())
+	{
+		// Cache is full -> The block must replace another one
+		// Select the less used block in cache
+		Trees.ReOrder(sortOrderAccess);
+
+		// Find the first tree not used
+		RCursor<cTreeRef> Cur(Trees);
+		for(Cur.Start();!Cur.End();Cur.Next())
+			if(!Cur()->Use)
+				break;
+
+		if(Cur.End())
 		{
-			if (curs() == ' ')													// Space
-				exp_end = true;													// => curr_exp reaches end
-			else if (curs().IsAlNum())											// Alphanumeric character
-				curr_exp += curs();
-			else if (curs() == '(')												// Parenthesis
-				buff = "(";
-			else if (curs() == ')')												// Parenthesis
-				buff = ")";
-			else if (curs() == '|')												// Or
-				buff = "OR";
-			else if (curs() == '&' || curs() == '+')			 				// And
-				buff = "AND";
-			else if (curs() == '/')												// Inc
-				buff = "INC";
-			else if (curs() == '.')												// Sib
-				buff = "SIB";
-			else if (curs() == '-')												// Not
-				buff = "NOT";
-			if (exp_end || buff.GetLen())										// curr_exp reaches end ?
+			// Must increase the container
+			Trees.InsertPtr(Tree=new cTreeRef(docid));
+		}
+		else
+		{
+			Tree=Cur();
+			Cur()->NbAccess=1;
+			Cur()->DocId=docid;
+		}
+
+		// Since a identifier was replaced, Cache must be re-ordered by identifiers
+		Trees.ReOrder();
+	}
+	else
+		Trees.InsertPtr(Tree=new cTreeRef(docid));
+
+	// Load the tree
+	Session->GetObj(pDoc,docid)->LoadTree(Tree->Tree);
+
+	return(Tree->Tree);
+}
+
+
+//------------------------------------------------------------------------------
+void GEngineXML::BuildRefs(RNodeCursor<GConceptTree,GConceptNode>& nodes)
+{
+	// Go trough each node : a concept appearing can only be treated once for a same parent.
+	// The TmpIds holds every identifier already treated
+	for(nodes.Start();!nodes.End();nodes.Next())
+	{
+		// Look for the type of node
+		GEngineXML::cRef::tType Type;
+		if( (nodes()->GetType()==ttText) ||
+			 (nodes()->GetType()==ttURI)  ||
+			 (nodes()->GetType()==ttLink) )
+			Type=GEngineXML::cRef::Text;
+		else
+			Type=GEngineXML::cRef::Semantic;
+
+		// Look for the reference
+		cRef* Ref(TmpRefs.GetPtrAt(nodes()->GetConceptId()));
+		if(!Ref)
+		{
+			Ref=new cRef(Type);
+			TmpRefs.InsertPtrAt(Ref,nodes()->GetConceptId(),true);
+		}
+
+		// Treatment depends of the node type
+		if(Type==GEngineXML::cRef::Text)
+		{
+			// Text : Verify that all parents notice that the concept is presented
+			GConceptNode* Parent(nodes()->GetParent());
+			while(Parent)
 			{
-				exp_end = false;
-				if (curr_exp.GetLen())
-					res += curr_exp + " ";
-				curr_exp = "";													// Reset curr_exp
-			}
-			if (buff.GetLen())
-			{
-				res += buff + " ";
-				buff = "";
+				//	If it is the first occurrence of the concept in Parent -> Save it
+				bool Find;
+				size_t Idx(Ref->Parents.GetId(Parent->GetSyntacticPos(),Find));
+				if(!Find)
+					Ref->Parents.InsertAt(Parent->GetSyntacticPos(),Idx,false);
+				Parent=Parent->GetParent();
 			}
 		}
-		if (curr_exp.GetLen())													// Adds the last exp
-			res += curr_exp + " ";
-		curr_exp = "";															// Reset curr_exp
+		else
+			Ref->Nb++; // Simply increase the number of
+
+		// Update the child nodes
+		RNodeCursor<GConceptTree,GConceptNode> Cur(nodes());
+		BuildRefs(Cur);
 	}
-	cout << "faiza c la requete " << res << endl;
-	return res;
 }
 
-// ______________________________________________________________________________
-//------------------------------------------------------------------------------
-//void GEngineXML::Process(R::RContainer<R::RString, false, false>&) throw(GException)
-//{
-//	XQuery xquery(Session->GetStorage(), Params);
-//	xquery.rank_results(Name);
-//
-//}
-//_NORMAL_____________________________________________________________________________
-//------------------------------------------------------------------------------
- void GEngineXML::Process(R::RContainer<R::RString,false,false> &keyWords) throw(GException)
- {
- 	RCursor<XResult> cres;
- 	unsigned int currRank = 0;
- 	RString url, title, description;
- 	XQuery xquery(Session->GetStorage(), Params);
- 	RContainer<RString, true, false> query_list(20);
 
- 	try
- 	{
- 		if (ask_reset)
- 		{
- 			GStorageTag cmdtag("ClearXMLTables");
- 			Session->GetStorage()->ExecuteCmd(cmdtag, 0);
- 			Factory->SetBool("Reset", false);										// Disable the Resest of DB
- 			UpdateDb();
- 		}
- 		else if (ask_update)
- 			UpdateDb();
- 		ask_update = false;
- 		ask_reset = false;
-  		ConstructQuery(keyWords).Split(query_list, RChar(' '));					// Same line as the 4 above, query_list
- 		time_t temps_actD;
- 		time_t temps_actF;
-
- 		time(&temps_actD);
- 		cres = xquery.Query(query_list, Name);										//   is a container of words and symbols
- 		time(&temps_actF);
- 		if (difftime(temps_actF,temps_actD))
- 		cout << "Time consumed for this query  " << difftime(temps_actF,temps_actD) << endl;
- 		for (cres.Start(); !cres.End() && currRank < NbResults; cres.Next())
- 		{
- 			url = cres()->GetUrl();
- 			title = "";
- 			description = cres()->GetSnippet();
- 			GALILEIApp->GetManager<GMetaEngineManager>("MetaEngine")->GetCurrentMethod()->AddResult(url, title, description, currRank, Factory->GetName());
- 			currRank++;
- 		}
- 	}
- 	catch(std::bad_alloc e)
- 	{
- 		throw GException(e.what());
- 	}
- 	catch (RException e)
- 	{
- 		throw GException(e.GetMsg());
- 	}
- }
-//______________________________________________________________________________
 //------------------------------------------------------------------------------
-void GEngineXML::CreateParams(RConfig* params)
+GEngineXML::cIff* GEngineXML::GetIff(size_t conceptid)
 {
-	params->InsertParam(new RParamValue("Name","/home/fgaultier/resultsFile"));
-	params->InsertParam(new RParamValue("NbResults", 40));
-	params->InsertParam(new RParamValue("Weight", 1.0));
-	params->InsertParam(new RParamValue("Update", false));
-	params->InsertParam(new RParamValue("Reset", false));
-	params->InsertParam(new RParamValue("Paths", ""));
-		params->InsertParam(RPromLinearCriterion::CreateParam("DocSc Criterion"));
-	//	params->InsertParam(RPromCriterionParams::CreateParam("Type Criterion"));
-		params->InsertParam(RPromLinearCriterion::CreateParam("Distance Criterion"));
-	//	params->InsertParam(RPromCriterionParams::CreateParam("Occurrence Criterion"));
-		params->InsertParam(RPromLinearCriterion::CreateParam("Specificity Criterion"));
-		params->InsertParam(RPromLinearCriterion::CreateParam("Tfief Criterion"));
+	cIff* Ref(Iffs.GetPtrAt(conceptid));
+	if(!Ref)
+	{
+		Ref=new cIff(conceptid);
+		Iffs.InsertPtrAt(Ref,conceptid,true);
+	}
+	return(Ref);
 }
 
-//______________________________________________________________________________
+
 //------------------------------------------------------------------------------
-GEngineXML::~GEngineXML(void)
+void GEngineXML::UpdateRefs(const GConceptTree* tree,bool add)
 {
+	// Verify the size
+	TmpRefs.VerifyTab(Session->GetNbConcepts()+1);
+
+	// Build the nodes for the tree passed
+	RNodeCursor<GConceptTree,GConceptNode> Cur(*tree);
+	BuildRefs(Cur);
+
+	// Treat the information gathered
+	RCursor<cRef> TmpRef(TmpRefs);
+	for(TmpRef.Start();!TmpRef.End();TmpRef.Next())
+	{
+		// Treat depends from the type
+		if(TmpRef()->Type==GEngineXML::cRef::Text)
+		{
+			// Update the number if references corresponding to each parent (if any)
+			RNumCursor<size_t> Parent(TmpRef()->Parents);
+			for(Parent.Start();!Parent.End();Parent.Next())
+			{
+				cIff* Ref(GetIff(tree->GetNode(Parent())->GetConceptId()));
+				cKeyword* Keyword(Ref->Children.GetInsertPtr(TmpRef.GetPos()));
+				if(add)
+					Keyword->NbRef++;
+				else
+					Keyword->NbRef--;
+			}
+		}
+		else
+		{
+			cIff* Ref(GetIff(TmpRef.GetPos()));
+			// Update the total number of references
+			if(add)
+				Ref->NbRef+=TmpRef()->Nb;
+			else
+				Ref->NbRef-=TmpRef()->Nb;
+		}
+
+		// Clear the position for next call
+		TmpRef()->Clear();
+	}
+
+	SaveIffs=true;
 }
 
-//______________________________________________________________________________
+
 //------------------------------------------------------------------------------
-CREATE_ENGINE_FACTORY("XML Engine", GEngineXML)
+void GEngineXML::RecomputeRefs(void)
+{
+	// Clear everything
+	Iffs.Clear(Session->GetNbConcepts()+1);
+
+	// Go trough each document and load the current structure
+	GConceptTree* Tree(0);
+	RCursor<GDoc> Doc(Session->GetObjs(pDoc));
+	for(Doc.Start();!Doc.End();Doc.Next())
+	{
+		Doc()->LoadTree(Tree);
+		UpdateRefs(Tree,true);
+	}
+	delete Tree;
+
+	// References are OK
+	IffsDirty=false;
+}
+
+
+//------------------------------------------------------------------------------
+double GEngineXML::GetIff(size_t conceptid,size_t parentid)
+{
+	// First search for the concept entry
+	cIff* Ref(Iffs.GetPtrAt(parentid));
+	if(!Ref)
+		return(0.0);
+
+	// Find the corresponding parent
+	cKeyword* Keyword(Ref->Children.GetPtr(conceptid));
+	if(!Keyword)
+		return(0.0);
+
+	// If necessary -> recompute the factor
+	if(Keyword->Iff!=Keyword->Iff)
+	{
+		if(Ref->NbRef)
+			Keyword->Iff=log10(static_cast<double>(Ref->NbRef)/static_cast<double>(Keyword->NbRef));
+		else
+			Keyword->Iff=0.0;
+	}
+	return(Keyword->Iff);
+}
+
+
+//------------------------------------------------------------------------------
+CREATE_ENGINE_FACTORY("XML Search Engine","XML Search Engine",GEngineXML)

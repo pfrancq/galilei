@@ -1,39 +1,52 @@
-/***************************************************************************
- *   Copyright (C) 2005 by Jean-Baptiste Valsamis                          *
- *   jvalsami@ulb.ac.be                                                    *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
- ***************************************************************************/
+/*
 
-#include "xnodeset.h"
-#include "xstuff.h"
+	GALILEI Research Project
 
-XNodeSet::XNodeSet(const int _idfile) : RContainer<XNode, true, true>(20)
-{
-	idfile = _idfile;
-	__NEW__(XNS, idfile);
-}
+	GNodeSet.h
 
-//______________________________________________________________________________
+	Concept Node Set - Header.
+
+	Copyright 2004-2012 by Pascal Francq.
+   Copyright 2004-2005 by Jean-Baptiste Valsamis.
+	Copyright 2005-2009 by Faïza Abbaci.
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Library General Public
+	License as published by the Free Software Foundation; either
+	version 2.0 of the License, or (at your option) any later version.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	Library General Public License for more details.
+
+	You should have received a copy of the GNU Library General Public
+	License along with this library, as a file COPYING.LIB; if not, write
+	to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+	Boston, MA  02111-1307  USA
+
+*/
+
+
+
 //------------------------------------------------------------------------------
-XNodeSet::XNodeSet(const XNodeSet &xns) : RContainer<XNode, true, true>(xns)
+// include files for current project
+#include "gnodeset.h"
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GNodeSet
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GNodeSet::GNodeSet(size_t docid)
+	: RContainer<XNode, true, true>(20), Doc(DocId)
 {
-	idfile = xns.idfile;
-	__NEW__(XNS, -idfile);
 }
+
 
 //______________________________________________________________________________
 //------------------------------------------------------------------------------
@@ -47,7 +60,7 @@ int XNodeSet::GetIdFile() const
 void XNodeSet::GetSetIdNode(const int idnode, XNodeSet *xns) const
 {
 	RCursor<XNode> curs(*this);
-	
+
 	xns->idfile = idfile;
 	for (curs.Start(); !curs.End(); curs.Next())
 		if (curs()->GetIdNode() == idnode)
@@ -62,7 +75,7 @@ void XNodeSet::GetSetIdNode(const int idnode, XNodeSet *xns) const
 void XNodeSet::GetSetIdPath(const int idpath, XNodeSet *xns) const
 {
 	RCursor<XNode> curs(*this);
-	
+
 	xns->idfile = idfile;
 	for (curs.Start(); !curs.End(); curs.Next())
 		if (curs()->GetIdPath() == idpath)
@@ -74,7 +87,7 @@ void XNodeSet::GetSetIdPath(const int idpath, XNodeSet *xns) const
 void XNodeSet::PushUp(const int idnode, const XNode &node)
 {
 	XNode *nres;
-	
+
 	nres = new XNode(node);
 	nres->PushUp(idnode);
 	InsertPtr(nres);
@@ -84,7 +97,7 @@ void XNodeSet::PushUp(const int idnode, const XNode &node)
 void XNodeSet::PushUp(const int idnode, const int dis, const int specif, const XNode &node)
 {
 	XNode *nres;
-	
+
 	nres = new XNode(node);
 	nres->PushUp(idnode);
 	nres->distance=dis;
@@ -106,19 +119,19 @@ void XNodeSet::Oper(XConst::tOper op, XNodeSet *p, XNodeSet *q)
 	RContainer<Int, true, true> qidpathset(10);									// Set of idpath to add
 	RContainer<Int, true, true> idnodeset(10);
 	RCursor<Int> cint;
-	
+
 	if (op == XConst::OR)
 	{
-		// on rajoute les �l�ment de p qui ne sont pas dans this	
+		// on rajoute les �l�ment de p qui ne sont pas dans this
 		if (p->GetNb())
 			for (p->Start();!p->End(); p->Next() ){
 				xn = p->Node();
 				xn = GetPtr(p->Node());
 				if (xn) {
 					i=0;
-					xn->distance += p->Node()->distance; 
+					xn->distance += p->Node()->distance;
 					//for (it = p->Node()->types.begin(); it < p->Node()->types.end();  it++){
-					//	xn->types.push_back(p->Node()->types[i]); 
+					//	xn->types.push_back(p->Node()->types[i]);
 					//	i++;
 					//}
 
@@ -131,22 +144,22 @@ void XNodeSet::Oper(XConst::tOper op, XNodeSet *p, XNodeSet *q)
 				xn = GetPtr(q->Node());
 				if (xn) {
 					i=0;
-					xn->distance += q->Node()->distance; 
+					xn->distance += q->Node()->distance;
 // 					for (it = q->Node()->types.begin(); it < q->Node()->types.end();  it++){
-// 						xn->types.push_back(q->Node()->types[i]); 
+// 						xn->types.push_back(q->Node()->types[i]);
 // 						i++;
 // 					}
 				} else InsertPtr( new  XNode(*q->Node()) );
 			}
-		
-	}	
+
+	}
 	else
 	{
 		p->Last();
 		q->Last();
 		while (!p->Begin() && !q->Begin())
 		{
-			
+
 			if (*p->Node() == *q->Node())
 			{
 				switch (op)
@@ -160,7 +173,7 @@ void XNodeSet::Oper(XConst::tOper op, XNodeSet *p, XNodeSet *q)
 							i=0;
 							xn->distance += q->Node()->distance;
 // 							for (it = q->Node()->types.begin(); it < q->Node()->types.end();  it++){
-// 								xn->types.push_back(q->Node()->types[i]); 
+// 								xn->types.push_back(q->Node()->types[i]);
 // 								i++;
 // 							}
 						} else { //sinon on fusionne les types de p et q dans p et on insert p
@@ -250,17 +263,17 @@ int i, t;
 			//si oui on rajoute les types
 			if ((xn) && !(xn==Node())) {
 				i=0;
-				if (xn->distance > Node()->distance) 					
+				if (xn->distance > Node()->distance)
 					xn->distance = Node()->distance;
 // 				for (it = Node()->types.begin(); it < Node()->types.end();  it++){
 // 					t = Node()->types[i];
-// 					xn->types.push_back(t); 
+// 					xn->types.push_back(t);
 // 					i++;
 // 				}
 				DeletePtr(*Node());
 				Prev();
 			}
-			
+
 		}
 }
 //______________________________________________________________________________

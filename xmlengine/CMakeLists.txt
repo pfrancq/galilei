@@ -5,34 +5,23 @@ ADD_DEFINITIONS(-DQT3_SUPPORT)
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 
 SET(SRC
-   xnode.cpp
-   genginexml.cpp
-   xanalyser.cpp
-   xanalysexmlfile.cpp
-   xnodesql.cpp
-   xtag.cpp
-   xwordsql.cpp
-   xxmlfile.cpp
-   xquery.cpp
-   xquerynode.cpp
-   xqueryres.cpp
-   xnodeset.cpp
-   xresult.cpp
-   xgeneral.cpp
-   xstuff.cpp
-   xsqlcmd.cpp
-   gxmlranking.cpp
-   gxmlprom.cpp
-   gxmlir.cpp
+	genginexml.cpp
+	gquerynode.cpp
+	gquery.cpp
+	gresnode.cpp
+	gresnodes.cpp
+	gqueryres.cpp
+	gprom.cpp
 )
-  
+
+
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
 IF(WIN32)
     ADD_LIBRARY(xmlengine STATIC ${SRC})
     SET_TARGET_PROPERTIES(xmlengine PROPERTIES LINK_FLAGS "/NODEFAULTLIB:MSVCRTD;MSVCRT;LIBCMT;LIBCMTD")
     TARGET_LINK_LIBRARIES(xmlengine galilei roptimization rmath rcore ${QT_LIBRARIES} ${QT_QT3SUPPORT_LIBRARY})
-         
+
 
 ELSE(WIN32)
     ADD_LIBRARY(xmlengine SHARED ${SRC})

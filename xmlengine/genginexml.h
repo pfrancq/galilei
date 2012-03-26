@@ -2,14 +2,13 @@
 
 	GALILEI Research Project
 
-	GXMLEngine
+	GEngineXML.h
 
-	Engine for extraction of results from the Yahoo search engine - Header.
+	XML Search Engine - Header.
 
-	Copyright 2004-2009 by the Universit�Libre de Bruxelles.
-
-	Authors:
-		Faïza Abbaci (fabbaci@ulb.ac.be)
+	Copyright 2004-2012 by Pascal Francq.
+   Copyright 2004-2005 by Jean-Baptiste Valsamis.
+	Copyright 2005-2009 by Faïza Abbaci.
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -31,70 +30,104 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef __GENGINEXMLH__			// Avoids multiple declarations
-#define __GENGINEXMLH__
+#ifndef GEngineXMLH
+#define GEngineXMLH
 
 
 //-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <galilei.h>
+// include files for R/GALILEI Projects
+#include <robject.h>
 #include <gengine.h>
-#include <genginedoc.h>
+using namespace std;
+using namespace R;
+using namespace GALILEI;
 
-//-----------------------------------------------------------------------------
-// include files for XML
-#include <xquery.h>
-#include <gxmlir.h>
-
-//-----------------------------------------------------------------------------
-namespace GALILEI{
-//-----------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 /**
 * The GEngineXML class provides a search engine over XML documents
-* @author Faïza Abbaci
-* @short XML serach engine
+* @short XML Search Engine
 */
-class GEngineXML : public GEngine
+class GEngineXML : public RObject, public GEngine
 {
+	class cTreeRef;
+	class cIff;
+	class cRef;
 
 	/**
-	* Name of the file.
+	* Parameter for the Tf/Idf criterion.
 	*/
-	R::RString Name;
+	RParam* TfIdf;
 
 	/**
-	* Param of Promethee
+	* Parameter for the Type.
 	*/
-	GXmlParams Params;
-	/**
-	* Param for number of results
-	*/
-	unsigned int NbResults;
+	RParam* Type;
 
 	/**
-	* Params for the weight of this engine
+	* Parameter for the Distance criterion.
 	*/
-	double Weight;
+	RParam* Distance;
 
 	/**
-	* Tells if database needs to be updated
+	* Parameter for the Specificity criterion.
 	*/
-	bool ask_update;
+	RParam* Specificity;
 
 	/**
-	* Tells if database needs to be updated
+	* Parameter for the TfIff criterion.
 	*/
-	bool ask_reset;
+	RParam* TfIff;
+
+	/**
+	* Number of results
+	*/
+	size_t NbResults;
+
+	/**
+	 * Container of the most used document trees.
+	 */
+	RContainer<cTreeRef,true,true> Trees;
+
+	/**
+	 * Container of the iff factor that weights the occurrences of a given
+	 * concept in the fragments associated to same parent concept.
+	 */
+	RContainer<cIff,true,false> Iffs;
+
+	/**
+	 * Are the iff factors dirty ?
+	 */
+	bool IffsDirty;
+
+	/**
+	 * Must the iff factors be saved.
+	 */
+	bool SaveIffs;
+
+	/**
+	 * Text category.
+    */
+	GConceptCat* Text;
+
+	/**
+	 * Temporary identifiers.
+	 */
+	RContainer<cRef,true,false> TmpRefs;
 
 public:
+
 	/**
-	* Construct the extractor for the Google engine.
+	* Construct XML search engine.
+	* @param session         Session.
 	* @param fac             Factory.
-	* @param owner            The parent of this class.
 	*/
-	GEngineXML(GFactoryEngine *fac);
+	GEngineXML(GSession* session,GPlugInFactory* fac);
+
+	/**
+	* Create the parameters.
+	*/
+	virtual void CreateConfig(void);
 
 	/**
 	* Configurations were applied from the factory.
@@ -102,59 +135,105 @@ public:
 	virtual void ApplyConfig(void);
 
 	/**
-	* Connect to a Session.
-	* @param session         The session.
-	*/
-	virtual void Connect(GSession *session) throw(GException);
+	 * This method is called each time a session is opened.
+    */
+	virtual void Init(void);
 
 	/**
-	* Disconnect from a Session.
-	* @param session         The session.
-	*/
-	virtual void Disconnect(GSession *session) throw(GException);
-
+	 * This method is called each time a session is closed.
+    */
+	virtual void Done(void);
 
 	/**
-	* Process the Engine extraction. All results will be extracted, the url of the next page...
-	* @param keyWords        The set of keywords to be searched
-	*/
-//NORMAL
-// 	virtual void Process(R::RContainer<R::RString, false, false> &keyWords) throw(GException);
-virtual void Process(R::RContainer<R::RString, false, false>& keyWords) throw(GException);
+	 * Handle a notification that a document was analyzed.
+    * @param notification   Notification.
+    */
+	void HandleDocAnalyzed(const R::RNotification& notification);
+
 	/**
-	* Get the weight associated to this engine.
-	*@return double          The weight of the engine.
+	 * Handle a notification that an object type must be recomputed.
+    * @param notification   Notification.
+    */
+	void HandleForceReCompute(const R::RNotification& notification);
+
+	/**
+	 * Handle a notification that a file was reset.
+    * @param notification   Notification.
+    */
+	void HandleResetFile(const R::RNotification& notification);
+
+	/**
+	* Request a query.
+	* @param caller          Meta-engine calling the engine.
+	* @param query           Query.
 	*/
-	virtual double GetEngineWeight(void){return Weight;}
+	virtual void Request(GMetaEngine* caller,const RString& query);
 
 private:
-	/**
-	* Construct the query based on the given keywords
-	* @param keyWords        The set of keywords to use to create the query
-	* @return RString        The query
-	*/
-	virtual R::RString ConstructQuery(R::RContainer<R::RString, false, false> &keyWords);
 
 	/**
-	* Update database
-	*/
-	void UpdateDb();
+	 * Method used to ordered the blocks by descending order of accesses.
+	 * @param a              Pointer to a block.
+	 * @param b              Pointer to the second block.
+	 */
+	static int sortOrderAccess(const void* a,const void* b);
 
 public:
-	/**
-	* Create the parameters.
-	* @param params          Parameters to configure.
-	*/
-	static void CreateParams (RConfig* params);
 
 	/**
-	* Destructor.
-	*/
-	virtual ~GEngineXML(void);
+	 * Get a concept tree for a given document. If it is not loaded into memory,
+	 * the engine loads it.
+	 * @param docid          Identifier of the document.
+	 * @return a pointer to the tree.
+	 */
+	const GConceptTree* GetTree(size_t docid);
+
+	/**
+	 * @return a pointer to the textual concept category.
+	 */
+	GConceptCat* GetText(void) const {return(Text);}
+
+private:
+
+	/**
+	 * Build the references for a given node set.
+	 * @param nodes          Nodes to update
+    */
+	void BuildRefs(RNodeCursor<GConceptTree,GConceptNode>& nodes);
+
+	/**
+	 * Get a reference to the IFF entry of a given concept.
+	 * @param conceptid      Concept identifier.
+    */
+	cIff* GetIff(size_t conceptid);
+
+	/**
+	 * Update the references of a given tree.
+	 * @param tree           Tree to update
+	 * @param add            Add the references or not.
+    */
+	void UpdateRefs(const GConceptTree* tree,bool add);
+
+	/**
+	 * Recompute the references of concepts in fragments.
+    */
+	void RecomputeRefs(void);
+
+public:
+	
+	/**
+	 * Compute the iff factor of a given concept in a given context (fragments
+	 * represented by a same parent concept). It is the same factor as idf by
+	 * where the computation is made on the fragment level rather than on the
+	 * document level.
+	 * @param conceptid      Identifier of the concept.
+	 * @param parentid       Identifier of the parent (may be cNoRef).
+	 * @return the iff factor.
+	 */
+	double GetIff(size_t conceptid,size_t parentid);
+
+	friend class GProm;
 };
-
-
-}  //-------- End of namespace GALILEI ----------------------------------------
 
 
 //-----------------------------------------------------------------------------
