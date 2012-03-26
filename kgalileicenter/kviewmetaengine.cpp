@@ -99,15 +99,16 @@ KViewMetaEngine::KViewMetaEngine(KGALILEICenter* app)
 //-----------------------------------------------------------------------------
 void KViewMetaEngine::showResults(void)
 {
-	Results->Set(QGObjectsList::Docs,GALILEIApp->GetCurrentPlugIn<GMetaEngine>("MetaEngine"),NbRes->value());
-	ResLabel->setText("<b>"+QString::number(NbRes->value())+" Results displayed.</b>");
+	GMetaEngine* Meta(GALILEIApp->GetCurrentPlugIn<GMetaEngine>("MetaEngine"));
+	Results->Set(QGObjectsList::Docs,Meta,NbRes->value());
+	ResLabel->setText("<b>"+QString::number(Meta->GetNbResults())+" Results displayed.</b>");
 }
 
 
 //-----------------------------------------------------------------------------
 void KViewMetaEngine::QueryEngine(void)
 {
-	//If no keywords specified -->Error
+	// If no keywords specified -->Error
 	if(TxtQuery->text().isEmpty())
 	{
 		ResLabel->setText("<b> Enter first a query!</b>");

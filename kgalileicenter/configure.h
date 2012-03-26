@@ -68,11 +68,11 @@ class Configure : KDialog, Ui_Configure
 		size_t IndexTolerance;
 		size_t IndexCache;
 		size_t IndexType;
-		bool CreateStruct;
-		size_t StructBlock;
-		size_t StructTolerance;
-		size_t StructCache;
-		size_t StructType;
+		bool CreateTree;
+		size_t TreeBlock;
+		size_t TreeTolerance;
+		size_t TreeCache;
+		size_t TreeType;
 
 		Type(const RString& name);
 		void Apply(void);

@@ -465,9 +465,9 @@ If the objects indexed are computed onece, the tolerance can be fixed to 0.</str
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="DocsStruct">
+        <widget class="QGroupBox" name="Tree">
          <property name="title">
-          <string>Structures</string>
+          <string>Concept Trees</string>
          </property>
          <property name="flat">
           <bool>false</bool>
@@ -477,9 +477,9 @@ If the objects indexed are computed onece, the tolerance can be fixed to 0.</str
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
-           <widget class="QCheckBox" name="CreateStruct">
+           <widget class="QCheckBox" name="CreateTree">
             <property name="text">
-             <string>Create structures?</string>
+             <string>Create concept trees?</string>
             </property>
            </widget>
           </item>
@@ -493,7 +493,7 @@ If the objects indexed are computed onece, the tolerance can be fixed to 0.</str
              </widget>
             </item>
             <item>
-             <widget class="KIntNumInput" name="StructBlock">
+             <widget class="KIntNumInput" name="TreeBlock">
               <property name="toolTip">
                <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
@@ -541,7 +541,7 @@ p, li { white-space: pre-wrap; }
              </widget>
             </item>
             <item>
-             <widget class="KIntNumInput" name="StructCache">
+             <widget class="KIntNumInput" name="TreeCache">
               <property name="toolTip">
                <string>Specify the number of blocks maintened in the cache.</string>
               </property>
@@ -578,7 +578,7 @@ A large cache speeds up the treatment but needs more RAM.</string>
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="StructType">
+             <widget class="QComboBox" name="TreeType">
               <property name="toolTip">
                <string>Specify the type of the cache.</string>
               </property>
@@ -626,7 +626,7 @@ p, li { white-space: pre-wrap; }
              </widget>
             </item>
             <item>
-             <widget class="KIntNumInput" name="StructTolerance">
+             <widget class="KIntNumInput" name="TreeTolerance">
               <property name="toolTip">
                <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;

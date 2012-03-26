@@ -50,6 +50,7 @@ using namespace std;
 #include <gsubject.h>
 #include <gsimulator.h>
 #include <rcursor.h>
+#include <rnodecursor.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -141,11 +142,11 @@ Configure::Type::Type(const RString& name)
 	// Structure (only for documents)
 	if(Name=="Documents")
 	{
-		CreateStruct=KGALILEICenter::App->getSession()->GetUInt("CreateStruct","Indexer","Documents","Structure");
-		StructBlock=KGALILEICenter::App->getSession()->GetUInt("BlockSize","Indexer","Documents","Structure");
-		StructTolerance=KGALILEICenter::App->getSession()->GetUInt("Tolerance","Indexer","Documents","Structure");
-		StructCache=KGALILEICenter::App->getSession()->GetUInt("CacheSize","Indexer","Documents","Structure");
-		StructType=KGALILEICenter::App->getSession()->GetUInt("Type","Indexer","Documents","Structure");
+		CreateTree=KGALILEICenter::App->getSession()->GetUInt("CreateTree","Indexer","Documents","Tree");
+		TreeBlock=KGALILEICenter::App->getSession()->GetUInt("BlockSize","Indexer","Documents","Tree");
+		TreeTolerance=KGALILEICenter::App->getSession()->GetUInt("Tolerance","Indexer","Documents","Tree");
+		TreeCache=KGALILEICenter::App->getSession()->GetUInt("CacheSize","Indexer","Documents","Tree");
+		TreeType=KGALILEICenter::App->getSession()->GetUInt("Type","Indexer","Documents","Tree");
 	}
 }
 
@@ -169,11 +170,11 @@ void Configure::Type::Apply(void)
 	// Structure (only for documents)
 	if(Name=="Documents")
 	{
-		KGALILEICenter::App->getSession()->SetBool("CreateStruct",CreateStruct,"Indexer","Documents","Structure");
-		KGALILEICenter::App->getSession()->SetUInt("BlockSize",StructBlock,"Indexer","Documents","Structure");
-		KGALILEICenter::App->getSession()->SetUInt("Tolerance",StructTolerance,"Indexer","Documents","Structure");
-		KGALILEICenter::App->getSession()->SetUInt("CacheSize",StructCache,"Indexer","Documents","Structure");
-		KGALILEICenter::App->getSession()->SetInt("Type",StructType,"Indexer","Documents","Structure");
+		KGALILEICenter::App->getSession()->SetBool("CreateTree",CreateTree,"Indexer","Documents","Tree");
+		KGALILEICenter::App->getSession()->SetUInt("BlockSize",TreeBlock,"Indexer","Documents","Tree");
+		KGALILEICenter::App->getSession()->SetUInt("Tolerance",TreeTolerance,"Indexer","Documents","Tree");
+		KGALILEICenter::App->getSession()->SetUInt("CacheSize",TreeCache,"Indexer","Documents","Tree");
+		KGALILEICenter::App->getSession()->SetInt("Type",TreeType,"Indexer","Documents","Tree");
 	}
 }
 
@@ -284,7 +285,7 @@ void Configure::addSubject(GSubject* subject,QTreeWidgetItem* parent)
 		item=new QSubjectItem(Subjects,subject);
 
 	// Child subjects
- 	RCursor<GSubject> Cur(subject->GetSubjects());
+ 	RNodeCursor<GSubjects,GSubject> Cur(subject);
  	for(Cur.Start();!Cur.End();Cur.Next())
  		addSubject(Cur(),item);
 }
@@ -365,7 +366,7 @@ void Configure::initSimulation(void)
 	Subjects->header()->setResizeMode(0,QHeaderView::ResizeToContents);
 	Subjects->header()->setResizeMode(1,QHeaderView::Stretch);
 	connect(Subjects,SIGNAL(itemClicked(QTreeWidgetItem*,int)),this,SLOT(subjectClicked(QTreeWidgetItem*,int)));
-	RCursor<GSubject> Cur(App->getSession()->GetTopSubjects());
+	RNodeCursor<GSubjects,GSubject> Cur(App->getSession()->GetSubjects(pSubject));
 	for(Cur.Start();!Cur.End();Cur.Next())
 		addSubject(Cur(),0);
 }
@@ -567,18 +568,18 @@ void Configure::objectChanged(const QString& obj)
 		CurType->IndexCache=IndexCache->value();
 		CurType->IndexType=IndexType->currentIndex();
 		CurType->CreateIndex=CreateIndex->isChecked();
-		CurType->CreateStruct=CreateStruct->isChecked();
-		CurType->StructBlock=StructBlock->value();
-		CurType->StructTolerance=StructTolerance->value();
-		CurType->StructCache=StructCache->value();
-		CurType->StructType=StructType->currentIndex();
+		CurType->CreateTree=CreateTree->isChecked();
+		CurType->TreeBlock=TreeBlock->value();
+		CurType->TreeTolerance=TreeTolerance->value();
+		CurType->TreeCache=TreeCache->value();
+		CurType->TreeType=TreeType->currentIndex();
 	}
 
 	// Set the current element
 	CurType=Types.GetPtr(FromQString(obj));
 	if(!CurType)
 	{
-		DocsStruct->setVisible(false);
+		Tree->setVisible(false);
 		return;
 	}
 	DescBlock->setValue(CurType->DescBlock);
@@ -593,13 +594,13 @@ void Configure::objectChanged(const QString& obj)
 
 	if(CurType->Name=="Documents")
 	{
-		DocsStruct->setVisible(true);
-		CreateStruct->setChecked(CurType->CreateStruct);
-		StructBlock->setValue(CurType->StructBlock);
-		StructTolerance->setValue(CurType->StructTolerance);
-		StructCache->setValue(CurType->StructCache);
-		StructType->setCurrentIndex(CurType->StructType);
+		Tree->setVisible(true);
+		CreateTree->setChecked(CurType->CreateTree);
+		TreeBlock->setValue(CurType->TreeBlock);
+		TreeTolerance->setValue(CurType->TreeTolerance);
+		TreeCache->setValue(CurType->TreeCache);
+		TreeType->setCurrentIndex(CurType->TreeType);
 	}
 	else
-		DocsStruct->setVisible(false);
+		Tree->setVisible(false);
 }

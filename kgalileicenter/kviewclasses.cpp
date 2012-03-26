@@ -32,6 +32,7 @@
 // include files for R
 #include <rqt.h>
 #include <rcursor.h>
+#include <rnodecursor.h>
 
 
 //-----------------------------------------------------------------------------
@@ -148,7 +149,7 @@ QString KViewClasses::buildDesc(GClass* c)
 void KViewClasses::buildClass(GClass* c,Item* parent)
 {
 	Item* item(new Item(parent,c,buildDesc(c)));
-	RCursor<GClass> Cur(c->GetNodes());
+	RNodeCursor<GClasses,GClass> Cur(c);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		buildClass(Cur(),item);
 }
@@ -158,11 +159,11 @@ void KViewClasses::buildClass(GClass* c,Item* parent)
 void KViewClasses::update(void)
 {
 	List->clear();
-	RCursor<GClass> Cur(KGALILEICenter::App->getSession()->GetTopClasses());
+	RNodeCursor<GClasses,GClass> Cur(*KGALILEICenter::App->getSession());
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Item* item(new Item(List,Cur(),buildDesc(Cur())));
-		RCursor<GClass> Cur2(Cur()->GetNodes());
+		RNodeCursor<GClasses,GClass> Cur2(Cur());
 		for(Cur2.Start();!Cur2.End();Cur2.Next())
 			buildClass(Cur2(),item);
 	}

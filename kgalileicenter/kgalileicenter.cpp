@@ -357,7 +357,7 @@ void KGALILEICenter::sessionDisconnect(void)
 	if(Doc)
 	{
 		Desktop->closeAllSubWindows();
-		DeleteSession(0);
+		DeleteSession(Doc);
 		Doc=0;
 		sessionConnected(false);
 		statusMsg(i18n("Not Connected !"));

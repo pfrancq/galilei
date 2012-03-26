@@ -202,5 +202,6 @@ void KViewDoc::AnalyzeDoc(void)
 //-----------------------------------------------------------------------------
 KViewDoc::~KViewDoc(void)
 {
-	if(bDelDoc)	delete Document;
+	if(bDelDoc)
+		delete Document;
 }

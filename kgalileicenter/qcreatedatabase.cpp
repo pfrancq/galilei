@@ -83,16 +83,7 @@ RString QCreateDB::GetConceptType(const RString& cat,const RString& name,const R
 	RString CatId;
 	RQuery Cat(Db,"SELECT catid FROM conceptcats WHERE name='"+cat+"'");
 	Cat.Start();
-	if(Cat.End())
-	{
-		// Create the category
-		RQuery Insert(Db,"INSERT INTO conceptcats(name) VALUES('"+cat+"')");
-		RQuery GetId(Db,"SELECT catid FROM conceptcats WHERE catid=LAST_INSERT_ID()");
-		GetId.Start();
-		CatId=GetId[0];
-	}
-	else
-		CatId=Cat[0];
+	CatId=Cat[0];
 
 	// Create the type
 	RQuery Insert(Db,"INSERT INTO concepttypes(name,description,catid) VALUES('"+name+"','"+desc+"','"+CatId+"')");
@@ -109,9 +100,11 @@ void QCreateDB::DoIt(void)
 	Parent->setLabelText("Database structure created");
 	RDbMySQL::Create(Info->Name,Info->Host,Info->User,Info->Pwd);
 	RDbMySQL Db(Info->Name,Info->Host,Info->User,Info->Pwd,"utf8");
- 	Parent->setLabelText("Dump Database model");
+ 	Parent->setLabelText("Dump database model");
  	Db.RunSQLFile(Info->DbSchema);
- 	Parent->setLabelText("Create Languages (terms and stopwords)");
+
+	// Create Languages
+ 	Parent->setLabelText("Insert the language stopwords");
  	RCursor<GPlugInFactory> Langs(GALILEIApp->GetFactories("Lang"));
  	RContainer<RString,true,false> Stops(200);
  	for(Langs.Start();!Langs.End();Langs.Next())
@@ -130,9 +123,6 @@ void QCreateDB::DoIt(void)
  		for(Cur.Start();!Cur.End();Cur.Next())
  			RQuery InsertStopWord(&Db,"INSERT INTO concepts(name,typeid) VALUES("+RQuery::SQLValue(*Cur())+","+TypeId+")");
  	}
-
-//	Parent->setLabelText("Create Other Concept Types");
-//GetConceptType("Semantic","XML","XML Schema",&Db);
 
  	// Create the configuration file with MySQL as default storage
  	RTextFile Config(RString(getenv("HOME"))+"/.r/config/lib/galilei/sessions/"+Info->Name+".config","utf-8");
@@ -178,7 +168,7 @@ QCreateDatabase::QCreateDatabase(KGALILEICenter* parent)
 //------------------------------------------------------------------------------
 void QCreateDatabase::run(void)
 {
-	URL->setUrl(KUrl("http://www.otlet-institute.org/NewDb.sql"));
+	URL->setUrl(KUrl("http://www.otlet-institute.org/docs/NewDb.sql"));
 	ConfigPath->setUrl(QString(getenv("HOME"))+"/.r/config/lib/galilei/sessions");
 	if(!exec())
 		return;
