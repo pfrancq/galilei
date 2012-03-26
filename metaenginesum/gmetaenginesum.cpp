@@ -101,21 +101,22 @@ void GMetaEngineSum::ApplyConfig(void)
 	}
 }
 
+
 //------------------------------------------------------------------------------
-void GMetaEngineSum::AddResult(size_t docid,const RString desc,double ranking,const GEngine* engine)
+void GMetaEngineSum::AddResult(size_t docid,size_t pos,size_t first,size_t last,double ranking,const GEngine* engine)
 {
 	if(UseWeight)
 		ranking*=engine->GetWeight();
-	GMetaEngine::AddResult(docid,desc,ranking,engine);
+	GMetaEngine::AddResult(docid,pos,first,last,ranking,engine);
 }
 
 
 //------------------------------------------------------------------------------
-void GMetaEngineSum::AddResult(const RString& uri,const RString& title,const RString desc,double ranking,const GEngine* engine)
+void GMetaEngineSum::AddResult(const R::RString& uri,const R::RString& title,const R::RString fragment,double ranking,const GEngine* engine)
 {
 	if(UseWeight)
 		ranking*=engine->GetWeight();
-	GMetaEngine::AddResult(uri,title,desc,ranking,engine);
+	GMetaEngine::AddResult(uri,title,fragment,ranking,engine);
 
 }
 
@@ -139,10 +140,10 @@ void GMetaEngineSum::Request(const R::RString query)
 	if(Debug)
 	{
 		// Print the results.
-		R::RCursor<GDocRetrieved> Doc(GetDocs());
+		R::RCursor<GDocFragment> Doc(GetResults());
 		for(Doc.Start();!Doc.End();Doc.Next())
 		{
-			cout<<Doc()->GetRanking()<<" URL : "<<Doc()->GetURI()<<endl;
+			cout<<Doc()->GetRanking()<<" URL : "<<Doc()->GetURI()()<<endl;
 			RCursor<GDocRanking> Cur(Doc()->GetRankings());
 			for(Cur.Start();!Cur.End();Cur.Next())
 				cout<<"  "<<Cur()->GetRanking()<<" : "<<Cur()->GetInfo()<<"  ";
@@ -223,28 +224,9 @@ void GMetaEngineSum::CombineKeywords(size_t pos,size_t k)
 //------------------------------------------------------------------------------
 void GMetaEngineSum::RequestEngines(const R::RString& query)
 {
-	try
-	{
-		RCastCursor<GPlugIn,GEngine> Cur(GALILEIApp->GetPlugIns<GEngine>("Engine"));
-		for(Cur.Start();!Cur.End();Cur.Next())
-			Cur()->Request(this,query);
-	}
-	catch(GException e)
-	{
-		cout<<"Error: "<<e.GetMsg()<<endl;
-	}
-	catch(RException e)
-	{
-		cout<<"Error: "<<e.GetMsg()<<endl;
-	}
-	catch(std::bad_alloc e)
-	{
-		cout<<"Error: bad_alloc"<<endl;
-	}
-	catch(...)
-	{
-		cout<<"Error"<<endl;
-	}
+	RCastCursor<GPlugIn,GEngine> Cur(GALILEIApp->GetPlugIns<GEngine>("Engine"));
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->Request(this,query);
 }
 
 
@@ -252,7 +234,7 @@ void GMetaEngineSum::RequestEngines(const R::RString& query)
 void GMetaEngineSum::ComputeGlobalRanking(void)
 {
 	// Go trough each document retrieved
-	RCursor<GDocRetrieved> Doc(GetDocs());
+	RCursor<GDocFragment> Doc(GetResults());
 	for(Doc.Start();!Doc.End();Doc.Next())
 	{
 		double Rank(0.0);
@@ -271,14 +253,13 @@ void GMetaEngineSum::ComputeGlobalRanking(void)
 //------------------------------------------------------------------------------
 int GMetaEngineSum::sortOrder(const void* a, const void* b)
 {
-	int ar=(*((GDocRetrieved**)(a)))->GetRanking();
-	int br=(*((GDocRetrieved**)(b)))->GetRanking();
-	if(ar==br)
-		return(0);
+	double ar=(*((GDocFragment**)(a)))->GetRanking();
+	double br=(*((GDocFragment**)(b)))->GetRanking();
 	if(ar>br)
-		return(1);
-	else
 		return(-1);
+	else if(ar<br)
+		return(1);
+	return(0);
 }
 
 
