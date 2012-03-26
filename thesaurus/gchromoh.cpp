@@ -73,7 +73,7 @@ void GChromoH::Evaluate(void)
 {
 	double val=0.0;
 
-	RCursor<GNodeInfos> Cur(GetTopNodes());
+	RNodeCursor<GChromoH,GNodeInfos> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->Evaluate(val,0.0);
 	(*Fitness)=val/static_cast<double>(Objs.GetNb());

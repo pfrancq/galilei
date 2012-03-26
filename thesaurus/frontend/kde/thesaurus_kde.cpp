@@ -72,7 +72,7 @@ void About(void)
 	KAboutData aboutData("thesaurus", 0, ki18n("Thesaurus Creation"),
 		"1.0", ki18n("This plug-in computes a thesaurus based on the topic."), KAboutData::License_GPL,
 		ki18n("(C) 2008-2012 by Pascal Francq"),
-		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
+		KLocalizedString(), "http://www.otlet-institute.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();

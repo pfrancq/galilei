@@ -162,9 +162,9 @@ public:
 
 	/**
 	 * Construct the classes from a given solution.
-	 * @param Sol            Solution.
+	 * @param sol            Solution.
 	 */
-	void ConstructResults(RCursor<GNodeInfos> Sol);
+	void ConstructResults(GChromoH* sol);
 
 	/**
 	 * Print an object.

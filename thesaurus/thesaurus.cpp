@@ -107,17 +107,18 @@ void Thesaurus::BuildNode(GNodeInfos* node,GClass* parent)
 	Session->Assign(Class,Desc);
 
 	// Create sub-classes
-	RCursor<GNodeInfos> Cur(node->GetNodes());
+	RNodeCursor<GChromoH,GNodeInfos> Cur(node);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		BuildNode(Cur(),Class);
 }
 
 
 //-----------------------------------------------------------------------------
-void Thesaurus::ConstructResults(RCursor<GNodeInfos> Cur)
+void Thesaurus::ConstructResults(GChromoH* sol)
 {
 	// Clear the classes.
 	Session->Reset(otClass);
+	RNodeCursor<GChromoH,GNodeInfos> Cur(*sol);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		BuildNode(Cur(),0);
 }
@@ -220,7 +221,7 @@ void Thesaurus::Run(GSlot*)
 		cout<<"Run HCA"<<endl;
 		Instance.Run();
 		cout<<"Build solutions"<<endl;
-		ConstructResults(Instance.BestChromosome->GetTopNodes());
+		ConstructResults(Instance.BestChromosome);
 	}
 	catch(RGAException& e)
 	{

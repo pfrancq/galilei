@@ -73,7 +73,7 @@ void GNodeInfos::Evaluate(double& val, double nbchoices)
 	val+=NbSubObjects*nbchoices;
 
 	// Go through each child nodes in order to continue computing the value
-	RCursor<GNodeInfos> Cur(GetNodes());
+	RNodeCursor<GChromoH,GNodeInfos> Cur(this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->Evaluate(val,nbchoices);
 }
