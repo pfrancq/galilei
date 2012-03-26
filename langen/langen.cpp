@@ -278,7 +278,6 @@ void GLangEN::GetStopWords(RContainer<RString,true,false>& stop)
 	stop.InsertPtr(new RString("com"));
 	stop.InsertPtr(new RString("come"));
 	stop.InsertPtr(new RString("comes"));
-	stop.InsertPtr(new RString("computer"));
 	stop.InsertPtr(new RString("con"));
 	stop.InsertPtr(new RString("concerning"));
 	stop.InsertPtr(new RString("consequently"));
