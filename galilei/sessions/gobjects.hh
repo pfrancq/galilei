@@ -481,36 +481,41 @@ template<class C>
 	{
 		// Position the block file to the correct position and read the size
 		Desc->Seek(Cur()->BlockId,Cur()->Id);
-		size_t size,concept;
+		size_t v,size,concept;
 		double weight;
-		Desc->Read((char*)&size,sizeof(size_t));
-		for(size_t i=0;i<size;i++)
+		Desc->Read((char*)&v,sizeof(size_t)); // Load number of vectors
+		for(size_t i=0;i<v;i++)
 		{
-			// Read concept identifier and weight
-			Desc->Read((char*)&concept,sizeof(size_t));
-			Desc->Read((char*)&weight,sizeof(double));
-
-			// Read the vector representing the current index
-			GConcept* Concept(GetConcept(concept));
-			if(Concept->GetIndex(Type))
-				Index->Read(Concept->GetIndex(Type),Concept->GetId(),tmpRefs);
-			else
-				tmpRefs.Clear();
-
-			// Add the document to the index
-			size_t oldsize(tmpRefs.GetNb());
-			tmpRefs.Insert(Cur()->Id);
-
-			// If the size of vector has changed -> Save it back
-			if(oldsize!=tmpRefs.GetNb())
+			Desc->Read((char*)&concept,sizeof(size_t));   // Load meta-concept identifier
+			Desc->Read((char*)&size,sizeof(size_t));      // Load size of the current vector
+			for(size_t j=0;j<size;j++)
 			{
-				size_t idx(Concept->GetIndex(Type));
-				Index->Write(idx,Concept->GetId(),tmpRefs);
-				Concept->SetIndex(GObjects<C>::Type,idx);
+				// Read concept identifier and weight
+				Desc->Read((char*)&concept,sizeof(size_t));
+				Desc->Read((char*)&weight,sizeof(double));
 
-				// If no cache is asked -> Save each time
-				if(Index->GetCacheType()==R::RBlockFile::WriteThrough)
-					Storage->SaveIndex(Concept,Type,Concept->GetIndex(Type));
+				// Read the vector representing the current index
+				GConcept* Concept(GetConcept(concept));
+				if(Concept->GetIndex(Type))
+					Index->Read(Concept->GetIndex(Type),Concept->GetId(),tmpRefs);
+				else
+					tmpRefs.Clear();
+
+				// Add the document to the index
+				size_t oldsize(tmpRefs.GetNb());
+				tmpRefs.Insert(Cur()->Id);
+
+				// If the size of vector has changed -> Save it back
+				if(oldsize!=tmpRefs.GetNb())
+				{
+					size_t idx(Concept->GetIndex(Type));
+					Index->Write(idx,Concept->GetId(),tmpRefs);
+					Concept->SetIndex(GObjects<C>::Type,idx);
+
+					// If no cache is asked -> Save each time
+					if(Index->GetCacheType()==R::RBlockFile::WriteThrough)
+						Storage->SaveIndex(Concept,Type,Concept->GetIndex(Type));
+				}
 			}
 		}
 	}
