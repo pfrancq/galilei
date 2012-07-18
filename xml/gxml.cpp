@@ -426,7 +426,7 @@ void GXML::Value(const RString& /*value*/)
 //------------------------------------------------------------------------------
 RChar GXML::CodeToChar(RString& str)
 {
-	RChar res=RXMLParser::CodeToChar(str);
+	RChar res(CodeToChar(str));
 	if(res!=0)
 		return(res);
 	return(' ');

@@ -136,42 +136,42 @@ class GFilterHTML : public GFilter, public GXMLParser
 	 /**
 	  * Detect the document divisions.
 	  */
-	 bool DetectDivisions;
+	bool DetectDivisions;
 
     /**
      * The current analyzer.
      */
-    GDocAnalyze* Analyzer;
+	GDocAnalyze* Analyzer;
 
     /**
      * Is the current tag 'META'
      */
-    bool MetaTag;
+	bool MetaTag;
 
     /**
      * Is the current tag 'TITLE'
      */
-    bool TitleTag;
+	bool TitleTag;
 
     /**
      * Has the Tag 'BODY' be parsed.
      */
-    bool BodyTag;
+	bool BodyTag;
 
     /**
      * Content attribute ?
      */
-    bool Content;
+	bool Content;
 
     /**
      * Valid meta tag.
      */
-    RString Meta;
+	RString Meta;
 
 	 /**
 	  * The different division tags.
 	  */
-	 RContainer<DivisionTag,true,true> DivisionTags;
+	RContainer<DivisionTag,true,true> DivisionTags;
 
 	/**
 	 * Last-In - Last-Out stack of divisions.

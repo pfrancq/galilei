@@ -205,7 +205,7 @@ void GFilterPS::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 			(debugfilter ? "" : "-q"),
 			rotate_path,
 			ocr_path,
-			file().Latin1()
+			file().ToLatin1()
 			);
 	if (debugfilter)
 		cerr<<gs_cmdline<<endl;
