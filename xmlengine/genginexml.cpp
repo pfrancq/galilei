@@ -483,7 +483,7 @@ void GEngineXML::BuildRefs(RNodeCursor<GConceptTree,GConceptNode>& nodes)
 			{
 				//	If it is the first occurrence of the concept in Parent -> Save it
 				bool Find;
-				size_t Idx(Ref->Parents.GetId(Parent->GetSyntacticPos(),Find));
+				size_t Idx(Ref->Parents.GetIndex(Parent->GetSyntacticPos(),Find));
 				if(!Find)
 					Ref->Parents.InsertAt(Parent->GetSyntacticPos(),Idx,false);
 				Parent=Parent->GetParent();
