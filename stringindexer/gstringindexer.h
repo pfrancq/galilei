@@ -69,6 +69,11 @@ class GStringIndexer : public GAnalyzer
 	 */
 	size_t MinOccurs;
 
+	/**
+	 * Apply the rules to the metadata ?
+	 */
+	bool ApplyRulesMetadata;
+
 public:
 
 	/**

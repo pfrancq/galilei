@@ -96,11 +96,13 @@ bool Configure(GPlugIn* fac)
 	// Stems
 	dlg.MinSize->setValue(fac->FindParam<RParamValue>("MinSize")->GetInt());
 	dlg.MinOccurs->setValue(fac->FindParam<RParamValue>("MinOccurs")->GetInt());
+	dlg.ApplyRulesMetadata->setChecked(fac->FindParam<RParamValue>("ApplyRulesMetadata")->GetBool());
 	if(dlg.exec())
 	{
 		// Stems
 		fac->FindParam<RParamValue>("MinSize")->SetUInt(dlg.MinSize->value());
 		fac->FindParam<RParamValue>("MinOccurs")->SetUInt(dlg.MinOccurs->value());
+		fac->FindParam<RParamValue>("ApplyRulesMetadata")->SetBool(dlg.ApplyRulesMetadata->isChecked());
 		return(true);
 	}
 	return(false);

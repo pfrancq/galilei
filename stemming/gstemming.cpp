@@ -63,7 +63,6 @@ void GStemming::TreatTokens(GDocAnalyze* analyzer)
 			if(Token()->GetType()!=ttText)
 				continue;
 
-			size_t Pos(Token.GetPos());
 			RString Stem(Lang->GetStemming(Token()->GetToken()));
 			analyzer->ReplaceToken(Token(),Stem);
 		}

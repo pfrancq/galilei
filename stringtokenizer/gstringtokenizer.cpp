@@ -157,7 +157,7 @@ bool GStringTokenizer::TreatChar(GDocAnalyze* analyzer,const R::RChar& car)
 		{
 			if(State==StartToken)
 				TokenStart=true;
-			
+
 			// Treat non-alphabetical characters
 			if(!car.IsAlpha())
 			{
@@ -187,7 +187,7 @@ bool GStringTokenizer::TreatChar(GDocAnalyze* analyzer,const R::RChar& car)
 			{
 				if(Debug)
 					cout<<"Add Token *"+Token+"*"<<endl;
-				analyzer->AddToken(Token,ttText);
+				analyzer->AddToken(Token);
 			}
 			else
 				analyzer->SkipToken();

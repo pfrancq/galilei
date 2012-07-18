@@ -57,6 +57,7 @@ void GStringIndexer::CreateConfig(void)
 {
 	InsertParam(new RParamValue("MinSize",3,"Minimum length of a token to be taken as information entity."));
 	InsertParam(new RParamValue("MinOccurs",2,"Minimal number of occurrences of a token to be considered as a valid one."));
+	InsertParam(new RParamValue("ApplyRulesMetadata",true,"Apply the filtering rules to the metadata?"));
 }
 
 
@@ -65,6 +66,7 @@ void GStringIndexer::ApplyConfig(void)
 {
 	MinSize=FindParam<RParamValue>("MinSize")->GetUInt();
 	MinOccurs=FindParam<RParamValue>("MinOccurs")->GetUInt();
+	ApplyRulesMetadata=FindParam<RParamValue>("ApplyRulesMetadata")->GetBool();
 }
 
 
@@ -86,7 +88,11 @@ void GStringIndexer::TreatTokens(GDocAnalyze* analyzer)
 		RString Term(Token()->GetToken());
 
 		// Look if the token is not too small or has enough occurrences
-		if((!Token()->IsUsed(Metadata))&&((Term.GetLen()<MinSize)||(Token()->GetNbOccurs()<MinOccurs)))
+		if(
+			((!ApplyRulesMetadata)&&(!Token()->IsUsed(Metadata)))        // We must not apply the rule to the metadata and token is used in the metadata
+			||
+			(ApplyRulesMetadata&&((Term.GetLen()<MinSize)||(Token()->GetNbOccurs()<MinOccurs)))
+		   )
 			continue;
 
 		// OK -> Assign a concept to it
