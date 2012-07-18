@@ -68,21 +68,21 @@ class GFdbk
 	*/
 	R::RDate Done;
 
-	/**
-	* Date of the last computation of the document when it was modified.
-	*/
-	R::RDate Computed;
-
 public:
+
+	/**
+	* Constructor.
+	* @param docid           Identifier of the document.
+	*/
+	GFdbk(size_t docid);
 
 	/**
 	* Constructor.
 	* @param docid           Identifier of the document.
 	* @param fdbk            Feedback type.
 	* @param done            Date.
-	* @param computed        Last computation.
 	*/
-	GFdbk(size_t docid,tFdbkType fdbk,const R::RDate& done,const R::RDate& computed);
+	GFdbk(size_t docid,tFdbkType fdbk,const R::RDate& done);
 
 	/**
 	* Compare two assessments to order them using the document identifier.
@@ -122,23 +122,7 @@ public:
 	* @return the date of the feedback on the document.
 	*/
 	R::RDate GetDone(void) const;
-
-	/**
-	* @return the date of last computation of the document.
-	*/
-	R::RDate GetComputed(void) const;
-
-	/**
-	* Must the feedback be used to compute a profile.
-	* @param profile         profile.
-	*/
-	bool MustUse(const GProfile* profile) const;
-
-	/**
-	* The document on which the feedback was made has been updated.
-	*/
-	void HasUpdate(void);
-
+	
 	/**
 	* Create an "erroneous feedback" with a given percentage. The percentage
 	* represents the number of feedbacks that will be changed in comparison to
@@ -165,6 +149,8 @@ public:
 	* Destruct the feedback.
 	*/
 	~GFdbk(void);
+
+	friend class GProfile;
 };
 
 

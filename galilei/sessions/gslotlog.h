@@ -66,9 +66,9 @@ public:
 
 	/**
 	* Construct the log file.
-	* @param name            Name of the file.
+	* @param uri             URI of the file.
 	*/
-	GSlotLog(const char* name);
+	GSlotLog(const R::RURI& uri);
 
 	/**
 	* The treatment for a specific document will begin.
@@ -93,7 +93,13 @@ public:
 	* Start a job.
 	* @param job             Description of the job.
 	*/
-	virtual void StartJob(const R::RString job);
+	virtual void StartJob(const R::RString& job);
+
+	/**
+	* End of the last started job.
+	* @param msg             Eventually, a message to print.
+	*/
+	virtual void EndJob(const R::RString& msg=R::RString::Null);
 
 	/**
 	* Forward a warning.

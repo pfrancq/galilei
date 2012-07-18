@@ -74,13 +74,13 @@ void GSlot::WriteStr(const RString&)
 
 
 //------------------------------------------------------------------------------
-void GSlot::StartJob(const R::RString)
+void GSlot::StartJob(const R::RString&)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GSlot::EndJob(void)
+void GSlot::EndJob(const R::RString&)
 {
 }
 

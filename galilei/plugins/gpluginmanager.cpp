@@ -75,7 +75,14 @@ void GPlugInList::CreateConfig(void)
 		GPlugIn* PlugIn(Cur()->GetPlugIn());
 		if(!PlugIn)
 			return;
-		PlugIn->CreateConfig();
+		try
+		{
+			PlugIn->CreateConfig();
+		}
+		catch(...)
+		{
+			ThrowGException("Problem when creating the configurations of the plug-in '"+PlugIn->GetName()+"'");
+		}
 		if(Mng->PluginsType==GPlugInManager::ptOrdered)
 		{
 			Cur()->SetLevel(static_cast<int>(GetNbFactories()));
@@ -290,7 +297,14 @@ void GPlugInManager::CreateConfig(RConfig* config)
 			for(Cur.Start();!Cur.End();Cur.Next())
 			{
 				config->InsertParam(new R::RParamValue(Cur()->Name,"None","Current plug-in"),Name,Cur()->Name);
-				Cur()->CreateConfig();
+				try
+				{
+					Cur()->CreateConfig();
+				}
+				catch(...)
+				{
+					ThrowGException("Problem when creating the configurations of the plug-in '"+Cur()->GetName()+"'");
+				}
 			}
 			break;
 		}
@@ -345,7 +359,14 @@ void GPlugInManager::ReadConfig(RConfig* config)
 			RCursor<GPlugIn> PlugIns(Lists()->Plugins);
 			for(PlugIns.Start();!PlugIns.End();PlugIns.Next())
 			{
-				PlugIns()->ApplyConfig();
+				try
+				{
+					PlugIns()->ApplyConfig();
+				}
+				catch(...)
+				{
+					ThrowGException("Problem when applying the configurations of the plug-in '"+PlugIns()->GetName()+"'");
+				}
 			}
 		}
 	}
@@ -354,7 +375,14 @@ void GPlugInManager::ReadConfig(RConfig* config)
 		RCursor<GPlugIn> PlugIns(Data.List->Plugins);
 		for(PlugIns.Start();!PlugIns.End();PlugIns.Next())
 		{
-			PlugIns()->ApplyConfig();
+			try
+			{
+				PlugIns()->ApplyConfig();
+			}
+			catch(...)
+			{
+				ThrowGException("Problem when applying the configurations of the plug-in '"+PlugIns()->GetName()+"'");
+			}
 		}
 	}
 }

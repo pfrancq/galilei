@@ -51,6 +51,18 @@ using namespace std;
 //
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+GConceptTree::GConceptTree(const GConceptTree& tree)
+	: RTree<GConceptTree,GConceptNode,false>(), RContainer<GConceptNode,true,false>(tree.RContainer<GConceptNode,true,false>::GetNb()),
+		  Pos(tree.Pos.GetNb()), Refs(tree.Refs.GetNb()), DocId(tree.DocId)
+{
+	RNodeCursor<GConceptTree,GConceptNode> Node(tree);
+	for(Node.Start();!Node.End();Node.Next())
+		CopyNode(0,Node());
+}
+
+
 //------------------------------------------------------------------------------
 GConceptTree::GConceptTree(size_t docid,size_t max,size_t nb)
 	: RTree<GConceptTree,GConceptNode,false>(), RContainer<GConceptNode,true,false>(max),
@@ -67,6 +79,19 @@ void GConceptTree::Verify(size_t docid,size_t max,size_t nb)
 	Pos.Clear(nb);
 	Refs.Clear(nb);
 	DocId=docid;
+}
+
+
+//------------------------------------------------------------------------------
+void GConceptTree::CopyNode(GConceptNode* parent,GConceptNode* node)
+{
+	// Create a new node
+	GConceptNode* NewNode(InsertNode(parent,node->Type,node->ConceptId,node->SyntacticPos,node->Pos,node->Depth));
+
+	// Parse its children
+	RNodeCursor<GConceptTree,GConceptNode> Node(node);
+	for(Node.Start();!Node.End();Node.Next())
+		CopyNode(NewNode,Node());
 }
 
 

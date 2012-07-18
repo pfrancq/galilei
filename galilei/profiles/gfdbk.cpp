@@ -45,8 +45,15 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFdbk::GFdbk(size_t docid,tFdbkType fdbk,const RDate& done,const R::RDate& computed)
-  : DocId(docid), Fdbk(fdbk), Done(done), Computed(computed)
+GFdbk::GFdbk(size_t docid)
+  : DocId(docid), Fdbk(ftUnknown)
+{
+}
+
+
+//------------------------------------------------------------------------------
+GFdbk::GFdbk(size_t docid,tFdbkType fdbk,const RDate& done)
+  : DocId(docid), Fdbk(fdbk), Done(done)
 {
 }
 
@@ -77,27 +84,6 @@ void GFdbk::NewFdbk(tFdbkType fdbk,const RDate& date)
 RDate GFdbk::GetDone(void) const
 {
 	return(Done);
-}
-
-
-//------------------------------------------------------------------------------
-RDate GFdbk::GetComputed(void) const
-{
-	return(Computed);
-}
-
-
-//------------------------------------------------------------------------------
-bool GFdbk::MustUse(const GProfile* profile) const
-{
-	return((Done>profile->GetComputed())||(Computed>profile->GetComputed()));
-}
-
-
-//------------------------------------------------------------------------------
-void GFdbk::HasUpdate(void)
-{
-	Computed.SetToday();
 }
 
 

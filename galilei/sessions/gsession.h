@@ -313,6 +313,11 @@ public:
 	inline R::RString GetName(void) const {return(Name);}
 
 	/**
+    * @return the log file current used.
+    */
+	R::RTextFile& GetLog(void) {return(Log);}
+
+	/**
 	* See if the session must break.
 	*/
 	bool MustBreak(void);
@@ -692,11 +697,13 @@ public:
 	* @param profid          Identifier of the profile.
 	* @param docid           Identifier of the document.
 	* @param fdbk            Feedback type.
-	* @param date            Date on the last feedback.
-	* @param computed        Date on the last computation of the document.
-	* @param newone          New feedback in the system?
+	* @param done            Date on the last feedback.
+	* @param load            Is the feedback loaded from the storage or not. It
+	*                        should be always true if the method is call from a
+	*                        GStorage child class.
+	* @return true if it is a new feedback.
 	*/
-	void InsertFdbk(size_t profid,size_t docid,tFdbkType fdbk,R::RDate date,R::RDate computed,bool newone=false);
+	bool InsertFdbk(size_t profid,size_t docid,tFdbkType fdbk,R::RDate done,bool load=false);
 
 	/**
 	* Look if a document is in the parent subject.
@@ -755,7 +762,8 @@ public:
 	void UpdateCommunity(size_t profid);
 
 	/**
-	* A document was updated and the corresponding feedbacks must be updated.
+	* A document was updated and the profiles that have made a feedback on it
+	* must be updated.
 	* @param docid           Identifier of the document.
 	*/
 	void UpdateProfiles(size_t docid);

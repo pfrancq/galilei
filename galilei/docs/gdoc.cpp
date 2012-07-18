@@ -67,7 +67,7 @@ GDoc::GDoc(GSession* session,const RURI& uri,const RString& name,GLang* lang,con
 	: GDescriptionObject<GDoc>(session,cNoRef,0,otDoc,name,osNew), URI(uri),
 	  Lang(lang),MIMEType(mime), Updated(RDate::GetToday()), Computed(RDate::Null),
 	  Fdbks(0), LinkSet(5,2), GroupId(0), Attached(RDate::Null),
-	  StructId(0)
+	  StructId(0), Tree(0)
 {
 	// Verify if the topic exists in memory
 	if(GroupId)
@@ -84,7 +84,7 @@ GDoc::GDoc(GSession* session,const RURI& uri,const RString& name,size_t id,size_
 	: GDescriptionObject<GDoc>(session,id,blockid,otDoc,name,osNew), URI(uri),
 	  Lang(lang),MIMEType(mime), Updated(u), Computed(c),
 	  Fdbks(0), LinkSet(5,2), GroupId(grpid), Attached(a),
-	  StructId(structid)
+	  StructId(structid), Tree(0)
 {
 	// Verify if the topic exists in memory
 	RAssert(GroupId!=cNoRef);
@@ -158,13 +158,51 @@ void GDoc::ClearTree(bool disk)
 {
 	if(disk)
 		StructId=0;
+	if(Tree)
+	{
+		delete Tree;
+		Tree=0;
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GDoc::ReleaseTree(void)
+{
+	if(Tree)
+	{
+		delete Tree;
+		Tree=0;
+	}
 }
 
 
 //------------------------------------------------------------------------------
 void GDoc::LoadTree(GConceptTree* &tree) const
 {
-	Session->LoadTree(pDoc,tree,StructId,Id);
+	if(StructId)
+		Session->LoadTree(pDoc,tree,StructId,Id);
+	else
+		tree=new GConceptTree(Id,0,0);
+
+
+}
+
+
+//------------------------------------------------------------------------------
+GConceptTree* GDoc::GetTree(void) const
+{
+	if(!Tree)
+		const_cast<GDoc*>(this)->LoadTree(const_cast<GConceptTree* &>(Tree));
+	return(Tree);
+}
+
+
+//------------------------------------------------------------------------------
+void GDoc::SetTree(GConceptTree& tree)
+{
+	ReleaseTree();
+	Tree=new GConceptTree(tree);
 }
 
 
@@ -186,7 +224,14 @@ RDate GDoc::GetAttached(void) const
 
 
 //------------------------------------------------------------------------------
-void GDoc::SetName(const R::RString& name)
+void GDoc::SetURI(RURI uri)
+{
+	URI=uri;
+}
+
+
+//------------------------------------------------------------------------------
+void GDoc::SetName(const RString& name)
 {
 	Name=name;
 }
@@ -198,6 +243,12 @@ RDate GDoc::GetUpdated(void) const
 	return(Updated);
 }
 
+
+//------------------------------------------------------------------------------
+void GDoc::SetUpdated(RDate& date)
+{
+	Updated=date;
+}
 
 //------------------------------------------------------------------------------
 RDate GDoc::GetComputed(void) const
@@ -221,26 +272,31 @@ void GDoc::SetMIMEType(const RString& mime)
 
 
 //------------------------------------------------------------------------------
-R::RNumContainer<size_t,true>* GDoc::GetFdbks(void) const
-{
-	return(Fdbks);
-}
-
-
-//------------------------------------------------------------------------------
-void GDoc::InsertFdbk(size_t id)
-{
-	if(!Fdbks)
-		Fdbks=new R::RNumContainer<size_t,true>(500);
-	Fdbks->Insert(id);
-}
-
-
-//------------------------------------------------------------------------------
-void GDoc::DeleteFdbk(size_t id)
+R::RNumCursor<size_t> GDoc::GetFdbks(void) const
 {
 	if(Fdbks)
-		Fdbks->Delete(id);
+		return(R::RNumCursor<size_t>(*Fdbks));
+	return(R::RNumCursor<size_t>());
+}
+
+
+//------------------------------------------------------------------------------
+bool GDoc::InsertFdbk(size_t profileid)
+{
+	if(!Fdbks)
+		Fdbks=new R::RNumContainer<size_t,true>(100);
+	bool NewFdbk;
+	size_t Idx(Fdbks->GetIndex(profileid,NewFdbk));
+	Fdbks->InsertAt(profileid,Idx,true);
+	return(NewFdbk);
+}
+
+
+//------------------------------------------------------------------------------
+void GDoc::DeleteFdbk(size_t profileid)
+{
+	if(Fdbks)
+		Fdbks->Delete(profileid);
 }
 
 
@@ -404,4 +460,5 @@ GDoc::~GDoc(void)
 {
 	// Delete feedbacks vector
 	delete Fdbks;
+	delete Tree;
 }

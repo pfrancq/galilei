@@ -62,7 +62,7 @@ void GFilter::AddMIME(RString name)
 //------------------------------------------------------------------------------
 RString GFilter::GetTextFragment(GDocFragment* fragment)
 {
-	cout<<"Extract at "<<fragment->GetPos()<<" in ["<<fragment->GetFirst()<<","<<fragment->GetLast()<<"]"<<endl;
+	//cout<<"Extract at "<<fragment->GetPos()<<" in ["<<fragment->GetFirst()<<","<<fragment->GetLast()<<"]"<<endl;
 	RString Fragment;
 	size_t Extract(0);
 	if(fragment->GetLast()==cNoRef)

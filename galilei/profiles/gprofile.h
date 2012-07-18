@@ -216,7 +216,9 @@ public:
 	void SetSocial(bool social);
 
 	/**
-	* Get the date of the last update of the profile.
+	* Get the date of the last update of the profile. It may be the date of the
+	* latest document feedback or an update of one of the documents on which some
+	* feedback exists.
 	* @returns R::RDate.
 	*/
 	R::RDate GetUpdated(void) const {return(Updated);}
@@ -305,10 +307,10 @@ public:
 	* Add a feedback to the list of the profile.
 	* @param docid           Identifier of the document.
 	* @param fdbk            Feedback type.
-	* @param date            Date.
-	* @param update          Last update of the document.
+	* @param done            Date of the assessment.
+	* @return true if it is a new feedback.
 	*/
-	void AddFdbk(size_t docid,tFdbkType fdbk,const R::RDate& date,const R::RDate& update);
+	bool InsertFdbk(size_t docid,tFdbkType fdbk,const R::RDate& done);
 
 	/**
 	* Delete a feedback from the list of the profile.
@@ -341,9 +343,7 @@ public:
 	* This method is call by a document when it was modified.
 	* @param docid           Identifier of the document.
 	*/
-	void HasUpdate(size_t docid);
-
-public:
+	void WasUpdated(size_t docid);
 
 	/**
 	* Destructor of the profile.

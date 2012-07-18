@@ -85,6 +85,12 @@ class GConceptTree : R::RTree<GConceptTree,GConceptNode,false>, R::RContainer<GC
 public:
 
 	/**
+	 * Copy constructor.
+    * @param tree           Source tree.
+    */
+	GConceptTree(const GConceptTree& tree);
+
+	/**
 	 * constructor.
 	 * @param docid          Document identifier.
 	 * @param max            Maximum number of initial nodes to create.
@@ -100,6 +106,17 @@ public:
 	 * @param nb             Number of the concept references.
 	*/
 	void Verify(size_t docid,size_t max,size_t nb);
+
+private:
+
+	/**
+	 * Copy a node from one tree to the other one.
+	 * @param parent         Parent node that will contain the node copied.
+	 * @param node           Node to copy.
+    */
+	void CopyNode(GConceptNode* parent,GConceptNode* node);
+
+public:
 
 	/**
 	 * Insert a node in the tree.

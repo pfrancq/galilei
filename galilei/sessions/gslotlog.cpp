@@ -48,8 +48,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSlotLog::GSlotLog(const char* name)
-	: GSlot(), RTextFile(name)
+GSlotLog::GSlotLog(const RURI& uri)
+	: GSlot(), RTextFile(uri,"utf-8")
 {
 	RTextFile::Open(RIO::Append);
 }
@@ -72,14 +72,21 @@ void GSlotLog::NextProfile(const GProfile* prof)
 //------------------------------------------------------------------------------
 void GSlotLog::WriteStr(const RString& str)
 {
-	WriteLog(str.Latin1());
+	WriteLog(str.ToLatin1());
 }
 
 
 //------------------------------------------------------------------------------
-void GSlotLog::StartJob(const R::RString job)
+void GSlotLog::StartJob(const R::RString& job)
 {
 	WriteLog(job);
+}
+
+//------------------------------------------------------------------------------
+void GSlotLog::EndJob(const R::RString& msg)
+{
+	if(msg!=RString::Null)
+		WriteLog(msg);
 }
 
 

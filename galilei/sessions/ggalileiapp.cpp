@@ -378,42 +378,51 @@ void GGALILEIApp::Load(const R::RContainer<R::RString,true,false>& dirs,bool dlg
 	for(Path.Start();!Path.End();Path.Next())
 		FindPlugins(*Path(),PlugIns,Dlgs);
 
-	// Analyze the plug-ins category by category
-	RCursor<GPlugInManager> Mngs(*this);
-	for(Mngs.Start();!Mngs.End();Mngs.Next())
+	// Analyze the plug-ins
+	R::RCursor<RString> Cur(PlugIns);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		R::RCursor<RString> Cur(PlugIns);
-		for(Cur.Start();!Cur.End();Cur.Next())
+		// Get a handle on the dynamic library
+		void *handle=dlopen(Cur()->ToLatin1(),RTLD_NOW);
+		if(!handle)
 		{
-			// Get a handle on the dynamic library
-			void *handle=dlopen(Cur()->Latin1(),RTLD_NOW);
-			if(!handle)
+			cerr<<dlerror()<<endl;
+			continue;
+		}
+
+		// Find the category and the manager
+		LibTypeFc* LibType=reinterpret_cast<LibTypeFc*>(reinterpret_cast<size_t>(dlsym(handle,"LibType")));
+
+		error=dlerror();
+		if(error)
+		{
+			cerr<<error<<endl;
+			continue;
+		}
+		const char* Lib=LibType();
+		GPlugInManager* Manager=GetPtr(Lib);
+		if(!Manager)
+			continue;
+
+		// Is there a dialog plug-in?
+		RString Dlg;
+		RString Short=Cur()->Mid(Cur()->Find(RTextFile::GetDirSeparator(),-1)+1);
+		if(dlg)
+		{
+			// Go through the dialog plug-ins to see if a a plug-in has this name
+			RString search=Short.Mid(0,Short.GetLen()-3)+"_dlg.so";
+			RCursor<RString> Cur2(Dlgs);
+			for(Cur2.Start();!Cur2.End();Cur2.Next())
 			{
-				cerr<<dlerror()<<endl;
-				continue;
+				if(Cur2()->FindStr(search,-1)!=-1)
+				{
+					Dlg=(*Cur2());
+					break;
+				}
 			}
-
-			// Find the category and the manager
-			LibTypeFc* LibType=reinterpret_cast<LibTypeFc*>(reinterpret_cast<size_t>(dlsym(handle,"LibType")));
-
-			error=dlerror();
-			if(error)
+			if(Dlg.IsEmpty())
 			{
-				cerr<<error<<endl;
-				continue;
-			}
-			const char* Lib=LibType();
-			GPlugInManager* Manager=GetPtr(Lib);
-			if((!Manager)||(Manager!=Mngs()))
-				continue;
-
-			// Is there a dialog plug-in?
-			RString Dlg;
-			RString Short=Cur()->Mid(Cur()->Find(RTextFile::GetDirSeparator(),-1)+1);
-			if(dlg)
-			{
-				// Go through the dialog plug-ins to see if a a plug-in has this name
-				RString search=Short.Mid(0,Short.GetLen()-3)+"_dlg.so";
+				RString search=Short.Mid(0,Short.GetLen()-3)+"kde.so";
 				RCursor<RString> Cur2(Dlgs);
 				for(Cur2.Start();!Cur2.End();Cur2.Next())
 				{
@@ -423,24 +432,11 @@ void GGALILEIApp::Load(const R::RContainer<R::RString,true,false>& dirs,bool dlg
 						break;
 					}
 				}
-				if(Dlg.IsEmpty())
-				{
-					RString search=Short.Mid(0,Short.GetLen()-3)+"kde.so";
-					RCursor<RString> Cur2(Dlgs);
-					for(Cur2.Start();!Cur2.End();Cur2.Next())
-					{
-						if(Cur2()->FindStr(search,-1)!=-1)
-						{
-							Dlg=(*Cur2());
-							break;
-						}
-					}
-				}
 			}
-			void* handleDlg=dlopen(Dlg.Latin1(),RTLD_NOW);
-
-			Manager->Load(Short,handle,handleDlg);
 		}
+		void* handleDlg=dlopen(Dlg.ToLatin1(),RTLD_NOW);
+
+		Manager->Load(Short,handle,handleDlg);
 	}
 }
 

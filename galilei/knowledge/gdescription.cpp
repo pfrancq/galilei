@@ -79,6 +79,17 @@ bool GDescription::LoadVectors(void)
 
 
 //------------------------------------------------------------------------------
+void GDescription::ReleaseVectors(void)
+{
+	if(Vectors)
+	{
+		delete Vectors;
+		Vectors=0;
+	}
+}
+
+
+//------------------------------------------------------------------------------
 RCursor<GVector> GDescription::GetVectors(void) const
 {
 	if(!Vectors)

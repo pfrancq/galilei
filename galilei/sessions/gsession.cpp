@@ -1151,16 +1151,23 @@ void GSession::Insert(GSubject* to,GSubject* subject)
 
 
 //------------------------------------------------------------------------------
-void GSession::InsertFdbk(size_t profid,size_t docid,tFdbkType fdbk,R::RDate date,R::RDate computed,bool newone)
+bool GSession::InsertFdbk(size_t profid,size_t docid,tFdbkType fdbk,R::RDate done,bool load)
 {
+	if(fdbk==ftUnknown)
+		ThrowGException("Cannot add an unknown feedback to profile +'"+RString::Number(Id)+"' for document '"+RString::Number(docid)+"'");
+
+	bool NewFdbk(false);
 	GProfile* prof(GetObj(pProfile,profid,false));
 	if(prof)
-		prof->AddFdbk(docid,fdbk,date,computed);
+		NewFdbk=prof->InsertFdbk(docid,fdbk,done);
 	GDoc* doc(GetObj(pDoc,docid,false));
 	if(doc)
-		doc->InsertFdbk(profid);
-	if(newone&&((!Storage->IsAllInMemory())||(SaveResults)))
-		Storage->AddFdbk(profid,docid,fdbk,date,computed);
+		NewFdbk=doc->InsertFdbk(profid);
+
+	if((!load)&&((!Storage->IsAllInMemory())||(SaveResults)))
+		Storage->UpdateFdbk(profid,docid,fdbk,done);
+
+	return((!load)&&NewFdbk);
 }
 
 
@@ -1238,7 +1245,11 @@ void GSession::RunTool(const RString& name,const RString& list,GSlot* slot,bool 
 	GTool* Tool(GALILEIApp->GetPlugIn<GTool>("Tools",name,list));
 	if((!Tool)&&need)
 		ThrowGException("Tool '"+name+"' does not exist in '"+list+"'");
-	Tool->Run(slot);
+	try
+	{
+		Tool->Run(slot);
+	}
+	HANDLEALLEXCEPTIONS(slot,"Error while executing the tool '"+name+"' in '"+list+"'")
 }
 
 
@@ -1376,17 +1387,13 @@ void GSession::UpdateProfiles(size_t docid)
 	GDoc* doc(GetObj(pDoc,docid));
 	if(doc)
 	{
-		RNumContainer<size_t,true>* fdbks(doc->GetFdbks());
-		if(fdbks)
+		RNumCursor<size_t> Cur(doc->GetFdbks());
+		for(Cur.Start();!Cur.End();Cur.Next())
 		{
-			RNumCursor<size_t> Cur(*fdbks);
-			for(Cur.Start();!Cur.End();Cur.Next())
-			{
-				GProfile* prof=GetObj(pProfile,Cur());
-				if(!prof)
-					continue;
-				prof->HasUpdate(docid);
-			}
+			GProfile* prof=GetObj(pProfile,Cur());
+			if(!prof)
+				continue;
+			prof->WasUpdated(docid);
 		}
 	}
 

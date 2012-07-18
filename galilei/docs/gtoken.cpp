@@ -46,14 +46,14 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GTokenOccur::GTokenOccur(size_t nb)
-	: Token(0), Vector(0), Children(nb,300), Pos(cNoRef), Depth(cNoRef), Index(cNoRef), Added(false)
+	: Token(0), Vector(0), Children(nb,300), Pos(cNoRef), Depth(cNoRef), Index(cNoRef), Weight(0.0)
 {
 }
 
 
 //------------------------------------------------------------------------------
 GTokenOccur::GTokenOccur(GToken* token,GVector* vector,size_t pos,size_t depth,size_t spos,size_t nb)
-	: Token(token), Vector(vector), Children(nb,300), Pos(pos), Depth(depth), SyntacticPos(spos), Index(cNoRef), Added(false)
+	: Token(token), Vector(vector), Children(nb,300), Pos(pos), Depth(depth), SyntacticPos(spos), Index(cNoRef), Weight(0.0)
 {
 }
 

@@ -114,6 +114,11 @@ protected:
 	size_t StructId;
 
 	/**
+	 * Tree representing the document.
+    */
+	GConceptTree* Tree;
+
+	/**
 	 * Method used to correctly instantiate some template methods.
 	 */
 	void PrivateInit(void);
@@ -207,6 +212,11 @@ public:
 	void ClearTree(bool disk);
 
 	/**
+	 * Release the tree.
+    */
+	void ReleaseTree(void);
+
+	/**
 	 * Load the concept tree of the document.
 	 * @param tree           Reference to a pointer to the tree. If null, the
 	 *                       tree is created.
@@ -214,10 +224,34 @@ public:
 	void LoadTree(GConceptTree* &tree) const;
 
 	/**
-	* Get the URL.
-	* @returns RURI.
+    * @return the concept tree (and load it if necessary).
+    */
+	GConceptTree* GetTree(void) const;
+
+private:
+
+	/**
+	 * Associate a concept tree with a document.
+	 *
+	 * The method is only called by GDocAnalyze to associate a tree to a document
+	 * loaded into memory but not in the storage.
+    * @param tree           Tree to associate.
+    */
+	void SetTree(GConceptTree& tree);
+
+public:
+
+	/**
+	* Get the URI.
+	* @return the URI.
 	*/
 	R::RURI GetURI(void) const {return(URI);}
+
+	/**
+	* Set the URI.
+	* @param uri             URI to assign.       .
+	*/
+	void SetURI(R::RURI uri);
 
 	/**
 	* @return Pointer to the Language.
@@ -232,13 +266,19 @@ public:
 
 	/**
 	* Get the date of the last update of the document content.
-	* @returns Pointer to date.
+	* @return the date.
 	*/
 	R::RDate GetUpdated(void) const;
 
 	/**
+	* Set the date of the last update of the document content.
+	* @param date            Date.
+	*/
+	void SetUpdated(R::RDate& date);
+
+	/**
 	* Get the date of the last analysis of the document.
-	* @returns Pointer to date.
+	* @return the date.
 	*/
 	R::RDate GetComputed(void) const;
 
@@ -261,7 +301,7 @@ public:
 
 	/**
 	* Get the date of the last attachment.
-	* @returns R::RDate.
+	* @return the date.
 	*/
 	R::RDate GetAttached(void) const;
 
@@ -284,23 +324,23 @@ public:
 	inline size_t GetStructId(void) const {return(StructId);}
 
 	/**
-	* Get a cursor on the identifier of the profiles which have assesses the
-	* documents.
-	* @return R::RVector*.
+	* @return a cursor on the identifier of the profiles which have assesses the
+	* document.
 	*/
-	R::RNumContainer<size_t,true>* GetFdbks(void) const;
+	R::RNumCursor<size_t> GetFdbks(void) const;
 
 	/**
 	* Add a profile to the list of those which have assess the document.
-	* @param id              Identifier of the profile.
+	* @param profileid       Identifier of the profile.
+	* @return true if it is a new feedback.
 	*/
-	void InsertFdbk(size_t id);
+	bool InsertFdbk(size_t profileid);
 
 	/**
 	* Delete a profile from the list of those which have assess the document.
-	* @param id              Identifier of the profile.
+	* @param profileid       Identifier of the profile.
 	*/
-	void DeleteFdbk(size_t id);
+	void DeleteFdbk(size_t profileid);
 
 	/**
 	* Clear all the assessments on the document.

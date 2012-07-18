@@ -134,9 +134,17 @@ template<class C>
 		else
 			CreateTree=false;
 	}
+	catch(GException& e)
+	{
+		std::cerr<<e.GetMsg()<<std::endl;
+	}
+	catch(R::RException& e)
+	{
+		std::cerr<<e.GetMsg()<<std::endl;
+	}
 	catch(...)
 	{
-		std::cerr<<"GObjects<C>::Apply: Problems in creating directories in '"<<Dir<<"'"<<std::endl;
+		std::cerr<<"GObjects<C>::OpenFiles(R::RConfig*,R::RString): Problems in creating directories in '"<<Dir<<"' for "<<ObjName<<std::endl;
 	}
 }
 
@@ -673,7 +681,7 @@ template<class C>
 	void GObjects<C>::InsertObj(C* obj,C*)
 {
 	// If it is a new one, it should perhaps be saved
-	if(R::RObjectContainer<C,true>::InsertObj(obj))
+	if(R::RObjectContainer<C,true>::InsertObj(obj)||(obj->GetState()==osCreated))
 	{
 		// If new one and all documents are in memory -> store it in the database
 		if(Storage->IsAllInMemory())

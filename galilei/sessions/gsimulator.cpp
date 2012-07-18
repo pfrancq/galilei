@@ -315,19 +315,19 @@ void GSimulator::ShareDocuments(void)
 				// Look if 'OK'
 				if(Session->IsFromSubject(Session->GetObj(pDoc,Cur()->GetDocId()),Session->GetSubject(Profile())))
 				{
-					Session->InsertFdbk(Profile()->GetId(),Cur()->GetDocId(),GFdbk::ErrorFdbk(ftRelevant,PercErr,Session->GetRandom()),RDate::GetToday(),doc->GetUpdated());
+					Session->InsertFdbk(Profile()->GetId(),Cur()->GetDocId(),GFdbk::ErrorFdbk(ftRelevant,PercErr,Session->GetRandom()),RDate::GetToday());
 				}
 				else
 				{
 					// Look If 'KO'
 					if(Session->IsFromParentSubject(Session->GetObj(pDoc,Cur()->GetDocId()),Session->GetSubject(Profile())))
 					{
-						Session->InsertFdbk(Profile()->GetId(),Cur()->GetDocId(),GFdbk::ErrorFdbk(ftFuzzyRelevant,PercErr,Session->GetRandom()),RDate::GetToday(),doc->GetUpdated());
+						Session->InsertFdbk(Profile()->GetId(),Cur()->GetDocId(),GFdbk::ErrorFdbk(ftFuzzyRelevant,PercErr,Session->GetRandom()),RDate::GetToday());
 					}
 					else
 					{
 						// Must be H
-						Session->InsertFdbk(Profile()->GetId(),Cur()->GetDocId(),GFdbk::ErrorFdbk(ftIrrelevant,PercErr,Session->GetRandom()),RDate::GetToday(),doc->GetUpdated());
+						Session->InsertFdbk(Profile()->GetId(),Cur()->GetDocId(),GFdbk::ErrorFdbk(ftIrrelevant,PercErr,Session->GetRandom()),RDate::GetToday());
 					}
 				}
 			}
@@ -819,7 +819,7 @@ void GSimulator::ProfileAssess(GProfile* prof,GSubject* sub,size_t max,size_t ma
 			if(nbDocsOK)
 			{
 				nbDocsOK--;
-				Session->InsertFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorFdbk(ftRelevant,PercErr,Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
+				Session->InsertFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorFdbk(ftRelevant,PercErr,Session->GetRandom()),RDate::GetToday());
 			}
 		}
 		else
@@ -830,7 +830,7 @@ void GSimulator::ProfileAssess(GProfile* prof,GSubject* sub,size_t max,size_t ma
 				if(nbDocsKO)
 				{
 					nbDocsKO--;
-					Session->InsertFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorFdbk(ftFuzzyRelevant,PercErr,Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
+					Session->InsertFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorFdbk(ftFuzzyRelevant,PercErr,Session->GetRandom()),RDate::GetToday());
 				}
 			}
 			else
@@ -839,7 +839,7 @@ void GSimulator::ProfileAssess(GProfile* prof,GSubject* sub,size_t max,size_t ma
 				if(nbDocsH)
 				{
 					nbDocsH--;
-					Session->InsertFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorFdbk(ftIrrelevant,PercErr,Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
+					Session->InsertFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorFdbk(ftIrrelevant,PercErr,Session->GetRandom()),RDate::GetToday());
 				}
 			}
 		}

@@ -94,6 +94,11 @@ public:
      */
     int Compare(const GDescription&) const {return(-1);}
 
+	 /**
+	  * Release the vectors from memory.
+     */
+	 void ReleaseVectors(void);
+
 	/**
 	 * Get the vectors associated to the object. The whole description is loaded
 	 * if necessary.

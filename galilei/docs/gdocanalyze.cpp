@@ -108,7 +108,17 @@ GToken* GDocAnalyze::CreateToken(const R::RString& token,tTokenType type)
 
 
 //------------------------------------------------------------------------------
-GTokenOccur* GDocAnalyze::AddToken(const RString& token,tTokenType type)
+GConcept* GDocAnalyze::GetBody(void)
+{
+	// Search for the meta-concept corresponding to the default textual content
+	if(!Body)
+		Body=Session->InsertConcept(Session->GetInsertConceptType(Session->GetInsertConceptCat("Text"),"content","Raw content"),"body");
+	return(Body);
+}
+
+
+//------------------------------------------------------------------------------
+GTokenOccur* GDocAnalyze::AddToken(const RString& token,tTokenType type,double weight)
 {
 	// Verify that is not a null token
 	if(token==RString::Null)
@@ -120,13 +130,17 @@ GTokenOccur* GDocAnalyze::AddToken(const RString& token,tTokenType type)
 	bool Find;
 	RDblHashContainer<GToken,false>::Hash2* Hash2((*OrderTokens[Idx1])[Idx2]);
 	size_t Idx(Hash2->GetIndex(GToken::Search(token,type),Find));
+	if(type==ttUnknown)
+		type=CurTokenType;
+	if(weight==0.0)
+		weight=CurTokenWeight;
 
 	// Create the token (if necessary)
 	if(Find)
 	{
 		Token=(*Hash2)[Idx];
 		if(Token->Type!=type)
-			ThrowGException("An existing token with a same type exists");
+			ThrowGException("The token '"+token+"' exists with different token type");
 	}
 	else
 	{
@@ -155,11 +169,11 @@ GTokenOccur* GDocAnalyze::AddToken(const RString& token,tTokenType type)
 		Occur->Depth=CurDepth;
 		Occur->SyntacticPos=CurSyntacticPos;
 		Occur->Children.Clear();
-		Occur->Added=false;
 	}
 	if(Debug)
 		cout<<"  "<<Occur->Pos<<endl;
 	Occur->Index=Occurs.GetNb();
+	Occur->Weight=weight;
 	Occurs.InsertPtr(Occur);
 	Token->Occurs.InsertPtr(Occur);
 
@@ -172,8 +186,17 @@ GTokenOccur* GDocAnalyze::AddToken(const RString& token,tTokenType type)
 	{
 		GTokenOccur* Parent(Depths());
 		if(Parent->Depth<Occur->Depth-1)
-			ThrowGException("Token depths are not synchronized");
-		 Parent->Children.InsertPtr(Occur);
+		{
+			if(!DepthError)
+			{
+				Session->GetLog().WriteLog(Doc->GetURI()()+": The depths of the tokens '"+token+"' ("+RString::Number(Occur->Depth)+") and '"+Parent->Token->Token+"' ("+RString::Number(Parent->Depth)+") are not synchronized");
+				DepthError=true;
+			}
+		}
+		else
+			DepthError=false;
+
+		Parent->Children.InsertPtr(Occur);
 	}
 	else
 		Top.InsertPtr(Occur);
@@ -197,11 +220,14 @@ GTokenOccur* GDocAnalyze::AddToken(const R::RString& token,tTokenType type,GConc
 	CurVector=Description.GetInsertVector(metaconcept);
 	CurDepth=depth;
 	CurPos=pos;
+	CurTokenType=type;
+	CurTokenWeight=weight;
+
 	if(spos!=SIZE_MAX)
 		CurSyntacticPos=spos;
 	if(Debug)
-		cout<<"Treat *"+token+"*"<<endl;
-	GTokenOccur* Occur(AddToken(token,type));
+		cout<<"AddToken *"+token+"*"<<endl;
+	GTokenOccur* Occur(AddToken(token,type,weight));
 	if(Occur->Token->Concept)
 	{
 		if(Occur->Token->Concept!=concept)
@@ -210,11 +236,6 @@ GTokenOccur* GDocAnalyze::AddToken(const R::RString& token,tTokenType type,GConc
 	else
 		Occur->Token->Concept=concept;
 
-	// Get the concept
-	GConceptRef* Ref(CurVector->GetRef(concept));
-	(*Ref)+=weight;
-	Occur->Added=true;
-
 	return(Occur);
 }
 
@@ -222,16 +243,25 @@ GTokenOccur* GDocAnalyze::AddToken(const R::RString& token,tTokenType type,GConc
 //------------------------------------------------------------------------------
 void GDocAnalyze::ExtractTextual(const R::RString& text,GConcept* metaconcept,size_t pos,size_t depth,size_t spos)
 {
+	ExtractTextual(text,ttText,1.0,metaconcept,pos,depth,spos);
+}
+
+
+//------------------------------------------------------------------------------
+void GDocAnalyze::ExtractTextual(const R::RString& text,tTokenType type,double weight,GConcept* metaconcept,size_t pos,size_t depth,size_t spos)
+{
 	// Get the vector associated with the concept
 	CurVector=Description.GetInsertVector(metaconcept);
 	CurDepth=depth;
 	CurPos=pos;
 	if(spos!=SIZE_MAX)
 		CurSyntacticPos=spos;
+	CurTokenType=type;
+	CurTokenWeight=weight;
 
 	// Parse the text to detect the tokens
 	if(Debug)
-		cout<<"Treat *"+text+"*"<<endl;
+		cout<<"ExtractTextual *"+text+"*"<<endl;
 	const RChar* Car(text());
 	Tokenizer->Start();  // Make sure previous stuff is cleaned
 	size_t Read(CurPos);
@@ -281,14 +311,21 @@ void GDocAnalyze::ExtractDCMI(const R::RString& element,const R::RString& value,
 
 
 //------------------------------------------------------------------------------
-void GDocAnalyze::ExtractBody(const R::RString& content,size_t pos,size_t depth)
+void GDocAnalyze::ExtractBody(const R::RString& content,size_t pos,size_t depth,size_t spos)
+{
+	ExtractBody(content,ttText,1.0,pos,depth,spos);
+}
+
+
+//------------------------------------------------------------------------------
+void GDocAnalyze::ExtractBody(const R::RString& content,tTokenType type,double weight,size_t pos,size_t depth,size_t spos)
 {
 	// Search for the meta-concept corresponding to the default textual content
 	if(!Body)
 		Body=Session->InsertConcept(Session->GetInsertConceptType(Session->GetInsertConceptCat("Text"),"content","Raw content"),"body");
 
 	// Find the vector corresponding to the concept
-	ExtractTextual(content,Body,pos,depth);
+	ExtractTextual(content,type,weight,Body,pos,depth,spos);
 }
 
 
@@ -507,10 +544,6 @@ void GDocAnalyze::BuildTensor(void)
 	RCursor<GTokenOccur> Occur(Occurs);
 	for(Occur.Start();!Occur.End();Occur.Next())
 	{
-		// If already added -> Skip it
-		if(Occur()->Added)
-			continue;
-
 		// Never treat a deleted token
 		if(Occur()->Token->Type==ttDeleted)
 			continue;
@@ -522,7 +555,7 @@ void GDocAnalyze::BuildTensor(void)
 
 		// Create the entry in the corresponding vector and increment its weights
 		GConceptRef* Ref(Occur()->Vector->GetRef(Concept));
-		(*Ref)+=1.0;
+		(*Ref)+=Occur()->Weight;
 	}
 
 	// Verify that there is no empty vector
@@ -578,6 +611,9 @@ void GDocAnalyze::Analyze(GDoc* doc,bool ram)
 	// Verify the the document must be computed
 	if(!doc->MustCompute()) return;
 
+	if(doc->GetId()!=cNoRef)
+		Session->GetLog().WriteLog("Analyze "+doc->GetURI()()+" ("+RString::Number(doc->GetId())+")");
+
 	// Prepare the analyze
 	NbMemoryTokensUsed=0;
 	NbMemoryOccursUsed=0;
@@ -595,6 +631,7 @@ void GDocAnalyze::Analyze(GDoc* doc,bool ram)
 	Occurs.Clear();
 	Top.Clear();
 	Depths.Clear();
+	DepthError = false;
 
 	// Find the filter for this document
 	R::RSmartTempFile TmpFile;
@@ -632,15 +669,27 @@ void GDocAnalyze::Analyze(GDoc* doc,bool ram)
 	doc->Update(Lang,Description,ram||(!Save),DelRefs);
 
 	// Save the information related to the object
-	if(Save&&(!ram))
+	if(Save)
 	{
 		if(doc->IsDefined())
 			doc->SaveDesc();
 		if(Session->DoCreateTree(pDoc))
 			Session->SaveTree(pDoc,Tree,doc->StructId,doc->Id);
 		Session->Storage->SaveObj(doc);
-		if(ram)
-			doc->SetState(osSaved);
+		doc->SetState(osSaved);
+	}
+
+	// Must the document be saved in RAM ?
+	if(!ram)
+	{
+		// If not RAM -> release the description
+		doc->ReleaseVectors();
+	}
+	else
+	{
+		// If Yes -> Store the tree if necessary
+		if(!Save)
+			doc->SetTree(Tree);
 	}
 
 	// Send a notification

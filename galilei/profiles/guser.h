@@ -56,6 +56,11 @@ class GUser : public GObject, public R::RContainer<GProfile,false,true>
 	*/
 	R::RString FullName;
 
+	/**
+	* State of the object.
+	*/
+	tObjState State;
+
 public:
 
 	/**
@@ -99,6 +104,18 @@ public:
 	* @return int
 	*/
 	int Compare(const R::RString& name) const;
+
+	/**
+	* @return the state of the object.
+	*/
+	inline tObjState GetState(void) const {return(State);}
+
+	/**
+	* Set the state of the object. If the object must be delete, its vector is
+	* loaded to delete the references.
+	* @param state           New state.
+	*/
+	void SetState(tObjState state);
 
 	/**
 	* Set the identifier.

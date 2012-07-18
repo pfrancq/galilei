@@ -481,10 +481,7 @@ void QGObjectsList::Set(oType type,GDoc* doc)
 	QGObject* hs(new QGObject(List,ftIrrelevant));
 
 	// Add Assessment
-	RNumContainer<size_t,true>* Profiles(doc->GetFdbks());
-	if(!Profiles)
-		return;
-	RNumCursor<size_t> Cur(*Profiles);
+	RNumCursor<size_t> Cur(doc->GetFdbks());
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		GProfile* prof(Session->GetObj(pProfile,Cur()));

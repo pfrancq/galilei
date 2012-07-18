@@ -87,9 +87,9 @@ class GTokenOccur
 	size_t Index;
 
 	/**
-	 * Specify if the occurrence was already added to the vector.
+	 * Weight of the occurrence.
     */
-	bool Added;
+	double Weight;
 
 public:
 

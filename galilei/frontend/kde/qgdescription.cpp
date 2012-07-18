@@ -133,62 +133,14 @@ void QGDescription::Set(GSession*,const GDescription* desc)
 			Vectors->setCurrentItem(Cur);
 			ChangeVector(Cur,0);
 		}
-//
-//		// Init
-//		GConceptType* IndexSpace=session->GetConceptType("XMLIndex","XML Index");
-//		QTreeWidget* Infos(static_cast<Ui_QGDescription*>(Ui)->Infos);
-//		Infos->clear();
-//
-//		// Show the information entities
-//		RCursor<GWeightInfo> Words(obj.GetInfos());
-//		for(Words.Start();!Words.End();Words.Next())
-//		{
-//			QString name;
-//			if(Words()->GetType()==IndexSpace)
-//			{
-//				GXMLIndex* idx=dynamic_cast<GXMLIndex*>(Words()->GetConcept());
-//				RString FullTagName(session->GetStorage()->LoadConcept(idx->GetXMLTag()->GetId()));
-//				RString TagName(FullTagName.Mid(FullTagName.Find(':',-1)+1));
-//				name="<"+ToQString(TagName)+">";
-//				bool SkipComma(true);
-//				RCursor<GConcept> Universal(idx->GetUniversalTerms());
-//				for(Universal.Start();!Universal.End();Universal.Next())
-//				{
-//					if(SkipComma)
-//						SkipComma=false;
-//					else
-//						name+=" ";
-//					name+=ToQString(session->GetStorage()->LoadConcept(Universal()->GetId()));
-//				}
-//				RCursor<GConcept> Stems(idx->GetStems());
-//				for(Stems.Start();!Stems.End();Stems.Next())
-//				{
-//					if(SkipComma)
-//						SkipComma=false;
-//					else
-//						name+=" ";
-//					name+=ToQString(session->GetStorage()->LoadConcept(Stems()->GetId()));
-//				}
-//				name+="</"+ToQString(TagName)+">";
-//			}
-//			else
-//			{
-//				name=ToQString(session->GetStorage()->LoadConcept(Words()->GetId()));
-//			}
-//			QString type=ToQString(Words()->GetType()->GetDescription());
-//			QString w(QString::number(Words()->GetWeight()));
-//			while(w.length()<10)
-//				w.prepend(' ');
-//			new Item(Infos,QStringList()<<name<<type<<w<<QString::number(Words()->GetConcept()->GetId()));
-//		}
 	}
 	catch(GException& e)
 	{
-		KMessageBox::error(this,e.GetMsg(),"GALILEI Exception");
+		KMessageBox::error(this,ToQString(e.GetMsg()),"GALILEI Exception");
 	}
 	catch(RException& e)
 	{
-		KMessageBox::error(this,e.GetMsg(),"R Exception");
+		KMessageBox::error(this,ToQString(e.GetMsg()),"R Exception");
 	}
 	catch(std::exception& e)
 	{

@@ -245,7 +245,7 @@ public:
 	* Construct an exception.
 	* @param str             Message of the error.
 	*/
-	GException(const char* str) throw()
+	GException(const R::RString& str)
 		: R::RException(str) {}
 
 	/**
@@ -259,7 +259,7 @@ public:
 	* @param where           Line position of the error.
 	* @param str             Message of the error.
 	*/
-	GException(const char* func,long where,const char* str) throw()
+	GException(const R::RString& func,long where,const R::RString& str)
 		: R::RException(func,where,str) {}
 
 	/**

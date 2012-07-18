@@ -93,12 +93,13 @@ public:
 	* Start a job.
 	* @param job             Description of the job.
 	*/
-	virtual void StartJob(const R::RString job);
+	virtual void StartJob(const R::RString& job);
 
 	/**
 	* End of the last started job.
+	* @param msg             Eventually, a message to print.
 	*/
-	virtual void EndJob(void);
+	virtual void EndJob(const R::RString& msg=R::RString::Null);
 
 	/**
 	* This is used by the caller to interact. Typically, it is used to give the

@@ -121,23 +121,10 @@ void QGDocStruct::Set(GDoc* obj)
 	RecsList->clear();
 
 	// Show the tree
-	if(obj->GetId()==cNoRef)
-	{
-		// Get the latest tree computed
-		RNodeCursor<GConceptTree,GConceptNode> Node(Session->GetTree());
-		for(Node.Start();!Node.End();Node.Next())
-			Display(Session,Node());
-	}
-	else
-	{
-		// Load the tree and remove it after
-		GConceptTree* tree(0);
-		obj->LoadTree(tree);
-		RNodeCursor<GConceptTree,GConceptNode> Node(*tree);
-		for(Node.Start();!Node.End();Node.Next())
-			Display(Session,Node());
-		delete tree;
-	}
+	RNodeCursor<GConceptTree,GConceptNode> Node(*obj->GetTree());
+	for(Node.Start();!Node.End();Node.Next())
+		Display(Session,Node());
+	obj->ReleaseTree();
 
 	RecsList->resizeColumnToContents(0);
 	RecsList->resizeColumnToContents(1);

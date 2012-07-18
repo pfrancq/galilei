@@ -156,11 +156,9 @@ void GProfile::SetSocial(bool social)
 //------------------------------------------------------------------------------
 bool GProfile::MustCompute(void) const
 {
-	if(!Fdbks.GetNb())
-		return(false);
-	if(Updated<Computed)
-		return(false);
-	return(true);
+	if(Fdbks.GetNb()&&(Updated>Computed))
+		return(true);
+	return(false);
 }
 
 
@@ -251,16 +249,30 @@ RCursor<GFdbk> GProfile::GetFdbks(void) const
 
 
 //------------------------------------------------------------------------------
-void GProfile::AddFdbk(size_t docid,tFdbkType fdbk,const R::RDate& date,const R::RDate& update)
+bool GProfile::InsertFdbk(size_t docid,tFdbkType fdbk,const R::RDate& done)
 {
-	Fdbks.InsertPtr(new GFdbk(docid,fdbk,date,update));
-	// If the document assessed was computed after the last computation
-	// -> profile is considered as updated
-	if((Computed<date)||(Computed<update))
+	if(fdbk==ftUnknown)
+		ThrowGException("Cannot add an unknown feedback to profile +'"+RString::Number(Id)+"' for document '"+RString::Number(docid)+"'");
+
+	bool NewFdbk(false);
+
+	// Create only one feedback per document and it is is latest
+	GFdbk* Fdbk(Fdbks.GetInsertPtr(docid));
+	if(Fdbk->Fdbk==ftUnknown)
+		NewFdbk=true;
+	Fdbk->Fdbk=fdbk;
+	if(done>Fdbk->Done)
+		Fdbk->Done=done;
+
+	// If the feedback was made after the last computation, the profile is
+	// considered as to be updated
+	if(Computed<done)
 	{
 		Updated.SetToday();
 		State=osModified;
 	}
+
+	return(NewFdbk);
 }
 
 
@@ -274,10 +286,8 @@ void GProfile::DeleteFdbk(size_t docid)
 	Fdbks.DeletePtr(*fdbk);
 	State=osModified;
 
-	// If the document assessed was computed after the last computation
-	// -> profile is considered as updated
-//	if(Computed<fdbk->GetComputed())
-		Updated.SetToday();
+	// Profile is considered as updated
+	Updated.SetToday();
 }
 
 
@@ -327,11 +337,11 @@ GFdbk* GProfile::GetFdbk(size_t docid) const
 
 
 //------------------------------------------------------------------------------
-void GProfile::HasUpdate(size_t docid)
+void GProfile::WasUpdated(size_t docid)
 {
 	GFdbk* fdbk=Fdbks.GetPtr(docid);
 	if(fdbk)
-		fdbk->HasUpdate();
+		Updated.SetToday();
 }
 
 

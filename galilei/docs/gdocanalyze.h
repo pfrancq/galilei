@@ -208,9 +208,24 @@ class GDocAnalyze : R::RDownload
 	size_t CurDepth;
 
 	/**
+	 * Is there a depth error for the current situation.
+	 */
+	bool DepthError;
+
+	/**
 	 * Current syntactic position.
     */
 	size_t CurSyntacticPos;
+
+	/**
+	 * Current token type.
+	 */
+	tTokenType CurTokenType;
+
+	/**
+	 * Current token weight.
+	 */
+	double CurTokenWeight;
 
 	/*
 	 * Container of syntactic positions in each document of a given concept.
@@ -270,16 +285,24 @@ private:
 public:
 
 	/**
+    * @return the meta-concept representing the default textual content.
+    */
+	GConcept* GetBody(void);
+
+	/**
 	 * Add a token to the current vector.
 	 *
 	 * The current syntactic position is incremented by one.
     * @warning This method should only be called by child classes of
     *          GTokenizer.
 	 * @param token          Token to add.
-	 * @param type           Token type.
+	 * @param type           Token type. If ttUnknown, the current token type is
+	 *                       used.
+	 * @param weight         Weight associate to the concept. If null, the
+	 *                       current weight is used.
 	 * @return the occurrence of the token added.
 	 */
-	GTokenOccur* AddToken(const R::RString& token,tTokenType type);
+	GTokenOccur* AddToken(const R::RString& token,tTokenType type=ttUnknown,double weight=0.0);
 
 	/**
 	 * Add a token of a given type and representing a concept. It is added to a
@@ -318,6 +341,24 @@ public:
 
 	/**
 	 * Extract some tokens of a given text, and add them to a vector associated
+    * with a given meta-concept.  If the vector already exists, the content is
+	 * added.
+	 *
+	 * The current syntactic position is incremented by the number of tokens
+	 * extracted.
+	 * @param text           Text to add.
+	 * @param type           Token type.
+	 * @param weight         Weight associate to the concept.
+	 * @param metaconcept    Meta-concept of the vector associated to the text.
+	 * @param pos            Position of the text.
+	 * @param depth          Depth of the text.
+	 * @param spos           Syntactic position. If SIZE_MAX, the token is
+	 *                       supposed to be next the previous one.
+	 */
+	void ExtractTextual(const R::RString& text,tTokenType type,double weight,GConcept* metaconcept,size_t pos,size_t depth=0,size_t spos=SIZE_MAX);
+
+	/**
+	 * Extract some tokens of a given text, and add them to a vector associated
     * with a given metadata defined by the Dublin core. In practice, to each
     * metadata corresponds one vector. Several contents associated with a given
     * metadata are simply added.
@@ -341,15 +382,35 @@ public:
    /**
     * Extract some tokens from a given text, and add them to the 'body'
     * meta-concept. Each time the method is called, the content is added to the
-	 * vector corresponding to the 'body' meta-concept.
+	 * vector corresponding to the 'body' meta-concept. The tokens are supposed
+	 * to be text.
 	 *
  	 * The current syntactic position is incremented by the number of tokens
 	 * extracted.
     * @param content        Content.
 	 * @param pos            Position of the content.
 	 * @param depth          Depth of the content.
+	 * @param spos           Syntactic position. If SIZE_MAX, the token is
+	 *                       supposed to be next the previous one.
     */
-   void ExtractBody(const R::RString& content,size_t pos,size_t depth=0);
+   void ExtractBody(const R::RString& content,size_t pos,size_t depth=0,size_t spos=SIZE_MAX);
+
+   /**
+    * Extract some tokens from a given text, and add them to the 'body'
+    * meta-concept. Each time the method is called, the content is added to the
+	 * vector corresponding to the 'body' meta-concept.
+	 *
+ 	 * The current syntactic position is incremented by the number of tokens
+	 * extracted.
+    * @param content        Content.
+	 * @param type           Token type.
+	 * @param weight         Weight associate to the concept.
+	 * @param pos            Position of the content.
+	 * @param depth          Depth of the content.
+	 * @param spos           Syntactic position. If SIZE_MAX, the token is
+	 *                       supposed to be next the previous one.
+    */
+   void ExtractBody(const R::RString& content,tTokenType type,double weight,size_t pos,size_t depth=0,size_t spos=SIZE_MAX);
 
 	/**
 	 * Assign the plug-ins. An exception is generated if no plug-ins are

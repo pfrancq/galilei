@@ -46,6 +46,8 @@ using namespace std;
 GTokenizer::GTokenizer(GSession* session,GPlugInFactory* fac)
 	: GPlugIn(session,fac)
 {
+	Buffer.SetLen(2048);
+	Buffer.Clear();
 }
 
 
