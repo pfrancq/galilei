@@ -119,22 +119,31 @@ void QSessionThread::run(void)
 		if(App->getSession()&&App->getSession()->MustBreak())
 			Parent->setLabelText("Canceled");
 		else
-			Parent->setLabelText("Finish");
+		{
+			if(Parent->EndMsg==QString::null)
+				Parent->setLabelText("Finish");
+			else
+				Parent->setLabelText(Parent->EndMsg);
+		}
 	}
 	catch(GException& e)
 	{
-		Parent->setLabelText(e.GetMsg());
+		Parent->	setWindowTitle("Error");
+		Parent->setLabelText(ToQString(e.GetMsg()));
 	}
 	catch(RException& e)
 	{
-		Parent->setLabelText(e.GetMsg());
+		Parent->	setWindowTitle("Error");
+		Parent->setLabelText(ToQString(e.GetMsg()));
 	}
 	catch(std::exception& e)
 	{
+		Parent->	setWindowTitle("Error");
 		Parent->setLabelText(e.what());
 	}
 	catch(...)
 	{
+		Parent->	setWindowTitle("Error");
 		Parent->setLabelText("Undefined Error");
 	}
 	Parent->Running=false;
@@ -350,6 +359,7 @@ QSessionProgressDlg::QSessionProgressDlg(KGALILEICenter* parent,const QString& c
 	setAllowCancel(cancel);
 	setAutoClose(false);
 	progressBar()->setVisible(false);
+	setMinimumSize(380,0);
 	adjustSize();
 }
 
@@ -357,6 +367,7 @@ QSessionProgressDlg::QSessionProgressDlg(KGALILEICenter* parent,const QString& c
 //-----------------------------------------------------------------------------
 bool QSessionProgressDlg::Run(QSessionThread* task)
 {
+	EndMsg=QString::null;
 	Running=true;
 	task->Set(this);
 	QEventLoop q;
@@ -373,6 +384,20 @@ bool QSessionProgressDlg::Run(QSessionThread* task)
 	delete task;
 	//return(res);
 	return(Ret);
+}
+
+
+//------------------------------------------------------------------------------
+void QSessionProgressDlg::StartJob(const R::RString& job)
+{
+	setLabelText(ToQString(job));
+}
+
+
+//------------------------------------------------------------------------------
+void QSessionProgressDlg::EndJob(const R::RString& msg)
+{
+	EndMsg=ToQString(msg);
 }
 
 

@@ -413,6 +413,11 @@ class QSessionProgressDlg : public KProgressDialog, public GSlot
 	 */
 	KGALILEICenter* App;
 
+	/**
+	 * End message.
+	 */
+	QString EndMsg;
+
 public:
 
 	/**
@@ -428,6 +433,18 @@ public:
 	* @param task            Task to execute.
 	*/
 	bool Run(QSessionThread* task);
+
+	/**
+	* Start a job.
+	* @param job             Description of the job.
+	*/
+	virtual void StartJob(const R::RString& job);
+
+	/**
+	* End of the last started job.
+	* @param msg             Eventually, a message to print.
+	*/
+	virtual void EndJob(const R::RString& msg=R::RString::Null);
 
 	/**
 	* Method called each time a new language is analyzed.

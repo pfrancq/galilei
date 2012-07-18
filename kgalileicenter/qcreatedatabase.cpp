@@ -103,6 +103,11 @@ void QCreateDB::DoIt(void)
  	Parent->setLabelText("Dump database model");
  	Db.RunSQLFile(Info->DbSchema);
 
+	// Create Main Concept Categories
+	RQuery InsertText(&Db,"INSERT INTO conceptcats(name) VALUES('Text')");
+	RQuery InsertSemantic(&Db,"INSERT INTO conceptcats(name) VALUES('Semantic')");
+	RQuery InsertMetadata(&Db,"INSERT INTO conceptcats(name) VALUES('Metadata')");
+
 	// Create Languages
  	Parent->setLabelText("Insert the language stopwords");
  	RCursor<GPlugInFactory> Langs(GALILEIApp->GetFactories("Lang"));
@@ -185,11 +190,11 @@ void QCreateDatabase::run(void)
 	}
 	catch(GException& e)
 	{
-		KMessageBox::error(this,e.GetMsg(),"GALILEI Exception");
+		KMessageBox::error(this,ToQString(e.GetMsg()),"GALILEI Exception");
 	}
 	catch(RException& e)
 	{
-		KMessageBox::error(this,e.GetMsg(),"R Exception");
+		KMessageBox::error(this,ToQString(e.GetMsg()),"R Exception");
 	}
 	catch(std::exception& e)
 	{

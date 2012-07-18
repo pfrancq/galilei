@@ -98,11 +98,11 @@ void KViewPrg::MyThread::run(void)
 	}
 	catch(GException& e)
 	{
-		KMessageBox::error(Rec,e.GetMsg(),"GException");
+		KMessageBox::error(Rec,ToQString(e.GetMsg()),"GException");
 	}
 	catch(RException& e)
 	{
-		KMessageBox::error(Rec,e.GetMsg(),"RException");
+		KMessageBox::error(Rec,ToQString(e.GetMsg()),"RException");
 	}
 	catch(std::exception& e)
 	{

@@ -247,6 +247,9 @@ void KGALILEICenter::readOptions(void)
 
 	aSessionSave->setChecked(General.readEntry("Save Results",false));
 	PrgPath=FromQString(General.readEntry("PrgPath",""));
+	ToolCat=FromQString(General.readEntry("ToolCat",""));
+	Tool=FromQString(General.readEntry("Tool",""));
+	SessionName=FromQString(General.readEntry("SessionName",""));
 
 	Configure::readOptions();
 }
@@ -260,6 +263,9 @@ void KGALILEICenter::saveOptions(void)
 
 	General.writeEntry("Save Results",aSessionSave->isChecked());
 	General.writeEntry("PrgPath",ToQString(PrgPath));
+	General.writeEntry("ToolCat",ToQString(ToolCat));
+	General.writeEntry("Tool",ToQString(Tool));
+	General.writeEntry("SessionName",ToQString(SessionName));
 
 	Configure::saveOptions();
 }
@@ -313,12 +319,12 @@ void KGALILEICenter::sessionConnect(void)
 	try
 	{
 	    bool ok;
-	    QString session=QInputDialog::getText(this,tr("Connect to a session"),tr("Session name:"),QLineEdit::Normal,"",&ok);
-	    if((!ok)||(session.isEmpty()))
+	    SessionName=FromQString(QInputDialog::getText(this,tr("Connect to a session"),tr("Session name:"),QLineEdit::Normal,ToQString(SessionName),&ok));
+	    if((!ok)||(SessionName.IsEmpty()))
 	    	return;
 		DestroyDoc=true;
 		QSessionProgressDlg dlg(this,"Loading from Database");
-		if(dlg.Run(new QCreateSession(this,Doc,FromQString(session))))
+		if(dlg.Run(new QCreateSession(this,Doc,SessionName)))
 		{
 			sessionConnected(true);
 			Status->setPixmap(QPixmap(KIconLoader::global()->loadIcon("network-connect",KIconLoader::Small)));
@@ -331,11 +337,11 @@ void KGALILEICenter::sessionConnect(void)
 	}
 	catch(GException& e)
 	{
-		KMessageBox::error(this,e.GetMsg(),"GALILEI Exception");
+		KMessageBox::error(this,ToQString(e.GetMsg()),"GALILEI Exception");
 	}
 	catch(RException& e)
 	{
-		KMessageBox::error(this,e.GetMsg(),"R Exception");
+		KMessageBox::error(this,ToQString(e.GetMsg()),"R Exception");
 	}
 	catch(std::exception& e)
 	{
@@ -422,11 +428,11 @@ void KGALILEICenter::runProgram(void)
 	}
 	catch(GException& e)
 	{
-		KMessageBox::error(this,e.GetMsg(),"GALILEI Exception");
+		KMessageBox::error(this,ToQString(e.GetMsg()),"GALILEI Exception");
 	}
 	catch(RException& e)
 	{
-		KMessageBox::error(this,e.GetMsg(),"R Exception");
+		KMessageBox::error(this,ToQString(e.GetMsg()),"R Exception");
 	}
 	catch(std::exception& e)
 	{
@@ -593,11 +599,11 @@ void KGALILEICenter::docAnalyze(void)
 		}
 		catch(GException& e)
 		{
-			KMessageBox::error(this,e.GetMsg(),"GALILEI Exception");
+			KMessageBox::error(this,ToQString(e.GetMsg()),"GALILEI Exception");
 		}
 		catch(RException& e)
 		{
-			KMessageBox::error(this,e.GetMsg(),"R Exception");
+			KMessageBox::error(this,ToQString(e.GetMsg()),"R Exception");
 		}
 		catch(std::exception& e)
 		{
@@ -927,24 +933,34 @@ void KGALILEICenter::runTool(void)
 	// Init the dialog box with the lists
 	Ui.Desc->setText("Choose the tool to run");
 	RCursor<GPlugInList> Lists(Manager->GetPlugInLists());
-	for(Lists.Start();!Lists.End();Lists.Next())
+	int Row(0),i;
+	for(Lists.Start(),i=0;!Lists.End();Lists.Next(),i++)
+	{
+		if(Lists()->GetName()==ToolCat)
+			Row=i;
 		Ui.List->addItem(ToQString(Lists()->GetName()));
-	Ui.List->setCurrentRow(0);
+	}
+	Ui.List->setCurrentRow(Row);
 	if(!Choose.exec())
 		return;
-	RString List(FromQString(Ui.List->item(Ui.List->currentRow())->text()));
+	ToolCat=FromQString(Ui.List->item(Ui.List->currentRow())->text());
 
 	// Init the dialog box with the plug-ins
-	RCastCursor<GPlugIn,GTool> Tools(Manager->GetPlugIns<GTool>(List));
+	RCastCursor<GPlugIn,GTool> Tools(Manager->GetPlugIns<GTool>(ToolCat));
 	Ui.List->clear();
-	for(Tools.Start();!Tools.End();Tools.Next())
+	for(Tools.Start(),i=0,Row=0;!Tools.End();Tools.Next(),i++)
+	{
+		if(Tools()->GetName()==Tool)
+			Row=i;
 		Ui.List->addItem(ToQString(Tools()->GetName()));
-	Ui.List->setCurrentRow(0);
+	}
+	Ui.List->setCurrentRow(Row);
 	if(!Choose.exec())
 		return;
 
 	QSessionProgressDlg Dlg(this,"Tool");
-	QRunTool* Task(new QRunTool(this,FromQString(Ui.List->item(Ui.List->currentRow())->text()),List));
+	Tool=FromQString(Ui.List->item(Ui.List->currentRow())->text());
+	QRunTool* Task(new QRunTool(this,Tool,ToolCat));
 	Dlg.Run(Task);
 }
 
@@ -961,11 +977,11 @@ void KGALILEICenter::communitiesCompare(void)
 	}
 	catch(GException& e)
 	{
-		KMessageBox::error(this,e.GetMsg(),"GALILEI Exception");
+		KMessageBox::error(this,ToQString(e.GetMsg()),"GALILEI Exception");
 	}
 	catch(RException& e)
 	{
-		KMessageBox::error(this,e.GetMsg(),"R Exception");
+		KMessageBox::error(this,ToQString(e.GetMsg()),"R Exception");
 	}
 	catch(std::exception& e)
 	{
@@ -990,11 +1006,11 @@ void KGALILEICenter::topicsCompare(void)
 	}
 	catch(GException& e)
 	{
-		KMessageBox::error(this,e.GetMsg(),"GALILEI Exception");
+		KMessageBox::error(this,ToQString(e.GetMsg()),"GALILEI Exception");
 	}
 	catch(RException& e)
 	{
-		KMessageBox::error(this,e.GetMsg(),"R Exception");
+		KMessageBox::error(this,ToQString(e.GetMsg()),"R Exception");
 	}
 	catch(std::exception& e)
 	{
@@ -1019,11 +1035,11 @@ void KGALILEICenter::classesCompare(void)
 	}
 	catch(GException& e)
 	{
-		KMessageBox::error(this,e.GetMsg(),"GALILEI Exception");
+		KMessageBox::error(this,ToQString(e.GetMsg()),"GALILEI Exception");
 	}
 	catch(RException& e)
 	{
-		KMessageBox::error(this,e.GetMsg(),"R Exception");
+		KMessageBox::error(this,ToQString(e.GetMsg()),"R Exception");
 	}
 	catch(std::exception& e)
 	{
@@ -1097,11 +1113,11 @@ KGALILEICenter::~KGALILEICenter(void)
 	}
 	catch(GException& e)
 	{
-		KMessageBox::error(this,e.GetMsg(),"GALILEI Exception");
+		KMessageBox::error(this,ToQString(e.GetMsg()),"GALILEI Exception");
 	}
 	catch(RException& e)
 	{
-		KMessageBox::error(this,e.GetMsg(),"R Exception");
+		KMessageBox::error(this,ToQString(e.GetMsg()),"R Exception");
 	}
 	catch(std::exception& e)
 	{

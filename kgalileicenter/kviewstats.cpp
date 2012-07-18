@@ -182,7 +182,7 @@ void KViewStats::ComputeStats(void)
 		}
 		catch(RException& e)
 		{
-			KMessageBox::error(this,e.GetMsg(),ToQString(Tool()->GetFactory()->GetList()));
+			KMessageBox::error(this,ToQString(e.GetMsg()),ToQString(Tool()->GetFactory()->GetList()));
 		}
 		catch(std::exception& e)
 		{

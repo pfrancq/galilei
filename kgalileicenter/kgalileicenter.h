@@ -102,6 +102,21 @@ class KGALILEICenter : public KXmlGuiWindow, public GSlot, public GGALILEIApp
 	 */
 	QList<KAction*> Actions;
 
+	/**
+	 * Last session name.
+	 */
+	RString SessionName;
+
+	/**
+	 * Last tool category used.
+	 */
+	RString ToolCat;
+
+	/**
+	 * Last tool used.
+	 */
+	RString Tool;
+
 public:
 
 	/**

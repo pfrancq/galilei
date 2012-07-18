@@ -152,7 +152,7 @@ void KViewDoc::setUp(void)
 	}
 	catch(GException& e)
 	{
-		KMessageBox::error(this,e.GetMsg(),"GALILEI Exception");
+		KMessageBox::error(this,ToQString(e.GetMsg()),"GALILEI Exception");
 	}
 	Struct->Set(Document);
 	Assessments->Set(QGObjectsList::Assessments,Document);
@@ -174,7 +174,7 @@ void KViewDoc::newFdbk(void)
 			assess=ftFuzzyRelevant;
 		else
 			assess=ftIrrelevant;
-		App->getSession()->InsertFdbk(dlg.Prof->GetId(),Document->GetId(),assess,RDate::GetToday(),Document->GetComputed(),true);
+		App->getSession()->InsertFdbk(dlg.Prof->GetId(),Document->GetId(),assess,RDate::GetToday());
 		Assessments->Set(QGObjectsList::Assessments,Document);
 	}
 }
