@@ -210,9 +210,7 @@ CREATE TABLE `docsbyprofiles` (
   `profileid` int(11) unsigned NOT NULL,
   `fdbk` int(3) NOT NULL,
   `done` date NOT NULL,
-  `langid` char(2) NOT NULL,
-  `computed` date NOT NULL,
-  `updated` date NOT NULL,
+  PRIMARY KEY (`docid`,`profileid`),
   KEY `profileidx` (`profileid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
@@ -345,5 +343,3 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2009-04-10  8:08:01

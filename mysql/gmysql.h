@@ -438,7 +438,8 @@ public:
 	virtual void LoadObj(GProfile* &profile,size_t profileid);
 
 	/**
-	* A document was updated and the corresponding feedbacks must be updated.
+	* A document was updated and the profiles that have made a feedback on it
+	* must be updated.
 	* @param docid           Identifier of the document.
 	*/
 	virtual void UpdateProfiles(size_t docid);
@@ -468,14 +469,14 @@ public:
 	virtual void SaveObj(GProfile* prof);
 
 	/**
-	* Add an assessment for a given profile and document.
+	* Update a feedback for a given profile and document. If it is a new one, it
+	* must be created in the database.
 	* @param p               Identifier of the profile.
 	* @param d               Identifier of the document.
 	* @param fdbk            Feedback type.
-	* @param date            Date on the last feedback.
-	* @param computed        Date on the last computation of the document.
+	* @param done            Date on the last feedback.
 	*/
-	virtual void AddFdbk(size_t p,size_t d,tFdbkType fdbk,R::RDate date,R::RDate computed);
+	virtual void UpdateFdbk(size_t p,size_t d,tFdbkType fdbk,R::RDate done);
 
 
 	// @} Users/Profiles
@@ -592,7 +593,6 @@ public:
 	virtual void LoadSugs(GSugs& sugs);
 
 	// @} Suggestions
-
 
 	/**
 	* Create the parameters.

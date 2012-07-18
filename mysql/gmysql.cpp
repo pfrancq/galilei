@@ -182,7 +182,7 @@ void GStorageMySQL::ApplyConfig(void)
 	Database=FindParam<RParamValue>("Database")->Get();
 	Filter.SetDate(FindParam<RParamValue>("Filter")->Get());
 	LoadAll=FindParam<RParamValue>("All")->GetBool();
-	Encoding=FindParam<RParamValue>("Encoding")->Get().Latin1();
+	Encoding=FindParam<RParamValue>("Encoding")->Get().ToLatin1();
 	Filtering=FindParam<RParamValue>("Filtering")->GetBool();
 	GStorage::ApplyConfig();
 }
@@ -1475,9 +1475,9 @@ void GStorageMySQL::LoadObjs(const GUser*)
 			}
 
 			// Load feedbacks
-			RQuery fdbks(Db,"SELECT docid,fdbk,profileid,done,computed FROM docsbyprofiles");
+			RQuery fdbks(Db,"SELECT docid,fdbk,profileid,done FROM docsbyprofiles");
 			for(fdbks.Start();!fdbks.End();fdbks.Next())
-				Session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),GetFdbkType(atoi(fdbks[1])),GetMySQLToDate(fdbks[3]),GetMySQLToDate(fdbks[4]));
+				Session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),GetFdbkType(atoi(fdbks[1])),GetMySQLToDate(fdbks[3]),true);
 		}
 	}
 	catch(RDbException& e)
@@ -1536,8 +1536,6 @@ void GStorageMySQL::LoadObj(GProfile* &profile,size_t profileid)
 {
 	try
 	{
-		GPlugInManager* Langs=GALILEIApp->GetManager("Lang");
-
 		// Load Profile
 		RQuery Profile(Db,"SELECT profileid,description,social,userid,attached,communityid,updated,calculated,blockid,score,level,profiletype "
 		                  "FROM profiles WHERE profileid="+Num(profileid));
@@ -1559,17 +1557,10 @@ void GStorageMySQL::LoadObj(GProfile* &profile,size_t profileid)
 		profile->SetState(osNeedLoad);
 
 		// Load Feedbacks
-		RQuery fdbks(Db,"SELECT docid,fdbk,profileid,done,computed "
+		RQuery fdbks(Db,"SELECT docid,fdbk,profileid,done "
 		                "FROM docsbyprofiles WHERE profileid="+Num(profileid));
 		for(fdbks.Start();!fdbks.End();fdbks.Next())
-		{
-			Session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),GetFdbkType(atoi(fdbks[1])),RDate(fdbks[3]),RDate(fdbks[4]));
-			// Since the profile is not in the session -> we must manually insert the profile.
-			GLang* lang(Langs->GetPlugIn<GLang>(fdbks[5],false));
-			if(!lang)
-				continue;
-			profile->AddFdbk(atoi(fdbks[0]),GetFdbkType(atoi(fdbks[1])),RDate(fdbks[3]),RDate(fdbks[4]));
-		}
+			Session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),GetFdbkType(atoi(fdbks[1])),RDate(fdbks[3]),true);
 	}
 	catch(RDbException& e)
 	{
@@ -1584,7 +1575,7 @@ void GStorageMySQL::UpdateProfiles(size_t docid)
 {
 	try
 	{
-		RQuery Up(Db,"UPDATE docsbyprofiles SET computed=CURDATE() WHERE docid="+Num(docid));
+		RQuery Up(Db,"UPDATE docsbyprofiles,profiles SET profiles.updated=CURDATE() WHERE profiles.profileid=docsbyprofiles.profileid AND docsbyprofiles.docid="+Num(docid));
 	}
 	catch(RDbException e)
 	{
@@ -1763,15 +1754,28 @@ void GStorageMySQL::SaveObj(GProfile* prof)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::AddFdbk(size_t p,size_t d,tFdbkType fdbk,R::RDate date,R::RDate computed)
+void GStorageMySQL::UpdateFdbk(size_t p,size_t d,tFdbkType fdbk,R::RDate done)
 {
 	try
 	{
 		RString sSql;
-		sSql="INSERT INTO docsbyprofiles(docid,fdbk,profileid,done,computed) "
-		     "VALUES("+Num(d)+",'"+RString::Number(fdbk)+"',"+Num(p)+","+RQuery::SQLValue(date)+
-		     ","+RQuery::SQLValue(computed)+")";
-		RQuery Insert(Db,sSql);
+
+		// First try to insert it. Since there is a primary key on (docid,profileid),
+		// if it exists, an exception is generated.
+
+		try
+		{
+			sSql="INSERT INTO docsbyprofiles(docid,fdbk,profileid,done) "
+		     "VALUES("+Num(d)+",'"+RString::Number(fdbk)+"',"+Num(p)+","+RQuery::SQLValue(done)+")";
+			RQuery Insert(Db,sSql);
+		}
+		catch(...)
+		{
+			// Update the line then
+			sSql="UPDATE docsbyprofiles SET done="+RQuery::SQLValue(done)+", fdbk='"+RString::Number(fdbk)+"'"
+				" WHERE docid="+Num(d)+" AND profileid="+Num(p);
+			RQuery Update(Db,sSql);
+		}
 	}
 	catch(RDbException e)
 	{
