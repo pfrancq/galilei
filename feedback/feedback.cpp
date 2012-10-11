@@ -118,6 +118,10 @@ void GProfileCalcFeedback::Compute(const GProfile* profile)
 		if((!Doc)||(!Doc->IsDefined()))
 			continue;
 
+		// Verify if the feedback must be treated
+		if(IncrementalMode&&(Fdbk()->GetDone()<profile->GetComputed())&&(Doc->GetComputed()<profile->GetComputed()))
+			continue;
+
 		// Normalize the description and add it to corresponding set
 		Tmp=(*Doc);
 		Tmp.Normalize();
