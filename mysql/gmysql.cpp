@@ -1,5 +1,5 @@
 /*
-
+ * stai
 	GALILEI Research Project
 
 	GMySQL.cpp
@@ -42,7 +42,6 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <glang.h>
-#include <glink.h>
 #include <gsugs.h>
 #include <guser.h>
 #include <gprofile.h>
@@ -258,7 +257,7 @@ void GStorageMySQL::LoadSubjects(void)
 		RQuery docs(Db,"SELECT docid,subjectid,used FROM subjectsbydocs");
 		for(docs.Start();!docs.End();docs.Next())
 		{
-			GDoc* d=Session->GetObj(static_cast<GDoc*>(0),docs[0].ToSizeT());
+			GDoc* d=Session->GetObj(pDoc,docs[0].ToSizeT());
 			if(!d) continue;
 			size_t UsedId,CatId;
 
@@ -285,7 +284,7 @@ void GStorageMySQL::LoadSubjects(void)
 		RQuery profiles(Db,"SELECT profileid,subjectid FROM profiles WHERE subjectid<>0");
 		for(profiles.Start();!profiles.End();profiles.Next())
 		{
-			GProfile* prof=Session->GetObj(static_cast<GProfile*>(0),profiles[0].ToSizeT());
+			GProfile* prof=Session->GetObj(pProfile,profiles[0].ToSizeT());
 			if(!prof) continue;
 			Session->Insert(prof,profiles[1].ToSizeT());
 		}
@@ -346,7 +345,7 @@ void GStorageMySQL::SaveSubject(GSubject* subject)
 		}
 
 		// See if some selected documents are not categorized to the subject
-		RCursor<GDoc> SelectedDocs(subject->GetObjs(static_cast<GDoc*>(0)));
+		RCursor<GDoc> SelectedDocs(subject->GetObjs(pDoc));
 		for(SelectedDocs.Start();!SelectedDocs.End();SelectedDocs.Next())
 		{
 			if(subject->IsCategorized(SelectedDocs()))
@@ -357,7 +356,7 @@ void GStorageMySQL::SaveSubject(GSubject* subject)
 		}
 
 		// Assign the profiles to the topic
-		RCursor<GProfile> Profiles(subject->GetObjs(static_cast<GProfile*>(0)));
+		RCursor<GProfile> Profiles(subject->GetObjs(pProfile));
 		for(Profiles.Start();!Profiles.End();Profiles.Next())
 		{
 			sSql="UPDATE profiles SET subjectid="+Num(subject->GetId())+" WHERE profileid="+Num(Profiles()->GetId());
@@ -481,9 +480,8 @@ void GStorageMySQL::Clear(tObjType objtype)
 		if(Doc)
 		{
 			RQuery Delete1(Db,"DELETE FROM docsbycommunities");
-			RQuery Delete2(Db,"DELETE FROM docsbylinks");
-			RQuery Delete3(Db,"DELETE FROM docsbyprofiles");
-			RQuery Delete4(Db,"DELETE FROM subjectsbydocs");
+			RQuery Delete2(Db,"DELETE FROM docsbyprofiles");
+			RQuery Delete3(Db,"DELETE FROM subjectsbydocs");
 		}
 	}
 	catch(RDbException e)
@@ -502,54 +500,14 @@ void GStorageMySQL::Clear(tObjType objtype)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::LoadConceptCatsTypes(void)
+void GStorageMySQL::LoadConceptTypes(void)
 {
 	try
 	{
-		RQuery Cats(Db,"SELECT catid,name FROM conceptcats");
-		for(Cats.Start();!Cats.End();Cats.Next())
-			Session->InsertConceptCat(static_cast<char>(atoi(Cats[0])),Cats[1]);
-
 		RQuery Types(Db,"SELECT typeid,name,description,refdocs,refprofiles,refcommunities,reftopics,refclasses,catid FROM concepttypes");
 		for(Types.Start();!Types.End();Types.Next())
-			Session->InsertConceptType(Session->GetConceptCat(Types[8].ToChar(),false),static_cast<char>(atoi(Types[0])),Types[1],Types[2],
+			Session->InsertConceptType(ConceptCat_cast(Types[8].ToChar()),static_cast<char>(atoi(Types[0])),Types[1],Types[2],
 					Types[3].ToSizeT(),Types[4].ToSizeT(),Types[5].ToSizeT(),Types[6].ToSizeT(),Types[7].ToSizeT());
-	}
-	catch(RDbException e)
-	{
-		cerr<<e.GetMsg()<<endl;
-		throw GException(e.GetMsg());
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GStorageMySQL::AssignId(GConceptCat* cat)
-{
-	try
-	{
-		// Init some strings
-		RString name=RQuery::SQLValue(cat->GetName());
-
-		// Verify that the concept category didn't already exist.
-		RString sSql="SELECT catid FROM conceptcats WHERE name="+name;
-		RQuery find(Db,sSql);
-		find.Start();
-		if(!find.End())
-		{
-			cat->SetId(find[0].ToChar());
-			return;
-		}
-
-		// Insert the new concept category
-		sSql="INSERT INTO conceptcats(name) VALUES("+name+")";
-		RQuery insert(Db,sSql);
-
-		// Get the next id
-		sSql=RString("SELECT catid FROM conceptcats WHERE catid=LAST_INSERT_ID()");
-		RQuery getinsert(Db,sSql);
-		getinsert.Start();
-		cat->SetId(getinsert[0].ToSizeT());
 	}
 	catch(RDbException e)
 	{
@@ -583,7 +541,7 @@ void GStorageMySQL::AssignId(GConceptType* type)
 		}
 
 		// Insert the new concept type
-		sSql="INSERT INTO concepttypes(name,description,catid) VALUES("+name+","+desc+","+RString::Number(type->GetCategory()->GetId())+")";
+		sSql="INSERT INTO concepttypes(name,description,catid) VALUES("+name+","+desc+","+RString::Number(type->GetCategory())+")";
 		RQuery insert(Db,sSql);
 
 		// Get the next id
@@ -605,8 +563,7 @@ void GStorageMySQL::LoadConcepts(void)
 {
 	try
 	{
-		GConceptCat* Cat(Session->GetConceptCat("Text",false));
-		size_t TermGroup(Session->GetInsertConceptType(Cat,"TermGroup","Group of terms")->GetId());
+		size_t TermGroup(Session->GetInsertConceptType(ccText,"TermGroup","Group of terms")->GetId());
 
 		// Create and insert the dictionary
 		// Load the dictionary from the database
@@ -1035,8 +992,8 @@ void GStorageMySQL::LoadStatements(void)
 		for(Statements.Start();!Statements.End();Statements.Next())
 			Session->InsertStatement(Statements[0].ToSizeT(),
 					Statements[1].ToSizeT(),
-					Statements[2].ToSizeT(),static_cast<tObjType>(Statements[3].ToInt()),
-					Statements[4].ToSizeT(),static_cast<tObjType>(Statements[5].ToInt()),
+					Statements[2].ToSizeT(),ObjType_cast(Statements[3].ToInt()),
+					Statements[4].ToSizeT(),ObjType_cast(Statements[5].ToInt()),
 					Statements[6].ToDouble());
 	}
 	catch(RDbException e)
@@ -1266,11 +1223,6 @@ void GStorageMySQL::LoadObj(GDoc* &doc,size_t docid)
 		doc=new GDoc(Session,quer[1],quer[2],docid,quer[9].ToSizeT(),quer[10].ToSizeT(),lang,
 				     quer[3],quer[7].ToSizeT(),GetMySQLToDate(quer[6]),GetMySQLToDate(quer[5]),GetMySQLToDate(quer[8]));
 		doc->SetState(osNeedLoad);
-
-		// Load the links of the document loaded.
-		RQuery querLinks (Db,"SELECT docid,linkid,occurs FROM docsbylinks WHERE docid="+Num(docid));
-		for(querLinks.Start();!querLinks.End();querLinks.Next())
-			doc->InsertLink(Session->GetObj(static_cast<GDoc*>(0),querLinks[1].ToSizeT()),querLinks[2].ToSizeT());
 	}
 	catch(RDbException e)
 	{
@@ -1305,11 +1257,6 @@ void GStorageMySQL::LoadObj(GDoc* &doc,const R::RString& url)
 		doc=new GDoc(Session,quer[1],quer[2],quer[0].ToSizeT(),quer[9].ToSizeT(),quer[10].ToSizeT(),lang,
 				     quer[3],quer[7].ToSizeT(),GetMySQLToDate(quer[6]),GetMySQLToDate(quer[5]),GetMySQLToDate(quer[8]));
 		doc->SetState(osNeedLoad);
-
-		// Load the links of the document loaded.
-		RQuery querLinks (Db,"SELECT docid,linkid,occurs FROM docsbylinks WHERE docid="+quer[0]);
-		for(querLinks.Start();!querLinks.End();querLinks.Next())
-			doc->InsertLink(Session->GetObj(static_cast<GDoc*>(0),querLinks[1].ToSizeT()),querLinks[2].ToSizeT());
 	}
 	catch(RDbException e)
 	{
@@ -1347,12 +1294,6 @@ void GStorageMySQL::LoadObjs(const GDoc*)
 					           quer[3],quer[7].ToSizeT(),GetMySQLToDate(quer[6]),GetMySQLToDate(quer[5]),GetMySQLToDate(quer[8])));
 			Session->InsertObj(doc);
 			doc->SetState(osNeedLoad);
-
-			// Load the links of the document loaded.
-			RQuery querLinks (Db,"SELECT docid,linkid,occurs FROM docsbylinks "
-			                     "WHERE docid="+Num(docid));
-			for(querLinks.Start(); !querLinks.End(); querLinks.Next())
-				doc->InsertLink(Session->GetObj(static_cast<GDoc*>(0),atoi(querLinks[1])), atoi(querLinks[2]));
 		}
 	}
 	catch(RDbException e)
@@ -1371,7 +1312,6 @@ void GStorageMySQL::SaveObj(GDoc* doc)
 	RString l;
 	RString id;
 	RString f;
-	R::RCursor<GLink> lcur;
 
 	try
 	{
@@ -1411,15 +1351,6 @@ void GStorageMySQL::SaveObj(GDoc* doc)
 			     ",blockid="+Num(doc->GetBlockId())+",structid="+Num(doc->GetStructId())+
 				 " WHERE docid="+Num(doc->GetId());
 			RQuery Update(Db,sSql);
-		}
-
-		// Update links to others documents
-		RQuery deletelinks(Db,"DELETE FROM docsbylinks WHERE docid="+Num(doc->GetId()));
-		lcur= doc->GetLinks();
-		for ( lcur.Start(); ! lcur.End(); lcur.Next())
-		{
-			sSql="INSERT INTO docsbylinks(docid,linkid,occurs) VALUES("+Num(doc->GetId())+","+Num(lcur()->GetId())+","+Num(lcur()->GetOccurs())+")";
-			RQuery insertkwds(Db,sSql);
 		}
 	}
 	catch(RDbException e)
@@ -1466,7 +1397,7 @@ void GStorageMySQL::LoadObjs(const GUser*)
 			RQuery Profiles(Db,Sql);
 			for(Profiles.Start();!Profiles.End();Profiles.Next())
 			{
-				GUser* user=Session->GetObj(static_cast<GUser*>(0),Profiles[3].ToSizeT());
+				GUser* user=Session->GetObj(pUser,Profiles[3].ToSizeT());
 				size_t groupid(Profiles[5].ToSizeT());
 				Session->InsertObj(prof=new GProfile(Session,user,GetProfileType(atoi(Profiles[11])),Profiles[0].ToSizeT(),Profiles[8].ToSizeT(),Profiles[1],groupid,
 						GetMySQLToDate(Profiles[4]),GetMySQLToDate(Profiles[6]),GetMySQLToDate(Profiles[7]),
@@ -1545,7 +1476,7 @@ void GStorageMySQL::LoadObj(GProfile* &profile,size_t profileid)
 			profile=0;
 			return;
 		}
-		GUser* user=Session->GetObj(static_cast<GUser*>(0),Profile[3].ToSizeT());
+		GUser* user=Session->GetObj(pUser,Profile[3].ToSizeT());
 		if(!user)
 			throw GException("Profile "+Profile[0]+" has no parent user");
 		size_t groupid=Profile[5].ToSizeT();

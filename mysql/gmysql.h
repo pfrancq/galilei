@@ -228,13 +228,7 @@ public:
 	/**
 	* Load the concept types from the database.
 	*/
-	virtual void LoadConceptCatsTypes(void);
-
-   /**
-	* Assign an identifier to a new concept category.
-	* @param cat             Concept category.
-	*/
-	virtual void AssignId(GConceptCat* cat);
+	virtual void LoadConceptTypes(void);
 
 	/**
 	* Assign an identifier to a new concept type.
