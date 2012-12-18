@@ -47,7 +47,7 @@
 
 //------------------------------------------------------------------------------
 GStringIndexer::GStringIndexer(GSession* session,GPlugInFactory* fac)
-	: GAnalyzer(session,fac), TermsSpace(0), Metadata(0)
+	: GAnalyzer(session,fac), TermsSpace(0)
 {
 }
 
@@ -74,9 +74,7 @@ void GStringIndexer::ApplyConfig(void)
 void GStringIndexer::TreatTokens(GDocAnalyze* analyzer)
 {
 	if(!TermsSpace)
-		TermsSpace=Session->GetInsertConceptType(Session->GetInsertConceptCat("Text"),"Terms","Terms");
-	if(!Metadata)
-		Metadata=Session->GetInsertConceptCat("Metadata");
+		TermsSpace=Session->GetInsertConceptType(ccText,"Terms","Terms");
 
 	RCursor<GToken> Token(analyzer->GetTokens());
 	for(Token.Start();!Token.End();Token.Next())
@@ -89,7 +87,7 @@ void GStringIndexer::TreatTokens(GDocAnalyze* analyzer)
 
 		// Look if the token is not too small or has enough occurrences
 		if(
-			((!ApplyRulesMetadata)&&(!Token()->IsUsed(Metadata)))        // We must not apply the rule to the metadata and token is used in the metadata
+			((!ApplyRulesMetadata)&&(!Token()->IsUsed(ccMetadata)))        // We must not apply the rule to the metadata and token is used in the metadata
 			||
 			(ApplyRulesMetadata&&((Term.GetLen()<MinSize)||(Token()->GetNbOccurs()<MinOccurs)))
 		   )

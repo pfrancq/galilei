@@ -55,11 +55,6 @@ class GStringIndexer : public GAnalyzer
 	GConceptType* TermsSpace;
 
 	/**
-	 * Category of metadata concepts.
-	 */
-	GConceptCat* Metadata;
-
-	/**
 	* Minimum number of characters to have a valid token.
 	*/
 	size_t MinSize;
