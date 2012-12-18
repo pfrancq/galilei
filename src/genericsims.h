@@ -34,24 +34,14 @@
 #define GGenericSimsH
 
 
-//------------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <math.h>
-using namespace std;
-
 
 //------------------------------------------------------------------------------
 // include files for R Project
 #include <rtextfile.h>
-using namespace R;
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gmatrixmeasure.h>
-#include <gconcepttype.h>
-#include <gconceptcat.h>
-#include <gconceptref.h>
 #include <gdescription.h>
 #include <glang.h>
 #include <gconcept.h>
@@ -61,7 +51,35 @@ using namespace R;
 #include <gtopic.h>
 #include <gcommunity.h>
 #include <gsession.h>
-using namespace GALILEI;
+
+
+//------------------------------------------------------------------------------
+// include files for the plug-in
+#include <gsimplugin.h>
+
+
+//------------------------------------------------------------------------------
+/**
+ * The Cat structure represents all the information related to a particlar
+ * concept category.
+ */
+struct GCat
+{
+	/**
+	 * The capacity of the integral of Choquet.
+	 */
+	double Capacity;
+
+	/**
+	 * The similarity for that category.
+	 */
+	double Sim;
+
+	/**
+	 * Number of comparisons between two objects in the category.
+	 */
+	double Nb;
+};
 
 
 //------------------------------------------------------------------------------
@@ -76,7 +94,7 @@ using namespace GALILEI;
  * @short Tensor Space Model Similarity
  */
 template<class cObj1,class cObj2>
-   class GGenericSims : public GMatrixMeasure
+   class GGenericSims : public GSimPlugIn
 {
 protected:
 
@@ -93,29 +111,6 @@ protected:
 		Choquet              /** Use the integral of Choquet.*/
 	};
 
-   /**
-    * Concept categories taken into account to compute the object similarity.
-    */
-   enum tCat
-   {
-       Textual             /** Textual content.*/,
-       Metadata            /** Metadata content.*/,
-       Semantic            /** Semantic rules.*/,
-       NbCats              /** Number of different content categories.*/
-   };
-
-   /**
-    * The Cat structure represents all the information related to a particlar
-    * concept category.
-    */
-   struct Cat
-   {
-       double Capacity;    // The capacity of the integral of Choquet.
-       GConceptCat* Cat;   // The concept category.
-       double Sim;         // The similarity for that category.
-       double NbConcepts;  // Number of common concepts of two objects in the category.
-   };
-
 	/**
 	 * Type of similarity:
 	 */
@@ -124,7 +119,7 @@ protected:
    /**
     * The different categories.
     */
-   Cat Cats[NbCats];
+   GCat* Cats;
 
 	/**
 	 * Factor used for the computation of the similarity if the product is the
@@ -160,6 +155,11 @@ protected:
 	 */
 	cObj2* Desc2;
 
+	/**
+	 * The type of concept corresponding to Web URI.
+    */
+	GConceptType* Web;
+
 public:
 
 	/**
@@ -194,37 +194,13 @@ public:
 	virtual void Init(void);
 
 	/**
-	 * @return the inverse factor of a given concept. If the elements in the
-	 * line and in the columns are different, the sum of both types are
-	 * computed.
-	 * @param concept        Concept.
-	 */
-	double GetIF(GConcept* concept);
-
-   /**
-    * Compute the "metadata" similarity between two vectors. It adds to
-    * Cats[Metadata] the weighted similarity and the number of common concept.
-    * @param vec1           First vector.
-    * @param vec2           Second vector.
-    */
-   void ComputeMetaSim(GVector* vec1,GVector* vec2);
-
-   /**
-    * Compute the adapted vector space similarity between two vectors. It adds
-    * to cat the weighted similarity and the number of common concept.
-    * @param vec1           First vector.
-    * @param vec2           Second vector.
-    * @param cat            Concept category.
-    */
-   void ComputeCosineSim(GVector* vec1,GVector* vec2,Cat& cat);
-
-	/**
 	 * Compute the similarity for each category.
-    * @param filter         Define a filter to limit the similarities to
-    *                       compute. If null, all the similarities are computed.
+    * @param filter         Define if the similarities to compute must be
+	 *                       filtered.
+	 * @param cat            Concept category used as filter.
 	 * @return true if something could be computed.
 	 */
-	bool ComputeSims(GConceptCat* filter=0);
+	bool ComputeSims(bool filter,tConceptCat cat=ccText);
 
 	/**
 	 * Compute a similarity between description using the integral of Choquet as
@@ -267,6 +243,11 @@ public:
 	 * Create the parameters.
 	 */
 	virtual void CreateConfig(void);
+
+	/**
+	 * Destructor.
+	 */
+	~GGenericSims(void);
 };
 
 

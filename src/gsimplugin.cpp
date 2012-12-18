@@ -2,12 +2,11 @@
 
 	GALILEI Research Project
 
-	DocsSims_KDE.cpp
+	GComputeSim.h
 
-	Similarities between documents (KDE Part) - Implementation.
+	Generic Similarity Measure - Implementation.
 
 	Copyright 2003-2012 by Pascal Francq (pascal@francq.info).
-	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -27,50 +26,47 @@
 */
 
 
+//------------------------------------------------------------------------------
+// include files for the plug-in
+#include <gsimplugin.h>
+#include <gcomputesimcos.h>
+#include <gcomputesimmeta.h>
+#include <gcomputesimlink.h>
 
-//-----------------------------------------------------------------------------
-// include files for Qt/KDE
-#include <kaboutdata.h>
-#include <kaboutapplicationdialog.h>
-#include <KDE/KLocale>
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
-#include <knuminput.h>
 
 
 //------------------------------------------------------------------------------
-// include files for GALILEI
-#include <gmeasure.h>
-#include "genericsims_kde.h"
-using namespace GALILEI;
-using namespace R;
-
-
-//------------------------------------------------------------------------------
-extern "C" {
+//
+// GSimPlugIn
+//
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void About(void)
+GSimPlugIn::GSimPlugIn(GSession* session,GPlugInFactory* fac,tObjType lines,tObjType cols)
+	: GMatrixMeasure(session,fac,lines,cols,lines==cols)
 {
-	KAboutData aboutData( "docssims", 0, ki18n("Documents Similarities"),
-		"1.0",ki18n("Method used to compute the similarities between documents."), KAboutData::License_GPL,
-		ki18n("(C) 2003-2012 by Pascal Francq\n(C) 2003-2008 by the Université Libre de Bruxelles (ULB)"),
-		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
-	KAboutApplicationDialog dlg(&aboutData);
-	dlg.exec();
+	Sims=new GComputeSim*[GetNbConceptCats()];
+	Sims[ccText]=Sims[ccSemantic]=new GComputeSimCos(this);
+	Sims[ccMetadata]=new GComputeSimMeta(this);
+	Sims[ccLink]=new GComputeSimLink(this);
 }
 
 
 //------------------------------------------------------------------------------
-bool Configure(GPlugIn* fac)
+double GSimPlugIn::GetIF(GConcept* concept) const
 {
-	GGenericSimsDlg dlg("Similarities between documents");
-	return(dlg.Configure(fac));
+	double IF(concept->GetIF(GetLinesType()));
+	if(GetLinesType()!=GetColsType())
+		IF+=concept->GetIF(GetColsType());
+	return(IF);
 }
 
 
 //------------------------------------------------------------------------------
-}     // end of extren
-//------------------------------------------------------------------------------
+GSimPlugIn::~GSimPlugIn(void)
+{
+	delete Sims[ccText];
+	delete Sims[ccLink];
+	delete Sims[ccMetadata];
+	delete[] Sims;
+}

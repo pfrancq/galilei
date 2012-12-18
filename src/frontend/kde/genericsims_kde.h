@@ -101,6 +101,11 @@ class GGenericSimsDlg : public QGMatrixMeasureDlg
 	 * Capacity associated to the pair (Semantic,Medatadata).
 	 */
 	KDoubleNumInput* SemanticMetadataCapacity;
+	
+	/**
+	 * Number of hops.
+	 */
+	KIntNumInput* NbHops;
 
 public:
 

@@ -122,6 +122,17 @@ void GGenericSimsDlg::Panel(void)
 	AddCapacity(TextualMetadataCapacity,"Textual/Metadata Capacity",layout2,1,2);
 	AddCapacity(SemanticMetadataCapacity,"Semantic/Metadata Capacity",layout2,2,2);
 	GetMeasureSpecificLayout()->addLayout(layout2);
+
+	// NbHops
+	layout = new QHBoxLayout();
+	text = new QLabel(GetMeasureSpecific());
+	text->setText("Number of hops");
+	layout->addWidget(text);
+	NbHops = new KIntNumInput(GetMeasureSpecific());
+	NbHops->setSpecialValueText("Number of Hops");
+	layout->addWidget(NbHops);
+	layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
+	GetMeasureSpecificLayout()->addLayout(layout);
 }
 
 
@@ -137,6 +148,7 @@ void GGenericSimsDlg::Init(GPlugIn* plugin)
 	TextualSemanticCapacity->setValue(plugin->FindParam<RParamValue>("Textual/Semantic Capacity")->GetDouble());
 	TextualMetadataCapacity->setValue(plugin->FindParam<RParamValue>("Textual/Metadata Capacity")->GetDouble());
 	SemanticMetadataCapacity->setValue(plugin->FindParam<RParamValue>("Semantic/Metadata Capacity")->GetDouble());
+	NbHops->setValue(plugin->FindParam<RParamValue>("NbHops")->GetUInt());
 }
 
 
@@ -151,6 +163,7 @@ void GGenericSimsDlg::Done(GPlugIn* plugin)
 	plugin->FindParam<RParamValue>("Textual/Semantic Capacity")->SetDouble(TextualSemanticCapacity->value());
 	plugin->FindParam<RParamValue>("Textual/Metadata Capacity")->SetDouble(TextualMetadataCapacity->value());
 	plugin->FindParam<RParamValue>("Semantic/Metadata Capacity")->SetDouble(SemanticMetadataCapacity->value());
+	plugin->FindParam<RParamValue>("NbHops")->SetUInt(NbHops->value());
 	QGMatrixMeasureDlg::Done(plugin);
 }
 
