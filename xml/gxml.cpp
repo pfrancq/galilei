@@ -143,7 +143,7 @@ int XMLSchema::Compare(const RString& uri)
 //-----------------------------------------------------------------------------
 GXML::GXML(GSession* session,GPlugInFactory* fac)
 	: GFilter(session,fac), GXMLParser(), MetadataTags(50), ExcludeTags(50), Schemas(50),
-	  Tags(30,20), Semantic(0)
+	  Tags(30,20)
 {
 	AddMIME("text/xml");
 	AddMIME("xml");
@@ -216,7 +216,7 @@ XMLSchema* GXML::GetSchema(const RString& uri)
 	XMLSchema* Schema(Schemas.GetInsertPtr(uri));
 	if(!Schema->Type)
 	{
-		Schema->Type=Session->GetInsertConceptType(Semantic,uri,RString::Null);
+		Schema->Type=Session->GetInsertConceptType(ccSemantic,uri,RString::Null);
 		Schema->MetaConcept=Schema->Type->GetInsertConcept(uri);
 	}
 	return(Schema);
@@ -438,8 +438,6 @@ void GXML::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 {
 	// Initialize the analyze
 	Clear();
-	if(!Semantic)
-		Semantic=Session->GetInsertConceptCat("Metadata");
 	Analyzer=analyzer;
 
 	// Read the XML file

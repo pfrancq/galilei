@@ -371,11 +371,6 @@ class GXML : public GFilter, public GXMLParser
 	 */
 	RStack<XMLTagOccur,true,true,true> Tags;
 
-	/**
-	 * Category of semantic concepts.
-	 */
-	GConceptCat* Semantic;
-
 public:
 
 	/**
