@@ -175,8 +175,7 @@ public:
 //------------------------------------------------------------------------------
 GEngineXML::GEngineXML(GSession* session,GPlugInFactory* fac) :
 	GEngine(session,fac), TfIdf(0), Distance(0), Specificity(0), TfIff(0),
-	NbResults(40), Trees(1000), Iffs(10000), IffsDirty(false), Text(0),
-	TmpRefs(10000)
+	NbResults(40), Trees(1000), Iffs(10000), IffsDirty(false), TmpRefs(10000)
 {
 	InsertObserver(HANDLER(GEngineXML::HandleDocAnalyzed),"DocAnalyzed");
 	InsertObserver(HANDLER(GEngineXML::HandleForceReCompute),"ForceReCompute",session);
@@ -328,10 +327,6 @@ void GEngineXML::HandleResetFile(const R::RNotification& notification)
 //------------------------------------------------------------------------------
  void GEngineXML::Request(GMetaEngine* caller,const RString& query)
  {
-	// Initialize text if necessary
-	if(!Text)
-		Text=Session->GetConceptCat("Text",false);
-
 	// Recompute References if necessary
 	if(IffsDirty)
 		RecomputeRefs();

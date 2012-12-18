@@ -106,11 +106,6 @@ class GEngineXML : public RObject, public GEngine
 	bool SaveIffs;
 
 	/**
-	 * Text category.
-    */
-	GConceptCat* Text;
-
-	/**
 	 * Temporary identifiers.
 	 */
 	RContainer<cRef,true,false> TmpRefs;
@@ -188,11 +183,6 @@ public:
 	 */
 	const GConceptTree* GetTree(size_t docid);
 
-	/**
-	 * @return a pointer to the textual concept category.
-	 */
-	GConceptCat* GetText(void) const {return(Text);}
-
 private:
 
 	/**
@@ -220,7 +210,7 @@ private:
 	void RecomputeRefs(void);
 
 public:
-	
+
 	/**
 	 * Compute the iff factor of a given concept in a given context (fragments
 	 * represented by a same parent concept). It is the same factor as idf by
