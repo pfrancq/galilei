@@ -138,7 +138,7 @@ bool GToken::IsUsed(GConcept* metaconcept) const
 
 
 //------------------------------------------------------------------------------
-bool GToken::IsUsed(GConceptCat* cat) const
+bool GToken::IsUsed(tConceptCat cat) const
 {
 	if(!cat)
 		return(false);

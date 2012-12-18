@@ -655,12 +655,7 @@ public:
 		if(args.GetNb()!=1)
 			throw RPrgException(prg,"Method needs one parameter");
 		RString objects=args[0]->GetValue(prg);
-		tObjType type(otNoClass);
-		if(objects=="Communities Evaluation")
-			type=otCommunity;
-		if(objects=="Topics Evaluation")
-			type=otTopic;
-		if(type==otNoClass)
+		if((objects!="Communities Evaluation")&&(objects!="Topics Evaluation"))
 			throw RPrgException(prg,"Compare with unsupported type");
 		o->WriteStr("Compare with Ideal "+objects+" Groups");
 
@@ -1021,20 +1016,21 @@ public:
 		GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
 		if(!Owner)
 			throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
-
-		tObjType type=otNoClass;
-
 		if(args.GetNb()!=1)
 			throw RPrgException(prg,"Method needs one parameter");
+
 		RString objects=args[0]->GetValue(prg);
+		tObjType type;
 		if(objects=="User")
 			type=otUser;
-		if(objects=="Doc")
+		else if(objects=="Doc")
 			type=otDoc;
-		if(objects=="Community")
+		else if(objects=="Community")
 			type=otCommunity;
-		if(objects=="Topic")
+		else if(objects=="Topic")
 			type=otTopic;
+		else
+			throw RPrgException(prg,"ForceReCompute with unsupported type");
 		Owner->Session->ForceReCompute(type);
 	}
 };

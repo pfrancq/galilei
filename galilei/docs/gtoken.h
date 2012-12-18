@@ -267,7 +267,7 @@ public:
 	 * category.
 	 * @param cat            Category to search for.
 	 */
-	bool IsUsed(GConceptCat* cat) const;
+	bool IsUsed(tConceptCat cat) const;
 
 	/**
 	 * Get the number of occurrences of the token.

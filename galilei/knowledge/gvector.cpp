@@ -136,6 +136,7 @@ int GVector::Compare(const GConcept* metaconcept) const
 	return(CompareIds(MetaConcept->Id,metaconcept->Id));
 }
 
+
 //------------------------------------------------------------------------------
 GConceptRef* GVector::GetRef(const GConceptRef* ref)
 {
@@ -330,6 +331,7 @@ GVector& GVector::operator+=(const GVector& vector)
 {
 	if(MetaConcept!=vector.MetaConcept)
 		ThrowGException("Operation does work only with vectors associated with the same meta-concept");
+
 	// Invalid maximum weights
 	MaxWeight=NAN;
 	MaxAbsWeight=NAN;

@@ -112,7 +112,7 @@ GConcept* GDocAnalyze::GetBody(void)
 {
 	// Search for the meta-concept corresponding to the default textual content
 	if(!Body)
-		Body=Session->InsertConcept(Session->GetInsertConceptType(Session->GetInsertConceptCat("Text"),"content","Raw content"),"body");
+		Body=Session->InsertConcept(Session->GetInsertConceptType(ccText,"content","Raw content"),"body");
 	return(Body);
 }
 
@@ -284,7 +284,7 @@ void GDocAnalyze::ExtractDCMI(const R::RString& element,const R::RString& value,
 	if(!DCMI)
 	{
 		// Verify that all concepts are OK.
-		DCMI=Session->GetInsertConceptType(Session->GetInsertConceptCat("Metadata"),"http://purl.org/dc/elements/1.1","Dublin Core Metadata Initiative (DMCI)");
+		DCMI=Session->GetInsertConceptType(ccMetadata,"http://purl.org/dc/elements/1.1","Dublin Core Metadata Initiative (DMCI)");
 		Session->InsertConcept(DCMI,"contributor");
 		Session->InsertConcept(DCMI,"coverage");
 		Session->InsertConcept(DCMI,"creator");
@@ -322,7 +322,7 @@ void GDocAnalyze::ExtractBody(const R::RString& content,tTokenType type,double w
 {
 	// Search for the meta-concept corresponding to the default textual content
 	if(!Body)
-		Body=Session->InsertConcept(Session->GetInsertConceptType(Session->GetInsertConceptCat("Text"),"content","Raw content"),"body");
+		Body=Session->InsertConcept(Session->GetInsertConceptType(ccText,"content","Raw content"),"body");
 
 	// Find the vector corresponding to the concept
 	ExtractTextual(content,type,weight,Body,pos,depth,spos);

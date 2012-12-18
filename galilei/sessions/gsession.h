@@ -79,14 +79,15 @@ class GSessionMsg
 	tObjType Type;
 
 	/**
-	 * Eventually a meta type associated to the messaged.
+	 * A meta type associated to the messaged.
 	 */
 	tObjType Meta;
 
 public:
 
 	/**
-	 * Construct a session message.
+	 * Construct a session message. The meta type associated is supposed to be
+	 * the session.
     * @param session        Session.
     * @param type           Type of the objects.
     */

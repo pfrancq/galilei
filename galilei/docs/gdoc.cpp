@@ -35,7 +35,6 @@
 #include <gconceptnodes.h>
 #include <gdoc.h>
 #include <gtopic.h>
-#include <glink.h>
 #include <glang.h>
 #include <gsession.h>
 #include <gprofile.h>
@@ -66,13 +65,13 @@ void GDoc::PrivateInit(void)
 GDoc::GDoc(GSession* session,const RURI& uri,const RString& name,GLang* lang,const RString& mime)
 	: GDescriptionObject<GDoc>(session,cNoRef,0,otDoc,name,osNew), URI(uri),
 	  Lang(lang),MIMEType(mime), Updated(RDate::GetToday()), Computed(RDate::Null),
-	  Fdbks(0), LinkSet(5,2), GroupId(0), Attached(RDate::Null),
+	  Fdbks(0), GroupId(0), Attached(RDate::Null),
 	  StructId(0), Tree(0)
 {
 	// Verify if the topic exists in memory
 	if(GroupId)
 	{
-		GTopic* grp=Session->GetObj(pTopic,GroupId,false,false);
+		GTopic* grp(Session->GetObj(pTopic,GroupId,false,false));
 		if(grp)
 			grp->InsertObj(this);
 	}
@@ -83,7 +82,7 @@ GDoc::GDoc(GSession* session,const RURI& uri,const RString& name,GLang* lang,con
 GDoc::GDoc(GSession* session,const RURI& uri,const RString& name,size_t id,size_t blockid,size_t structid,GLang* lang,const RString& mime,size_t grpid,const RDate& c,const RDate& u,const RDate& a)
 	: GDescriptionObject<GDoc>(session,id,blockid,otDoc,name,osNew), URI(uri),
 	  Lang(lang),MIMEType(mime), Updated(u), Computed(c),
-	  Fdbks(0), LinkSet(5,2), GroupId(grpid), Attached(a),
+	  Fdbks(0), GroupId(grpid), Attached(a),
 	  StructId(structid), Tree(0)
 {
 	// Verify if the topic exists in memory
@@ -132,6 +131,13 @@ int GDoc::Compare(const GDoc* doc) const
 int GDoc::Compare(const size_t id) const
 {
 	return(CompareIds(Id,id));
+}
+
+
+//------------------------------------------------------------------------------
+int GDoc::Compare(const R::RString& name) const
+{
+	return(URI.Compare(name));
 }
 
 
@@ -384,29 +390,6 @@ size_t GDoc::GetNbFdbks(void) const
 	if(Fdbks)
 		return(Fdbks->GetNb());
 	return(0);
-}
-
-
-//------------------------------------------------------------------------------
-size_t GDoc::GetNbLinks(void) const
-{
-	return(LinkSet.GetNb());
-}
-
-
-//------------------------------------------------------------------------------
-void GDoc::InsertLink(const GDoc* doc,size_t nboccurs)
-{
-	GLink* link=LinkSet.GetInsertPtr(doc);
-	if(nboccurs)
-		link->SetOccurs(nboccurs);
-}
-
-
-//------------------------------------------------------------------------------
-R::RCursor<GLink> GDoc::GetLinks(void) const
-{
-	return(R::RCursor<GLink>(LinkSet));
 }
 
 

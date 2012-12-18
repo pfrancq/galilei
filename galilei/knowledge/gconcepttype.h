@@ -66,7 +66,7 @@ private:
     /**
      * Category.
      */
-    GConceptCat* Category;
+    tConceptCat Category;
 
 	/**
 	 * Concepts.
@@ -114,7 +114,7 @@ public:
 	* @param desc            Short description.
 	* @param s               Size of the second hash table.
 	*/
-	GConceptType(GSession* session,GConceptCat* cat,size_t id,const R::RString& name,const R::RString& desc,size_t s);
+	GConceptType(GSession* session,tConceptCat cat,size_t id,const R::RString& name,const R::RString& desc,size_t s);
 
 	/**
 	* Set the references of a given language. This method is called when
@@ -151,7 +151,7 @@ public:
    /**
     * @return the category.
     */
-   GConceptCat* GetCategory(void) const {return(Category);}
+   tConceptCat GetCategory(void) const {return(Category);}
 
 	/**
 	* @return the description.

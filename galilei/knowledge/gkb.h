@@ -40,7 +40,6 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <gconcept.h>
-#include <gconceptcat.h>
 #include <gconcepttype.h>
 
 
@@ -54,6 +53,8 @@ namespace GALILEI{
 * The GKB represents the knowledge base. It is the basic building block for a
 * session. In fact, all the methods defined here can only be called through a
 * session instance.
+*
+* By default, four concept categories are always created: Text, Metadata,
 * @warning Some methods use a reinterpret_cast<GSession*>(this) expression.
 * @author GALILEI Team
 * @short Knowledge Base.
@@ -71,16 +72,6 @@ protected:
 	 *  Must the results be saved after computed ?
 	 */
 	bool SaveResults;
-
-   /**
-	 *  Categories of Concepts.
-	 */
-	R::RContainer<GConceptCat,true,true> ConceptCats;
-
-	/**
-	 *  Categories of Concepts (accessed by identifiers).
-	 */
-	R::RContainer<GConceptCat,false,false> ConceptCatsByIds;
 
 	/**
 	 *  Types of Concepts.
@@ -125,51 +116,6 @@ public:
 	inline GStorage* GetStorage(void) const {return(Storage);}
 
    /**
-	* Get the a pointer to a category of concept.
-	* @param id              Identifier of the category.
-	* @param null            If set to true, if the category does not exist,
-	*                        return 0, else an exception is generated.
-	* @return Pointer to a GConceptCat.
-	*/
-	GConceptCat* GetConceptCat(char id,bool null);
-
-	/**
-	* Get the a pointer to a category of concept. If the concept category doesn't
-	* exist, it is created.
-	* @param name            Name of the type.
-	* @return Pointer to a GConceptCat.
-	*/
-	GConceptCat* GetInsertConceptCat(const R::RString& name);
-
-	/**
-	* Get the a pointer to a category of concept.
-	* @param name            Name of the category.
-	* @param null            If set to true, if the type does not exist,
-	*                        return 0, else an exception is generated.
-	* @return Pointer to a GConceptCat.
-	*/
-	GConceptCat* GetConceptCat(const R::RString& name,bool null);
-
-   /**
-	 * Get the number of concept categories created in the system.
-    *
-    * In fact, it returns the highest identifier of a concept category.
-	 * @return the number of concept categories.
-	 */
-	inline size_t GetNbConceptCats(void) const
-   {
-       if(!ConceptCats.GetNb())
-           return(0);
-       return(ConceptCatsByIds[ConceptCatsByIds.GetMaxPos()]->Id);
-   }
-
-	/**
-	* Get all concept categories defined.
-	* @return RCursor over GConceptType.
-	*/
-	inline R::RCursor<GConceptCat> GetConceptCats(void) const {return(R::RCursor<GConceptCat>(ConceptCats));}
-
-   /**
 	* Insert a new concept category.
 	* @param id              Identifier of the category.
 	* @param name            Name of the category.
@@ -193,7 +139,7 @@ public:
 	* @param desc            Short description
 	* @return Pointer to a GConceptType.
 	*/
-	GConceptType* GetInsertConceptType(GConceptCat* cat,const R::RString& name,const R::RString& desc);
+	GConceptType* GetInsertConceptType(tConceptCat cat,const R::RString& name,const R::RString& desc);
 
 	/**
 	* Get the a pointer to a type of concept.
@@ -231,11 +177,11 @@ public:
 	* @param desc            Short description.
 	* @param refdocs         Number of documents referenced.
 	* @param refprofiles     Number of profiles referenced.
-	* @param refgroups       Number of commuinities referenced.
+	* @param refgroups       Number of communities referenced.
 	* @param reftopics       Number of topics referenced.
 	* @param refclasses      Number of classes referenced.
 	*/
-	void InsertConceptType(GConceptCat* cat,char id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics,size_t refclasses);
+	void InsertConceptType(tConceptCat cat,char id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics,size_t refclasses);
 
   	/**
 	 * Get the number of concept created in the system.
@@ -262,6 +208,15 @@ public:
 	* @return RCursor over GConcept.
 	*/
 	R::RCursor<GConcept> GetConcepts(void) const;
+
+	/**
+	* Get a pointer to a concept.
+	* @param type            Type of the concept.
+	* @param concept         Name of the concept to insert.
+	* @param null            If set to true, if the object does not exist,
+	*                        return 0, else an exception is generated.
+	*/
+	GConcept* GetConcept(GConceptType* type,const R::RString& concept,bool null=false);
 
 	/**
 	* Insert a concept.

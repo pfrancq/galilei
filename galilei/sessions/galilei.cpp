@@ -77,10 +77,6 @@ RString GALILEI::GetObjType(tObjType type,bool upper,bool plural)
 {
 	switch(type)
 	{
-		case otNoClass:
-			return(Str("unknown",upper));
-		case otAnyClass:
-			return(Str("any class",upper));
 		case otSession:
 			if(plural)
 				return(Str("sessions",upper));
@@ -184,6 +180,15 @@ RString GALILEI::GetObjType(tObjType type,bool upper,bool plural)
 
 
 //------------------------------------------------------------------------------
+tObjType GALILEI::ObjType_cast(size_t objtype)
+{
+	if(objtype>=otReference)
+		ThrowGException("'"+RString::Number(objtype)+"' is not a valid object type value");
+	return(static_cast<tObjType>(objtype));
+}
+
+
+//------------------------------------------------------------------------------
 RString GALILEI::GetState(tObjState state,bool upper)
 {
 	switch(state)
@@ -214,6 +219,37 @@ RString GALILEI::GetState(tObjState state,bool upper)
 			return(Str("must load information",upper));
 	}
 	ThrowGException("'"+RString::Number(state)+"' is not a valid state value");
+}
+
+
+//------------------------------------------------------------------------------
+RString GALILEI::GetConceptCat(tConceptCat cat,bool upper,bool plural)
+{
+	switch(cat)
+	{
+		case ccText:
+			return(Str("text",upper));
+		case ccMetadata:
+			return(Str("metadata",upper));
+		case ccSemantic:
+			if(plural)
+				return(Str("semantic rules",upper));
+			return(Str("semantic rule",upper));
+		case ccLink:
+			if(plural)
+				return(Str("links",upper));
+			return(Str("link",upper));
+	}
+	ThrowGException("'"+RString::Number(cat)+"' is not a valid concept category value");
+}
+
+
+//------------------------------------------------------------------------------
+tConceptCat GALILEI::ConceptCat_cast(size_t cat)
+{
+	if(cat>=4)
+		ThrowGException("'"+RString::Number(cat)+"' is not a valid concept category value");
+	return(static_cast<tConceptCat>(cat));
 }
 
 

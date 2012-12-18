@@ -1,5 +1,4 @@
 SET(galilei_knowledge_INST_INCLUDES
-    gconceptcat.h
     gconcepttype.h
     gconcept.h
     gconceptlist.h
@@ -19,7 +18,6 @@ SET(galilei_knowledge_INST_INCLUDES
 
 
 SET(galilei_knowledge_TARGET_SOURCES
-	 gconceptcat.cpp
     gconcepttype.cpp
     gconcept.cpp
     gconceptlist.cpp

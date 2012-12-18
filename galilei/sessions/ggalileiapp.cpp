@@ -253,7 +253,7 @@ GSession* GGALILEIApp::GetSession(const R::RString& name,bool created)
 		Storages->InitPlugIns(Session);
 		GStorage* Storage(Storages->GetCurrentPlugIn<GStorage>());
 		Session->Storage=Storage;
-		Storage->LoadConceptCatsTypes();
+		Storage->LoadConceptTypes();
 		Storage->LoadConcepts();
 		Storage->LoadPredicates();
 		Storage->LoadStatements();

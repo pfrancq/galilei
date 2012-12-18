@@ -37,7 +37,6 @@ using namespace std;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gconcepttype.h>
-#include <gconceptcat.h>
 #include <gconcept.h>
 #include <gsession.h>
 #include <gstorage.h>
@@ -53,14 +52,11 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GConceptType::GConceptType(GSession* session,GConceptCat* cat,size_t id,const RString& name,const RString& desc,size_t s)
+GConceptType::GConceptType(GSession* session,tConceptCat cat,size_t id,const RString& name,const RString& desc,size_t s)
 	: GObject(session,id,name,otConceptType), Category(cat), Concepts(27,27,s,s/4),
 	  Description(desc), NbRefDocs(0), NbRefProfiles(0),
 	  NbRefCommunities(0), NbRefTopics(0), NbRefClasses(0)
 {
-	if(!Category)
-		ThrowGException("A concept type must have a category");
-	Category->InsertConceptType(this);
 }
 
 
@@ -236,9 +232,6 @@ size_t GConceptType::GetRef(tObjType ObjType) const
 		case otClass:
 			return(NbRefClasses);
 			break;
-		case otAnyClass:
-			return(NbRefDocs+NbRefProfiles+NbRefCommunities+NbRefTopics+NbRefClasses);
-			break;
 		default:
 			ThrowGException(GALILEI::GetObjType(ObjType,true,true)+" have no references");
 			break;
@@ -297,5 +290,4 @@ size_t GConceptType::DecRef(GConcept* concept,tObjType ObjType)
 //------------------------------------------------------------------------------
 GConceptType::~GConceptType(void)
 {
-	Category->DeleteConceptType(this);
 }

@@ -63,8 +63,6 @@ namespace GALILEI{
 */
 enum tObjType
 {
-	otNoClass                /** No specific class. */,
-	otAnyClass               /** Any class. */,
 	otSession                /** GALILEI Session. */,
 	otDoc                    /** Document. */,
 	otUser                   /** User.*/,
@@ -90,6 +88,16 @@ enum tObjType
 	otIndexFile              /** Index file.*/,
 	otReference              /** Reference.*/
 };
+
+
+//------------------------------------------------------------------------------
+/**
+ * This function does a save cast from an integer to a object type. In
+ * particular, it generates an exception if the integer is not valid.
+ * @param objtype            Integer representing an object type.
+ * @return a valid object type.
+ */
+tObjType ObjType_cast(size_t objtype);
 
 
 //------------------------------------------------------------------------------
@@ -131,6 +139,48 @@ enum tObjState
  * @param upper               First letter in uppercase ?
  */
 R::RString GetState(tObjState state,bool upper);
+
+
+//------------------------------------------------------------------------------
+/**
+ * The Tensor Space Model supposes that a fixed number of concept categories
+ * exists.
+ * @short Concept Category
+ */
+enum tConceptCat
+{
+	ccText                   /** Text.*/,
+	ccMetadata               /** Metadata.*/,
+	ccSemantic               /** Semantic rules.*/,
+	ccLink                   /** Links. */
+};
+
+
+//------------------------------------------------------------------------------
+/**
+ * @return the number of concept categories.
+ */
+inline size_t GetNbConceptCats(void) {return(4);}
+
+
+//------------------------------------------------------------------------------
+/**
+ * This function does a save cast from an integer to a concept category. In
+ * particular, it generates an exception if the integer is not valid.
+ * @param cat                         Integer representing a category.
+ * @return a valid concept category.
+ */
+tConceptCat ConceptCat_cast(size_t cat);
+
+
+//------------------------------------------------------------------------------
+/**
+ * Get a string representing a category of concepts.
+ * @param cat                Concept category.
+ * @param upper              First letter in uppercase ?
+ * @param plural             Plural ?
+ */
+R::RString GetConceptCat(tConceptCat cat,bool upper,bool plural);
 
 
 //------------------------------------------------------------------------------
@@ -278,7 +328,6 @@ public:
 //------------------------------------------------------------------------------
 // forward class declaration - Knowledge Part
 class GConcept;
-class GConceptCat;
 class GConceptType;
 class GPredicate;
 class GStatement;
@@ -295,9 +344,6 @@ class GClasses;
 //------------------------------------------------------------------------------
 // forward class declaration - Documents Part
 class GDoc;
-class GBalancedLinks;
-class GLink;
-class GLinks;
 class GDocAnalyze;
 class GFilter;
 class GTokenizer;

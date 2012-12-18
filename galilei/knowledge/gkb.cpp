@@ -55,79 +55,11 @@ using namespace std;
 //------------------------------------------------------------------------------
 GKB::GKB(void)
 	: Storage(0), SaveResults(true),
-	  ConceptCats(10), ConceptCatsByIds(10),
 	  ConceptTypes(20), ConceptTypesByIds(20),
 	  Concepts(50000,10000),
 	  Predicates(30), PredicatesByIds(30), Statements(5000,5000)
 
 {
-}
-
-
-//-----------------------------------------------------------------------------
-GConceptCat* GKB::GetConceptCat(char id,bool null)
-{
-	GConceptCat* cat(0);
-	try
-	{
-		cat=ConceptCatsByIds[id];
-	}
-	catch(...)
-	{
-	}
-	if((!cat)&&(!null))
-		ThrowGException("Unknown concept category "+RString::Number(id));
-	return(cat);
-}
-
-
-//-----------------------------------------------------------------------------
-GConceptCat* GKB::GetInsertConceptCat(const RString& name)
-{
-	GConceptCat* cat(0);
-	try
-	{
-		cat=ConceptCats.GetPtr(name);
-	}
-	catch(...)
-	{
-	}
-	if(!cat)
-	{
-		ConceptCats.InsertPtr(cat=new GConceptCat(dynamic_cast<GSession*>(this),cNoRef,name));
-		Storage->AssignId(cat);
-		ConceptCatsByIds.InsertPtrAt(cat,cat->GetId(),true);
-	}
-	return(cat);
-}
-
-
-//-----------------------------------------------------------------------------
-GConceptCat* GKB::GetConceptCat(const RString& name,bool null)
-{
-	GConceptCat* cat(0);
-	try
-	{
-		cat=ConceptCats.GetPtr(name);
-	}
-	catch(...)
-	{
-	}
-	if((!cat)&&(!null))
-		ThrowGException("Unknown concept category '"+name+"'");
-	return(cat);
-}
-
-
-//-----------------------------------------------------------------------------
-void GKB::InsertConceptCat(char id,const R::RString& name)
-{
-	GConceptCat* cat=new GConceptCat(dynamic_cast<GSession*>(this),id,name);
-	if(!id)
-		Storage->AssignId(cat);
-
-	ConceptCats.InsertPtr(cat);
-	ConceptCatsByIds.InsertPtrAt(cat,cat->GetId(),true);
 }
 
 
@@ -149,7 +81,7 @@ GConceptType* GKB::GetConceptType(char id,bool null)
 
 
 //-----------------------------------------------------------------------------
-GConceptType* GKB::GetInsertConceptType(GConceptCat* cat,const RString& name,const RString& desc)
+GConceptType* GKB::GetInsertConceptType(tConceptCat cat,const RString& name,const RString& desc)
 {
 	GConceptType* type(0);
 	try
@@ -187,7 +119,7 @@ GConceptType* GKB::GetConceptType(const RString& name,bool null)
 
 
 //-----------------------------------------------------------------------------
-void GKB::InsertConceptType(GConceptCat* cat,char id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics,size_t refclasses)
+void GKB::InsertConceptType(tConceptCat cat,char id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics,size_t refclasses)
 {
 	GConceptType* type=new GConceptType(dynamic_cast<GSession*>(this),cat,id,name,desc,5000);
 	if(!id)
@@ -300,6 +232,22 @@ GStatement* GKB::GetStatement(size_t id)
 	if(!Statement)
 		ThrowGException("'"+RString::Number(id)+"' is not a valid concept identifier");
 	return(Statement);
+}
+
+
+//------------------------------------------------------------------------------
+GConcept* GKB::GetConcept(GConceptType* type,const R::RString& concept,bool null)
+{
+	// Look if the data exists in the dictionary. If not, create and insert it.
+	GConcept* ptr(type->GetConcept(concept));
+	if(!ptr)
+	{
+		if(null)
+			return(0);
+		else
+			ThrowGException("Unknown concept '"+concept+"' for the type '"+type->GetName()+"'");
+	}
+	return(ptr);
 }
 
 

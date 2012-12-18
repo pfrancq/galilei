@@ -54,7 +54,6 @@ using namespace R;
 #include <gdoc.h>
 #include <gconcepttree.h>
 #include <glinkcalc.h>
-#include <glink.h>
 #include <gengine.h>
 #include <gmetaengine.h>
 #include <gdocfragment.h>
@@ -150,7 +149,7 @@ const size_t SizeT2=2*sizeof(size_t);
 
 //------------------------------------------------------------------------------
 GSessionMsg::GSessionMsg(GSession* session,tObjType type)
-	: Session(session), Type(type), Meta(otNoClass)
+	: Session(session), Type(type), Meta(otSession)
 {
 
 }

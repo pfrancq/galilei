@@ -53,7 +53,9 @@ namespace GALILEI{
 /**
 * The GDoc class provides a representation of a analyzed document. In fact, a
 * document is represented as a set of vectors and, eventually, its concept tree
-* (the positions and the depths of each concept occurrence).
+* (the positions and the depths of each concept occurrence). In the tensor space
+* model, the (hyper)links between documents are represented as a vector
+* corresponding to concept category "link"
 *
 * @warning Since the concept tree is memory consuming, it is not associated with
 * the document and must be managed by the developer.
@@ -92,11 +94,6 @@ protected:
 	* Identifiers of the profiles which have assessed the document.
 	*/
 	R::RNumContainer<size_t,true>* Fdbks;
-
-	/**
-	* Links "out" of the document.
-	*/
-	R::RContainer<GLink,true,true> LinkSet;
 
 	/**
 	* Identifiers of the corresponding topic.
@@ -188,6 +185,14 @@ public:
 	* @return int
 	*/
 	int Compare(const size_t id) const;
+
+	/**
+	* Compare the name of a documents with a given name.
+	* @see R::RContainer
+	* @param name             Name.
+	* @return int
+	*/
+	int Compare(const R::RString& name) const;
 
 	/**
 	* Compare the language of a document with a given language.
@@ -372,26 +377,6 @@ public:
 	* Get the number of times the documents was assessed.
 	*/
 	size_t GetNbFdbks(void) const;
-
-	/**
-	* Get the number of outgoing links
-	*/
-	size_t GetNbLinks(void) const;
-
-	/**
-	* Add a new link to the document and set the number of occurrences of this
-	* link.
-	* @param doc             The Document representing the link to be inserted.
-	* @param nboccurs        The number of occurrences of the link inside the
-	*                        document. If the number of occurrences is set to 0,
-	*                        an occurrence number of 1 is used.
-	*/
-	void InsertLink(const GDoc* doc,size_t nboccurs=0);
-
-	/**
-	* Get a cursor on the Links of the document.
-	*/
-	R::RCursor<GLink> GetLinks(void) const;
 
 private:
 

@@ -50,7 +50,6 @@
 #include <gcommunity.h>
 #include <gtopic.h>
 #include <guser.h>
-#include <glink.h>
 #include <gsugs.h>
 #include <gcommunitycalc.h>
 #include <gtopiccalc.h>

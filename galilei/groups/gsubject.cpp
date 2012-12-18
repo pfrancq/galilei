@@ -44,7 +44,6 @@
 #include <gdoc.h>
 #include <gcommunity.h>
 #include <gtopic.h>
-#include <glink.h>
 using namespace R;
 using namespace GALILEI;
 using namespace std;
