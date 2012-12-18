@@ -74,7 +74,7 @@ public:
 	tObjType Type;
 
 	QGObject(QTreeWidget* parent,GConceptType* dict)
-		: QTreeWidgetItem(parent,QStringList()<<ToQString(dict->GetDescription())<<ToQString(dict->GetCategory()->GetName())), Type(otConceptType)
+		: QTreeWidgetItem(parent,QStringList()<<ToQString(dict->GetDescription())<<ToQString(GetConceptCat(dict->GetCategory(),true,false))), Type(otConceptType)
 	{
 		Obj.Dict=dict;
 		//setIcon(0,KIconLoader::global()->loadIcon("dashboard-show",KIconLoader::Small));

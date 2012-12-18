@@ -75,7 +75,7 @@ class KViewDicts : public QMdiSubWindow, public Ui_KViewDicts
 	KGALILEICenter* App;
 
 public:
-
+	
 	/**
 	* Constructor for the view
 	*/
