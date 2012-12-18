@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configurationDescriptor version="84">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="lib" displayName="lib" projectFiles="true" root="/usr/lib">
+      <itemPath>/usr/lib/libkdeui.so.5.9.2</itemPath>
+      <itemPath>/usr/lib/libkdeui.so.5.9.3</itemPath>
+    </logicalFolder>
     <df name="statsims" root=".">
       <df name="build">
         <df name="CMakeFiles">
           <df name="CMakeTmp">
-            <df name="CMakeFiles">
-              <df name="cmTryCompileExec.dir">
-              </df>
-            </df>
           </df>
           <df name="CompilerIdC">
             <in>CMakeCCompilerId.c</in>
@@ -83,46 +83,75 @@
           <executablePath></executablePath>
           <ccTool>
             <incDir>
-              <pElem>statsims/gstatprofdoc.cpp</pElem>
+              <pElem>../../galilei/galilei/tools</pElem>
+              <pElem>../../galilei/galilei/frontend</pElem>
+              <pElem>../../galilei/galilei/frontend/kde</pElem>
               <pElem>../../r/rmath/matrix</pElem>
-              <pElem>statsims</pElem>
-              <pElem>../../galilei/galilei/plugins</pElem>
+              <pElem>../../r/roptimization/hga</pElem>
+              <pElem>statsims/frontend/kde</pElem>
+              <pElem>../../r/rmath/graph</pElem>
+              <pElem>/usr/include/qt4</pElem>
               <pElem>../../r/rcore/prg</pElem>
-              <pElem>../../galilei/galilei/sessions</pElem>
-              <pElem>../../galilei/galilei/groups</pElem>
+              <pElem>statsims/frontend</pElem>
+              <pElem>../../r/rcore/frontend</pElem>
+              <pElem>../../r/rmath/geometry</pElem>
+              <pElem>build</pElem>
+              <pElem>../../r/rcore/strings</pElem>
               <pElem>build/statsims</pElem>
-              <pElem>../../r/rcore/app</pElem>
               <pElem>../../galilei/galilei/docs</pElem>
+              <pElem>../../r/roptimization/frontend/kde</pElem>
+              <pElem>../../r/roptimization/promethee</pElem>
+              <pElem>../../r/rcore/db</pElem>
               <pElem>../../r/rcore/tools</pElem>
               <pElem>../../r/rcore/xml</pElem>
               <pElem>../../galilei/galilei/profiles</pElem>
               <pElem>../../galilei/galilei/knowledge</pElem>
-              <pElem>/usr/include/curl</pElem>
-              <pElem>../../galilei/galilei/engines</pElem>
               <pElem>../../r/rcore/io</pElem>
+              <pElem>../../r/rmath/stats</pElem>
+              <pElem>../../r/rmath</pElem>
+              <pElem>statsims</pElem>
+              <pElem>../../r/roptimization/ga2d</pElem>
+              <pElem>../../galilei/galilei/plugins</pElem>
+              <pElem>../../galilei/galilei</pElem>
+              <pElem>../../r/rcore</pElem>
+              <pElem>../../galilei/galilei/sessions</pElem>
+              <pElem>../../galilei/galilei/groups</pElem>
+              <pElem>.</pElem>
+              <pElem>../../r/roptimization</pElem>
+              <pElem>../../r/rcore/geometry</pElem>
+              <pElem>../../r/roptimization/nngga</pElem>
+              <pElem>../../r/rcore/app</pElem>
+              <pElem>../../r/rcore/frontend/kde</pElem>
+              <pElem>../../galilei/galilei/historic</pElem>
+              <pElem>../../r/roptimization/frontend</pElem>
+              <pElem>../../galilei/galilei/engines</pElem>
+              <pElem>../../r/roptimization/sgga</pElem>
+              <pElem>../../galilei/build</pElem>
               <pElem>../../r/roptimization/ga</pElem>
+              <pElem>../../r/roptimization/gga</pElem>
             </incDir>
             <preprocessorList>
               <Elem>KDE4_CMAKE_TOPLEVEL_DIR_LENGTH=33</Elem>
-              <Elem>KDE_DEPRECATED_WARNINGS=1</Elem>
-              <Elem>PIC=1</Elem>
-              <Elem>QT_NO_CAST_TO_ASCII=1</Elem>
-              <Elem>QT_NO_EXCEPTIONS=1</Elem>
-              <Elem>QT_NO_STL=1</Elem>
-              <Elem>_BSD_SOURCE=1</Elem>
-              <Elem>_LARGEFILE64_SOURCE=1</Elem>
-              <Elem>_REENTRANT=1</Elem>
+              <Elem>KDE_DEPRECATED_WARNINGS</Elem>
+              <Elem>PIC</Elem>
+              <Elem>QT_NO_CAST_TO_ASCII</Elem>
+              <Elem>QT_NO_EXCEPTIONS</Elem>
+              <Elem>QT_NO_STL</Elem>
+              <Elem>_BSD_SOURCE</Elem>
+              <Elem>_GNU_SOURCE</Elem>
+              <Elem>_LARGEFILE64_SOURCE</Elem>
+              <Elem>_REENTRANT</Elem>
               <Elem>_XOPEN_SOURCE=500</Elem>
-              <Elem>__PIC__=2</Elem>
-              <Elem>__REGISTER_PREFIX__=</Elem>
-              <Elem>__STRICT_ANSI__=1</Elem>
-              <Elem>__USER_LABEL_PREFIX__=</Elem>
-              <Elem>__pic__=2</Elem>
-              <Elem>statsims_EXPORTS=1</Elem>
+              <Elem>__NO_INLINE__</Elem>
             </preprocessorList>
+            <undefinedList>
+              <Elem>__EXCEPTIONS</Elem>
+            </undefinedList>
           </ccTool>
         </makeTool>
       </makefileType>
+      <item path="/usr/lib/libkdeui.so.5.9.2" ex="true" tool="3" flavor2="0">
+      </item>
       <item path="build/CMakeFiles/CompilerIdC/CMakeCCompilerId.c"
             ex="true"
             tool="0"
@@ -138,16 +167,47 @@
             tool="1"
             flavor2="0">
       </item>
-      <item path="statsims/frontend/kde/statsims_kde.cpp"
-            ex="true"
+      <item path="build/statsims/statsimskde_automoc.cpp"
+            ex="false"
             tool="1"
-            flavor2="0">
+            flavor2="4">
+        <ccTool>
+        </ccTool>
       </item>
-      <item path="statsims/gstatsimelements.h" ex="true" tool="3" flavor2="0">
+      <folder path="statsims/build">
+        <ccTool>
+          <preprocessorList>
+            <Elem>MAKE_STATSIMSKDE_LIB</Elem>
+          </preprocessorList>
+        </ccTool>
+      </folder>
+      <folder path="statsims/statsims/frontend">
+        <ccTool>
+          <preprocessorList>
+            <Elem>MAKE_STATSIMSKDE_LIB</Elem>
+          </preprocessorList>
+        </ccTool>
+      </folder>
+      <item path="statsims/frontend/kde/statsims_kde.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+        <ccTool>
+        </ccTool>
       </item>
-      <item path="statsims/statsims.cpp" ex="true" tool="1" flavor2="0">
+      <item path="statsims/gstatprofdoc.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool>
+          <preprocessorList>
+            <Elem>statsims_EXPORTS</Elem>
+          </preprocessorList>
+        </ccTool>
       </item>
-      <item path="statsims/statsims.h" ex="true" tool="3" flavor2="0">
+      <item path="statsims/statsims.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool>
+          <preprocessorList>
+            <Elem>statsims_EXPORTS</Elem>
+          </preprocessorList>
+        </ccTool>
       </item>
     </conf>
   </confs>

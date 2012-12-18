@@ -236,9 +236,9 @@ template<class E1,class E2>
 		Stats.AddLine(Line,Sub()->GetName());
 
 		size_t NbElements(0);                        // Number of elements in Sub()
-		double LocalAvgMinIntra(0.0);                // Average minimum intra-cluster similarity for Sub()
+		double LocalAvgMinIntra(2.0);                // Average minimum intra-cluster similarity for Sub()
 		double LocalAvgIntra(0.0);                   // Average intra-cluster similarity for Sub()
-		double LocalAvgMaxInter(0.0);                // Average maximum inter-cluster similarity for Sub()
+		double LocalAvgMaxInter(-2.0);                // Average maximum inter-cluster similarity for Sub()
 		double LocalAvgInter(0.0);                   // Average inter-cluster similarity for Sub()
 		double LocalAvgRie(0.0);                     // Average Rie for Sub()
 		double LocalAvgIn(0.0);                      // Average incoherence for Sub()

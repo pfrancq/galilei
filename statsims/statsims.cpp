@@ -75,7 +75,7 @@ class GStatSimDocs : public GStatSimElements<GDoc,GDoc>
 public:
 	GStatSimDocs(GSession* ses,RWorksheet& stats,size_t idx) : GStatSimElements<GDoc,GDoc>(ses,otDoc,otDoc,stats,idx)
 	{
-		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents Similarities");
+		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Document Similarities");
 	}
 
 	virtual R::RCursor<GDoc> GetE1Cursor(void)
@@ -103,7 +103,7 @@ public:
 
 	GStatSimProfiles(GSession* ses,RWorksheet& stats,size_t idx) : GStatSimElements<GProfile,GProfile>(ses,otProfile,otProfile,stats,idx)
 	{
-		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profiles Similarities");
+		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profile Similarities");
 	}
 
 	virtual R::RCursor<GProfile> GetE1Cursor(void)
@@ -133,7 +133,7 @@ public:
 
 	GStatSimDocGrp(GSession* ses,RWorksheet& stats,size_t idx) : GStatSimElements<GDoc,GCommunity>(ses,otDoc,otCommunity,stats,idx), Com(1)
 	{
-		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents/Groups Similarities");
+		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Document/Community Similarities");
 	}
 
 	virtual R::RCursor<GDoc> GetE1Cursor(void)
@@ -162,7 +162,7 @@ public:
 
 	GStatSimDocProf(GSession* ses,RWorksheet& stats,size_t idx) : GStatSimElements<GDoc,GProfile>(ses,otDoc,otProfile,stats,idx)
 	{
-		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents/Profiles Similarities");
+		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Document/Profile Similarities");
 	}
 
 	virtual R::RCursor<GDoc> GetE1Cursor(void)
@@ -192,7 +192,7 @@ public:
 
 	GStatSimProfGrp(GSession* ses,RWorksheet& stats,size_t idx) : GStatSimElements<GProfile,GCommunity>(ses,otProfile,otCommunity,stats,idx), Com(1)
 	{
-		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profiles/Groups Similarities");
+		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profile/Community Similarities");
 	}
 
 	virtual R::RCursor<GProfile> GetE1Cursor(void)
@@ -256,26 +256,28 @@ void GStatsSims::DoExportDocsSims(void)
 		return;
 
 	// Get the measure
-	GMeasure* Measure(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents Similarities"));
+	GMeasure* Measure(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Document Similarities"));
 	double tmp;
-	bool NewLine;
-	bool NewComma;
 
 	// Create the file
 	RTextFile Export(DocsSims);
 	Export.Open(RIO::Create);
 
-	// Save the sims
+	// Write the identifiers of the documents
+	Export<<"Documents";
 	R::RCursor<GDoc> Objs1(Session->GetObjs(pDoc));
+	for(Objs1.Start();!Objs1.End();Objs1.Next())
+		Export<<","<<Objs1()->GetId();
+
+	// Save the sims
 	R::RCursor<GDoc> Objs2(Session->GetObjs(pDoc));
-	for(Objs1.Start(),NewLine=false;!Objs1.End();Objs1.Next())
+	for(Objs1.Start();!Objs1.End();Objs1.Next())
 	{
-		if(NewLine)
-			Export<<endl;
-		for(Objs2.Start(),NewComma=false;!Objs2.End();Objs2.Next())
+		// New Line and start with the identifier of the document
+		Export<<endl<<Objs1()->GetId();
+		for(Objs2.Start();!Objs2.End();Objs2.Next())
 		{
-			if(NewComma)
-				Export<<',';
+			Export<<',';
 			if(Objs1()==Objs2())
 				Export<<"1.000000E+00";
 			else
@@ -283,9 +285,7 @@ void GStatsSims::DoExportDocsSims(void)
 				Measure->Measure(0,Objs1()->GetId(),Objs2()->GetId(),&tmp);
 				Export<<tmp;
 			}
-			NewComma=true;
 		}
-		NewLine=true;
 	}
 }
 
@@ -425,7 +425,7 @@ void GStatsSims::Run(GSlot*)
 	if(Docs)
 	{
 		size_t First(Idx);
-		AddColumns(Stats,Idx,"Docs");
+		AddColumns(Stats,Idx,"Documents");
 		GStatSimDocs Stat(Session,Stats,First);
 		Stat.Run(GetMeasureType());
 	}
@@ -439,7 +439,7 @@ void GStatsSims::Run(GSlot*)
 	if(GroupDoc)
 	{
 		size_t First(Idx);
-		AddColumns(Stats,Idx,"Documents/Groups");
+		AddColumns(Stats,Idx,"Documents/Communities");
 		GStatSimDocGrp Stat(Session,Stats,First);
 		Stat.Run(GetMeasureType());
 	}
@@ -452,7 +452,7 @@ void GStatsSims::Run(GSlot*)
 	}
 	if(SameDocProf)
 	{
-		size_t First(Idx);
+		//size_t First(Idx);
 		AddColumns(Stats,Idx,"Profiles/Common Documents");
 		GStatProfDoc Stat(Session,File);
 		Stat.Run();
@@ -460,7 +460,7 @@ void GStatsSims::Run(GSlot*)
 	if(GroupProf)
 	{
 		size_t First(Idx);
-		AddColumns(Stats,Idx,"Profiles/Groups");
+		AddColumns(Stats,Idx,"Profiles/Communities");
 		GStatSimProfGrp Stat(Session,Stats,First);
 		Stat.Run(GetMeasureType());
 	}
