@@ -43,20 +43,6 @@ CREATE TABLE `concepts` (
 SET character_set_client = @saved_cs_client;
 
 --
--- Table structure for table `conceptcats`
---
-
-DROP TABLE IF EXISTS `conceptcats`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `conceptcats` (
-  `catid` int(11) unsigned NOT NULL auto_increment,
-  `name` varchar(200) collate utf8_bin NOT NULL,
-  PRIMARY KEY  (`catid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
-
---
 -- Table structure for table `concepttypes`
 --
 
@@ -65,8 +51,8 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `concepttypes` (
   `typeid` int(11) unsigned NOT NULL auto_increment,
-  `catid` int(11) unsigned NOT NULL default '0',
-  `name` varchar(200) collate utf8_bin NOT NULL,
+  `catid` int(11) unsigned,
+  `name` varchar(50) collate utf8_bin NOT NULL,
   `description` varchar(200) collate utf8_bin NOT NULL,
   `refdocs` int(11) unsigned NOT NULL default '0',
   `refcommunities` int(11) unsigned NOT NULL default '0',
@@ -184,19 +170,6 @@ CREATE TABLE `docsbycommunities` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
---
--- Table structure for table `docsbylinks`
---
-
-DROP TABLE IF EXISTS `docsbylinks`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `docsbylinks` (
-  `docid` int(11) unsigned NOT NULL,
-  `linkid` int(11) unsigned NOT NULL,
-  `occurs` int(11) unsigned default NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
 
 --
 -- Table structure for table `docsbyprofiles`
@@ -210,7 +183,9 @@ CREATE TABLE `docsbyprofiles` (
   `profileid` int(11) unsigned NOT NULL,
   `fdbk` int(3) NOT NULL,
   `done` date NOT NULL,
-  PRIMARY KEY (`docid`,`profileid`),
+  `langid` char(2) NOT NULL,
+  `computed` date NOT NULL,
+  `updated` date NOT NULL,
   KEY `profileidx` (`profileid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
@@ -343,3 +318,5 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2009-04-10  8:08:01
