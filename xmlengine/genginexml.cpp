@@ -455,7 +455,6 @@ void GEngineXML::BuildRefs(RNodeCursor<GConceptTree,GConceptNode>& nodes)
 		// Look for the type of node
 		GEngineXML::cRef::tType Type;
 		if( (nodes()->GetType()==ttText) ||
-			 (nodes()->GetType()==ttURI)  ||
 			 (nodes()->GetType()==ttLink) )
 			Type=GEngineXML::cRef::Text;
 		else

@@ -339,7 +339,6 @@ double GProm::ComputeType(GResNode* node)
 	switch(node->GetNode()->GetType())
 	{
 		case ttLink:
-		case ttURI:
 			Ret=1;
 			break;
 		case ttSemantic:
