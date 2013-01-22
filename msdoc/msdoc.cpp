@@ -169,7 +169,7 @@ void GFilterMSDoc::subDocFound(const wvWare::FunctorBase* functor, int data)
 void GFilterMSDoc::WriteParagraph(RString par)
 {
 	if(!par.IsEmpty())
-		Analyzer->ExtractBody(par,0);
+		Analyzer->ExtractDefaultText(par,0);
 	Paragraph="";
 }
 

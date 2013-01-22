@@ -322,7 +322,7 @@ void GFilterPS::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 				Paragraph=false;
 			}
 		}
-		analyzer->ExtractBody(Begin,0);
+		analyzer->ExtractDefaultText(Begin,0);
 	}
 
 	// Clean up

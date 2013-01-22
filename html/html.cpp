@@ -191,9 +191,9 @@ void GFilterHTML::Text(const RString& text)
 	else if(BodyTag)
 	{
 		if(DetectDivisions)
-			Analyzer->ExtractBody(text,GetLastTokenPos(),Divisions()->Depth);
+			Analyzer->ExtractDefaultText(text,GetLastTokenPos(),Divisions()->Depth);
 		else
-			Analyzer->ExtractBody(text,GetLastTokenPos(),GetCurrentDepth());
+			Analyzer->ExtractDefaultText(text,GetLastTokenPos(),GetCurrentDepth());
 	}
 }
 

@@ -62,7 +62,7 @@ void GFilterTXT::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 	while(!Src.End())
 	{
 		size_t Pos(Src.GetPos());
-		analyzer->ExtractBody(Src.GetLine(false),Pos);
+		analyzer->ExtractDefaultText(Src.GetLine(false),Pos);
 	}
 }
 

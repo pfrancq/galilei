@@ -375,22 +375,22 @@ void GXML::Text(const RString& text)
 			if(ExtractMetadata)
 				if(Debug)
 					cout<<"    Add metadata "<<text<<endl;
-				Analyzer->ExtractTextual(text,Occur->Tag->GetConcept(),GetLastTokenPos(),GetCurrentDepth());
+				Analyzer->ExtractText(text,Occur->Tag->GetConcept(),GetLastTokenPos(),GetCurrentDepth());
 			break;
 		case XMLTag::Text:
 			if(Debug)
-				cout<<"    Add textual "<<text<<endl;
-			Analyzer->ExtractBody(text,GetLastTokenPos(),GetCurrentDepth());
+				cout<<"    Add text "<<text<<endl;
+			Analyzer->ExtractDefaultText(text,GetLastTokenPos(),GetCurrentDepth());
 			break;
 		case XMLTag::Unknown:
 			// We must guess if it is a metadata tag
 			if((!DetectMetadataTag) || (DetectMetadataTag&&((GetCurrentDepth()>MetadataMaxDepth)||(Occur->Tag->NbOccurs>MetadataMaxOccurs))))
 			{
 				if(Debug)
-					cout<<"    Add textual "<<text<<endl;
+					cout<<"    Add text "<<text<<endl;
 
 				// We are sure that isn't a metadata -> Add normal text
-				Analyzer->ExtractBody(text,GetLastTokenPos(),GetCurrentDepth());
+				Analyzer->ExtractDefaultText(text,GetLastTokenPos(),GetCurrentDepth());
 			}
 			else
 			{
@@ -469,9 +469,9 @@ void GXML::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 					for(Text.Start();!Text.End();Text.Next())
 					{
 						if(IsText)
-							Analyzer->ExtractBody(Text()->Text,Text()->Pos,Text()->Depth);
+							Analyzer->ExtractDefaultText(Text()->Text,Text()->Pos,Text()->Depth);
 						else if(ExtractMetadata)
-							Analyzer->ExtractTextual(Text()->Text,Tag()->GetConcept(),Text()->Pos,Text()->Depth);
+							Analyzer->ExtractText(Text()->Text,Tag()->GetConcept(),Text()->Pos,Text()->Depth);
 					}
 				}
 			}

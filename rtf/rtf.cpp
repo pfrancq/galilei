@@ -223,7 +223,7 @@ void GFilterRTF::AnalyzeText(GDocAnalyze* analyzer,RString str)
 				t=Tags->GetPtr<const RString>(readTag);
 				if((t)&&(t->Type==Tag::tPAR)&&(!par.IsEmpty()))
 				{
-					analyzer->ExtractBody(par,0);
+					analyzer->ExtractDefaultText(par,0);
 					par="";
 				}
 			}
@@ -238,7 +238,7 @@ void GFilterRTF::AnalyzeText(GDocAnalyze* analyzer,RString str)
 				t=Tags->GetPtr<const RString>(readTag);
 				if((t)&&(t->Type==Tag::tPAR)&&(!par.IsEmpty()))
 				{
-					analyzer->ExtractBody(par,0);
+					analyzer->ExtractDefaultText(par,0);
 					par="";
 				}
 			}
@@ -249,7 +249,7 @@ void GFilterRTF::AnalyzeText(GDocAnalyze* analyzer,RString str)
 
 	//test If some text has not been added yet to structure
 	if(!par.IsEmpty())
-		analyzer->ExtractBody(par,0);
+		analyzer->ExtractDefaultText(par,0);
 }
 
 
