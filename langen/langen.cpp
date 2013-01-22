@@ -842,7 +842,10 @@ bool GLangEN::ApplyRules(RString& kwd,RContainer<PorterRule,true,false>& rules)
 		}
 
 		// Replace the old suffix by the new one, and return 'Next'.
-		kwd.Insert(Cur()->NewSuffix,-Cur()->OldSuffix.GetLen(),(size_t)-1);
+		if(Cur()->OldSuffix.GetLen())
+			kwd.Insert(Cur()->NewSuffix,-Cur()->OldSuffix.GetLen(),(size_t)-1);
+		else
+			kwd+=Cur()->NewSuffix;
 		return(Cur()->Next);
 	}
 	return(false);

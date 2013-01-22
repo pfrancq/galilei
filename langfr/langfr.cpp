@@ -978,7 +978,10 @@ bool GLangFR::ApplyRules(RString& kwd,RContainer<FrenchPorterRule,true,false>& r
 			continue;
 
 		// Replace the old suffix by the new one
-		kwd.Insert(Cur()->NewSuffix,-Cur()->OldSuffix.GetLen(),(size_t)-1);
+		if(Cur()->OldSuffix.GetLen())
+			kwd.Insert(Cur()->NewSuffix,-Cur()->OldSuffix.GetLen(),(size_t)-1);
+		else
+			kwd+=Cur()->NewSuffix;
 		return(true);
 	}
 	return(false);
