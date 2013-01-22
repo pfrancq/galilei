@@ -169,7 +169,7 @@ void KGALILEICenter::initActions(void)
 	Actions.insert(Actions.size(),addAction("Show &Documents","showDocs",SLOT(showDocs()),"text-xml"));
 	Actions.insert(Actions.size(),addAction("Export Documents Description","exportDocs",SLOT(exportDocs())));
 	Actions.insert(Actions.size(),addAction("Index Documents","indexDocs",SLOT(indexDocs())));
-	Actions.insert(Actions.size(),addAction("Load and Analyze a Document","docAnalyze",SLOT(docAnalyze())));
+	Actions.insert(Actions.size(),addAction("Load and Analyze a Document","docAnalyze",SLOT(docAnalyze()),"","Ctrl+O"));
 	Actions.insert(Actions.size(),addAction("&Analyze Documents","docsAnalyze",SLOT(docsAnalyze()),"kfind"));
 	Actions.insert(Actions.size(),addAction("&Export Documents","docsIndexer",SLOT(docsIndexer())));
 	Actions.insert(Actions.size(),addAction("&Query Meta Engine","queryMetaEngine",SLOT(queryMetaEngine()),"edit-find"));

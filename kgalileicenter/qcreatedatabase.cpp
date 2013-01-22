@@ -63,13 +63,13 @@ class QCreateDB : public QSessionThread
 	QCreateDatabase* Info;
 public:
 	QCreateDB(KGALILEICenter* app,QCreateDatabase* info) : QSessionThread(app), Info(info) {}
-	RString GetConceptType(const RString& cat,const RString& name,const RString& desc,RDb* Db);
+	RString GetConceptType(tConceptCat cat,const RString& name,const RString& desc,RDb* Db);
 	virtual void DoIt(void);
 };
 
 
 //-----------------------------------------------------------------------------
-RString QCreateDB::GetConceptType(const RString& cat,const RString& name,const RString& desc,RDb* Db)
+RString QCreateDB::GetConceptType(tConceptCat cat,const RString& name,const RString& desc,RDb* Db)
 {
 	// Look if the concept type exists
 	RQuery Select(Db,"SELECT typeid FROM concepttypes WHERE name='"+name+"'");
@@ -79,14 +79,8 @@ RString QCreateDB::GetConceptType(const RString& cat,const RString& name,const R
 		return(Select[0]);
 	}
 
-	// Look for the concept category
-	RString CatId;
-	RQuery Cat(Db,"SELECT catid FROM conceptcats WHERE name='"+cat+"'");
-	Cat.Start();
-	CatId=Cat[0];
-
 	// Create the type
-	RQuery Insert(Db,"INSERT INTO concepttypes(name,description,catid) VALUES('"+name+"','"+desc+"','"+CatId+"')");
+	RQuery Insert(Db,"INSERT INTO concepttypes(name,description,catid) VALUES('"+name+"','"+desc+"','"+RString::Number(cat)+"')");
 	RQuery GetId(Db,"SELECT typeid FROM concepttypes WHERE typeid=LAST_INSERT_ID()");
 	GetId.Start();
 	return(GetId[0]);
@@ -103,11 +97,6 @@ void QCreateDB::DoIt(void)
  	Parent->setLabelText("Dump database model");
  	Db.RunSQLFile(Info->DbSchema);
 
-	// Create Main Concept Categories
-	RQuery InsertText(&Db,"INSERT INTO conceptcats(name) VALUES('Text')");
-	RQuery InsertSemantic(&Db,"INSERT INTO conceptcats(name) VALUES('Semantic')");
-	RQuery InsertMetadata(&Db,"INSERT INTO conceptcats(name) VALUES('Metadata')");
-
 	// Create Languages
  	Parent->setLabelText("Insert the language stopwords");
  	RCursor<GPlugInFactory> Langs(GALILEIApp->GetFactories("Lang"));
@@ -122,15 +111,18 @@ void QCreateDB::DoIt(void)
  		Factory->CreateStopWords(Stops,Code,Name);
 
  		// Create the concept types
- 		RString TypeId(GetConceptType("Text",Code+"Stopwords",Name+" Stopwords",&Db));
+ 		RString TypeId(GetConceptType(ccText,Code+"Stopwords",Name+" Stopwords",&Db));
 
  		RCursor<RString> Cur(Stops);
  		for(Cur.Start();!Cur.End();Cur.Next())
  			RQuery InsertStopWord(&Db,"INSERT INTO concepts(name,typeid) VALUES("+RQuery::SQLValue(*Cur())+","+TypeId+")");
  	}
 
- 	// Create the configuration file with MySQL as default storage
- 	RTextFile Config(RString(getenv("HOME"))+"/.r/config/lib/galilei/sessions/"+Info->Name+".config","utf-8");
+ 	// Create the configuration file with MySQL as default storage if it doesn't exist
+	RURI URI(RString(getenv("HOME"))+"/.r/config/lib/galilei/sessions/"+Info->Name+".config");
+	if(RFile::Exists(URI))
+		return;
+ 	RTextFile Config(URI,"utf-8");
  	Config.Open(RIO::Create);
  	Config<<"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"<<endl;
  	Config<<"<!DOCTYPE config>"<<endl;

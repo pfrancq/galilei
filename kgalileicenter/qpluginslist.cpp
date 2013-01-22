@@ -292,9 +292,6 @@ void QPlugInsList::apply(GSession* session)
 			case Tokenizers:
 				GALILEIApp->SetCurrentPlugIn("Tokenizer",FromQString(Current->currentText()),false);
 				break;
-			case Analyzers:
-				GALILEIApp->SetCurrentPlugIn("Analyzer",FromQString(Current->currentText()),false);
-				break;
 			case LinkCalcs:
 				GALILEIApp->SetCurrentPlugIn("LinkCalc",FromQString(Current->currentText()),false);
 				break;
