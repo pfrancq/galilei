@@ -85,12 +85,12 @@ void GStringIndexer::TreatTokens(GDocAnalyze* analyzer)
 		// Get the term
 		RString Term(Token()->GetToken());
 
-		// Look if the token is not too small or has enough occurrences
+		// Look if necessary if the token is not too small or has enough occurrences
 		if(
-			((!ApplyRulesMetadata)&&(!Token()->IsUsed(ccMetadata)))        // We must not apply the rule to the metadata and token is used in the metadata
-			||
-			(ApplyRulesMetadata&&((Term.GetLen()<MinSize)||(Token()->GetNbOccurs()<MinOccurs)))
-		   )
+			(((!ApplyRulesMetadata)&&(!Token()->IsUsed(ccMetadata))) || (ApplyRulesMetadata))
+			&&
+			((Term.GetLen()<MinSize)||(Token()->GetNbOccurs()<MinOccurs))
+			)
 			continue;
 
 		// OK -> Assign a concept to it

@@ -30,6 +30,7 @@
 //------------------------------------------------------------------------------
 // include files for R/GALILEI projects
 #include <gstringtokenizer.h>
+#include <gsession.h>
 #include <gdocanalyze.h>
 
 
@@ -48,8 +49,18 @@ const bool Debug=false;
 
 //------------------------------------------------------------------------------
 GStringTokenizer::GStringTokenizer(GSession* session,GPlugInFactory* fac)
-	: GTokenizer(session,fac)
+	: GTokenizer(session,fac), Schemes(30), URISpace(0)
 {
+	InitSchemes();
+}
+
+
+//------------------------------------------------------------------------------
+void GStringTokenizer::InitSchemes(void)
+{
+	Schemes.InsertPtr(new RString("about"));
+	Schemes.InsertPtr(new RString("http"));
+	Schemes.InsertPtr(new RString("mailto"));
 }
 
 
@@ -57,6 +68,7 @@ GStringTokenizer::GStringTokenizer(GSession* session,GPlugInFactory* fac)
 void GStringTokenizer::CreateConfig(void)
 {
 	InsertParam(new RParamValue("ExtractNonLetter",true,"Tokens containing non-letters can be information entities?"));
+	InsertParam(new RParamValue("ExtractURI",true,"Extract URI as tokens representing Links?"));
 	InsertParam(new RParamValue("Filtering",true,"Should the word be filtered?"));
 	InsertParam(new RParamValue("MaxNonLetter",5,"Maximum number of non-letter characters to consider a token as valid."));
 	InsertParam(new RParamValue("MaxConsecutiveOccurs",3,"Maximum consecutive occurrences of a same character to consider a word valid."));
@@ -68,6 +80,7 @@ void GStringTokenizer::CreateConfig(void)
 void GStringTokenizer::ApplyConfig(void)
 {
 	ExtractNonLetter=FindParam<RParamValue>("ExtractNonLetter")->GetBool();
+	ExtractURI=FindParam<RParamValue>("ExtractURI")->GetBool();
 	Filtering=FindParam<RParamValue>("Filtering")->GetBool();
 	MaxConsecutiveOccurs=FindParam<RParamValue>("MaxConsecutiveOccurs")->GetUInt();
 	MaxNonLetter=FindParam<RParamValue>("MaxNonLetter")->GetUInt();
@@ -85,6 +98,51 @@ void GStringTokenizer::Start(void)
 	NbNonLetters=0;
 	LastCar=0;
 	NbCurOccurs=0;
+	PosDoublePoint=0;
+	Pos1At=0;
+	Pos2At=0;
+}
+
+
+//------------------------------------------------------------------------------
+bool GStringTokenizer::IsURI(R::RString& str)
+{
+	if(!PosDoublePoint)
+	{
+		// Verify if it is a normal email address
+
+		// Is there one and only one at sign ?
+		if((!Pos1At)||(Pos2At))
+			return(false);
+
+		// Scan the characters
+		bool SearchPoint(false);
+		RCharCursor Car(str);
+		for(Car.StartFromEnd();!Car.Begin();Car.Prev())
+		{
+			// Is at least one point after the at sign
+			if(SearchPoint&&(Car()==RChar('.')))
+			{
+				if(Car.GetPos()<=Pos1At)
+					return(false);
+				SearchPoint=false;
+			}
+
+			// No other non alphanumeric character are accepted except '.' and '@'
+			if((!Car().IsAlNum())&&(Car()!=RChar('.'))&&(Car()!=RChar('@')))
+				return(false);
+		}
+
+		str="mailto:"+str;
+		return(true);
+	}
+
+	// Look at the scheme name
+	RString Schema(str.Mid(0,PosDoublePoint-1));
+	if(Schemes.IsIn(Schema))
+		return(true);
+
+	return(false);
 }
 
 
@@ -144,6 +202,15 @@ bool GStringTokenizer::TreatChar(GDocAnalyze* analyzer,const R::RChar& car)
 				// If  they aren't accepted -> not a valid token
 				if(!ExtractNonLetter)
 					ValidToken=false;
+
+				if(car==RChar(':'))
+					PosDoublePoint=GetPos();
+				else if(car==RChar('@'))
+				{
+					if(Pos1At)
+						Pos2At=GetPos();
+					Pos1At=GetPos();
+				}
 			}
 
 			if(State!=Sep)
@@ -162,7 +229,8 @@ bool GStringTokenizer::TreatChar(GDocAnalyze* analyzer,const R::RChar& car)
 			if(!car.IsAlpha())
 			{
 				NbNonLetters++;
-				// If  they aren't accepted -> not a valid token
+
+				// If  they aren't accepted -> sure it is not a valid token
 				if(!ExtractNonLetter)
 					ValidToken=false;
 			}
@@ -177,17 +245,37 @@ bool GStringTokenizer::TreatChar(GDocAnalyze* analyzer,const R::RChar& car)
 
 	if(State==EndToken)
 	{
+		if(Debug)
+			cout<<"EndToken *"+Extract(FirstPos,SkipSep)+"*"<<endl;
+
 		// Verify if it is a valid token
-		if(ValidToken&&(NbNonLetters<=MaxNonLetter))
+		if(ValidToken)
 		{
-			// Verify the ratio
-			RString Token(Extract(FirstPos,SkipSep).ToLower());
-			double Size(SkipSep-FirstPos);
-			if(((Size-NbNonLetters)/Size)>=NormalRatio)
+			RString Token(Extract(FirstPos,SkipSep));
+			if(((PosDoublePoint&&(PosDoublePoint<=SkipSep))||Pos1At)&&IsURI(Token))
 			{
-				if(Debug)
-					cout<<"Add Token *"+Token+"*"<<endl;
-				analyzer->AddToken(Token);
+				GVector* Cur(analyzer->GetCurrentVector());
+				GTokenOccur* Occur(analyzer->AddToken(Token,analyzer->GetDefaultURI(),ttLink));
+				if(!Occur->GetToken()->GetConcept())
+				{
+					if(!URISpace)
+						URISpace=Session->GetInsertConceptType(ccLink,"URI","Uniform Resource Identifier");
+					Occur->GetToken()->SetConcept(URISpace->GetInsertConcept(Token));
+				}
+				analyzer->SetCurrentVector(Cur);
+			}
+			else if(NbNonLetters<=MaxNonLetter)
+			{
+				// Verify the ratio
+				double Size(SkipSep-FirstPos);
+				if(((Size-NbNonLetters)/Size)>=NormalRatio)
+				{
+					if(Debug)
+						cout<<"Add Token *"+Token.ToLower()+"*"<<endl;
+					analyzer->AddToken(Token.ToLower());
+				}
+				else
+					analyzer->SkipToken();
 			}
 			else
 				analyzer->SkipToken();

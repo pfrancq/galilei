@@ -93,6 +93,7 @@ bool Configure(GPlugIn* fac)
 
 	// Stems
 	dlg.ExtractNonLetter->setChecked(fac->FindParam<RParamValue>("ExtractNonLetter")->GetBool());
+	dlg.ExtractURI->setChecked(fac->FindParam<RParamValue>("ExtractURI")->GetBool());
 	dlg.Filtering->setChecked(fac->FindParam<RParamValue>("Filtering")->GetBool());
 	dlg.MaxConsecutiveOccurs->setValue(fac->FindParam<RParamValue>("MaxConsecutiveOccurs")->GetInt());
 	dlg.MaxNonLetter->setValue(fac->FindParam<RParamValue>("MaxNonLetter")->GetInt());
@@ -102,6 +103,7 @@ bool Configure(GPlugIn* fac)
 	{
 		// Stems
 		fac->FindParam<RParamValue>("ExtractNonLetter")->SetBool(dlg.ExtractNonLetter->isChecked());
+		fac->FindParam<RParamValue>("ExtractURI")->SetBool(dlg.ExtractURI->isChecked());
 		fac->FindParam<RParamValue>("Filtering")->SetBool(dlg.Filtering->isChecked());
 		fac->FindParam<RParamValue>("MaxConsecutiveOccurs")->SetUInt(dlg.MaxConsecutiveOccurs->value());
 		fac->FindParam<RParamValue>("MaxNonLetter")->SetUInt(dlg.MaxNonLetter->value());

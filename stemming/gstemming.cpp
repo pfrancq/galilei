@@ -60,7 +60,7 @@ void GStemming::TreatTokens(GDocAnalyze* analyzer)
 		RCursor<GToken> Token(analyzer->GetTokens());
 		for(Token.Start();!Token.End();Token.Next())
 		{
-			if(Token()->GetType()!=ttText)
+			if((Token()->GetType()!=ttText)||(!Token()->IsAlpha()))
 				continue;
 
 			RString Stem(Lang->GetStemming(Token()->GetToken()));

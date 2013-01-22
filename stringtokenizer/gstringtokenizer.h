@@ -57,6 +57,11 @@ class GStringTokenizer : public GTokenizer
 	bool ExtractNonLetter;
 
 	/**
+	 * Extract URI as links.
+	 */
+	bool ExtractURI;
+
+	/**
 	* Filter the token extracted?
 	*/
 	bool Filtering;
@@ -98,6 +103,21 @@ class GStringTokenizer : public GTokenizer
 	bool ValidToken;
 
 	/**
+	 * Position of the first double point.
+	 */
+	size_t PosDoublePoint;
+
+	/**
+	 * Position of the first at sign.
+	 */
+	size_t Pos1At;
+
+	/**
+	 * Position of the second at sign.
+	 */
+	size_t Pos2At;
+
+	/**
 	 * State of the finite-state machine (start a new token, parsing a normal
 	 * character, parsing a separation character or end the token).
 	 */
@@ -113,6 +133,16 @@ class GStringTokenizer : public GTokenizer
 	 */
 	size_t FirstPos;
 
+	/**
+	 * Accepted schemes.
+    */
+	RContainer<RString,true,true> Schemes;
+	
+	/**
+	 * Type of the concepts representing URI.
+	 */
+	GConceptType* URISpace;
+
 public:
 
 	/**
@@ -121,6 +151,11 @@ public:
 	* @param fac            Factory.
 	*/
 	GStringTokenizer(GSession* session,GPlugInFactory* fac);
+
+	/**
+	 * Initialize the schemes container.
+    */
+	void InitSchemes(void);
 
 	/**
 	* Create the parameters.
@@ -136,6 +171,13 @@ public:
 	 * Method call each time the tokenizer is started to analyze some text.
 	 */
 	virtual void Start(void);
+
+	/**
+	 * Look if a string is an URI that must be added as an link token.
+    * @param str            String to analyze (can be modified).
+    * @return true if it was treated as URI.
+    */
+	bool IsURI(R::RString& str);
 
 	/**
 	 * This method is called each time the analyzer treat a character.
