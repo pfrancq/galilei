@@ -119,7 +119,7 @@ public:
 	 * @endcode
 	 */
 	virtual void Panel(void);
-
+	
 	/**
 	 * Method called before the dialog box is opened. It uses the values of the
 	 * parameters to initialize the dialog box. This method can be override

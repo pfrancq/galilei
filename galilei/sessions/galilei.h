@@ -199,8 +199,7 @@ enum tTokenType
 	ttMetadata               /** Metadata token (for example author), the value
 	                           * being made of textual tokens.*/,
 	ttAttribute              /** Attribute token (for example a XML attribute).*/,
-	ttLink                   /** Link token (for example an <a> tag in HTML.*/,
-	ttURI                    /** URI token.*/
+	ttLink                   /** Link token (for example an <a> tag in HTML.*/
 };
 
 

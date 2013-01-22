@@ -557,7 +557,14 @@ R::RCursor<GPlugInFactory> GPlugInManager::GetFactories(const R::RString& list) 
 			ThrowGException("No type '"+list+"' available for '"+Name+"'");
 	}
 	else
+	{
+		if(PluginsType==ptOrdered)
+		{
+			Data.List->Factories.ReOrder();
+			Data.List->Plugins.ReOrder();
+		}
 		List=Data.List;
+	}
 	return(RCursor<GPlugInFactory>(List->Factories));
 }
 

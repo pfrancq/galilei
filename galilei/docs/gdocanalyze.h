@@ -74,7 +74,7 @@ namespace GALILEI{
  * filter to ensure it.
 
  * Once a document is analyzed, it send a notification 'DocAnalyzed'. It can be
- * catched by all classes inhereting from R::RObject that become an observator
+ * catched by all classes inheriting from R::RObject that become an observator
  * with the command (generally in the constructor):
  * @code
  * InsertObserver(HANDLER(TheClass::Handle),"DocAnalyzed");
@@ -137,15 +137,20 @@ class GDocAnalyze : R::RDownload
 	 */
 	R::RCastCursor<GPlugIn,GAnalyzer> Analyzers;
 
+   /**
+    * Meta-concept representing the default textual content.
+    */
+   GConcept* DefaultText;
+
 	/**
 	 * Concepts related to the Dublin Core Metadata Initiative.
 	 */
 	GConceptType* DCMI;
 
-   /**
-    * Meta-concept representing the default textual content.
-    */
-   GConcept* Body;
+	/**
+	 * Concepts related to the default URI content.
+	 */
+	GConcept* DefaultURI;
 
   	/**
 	 * Memory of tokens.
@@ -285,9 +290,33 @@ private:
 public:
 
 	/**
-    * @return the meta-concept representing the default textual content.
+    * @return the meta-concept representing the default text content.
     */
-	GConcept* GetBody(void);
+	GConcept* GetDefaultText(void);
+
+	/**
+    * @return the concept type representing the DMCI.
+    */
+	GConceptType* GetDCMI(void);
+
+	/**
+    * @return the meta-concept representing the default URI content.
+    */
+	GConcept* GetDefaultURI(void);
+
+	/**
+	 * Get the current vector.
+	 * @return a pointer to the current vector.
+	 */
+	GVector* GetCurrentVector(void) const {return(CurVector);}
+
+	/**
+	 * Set the current vector.
+	 *
+	 * Be careful with this method.
+    * @param vector          Pointer to the vector.
+    */
+	void SetCurrentVector(GVector* vector);
 
 	/**
 	 * Add a token to the current vector.
@@ -303,6 +332,22 @@ public:
 	 * @return the occurrence of the token added.
 	 */
 	GTokenOccur* AddToken(const R::RString& token,tTokenType type=ttUnknown,double weight=0.0);
+
+	/**
+	 * Add a token to a given vector.
+	 *
+	 * The current syntactic position is incremented by one.
+    * @warning This method should only be called by child classes of
+    *          GTokenizer.
+	 * @param token          Token to add.
+	 * @param metaconcept    Meta-concept of the vector associated to the concept.
+	 * @param type           Token type. If ttUnknown, the current token type is
+	 *                       used.
+	 * @param weight         Weight associate to the concept. If null, the
+	 *                       current weight is used.
+	 * @return the occurrence of the token added.
+	 */
+	GTokenOccur* AddToken(const R::RString& token,GConcept* metaconcept,tTokenType type=ttUnknown,double weight=0.0);
 
 	/**
 	 * Add a token of a given type and representing a concept. It is added to a
@@ -337,7 +382,7 @@ public:
 	 * @param spos           Syntactic position. If SIZE_MAX, the token is
 	 *                       supposed to be next the previous one.
 	 */
-	void ExtractTextual(const R::RString& text,GConcept* metaconcept,size_t pos,size_t depth=0,size_t spos=SIZE_MAX);
+	void ExtractText(const R::RString& text,GConcept* metaconcept,size_t pos,size_t depth=0,size_t spos=SIZE_MAX);
 
 	/**
 	 * Extract some tokens of a given text, and add them to a vector associated
@@ -355,7 +400,7 @@ public:
 	 * @param spos           Syntactic position. If SIZE_MAX, the token is
 	 *                       supposed to be next the previous one.
 	 */
-	void ExtractTextual(const R::RString& text,tTokenType type,double weight,GConcept* metaconcept,size_t pos,size_t depth=0,size_t spos=SIZE_MAX);
+	void ExtractText(const R::RString& text,tTokenType type,double weight,GConcept* metaconcept,size_t pos,size_t depth=0,size_t spos=SIZE_MAX);
 
 	/**
 	 * Extract some tokens of a given text, and add them to a vector associated
@@ -380,10 +425,10 @@ public:
 	void ExtractDCMI(const R::RString& element,const R::RString& value,size_t pos,size_t depth=0,size_t spos=SIZE_MAX);
 
    /**
-    * Extract some tokens from a given text, and add them to the 'body'
-    * meta-concept. Each time the method is called, the content is added to the
-	 * vector corresponding to the 'body' meta-concept. The tokens are supposed
-	 * to be text.
+    * Extract some tokens from a given text, and add them to a '*' (neutral)
+    * meta-concept of the type 'text block. Each time the method is called, the
+	 * content is added to the vector corresponding to the '*' meta-concept.
+	 * The tokens are supposed to be text.
 	 *
  	 * The current syntactic position is incremented by the number of tokens
 	 * extracted.
@@ -393,12 +438,13 @@ public:
 	 * @param spos           Syntactic position. If SIZE_MAX, the token is
 	 *                       supposed to be next the previous one.
     */
-   void ExtractBody(const R::RString& content,size_t pos,size_t depth=0,size_t spos=SIZE_MAX);
+   void ExtractDefaultText(const R::RString& content,size_t pos,size_t depth=0,size_t spos=SIZE_MAX);
 
    /**
-    * Extract some tokens from a given text, and add them to the 'body'
-    * meta-concept. Each time the method is called, the content is added to the
-	 * vector corresponding to the 'body' meta-concept.
+    * Extract some tokens from a given text, and add them to a '*' (neutral)
+    * meta-concept of the type 'text block. Each time the method is called, the
+	 * content is added to the vector corresponding to the '*' meta-concept.
+	 * The tokens are supposed to be text.
 	 *
  	 * The current syntactic position is incremented by the number of tokens
 	 * extracted.
@@ -410,7 +456,21 @@ public:
 	 * @param spos           Syntactic position. If SIZE_MAX, the token is
 	 *                       supposed to be next the previous one.
     */
-   void ExtractBody(const R::RString& content,tTokenType type,double weight,size_t pos,size_t depth=0,size_t spos=SIZE_MAX);
+   void ExtractDefaultText(const R::RString& content,tTokenType type,double weight,size_t pos,size_t depth=0,size_t spos=SIZE_MAX);
+
+   /**
+    * Extract a token that represents a URI, and add it to the '*' (neutral)
+    * meta-concept of the type 'URI'. Each time the method is called, the
+	 * content is added to the vector corresponding to the '*' meta-concept.
+	 *
+ 	 * The current syntactic position is incremented by one.
+    * @param uri            URI.
+	 * @param pos            Position of the URI.
+	 * @param depth          Depth of the URI.
+	 * @param spos           Syntactic position. If SIZE_MAX, the URI is
+	 *                       supposed to be next the previous one.
+    */
+   void ExtractDefaultURI(const R::RString& uri,size_t pos,size_t depth=0,size_t spos=SIZE_MAX);
 
 	/**
 	 * Assign the plug-ins. An exception is generated if no plug-ins are

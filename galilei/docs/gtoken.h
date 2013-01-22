@@ -252,7 +252,7 @@ public:
 
 	/**
 	 * Look if the token contains alphabetic characters only.
-    * @return true if it is the cas.
+    * @return true if it is the case.
     */
 	bool IsAlpha(void) const;
 

@@ -140,8 +140,6 @@ bool GToken::IsUsed(GConcept* metaconcept) const
 //------------------------------------------------------------------------------
 bool GToken::IsUsed(tConceptCat cat) const
 {
-	if(!cat)
-		return(false);
 	RCursor<GTokenOccur> Occur(Occurs);
 	for(Occur.Start();!Occur.End();Occur.Next())
 		if(Occur()->Vector->GetMetaConcept()->GetType()->GetCategory()==cat)

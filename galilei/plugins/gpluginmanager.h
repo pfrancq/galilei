@@ -435,7 +435,14 @@ public:
 				ThrowGException("No type '"+list+"' available for '"+Name+"'");
 		}
 		else
+		{
+			if(PluginsType==ptOrdered)
+			{
+				Data.List->Factories.ReOrder();
+				Data.List->Plugins.ReOrder();
+			}
 			List=Data.List;
+		}
 		return(R::RCastCursor<GPlugIn,plugin>(List->Plugins));
 	}
 

@@ -63,10 +63,15 @@ class GConceptType : public GObject
 {
 private:
 
-    /**
-     * Category.
-     */
-    tConceptCat Category;
+   /**
+    * Category.
+    */
+   tConceptCat Category;
+
+	/**
+	 * The neutral concept;
+	 */
+	GConcept* Neutral;
 
 	/**
 	 * Concepts.
@@ -157,6 +162,11 @@ public:
 	* @return the description.
 	*/
 	R::RString GetDescription(void) const {return(Description);}
+
+	/**
+    * @return the neutral concept.
+    */
+	GConcept GetNeutral(void) const;
 
 	/**
 	* @return a cursor over the main hash table.

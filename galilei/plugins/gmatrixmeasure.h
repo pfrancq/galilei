@@ -233,6 +233,11 @@ private:
 	 */
 	tObjType Cols;
 
+	/**
+	 * Force computing.
+    */
+	bool ForceCompute;
+
 public:
 
 	/**
@@ -290,6 +295,18 @@ public:
 	 * of the plug-in.
 	 */
 	virtual R::RString GetFilesName(void) const;
+
+	/**
+	 * Specify if the values must be recomputed or if it is the stored value that
+	 * is return.
+	 * @param compute         Specify the recomputation mode.
+    */
+	void SetForceCompute(bool compute);
+
+	/**
+	 * Inform if the values are recomputed or not.
+    */
+	bool MustForceCompute(void) const {return(ForceCompute);}
 
 	/**
 	* Configurations were applied from the factory.

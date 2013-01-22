@@ -137,6 +137,13 @@ RString GMatrixMeasure::GetFilesName(void) const
 
 
 //-----------------------------------------------------------------------------
+void GMatrixMeasure::SetForceCompute(bool compute)
+{
+	ForceCompute=compute;
+}
+
+
+//-----------------------------------------------------------------------------
 void GMatrixMeasure::ApplyConfig(void)
 {
 	// Parameters that can always be changed
@@ -174,6 +181,7 @@ void GMatrixMeasure::ApplyConfig(void)
 		default:
 			ThrowGException("Type '"+FindParam<RParamValue>("Type")->Get()+"' is not a valid type");
 	}
+	ForceCompute=FindParam<RParamValue>("ForceCompute")->GetBool();
 	FastNN=FindParam<RParamValue>("FastNN")->GetBool();
 }
 
@@ -312,8 +320,8 @@ void GMatrixMeasure::Measure(size_t measure,...)
 		// Take the element from the matrix (static_cast is to ensure the call of the const operator).
 		(*res)=(*static_cast<const RGenericMatrix*>(Matrix))(id1-1,id2-1);
 
-		// If NAN -> Recomputing is necessary (Verification in the case of the full matrix)
-		if((*res)!=(*res))
+		// If NAN or ForceCompute=true -> Recomputing is necessary (Verification in the case of the full matrix)
+		if(((*res)!=(*res))||ForceCompute)
 		{
 			GObject* obj1=Session->GetObj(Lines,id1);
 			GObject* obj2=Session->GetObj(Cols,id2);
@@ -341,8 +349,8 @@ void GMatrixMeasure::Measure(size_t measure,...)
 		// Read the value from the storage
 		(*res)=Storage.Read(id1-1,id2-1);
 
-		// If NAN -> recomputing is necessary (Verification in the case of the full matrix)
-		if((*res)!=(*res))
+		// If NAN or ForceCompute=true -> recomputing is necessary (Verification in the case of the full matrix)
+		if(((*res)!=(*res))||ForceCompute)
 		{
 			GObject* obj1=Session->GetObj(Lines,id1);
 			GObject* obj2=Session->GetObj(Cols,id2);
@@ -1389,6 +1397,7 @@ void GMatrixMeasure::CreateConfig(void)
 	InsertParam(new RParamValue("NbNearest",10,"Number of nearest neighbors to store"));
 	InsertParam(new RParamValue("NbSamples",20,"Number of samples used to compute the nearest neighbors"));
 	InsertParam(new RParamValue("FastNN",true,"Use a fast computation method for the nearest neighbors (needs more memory)?"));
+	InsertParam(new RParamValue("ForceCompute",false,"Must the measure be systematically recomputed?"));
 }
 
 

@@ -81,7 +81,7 @@ void QGDocStruct::Display(GSession* session,GConceptNode* node)
 		case ttDeleted:
 			TokenType="Deleted";
 		case ttText:
-			TokenType="Textual";
+			TokenType="Text";
 			break;
 		case ttSemantic:
 			TokenType="Semantic";
@@ -97,9 +97,6 @@ void QGDocStruct::Display(GSession* session,GConceptNode* node)
 			break;
 		case ttLink:
 			TokenType="Link";
-			break;
-		case ttURI:
-			TokenType="URI";
 			break;
 	}
 	new QTreeWidgetItem(RecsList,QStringList()<<name<<TokenType<<ConceptType<<QString::number(node->GetPos())<<QString::number(node->GetSyntacticPos())<<QString::number(node->GetSyntacticDepth()));

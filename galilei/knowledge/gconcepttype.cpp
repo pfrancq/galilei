@@ -53,7 +53,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 GConceptType::GConceptType(GSession* session,tConceptCat cat,size_t id,const RString& name,const RString& desc,size_t s)
-	: GObject(session,id,name,otConceptType), Category(cat), Concepts(27,27,s,s/4),
+	: GObject(session,id,name,otConceptType), Category(cat), Neutral(0), Concepts(27,27,s,s/4),
 	  Description(desc), NbRefDocs(0), NbRefProfiles(0),
 	  NbRefCommunities(0), NbRefTopics(0), NbRefClasses(0)
 {
@@ -89,6 +89,15 @@ int GConceptType::Compare(const GConceptType* type) const
 int GConceptType::Compare(const R::RString& name) const
 {
 	return(Name.Compare(name));
+}
+
+
+//------------------------------------------------------------------------------
+GConcept GConceptType::GetNeutral(void) const
+{
+	if(Neutral)
+		const_cast<GConceptType*>(this)->Neutral=Session->InsertConcept(const_cast<GConceptType*>(this),"*");
+	return(Neutral);
 }
 
 

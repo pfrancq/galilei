@@ -69,7 +69,7 @@ bool Debug=false;
 //------------------------------------------------------------------------------
 GDocAnalyze::GDocAnalyze(GSession* session)
 	: RDownload(), Session(session), Description(), Tree(0,20000,2000), Tokenizer(0),
-	  DCMI(0), Body(0), MemoryTokens(500), MemoryOccurs(20000),
+	  DefaultText(0), DCMI(0), DefaultURI(0), MemoryTokens(500), MemoryOccurs(20000),
 	  OrderTokens(27,27,50,20), Tokens(500), Occurs(20000), Top(200), Depths(100,50),
 	  SyntacticPos(20)
 {
@@ -108,12 +108,58 @@ GToken* GDocAnalyze::CreateToken(const R::RString& token,tTokenType type)
 
 
 //------------------------------------------------------------------------------
-GConcept* GDocAnalyze::GetBody(void)
+GConcept* GDocAnalyze::GetDefaultText(void)
 {
-	// Search for the meta-concept corresponding to the default textual content
-	if(!Body)
-		Body=Session->InsertConcept(Session->GetInsertConceptType(ccText,"content","Raw content"),"body");
-	return(Body);
+	if(!DefaultText)
+		DefaultText=Session->InsertConcept(Session->GetInsertConceptType(ccText,"text block","A block of text"),"*");
+	return(DefaultText);
+}
+
+
+//------------------------------------------------------------------------------
+GConceptType* GDocAnalyze::GetDCMI(void)
+{
+	// Search for the concept types corresponding to the DMCI
+	if(!DCMI)
+	{
+		// Verify that all concepts are OK.
+		DCMI=Session->GetInsertConceptType(ccMetadata,"http://purl.org/dc/elements/1.1","Dublin Core Metadata Initiative (DMCI)");
+		Session->InsertConcept(DCMI,"contributor");
+		Session->InsertConcept(DCMI,"coverage");
+		Session->InsertConcept(DCMI,"creator");
+		Session->InsertConcept(DCMI,"date");
+		Session->InsertConcept(DCMI,"description");
+		Session->InsertConcept(DCMI,"format");
+		Session->InsertConcept(DCMI,"identifier");
+		Session->InsertConcept(DCMI,"language");
+		Session->InsertConcept(DCMI,"publisher");
+		Session->InsertConcept(DCMI,"relation");
+		Session->InsertConcept(DCMI,"rights");
+		Session->InsertConcept(DCMI,"source");
+		Session->InsertConcept(DCMI,"subject");
+		Session->InsertConcept(DCMI,"title");
+		Session->InsertConcept(DCMI,"type");
+	}
+	return(DCMI);
+}
+
+
+//------------------------------------------------------------------------------
+GConcept* GDocAnalyze::GetDefaultURI(void)
+{
+	if(!DefaultURI)
+		DefaultURI=Session->InsertConcept(Session->GetInsertConceptType(ccLink,"URI","Uniform Resource Identifier"),"*");
+	return(DefaultURI);
+}
+
+
+//------------------------------------------------------------------------------
+void GDocAnalyze::SetCurrentVector(GVector* vector)
+{
+	// Verify this vector is a valid one
+	if(vector!=Description.GetInsertVector(vector->GetMetaConcept()))
+		ThrowGException("Invalid vector");
+	CurVector=vector;
 }
 
 
@@ -210,6 +256,14 @@ GTokenOccur* GDocAnalyze::AddToken(const RString& token,tTokenType type,double w
 
 
 //------------------------------------------------------------------------------
+GTokenOccur* GDocAnalyze::AddToken(const R::RString& token,GConcept* metaconcept,tTokenType type,double weight)
+{
+	CurVector=Description.GetInsertVector(metaconcept);
+	return(AddToken(token,type,weight));
+}
+
+
+//------------------------------------------------------------------------------
 GTokenOccur* GDocAnalyze::AddToken(const R::RString& token,tTokenType type,GConcept* concept,double weight,GConcept* metaconcept,size_t pos,size_t depth,size_t spos)
 {
 	// Verify that is not a null concept
@@ -226,7 +280,7 @@ GTokenOccur* GDocAnalyze::AddToken(const R::RString& token,tTokenType type,GConc
 	if(spos!=SIZE_MAX)
 		CurSyntacticPos=spos;
 	if(Debug)
-		cout<<"AddToken *"+token+"*"<<endl;
+		cout<<"In AddToken *"+token+"*"<<endl;
 	GTokenOccur* Occur(AddToken(token,type,weight));
 	if(Occur->Token->Concept)
 	{
@@ -241,14 +295,14 @@ GTokenOccur* GDocAnalyze::AddToken(const R::RString& token,tTokenType type,GConc
 
 
 //------------------------------------------------------------------------------
-void GDocAnalyze::ExtractTextual(const R::RString& text,GConcept* metaconcept,size_t pos,size_t depth,size_t spos)
+void GDocAnalyze::ExtractText(const R::RString& text,GConcept* metaconcept,size_t pos,size_t depth,size_t spos)
 {
-	ExtractTextual(text,ttText,1.0,metaconcept,pos,depth,spos);
+	ExtractText(text,ttText,1.0,metaconcept,pos,depth,spos);
 }
 
 
 //------------------------------------------------------------------------------
-void GDocAnalyze::ExtractTextual(const R::RString& text,tTokenType type,double weight,GConcept* metaconcept,size_t pos,size_t depth,size_t spos)
+void GDocAnalyze::ExtractText(const R::RString& text,tTokenType type,double weight,GConcept* metaconcept,size_t pos,size_t depth,size_t spos)
 {
 	// Get the vector associated with the concept
 	CurVector=Description.GetInsertVector(metaconcept);
@@ -261,7 +315,7 @@ void GDocAnalyze::ExtractTextual(const R::RString& text,tTokenType type,double w
 
 	// Parse the text to detect the tokens
 	if(Debug)
-		cout<<"ExtractTextual *"+text+"*"<<endl;
+		cout<<"Extract Text *"+text+"*"<<endl;
 	const RChar* Car(text());
 	Tokenizer->Start();  // Make sure previous stuff is cleaned
 	size_t Read(CurPos);
@@ -280,52 +334,33 @@ void GDocAnalyze::ExtractTextual(const R::RString& text,tTokenType type,double w
 //------------------------------------------------------------------------------
 void GDocAnalyze::ExtractDCMI(const R::RString& element,const R::RString& value,size_t pos,size_t depth,size_t spos)
 {
-	// Search for the concept types corresponding to the DMCI
-	if(!DCMI)
-	{
-		// Verify that all concepts are OK.
-		DCMI=Session->GetInsertConceptType(ccMetadata,"http://purl.org/dc/elements/1.1","Dublin Core Metadata Initiative (DMCI)");
-		Session->InsertConcept(DCMI,"contributor");
-		Session->InsertConcept(DCMI,"coverage");
-		Session->InsertConcept(DCMI,"creator");
-		Session->InsertConcept(DCMI,"date");
-		Session->InsertConcept(DCMI,"description");
-		Session->InsertConcept(DCMI,"format");
-		Session->InsertConcept(DCMI,"identifier");
-		Session->InsertConcept(DCMI,"language");
-		Session->InsertConcept(DCMI,"publisher");
-		Session->InsertConcept(DCMI,"relation");
-		Session->InsertConcept(DCMI,"rights");
-		Session->InsertConcept(DCMI,"source");
-		Session->InsertConcept(DCMI,"subject");
-		Session->InsertConcept(DCMI,"title");
-		Session->InsertConcept(DCMI,"type");
-	}
-
 	// Find the vector corresponding to the concept
-	GConcept* Metadata(DCMI->GetConcept(element));
+	GConcept* Metadata(GetDCMI()->GetConcept(element));
 	if(!Metadata)
 		ThrowGException("'"+element+"' is not a valid DCMI element");
-	ExtractTextual(value,Metadata,pos,depth,spos);
+	ExtractText(value,Metadata,pos,depth,spos);
 }
 
 
 //------------------------------------------------------------------------------
-void GDocAnalyze::ExtractBody(const R::RString& content,size_t pos,size_t depth,size_t spos)
+void GDocAnalyze::ExtractDefaultText(const R::RString& content,size_t pos,size_t depth,size_t spos)
 {
-	ExtractBody(content,ttText,1.0,pos,depth,spos);
+	ExtractDefaultText(content,ttText,1.0,pos,depth,spos);
 }
 
 
 //------------------------------------------------------------------------------
-void GDocAnalyze::ExtractBody(const R::RString& content,tTokenType type,double weight,size_t pos,size_t depth,size_t spos)
+void GDocAnalyze::ExtractDefaultText(const R::RString& content,tTokenType type,double weight,size_t pos,size_t depth,size_t spos)
 {
-	// Search for the meta-concept corresponding to the default textual content
-	if(!Body)
-		Body=Session->InsertConcept(Session->GetInsertConceptType(ccText,"content","Raw content"),"body");
-
 	// Find the vector corresponding to the concept
-	ExtractTextual(content,type,weight,Body,pos,depth,spos);
+	ExtractText(content,type,weight,GetDefaultText(),pos,depth,spos);
+}
+
+
+//------------------------------------------------------------------------------
+void GDocAnalyze::ExtractDefaultURI(const R::RString& uri,size_t pos,size_t depth,size_t spos)
+{
+	ExtractText(uri,GetDefaultURI(),pos,depth,spos);
 }
 
 
