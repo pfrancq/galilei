@@ -34,40 +34,33 @@
 
 //------------------------------------------------------------------------------
 // include files for the plug-in
-#include <gsimplugin.h>
+#include <gcomputesimmeta.h>
+
 
 
 //------------------------------------------------------------------------------
 /**
  * The ComputeSimLink class proposes a way to compute the similarity between two
- * vectors containing links.
+ * vectors containing links. In practice, it computes the ratio of common links
+ * regarding the total number of different links between both vectors weighted
+ * by their idf.
+ *
+ * To take negative concept weights into account, two vectors sharing no
+ * concepts have a similarity of 0.5.
  */
-class GComputeSimLink : public GComputeSim
+class GComputeSimLink : public GComputeSimMeta
 {
-	/**
-	* Represent a node in the graph of a document.
-	*/
 	class Node;
 
 	/**
-	 * Container of nodes for the first vector.
+	 * Neighbors of the first object.
 	 */
-	RContainer<Node,true,true> Vector1;
+	RContainer<Node,true,true> Neighbors1;
 
 	/**
-	 * Container of nodes for the second vector.
+	 * Neighbors of the second object.
 	 */
-	RContainer<Node,true,true> Vector2;
-
-	/**
-	 * Numerator.
-	 */
-	double Num;
-
-	/**
-	 * Denominator.
-	 */
-	double Den;
+	RContainer<Node,true,true> Neighbors2;
 
 public:
 
@@ -80,21 +73,10 @@ public:
 	 * Add to a given container all the links of a vector.
     * @param cont            Container containing the links.
     * @param vec             Vector to treat.
-	 * @param concept         Concept corresponding to the other object (can be
-	 *                        null).
-	 * @param weigth          Weight of the vector.
+	 * @param weight          Weight of the parent link.
     * @param hop             Number of hops to propagate the computation.
     */
-	void Fill(RContainer<Node,true,true>& cont,const GVector* vec,GConcept* concept,double weight,size_t hop);
-
-	/**
-	 * Compute the ratio of links of the first container that are also in the
-	 * second one. This comparison is weighted by the number of times a link
-	 * appears and its IF.
-    * @param cont1           First container.
-    * @param cont2           Second container.
-    */
-	void AddLinks(RContainer<Node,true,true>& cont1,RContainer<Node,true,true>& cont2);
+	void Fill(RContainer<Node,true,true>& cont,const GVector* vec,double weight,size_t hop);
 
 	/**
 	 * Compute the similarity.

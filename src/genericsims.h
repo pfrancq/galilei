@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for R Project
 #include <rtextfile.h>
+#include <r2additivechoquet.h>
 
 
 //------------------------------------------------------------------------------
@@ -66,12 +67,7 @@
 struct GCat
 {
 	/**
-	 * The capacity of the integral of Choquet.
-	 */
-	double Capacity;
-
-	/**
-	 * The similarity for that category.
+	 * The weighted similarity for that category.
 	 */
 	double Sim;
 
@@ -108,7 +104,7 @@ protected:
 		TextOnly             /** Based only on the text.*/,
 		Product              /** Product of the different similarities.*/,
 		Sum                  /** Weighted sum of the different similarities.*/,
-		Choquet              /** Use the integral of Choquet.*/
+		Choquet              /** Use the 2-additive Choquet integral.*/
 	};
 
 	/**
@@ -128,22 +124,14 @@ protected:
 	double ProductFactor;
 
 	/**
-	 * Capacity of the combination of the textual and semantic criteria
-	 * (Choquet).
+	 * Compute the 2-additive Choquet integral.
 	 */
-	double TextualSemanticCapacity;
+	R2AdditiveChoquet ComputeChoquet;
 
 	/**
-	 * Capacity of the combination of the textual and meta criteria
-	 * (Choquet)
+	 * Values of the criteria.
 	 */
-	double TextualMetadataCapacity;
-
-	/**
-	 * Capacity of the combination of the semantic and metadata criteria
-	 * (Choquet)
-	 */
-	double SemanticMetadataCapacity;
+	RNumContainer<double,false> Values;
 
 	/**
 	 * First object.
@@ -156,9 +144,19 @@ protected:
 	cObj2* Desc2;
 
 	/**
-	 * The type of concept corresponding to Web URI.
+	 * The type of concept corresponding to URI.
     */
-	GConceptType* Web;
+	GConceptType* URI;
+
+	/**
+	 * Emit a signal each time a criteria of a similarity is computed.
+    */
+	bool EmitSignal;
+
+	/**
+	 * Notification handle.
+    */
+	hNotification Notification;
 
 public:
 

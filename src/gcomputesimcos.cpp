@@ -42,7 +42,8 @@
 //------------------------------------------------------------------------------
 void GComputeSimCos::Compute(GVector* vec1,GVector* vec2,double& sim,size_t& nb)
 {
-	double Num(0.0),Norm1(0.0),Norm2(0.0),NbCommon(0);
+	double Num(0.0),Norm1(0.0),Norm2(0.0);
+	nb=0;
 
 	RCursor<GConceptRef> ptr1(vec1->GetRefs());
 	RCursor<GConceptRef> ptr2(vec2->GetRefs());
@@ -73,7 +74,7 @@ void GComputeSimCos::Compute(GVector* vec1,GVector* vec2,double& sim,size_t& nb)
 			if(fabs(1.0+d)<PlugIn->GetCutoffFrequency())
 				d=-1.0;
 			Num+=d;
-			NbCommon++;
+			nb++;
 		}
 	}
 
@@ -84,7 +85,15 @@ void GComputeSimCos::Compute(GVector* vec1,GVector* vec2,double& sim,size_t& nb)
 		Norm2+=w2*w2;
 	}
 
-	// Assign to the right category
-	sim=0.5+(Num/(2.0*sqrt(Norm1)*sqrt(Norm2)));
-	nb=NbCommon;
+	// Compute
+	double Den(sqrt(Norm1)*sqrt(Norm2));
+	if(Den>0.0)
+		Num/=Den;
+	else
+		Num=0;
+	if(fabs(Num-1.0)<PlugIn->GetCutoffFrequency())
+		Num=1.0;
+	if(fabs(1.0+Num)<PlugIn->GetCutoffFrequency())
+		Num=-1.0;
+	sim=0.5+(Num/2.0);
 }

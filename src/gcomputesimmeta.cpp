@@ -42,45 +42,8 @@
 //------------------------------------------------------------------------------
 void GComputeSimMeta::Compute(GVector* vec1,GVector* vec2,double& sim,size_t& nb)
 {
-	double Num(0.0), Den(0.0), NbCommon(0),NbDiff(0);
-
 	RCursor<GConceptRef> ptr1(vec1->GetRefs());
 	RCursor<GConceptRef> ptr2(vec2->GetRefs());
-	for(ptr1.Start(),ptr2.Start();!ptr1.End();ptr1.Next())
-	{
-		NbDiff++;
-
-		for(;(!ptr2.End())&&(ptr2()->GetId()<ptr1()->GetId());ptr2.Next())
-			NbDiff++;
-
-		// Same concept -> Add Num
-		if((!ptr2.End())&&(ptr2()->GetId()==ptr1()->GetId()))
-		{
-			double w1(ptr1()->GetWeight()*PlugIn->GetIF(ptr1()->GetConcept()));
-			double w2(ptr2()->GetWeight()*PlugIn->GetIF(ptr2()->GetConcept()));
-
-			// If both weight are negative -> pass
-		   if((w1<0.0)&&(w2<0.0))
-				continue;
-
-			// Compute the product
-			NbCommon++;
-			double d(w2*w1);
-			if(fabs(d-1.0)<PlugIn->GetCutoffFrequency())
-				d=1.0;
-			if(fabs(1.0+d)<PlugIn->GetCutoffFrequency())
-				d=-1.0;
-			Num+=d;
-			Den+=fabs(d);
-		}
-	}
-
-	// Compute the rest of the NbDiff
-	for(;!ptr2.End();ptr2.Next())
-		NbDiff++;
-
-	// Assign to the category
-	sim=0.5+((Num*NbCommon)/(2*NbDiff*Den));
-	nb=NbCommon;
+	Compute(ptr1,ptr2,sim,nb);
 }
 

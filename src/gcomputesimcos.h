@@ -39,6 +39,9 @@
 /**
  * The ComputeSimCos class proposes a way to compute the cosine similarity
  * between two vectors.
+ *
+ * To take negative concept weights into account, two vectors sharing no
+ * concepts have a similarity of 0.5.
  */
 class GComputeSimCos : public GComputeSim
 {

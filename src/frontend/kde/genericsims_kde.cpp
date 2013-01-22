@@ -30,6 +30,11 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <math.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for Qt/KDE
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
@@ -59,7 +64,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 GGenericSimsDlg::GGenericSimsDlg(const QString& title)
-	: QGMatrixMeasureDlg(title)
+	: QGMatrixMeasureDlg(title), Ui_Specific()
 {
 }
 
@@ -81,58 +86,10 @@ void GGenericSimsDlg::AddCapacity(KDoubleNumInput* &cap,const char* str,QGridLay
 //-----------------------------------------------------------------------------
 void GGenericSimsDlg::Panel(void)
 {
-	QHBoxLayout* layout = new QHBoxLayout();
-   QLabel* text = new QLabel(GetMeasureSpecific());
-   text->setText("Similarity Type");
-   layout->addWidget(text);
-	SimType = new QComboBox(GetMeasureSpecific());
-	SimType->addItem("Integral of Choquet");
-	SimType->addItem("Product");
-	SimType->addItem("Sum");
-	SimType->addItem("Text Only");
-   layout->addWidget(SimType);
-   SimType->setToolTip("The similarity measure can be the classical cosine between the vectors (textual) or the one of the tensor space model." );
-   const char* simText= "<p>Choose the <b>similarity measure</b> that will be used. <br/>"
-                        "The <em>tensor space model</em> measure computes a similarity based on the different concepts categories where the "
-    	                  "elements are indexed (textual, metadata and semantic). Each category have its own measure"
-    	                  ", such as the adapted cosine between the vectors in this space. ";
-   SimType->setWhatsThis(simText);
-	layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
-	GetMeasureSpecificLayout()->addLayout(layout);
-
-	// Factor
-	layout = new QHBoxLayout();
-   text = new QLabel(GetMeasureSpecific());
-   text->setText("Factor for the product");
-   layout->addWidget(text);
-	Factor = new KDoubleNumInput(GetMeasureSpecific());
-	Factor->setSpecialValueText("Product Factor");
-	Factor->setDecimals(5);
-   layout->addWidget(Factor);
-	layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
-	GetMeasureSpecificLayout()->addLayout(layout);
-
-	// Parameters
-	QGridLayout* layout2=new QGridLayout();
-	AddCapacity(TextualCapacity,"Textual Capacity",layout2,0,0);
-	AddCapacity(SemanticCapacity,"Semantic Capacity",layout2,1,0);
-	AddCapacity(MetadataCapacity,"Metadata Capacity",layout2,2,0);
-   layout2->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum),0,1);
-	AddCapacity(TextualSemanticCapacity,"Textual/Semantic Capacity",layout2,0,2);
-	AddCapacity(TextualMetadataCapacity,"Textual/Metadata Capacity",layout2,1,2);
-	AddCapacity(SemanticMetadataCapacity,"Semantic/Metadata Capacity",layout2,2,2);
-	GetMeasureSpecificLayout()->addLayout(layout2);
-
-	// NbHops
-	layout = new QHBoxLayout();
-	text = new QLabel(GetMeasureSpecific());
-	text->setText("Number of hops");
-	layout->addWidget(text);
-	NbHops = new KIntNumInput(GetMeasureSpecific());
-	NbHops->setSpecialValueText("Number of Hops");
-	layout->addWidget(NbHops);
-	layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
-	GetMeasureSpecificLayout()->addLayout(layout);
+	QWidget* ptr=new QWidget();
+	setupUi(ptr);
+	GetMeasureSpecificLayout()->addWidget(ptr);
+	connect(SimType,SIGNAL(currentIndexChanged(const QString&)),this,SLOT(simTypeChanged(const QString&)));
 }
 
 
@@ -140,30 +97,39 @@ void GGenericSimsDlg::Panel(void)
 void GGenericSimsDlg::Init(GPlugIn* plugin)
 {
 	QGMatrixMeasureDlg::Init(plugin);
-	SimType->setCurrentIndex(SimType->findText(ToQString(plugin->FindParam<RParamValue>("SimType")->Get())));
-	Factor->setValue(plugin->FindParam<RParamValue>("Product Factor")->GetDouble());
-	TextualCapacity->setValue(plugin->FindParam<RParamValue>("Textual Capacity")->GetDouble());
-	SemanticCapacity->setValue(plugin->FindParam<RParamValue>("Semantic Capacity")->GetDouble());
-	MetadataCapacity->setValue(plugin->FindParam<RParamValue>("Metadata Capacity")->GetDouble());
-	TextualSemanticCapacity->setValue(plugin->FindParam<RParamValue>("Textual/Semantic Capacity")->GetDouble());
-	TextualMetadataCapacity->setValue(plugin->FindParam<RParamValue>("Textual/Metadata Capacity")->GetDouble());
-	SemanticMetadataCapacity->setValue(plugin->FindParam<RParamValue>("Semantic/Metadata Capacity")->GetDouble());
 	NbHops->setValue(plugin->FindParam<RParamValue>("NbHops")->GetUInt());
+	SimType->setCurrentIndex(SimType->findText(ToQString(plugin->FindParam<RParamValue>("SimType")->Get())));
+	simTypeChanged(ToQString(plugin->FindParam<RParamValue>("SimType")->Get()));
+	Factor->setValue(plugin->FindParam<RParamValue>("Product Factor")->GetDouble());
+	Text->setValue(plugin->FindParam<RParamValue>("Text")->GetDouble());
+	Semantic->setValue(plugin->FindParam<RParamValue>("Semantic")->GetDouble());
+	Metadata->setValue(plugin->FindParam<RParamValue>("Metadata")->GetDouble());
+	Link->setValue(plugin->FindParam<RParamValue>("Link")->GetDouble());
+	TextMetadata->setValue(plugin->FindParam<RParamValue>("Text/Metadata")->GetDouble());
+	TextSemantic->setValue(plugin->FindParam<RParamValue>("Text/Semantic")->GetDouble());
+	TextLink->setValue(plugin->FindParam<RParamValue>("Text/Link")->GetDouble());
+	MetadataSemantic->setValue(plugin->FindParam<RParamValue>("Metadata/Semantic")->GetDouble());
+	MetadataLink->setValue(plugin->FindParam<RParamValue>("Metadata/Link")->GetDouble());
+	SemanticLink->setValue(plugin->FindParam<RParamValue>("Semantic/Link")->GetDouble());
 }
 
 
 //-----------------------------------------------------------------------------
 void GGenericSimsDlg::Done(GPlugIn* plugin)
 {
+	plugin->FindParam<RParamValue>("NbHops")->SetUInt(NbHops->value());
 	plugin->FindParam<RParamValue>("SimType")->Set(FromQString(SimType->currentText()));
 	plugin->FindParam<RParamValue>("Product Factor")->SetDouble(Factor->value());
-	plugin->FindParam<RParamValue>("Textual Capacity")->SetDouble(TextualCapacity->value());
-	plugin->FindParam<RParamValue>("Semantic Capacity")->SetDouble(SemanticCapacity->value());
-	plugin->FindParam<RParamValue>("Metadata Capacity")->SetDouble(MetadataCapacity->value());
-	plugin->FindParam<RParamValue>("Textual/Semantic Capacity")->SetDouble(TextualSemanticCapacity->value());
-	plugin->FindParam<RParamValue>("Textual/Metadata Capacity")->SetDouble(TextualMetadataCapacity->value());
-	plugin->FindParam<RParamValue>("Semantic/Metadata Capacity")->SetDouble(SemanticMetadataCapacity->value());
-	plugin->FindParam<RParamValue>("NbHops")->SetUInt(NbHops->value());
+	plugin->FindParam<RParamValue>("Text")->SetDouble(Text->value());
+	plugin->FindParam<RParamValue>("Semantic")->SetDouble(Semantic->value());
+	plugin->FindParam<RParamValue>("Metadata")->SetDouble(Metadata->value());
+	plugin->FindParam<RParamValue>("Link")->SetDouble(Link->value());
+	plugin->FindParam<RParamValue>("Text/Metadata")->SetDouble(TextMetadata->value());
+	plugin->FindParam<RParamValue>("Text/Semantic")->SetDouble(TextSemantic->value());
+	plugin->FindParam<RParamValue>("Text/Link")->SetDouble(TextLink->value());
+	plugin->FindParam<RParamValue>("Metadata/Semantic")->SetDouble(MetadataSemantic->value());
+	plugin->FindParam<RParamValue>("Metadata/Link")->SetDouble(MetadataLink->value());
+	plugin->FindParam<RParamValue>("Semantic/Link")->SetDouble(SemanticLink->value());
 	QGMatrixMeasureDlg::Done(plugin);
 }
 
@@ -171,22 +137,56 @@ void GGenericSimsDlg::Done(GPlugIn* plugin)
 //-----------------------------------------------------------------------------
 bool GGenericSimsDlg::IsDlgOK(void)
 {
-	// Look if the current similarity is the integral of Choquet
-	if(SimType->currentText()=="Integral of Choquet")
+	// Look if the current similarity is the 2-Additive Choquet Integral
+	if(SimType->currentText()=="2-Additive Choquet Integral")
 	{
 		// The sum of the capacities should be equals to 1.
 		double Sum(0.0);
-		Sum+=TextualCapacity->value();
-		Sum+=SemanticCapacity->value();
-		Sum+=MetadataCapacity->value();
-		Sum+=TextualSemanticCapacity->value();
-		Sum+=TextualMetadataCapacity->value();
-		Sum+=SemanticMetadataCapacity->value();
-		if(Sum!=1.0)
+		Sum+=Text->value();
+		Sum+=Metadata->value();
+		Sum+=Semantic->value();
+		Sum+=Link->value();
+		Sum+=TextMetadata->value();
+		Sum+=TextSemantic->value();
+		Sum+=TextLink->value();
+		Sum+=MetadataSemantic->value();
+		Sum+=MetadataLink->value();
+		Sum+=SemanticLink->value();
+		if(fabs(Sum-1.0)>=0.0000000001)
 		{
-			KMessageBox::error(this,"When the integral of Choquet is used as aggregating function, the sum of the capacities should 1 and not "+QString::number(Sum));
+			KMessageBox::error(this,"When the 2-Additive Choquet Integral is used, the sum of the weights should 1 and not "+QString::number(Sum));
 			return(false);
 		}
 	}
 	return(true);
+}
+
+
+//-----------------------------------------------------------------------------
+void GGenericSimsDlg::simTypeChanged(const QString& text)
+{
+	if((text=="Text Only")||(text=="Product"))
+		Criteria->setEnabled(false);
+	else
+		Criteria->setEnabled(true);
+	if(text=="2-Additive Choquet Integral")
+		Interactions->setEnabled(true);
+	else
+		Interactions->setEnabled(false);
+	if(text=="Product")
+	{
+		FactorText->setEnabled(true);
+		Factor->setEnabled(true);
+	}
+	else
+	{
+		FactorText->setEnabled(false);
+		Factor->setEnabled(false);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+GGenericSimsDlg::~GGenericSimsDlg(void)
+{
 }

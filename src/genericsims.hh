@@ -38,9 +38,10 @@
 //------------------------------------------------------------------------------
 template<class cObj1,class cObj2>
 	GGenericSims<cObj1,cObj2>::GGenericSims(GSession* session,GPlugInFactory* fac,tObjType lines,tObjType cols)
-	: GSimPlugIn(session,fac,lines,cols), Cats(0), Desc1(0), Desc2(0), Web(0)
+	: GSimPlugIn(session,fac,lines,cols), Cats(0), ComputeChoquet(4), Values(4), Desc1(0), Desc2(0), URI(0)
 {
 	Cats=new GCat[GetNbConceptCats()];
+	Notification=GetNotificationHandle("Sim");
 }
 
 
@@ -59,12 +60,16 @@ template<class cObj1,class cObj2>
 	GMatrixMeasure::ApplyConfig();
 	RString type=FindParam<RParamValue>("SimType")->Get();
 	ProductFactor=FindParam<RParamValue>("Product Factor")->GetDouble();
-	Cats[ccText].Capacity=FindParam<RParamValue>("Textual Capacity")->GetDouble();
-	Cats[ccSemantic].Capacity=FindParam<RParamValue>("Semantic Capacity")->GetDouble();
-	Cats[ccMetadata].Capacity=FindParam<RParamValue>("Metadata Capacity")->GetDouble();
-	TextualSemanticCapacity=FindParam<RParamValue>("Textual/Semantic Capacity")->GetDouble();
-	TextualMetadataCapacity=FindParam<RParamValue>("Textual/Metadata Capacity")->GetDouble();
-	SemanticMetadataCapacity=FindParam<RParamValue>("Semantic/Metadata Capacity")->GetDouble();
+	ComputeChoquet.SetCriteria(0,FindParam<RParamValue>("Text")->GetDouble());
+	ComputeChoquet.SetCriteria(1,FindParam<RParamValue>("Metadata")->GetDouble());
+	ComputeChoquet.SetCriteria(2,FindParam<RParamValue>("Semantic")->GetDouble());
+	ComputeChoquet.SetCriteria(3,FindParam<RParamValue>("Link")->GetDouble());
+	ComputeChoquet.SetInteraction(0,1,FindParam<RParamValue>("Text/Metadata")->GetDouble());
+	ComputeChoquet.SetInteraction(0,2,FindParam<RParamValue>("Text/Semantic")->GetDouble());
+	ComputeChoquet.SetInteraction(0,3,FindParam<RParamValue>("Text/Link")->GetDouble());
+	ComputeChoquet.SetInteraction(1,2,FindParam<RParamValue>("Metadata/Semantic")->GetDouble());
+	ComputeChoquet.SetInteraction(1,3,FindParam<RParamValue>("Metadata/Link")->GetDouble());
+	ComputeChoquet.SetInteraction(2,3,FindParam<RParamValue>("Semantic/Link")->GetDouble());
 	NbHops=FindParam<RParamValue>("NbHops")->GetUInt();
 	tSimType sim(Undefined);
 	if(type=="Product")
@@ -73,7 +78,7 @@ template<class cObj1,class cObj2>
 		sim=TextOnly;
 	else if(type=="Sum")
 		sim=Sum;
-	else if(type=="Integral of Choquet")
+	else if(type=="2-Additive Choquet Integral")
 		sim=Choquet;
 	if(sim==Undefined)
 	{
@@ -82,6 +87,7 @@ template<class cObj1,class cObj2>
 	}
 	else
 		SimType=sim;
+	EmitSignal=FindParam<RParamValue>("EmitSignal")->GetBool();
 }
 
 
@@ -91,6 +97,16 @@ template<class cObj1,class cObj2>
 {
 	GMatrixMeasure::Init();
 }
+
+
+//------------------------------------------------------------------------------
+struct sInfo
+{
+	double Text;
+	double Metadata;
+	double Semantic;
+	double Link;
+};
 
 
 //------------------------------------------------------------------------------
@@ -130,14 +146,32 @@ template<class cObj1,class cObj2>
 			Cats[Cat1].Nb+=Nb;
 		}
 	}
-	if(Cats[ccText].Nb)
+	if(Cats[ccText].Nb>0.1)
 		Cats[ccText].Sim/=Cats[ccText].Nb;
-	if(Cats[ccMetadata].Nb)
+	else
+		Cats[ccText].Sim=0.5;
+	if(Cats[ccMetadata].Nb>0.1)
 		Cats[ccMetadata].Sim/=Cats[ccMetadata].Nb;
-	if(Cats[ccSemantic].Nb)
+	else
+		Cats[ccMetadata].Sim=0.5;
+	if(Cats[ccSemantic].Nb>0.1)
 		Cats[ccSemantic].Sim/=Cats[ccSemantic].Nb;
-	if(Cats[ccLink].Nb)
+	else
+		Cats[ccSemantic].Sim=0.5;
+	if(Cats[ccLink].Nb>0.1)
 		Cats[ccLink].Sim/=Cats[ccLink].Nb;
+	else
+		Cats[ccLink].Sim=0.5;
+	if(EmitSignal)
+	{
+
+		sInfo Info;
+		Info.Text=Cats[ccText].Sim;
+		Info.Metadata=Cats[ccMetadata].Sim;
+		Info.Semantic=Cats[ccSemantic].Sim;
+		Info.Link=Cats[ccLink].Sim;
+		PostNotification(Notification,Info);
+	}
 	return((Cats[ccText].Sim!=0.0)||(Cats[ccMetadata].Sim!=0.0)||(Cats[ccSemantic].Sim!=0.0)||(Cats[ccLink].Sim!=0.0));
 }
 
@@ -149,55 +183,12 @@ template<class cObj1,class cObj2>
 	if(!ComputeSims(false))
 		return(0.0);
 
-	// Put them in descending order
-	struct tSimSpace
-	{
-		double Sim;
-		int What;
-		static int Compare(const void *a, const void *b)
-		{
-		  double temp = static_cast<const tSimSpace*>(a)->Sim - static_cast<const tSimSpace*>(b)->Sim;
-		  if(temp>0)
-		    return(1);
-		  else if(temp<0)
-		    return(-1);
-		  else
-		    return(0);
-		}
-
-	};
-	tSimSpace Tab[3];
-	Tab[0].Sim=Cats[ccText].Sim;
-	Tab[0].What=0;
-	Tab[1].Sim=Cats[ccSemantic].Sim;
-	Tab[1].What=1;
-	Tab[2].Sim=Cats[ccMetadata].Sim;
-	Tab[2].What=2;
-	qsort(Tab,static_cast<size_t>(3),sizeof(tSimSpace),tSimSpace::Compare);
-
-	// First element (capacity=1)
-	double Choquet(Tab[0].Sim);
-
-	// Second element: Find the right capacity (in Cap)
-	double Cap;
-	if((Tab[1].What==0&&Tab[2].What==1)||(Tab[1].What==1&&Tab[2].What==0))
-		Cap=TextualSemanticCapacity;
-	else if((Tab[1].What==0&&Tab[2].What==2)||(Tab[1].What==2&&Tab[2].What==0))
-		Cap=TextualMetadataCapacity;
-	else if((Tab[1].What==1&&Tab[2].What==2)||(Tab[1].What==2&&Tab[2].What==1))
-		Cap=SemanticMetadataCapacity;
-	else
-		Cap=0;
-	Choquet+=(Tab[1].Sim-Tab[0].Sim)*Cap;
-
-	// Third element : Find the right capacity
-	if(Tab[2].What==0)
-		Cap=Cats[ccText].Capacity;
-	else if(Tab[2].What==1)
-		Cap=Cats[ccSemantic].Capacity;
-	else if(Tab[2].What==2)
-		Cap=Cats[ccMetadata].Capacity;
-	return(Choquet+(Tab[2].Sim-Tab[1].Sim)*Cap);
+	// Prepare the vector and compute the value
+	Values[0]=Cats[ccText].Sim;
+	Values[1]=Cats[ccMetadata].Sim;
+	Values[2]=Cats[ccSemantic].Sim;
+	Values[3]=Cats[ccLink].Sim;
+	return(ComputeChoquet.Compute(Values));
 }
 
 
@@ -207,8 +198,11 @@ template<class cObj1,class cObj2>
 {
 	if(!ComputeSims(false))
 		return(0.0);
-	double Num((Cats[ccText].Sim*Cats[ccText].Capacity)+(Cats[ccSemantic].Sim*Cats[ccText].Capacity)+(Cats[ccMetadata].Sim*Cats[ccMetadata].Capacity));
-	double Den(Cats[ccText].Capacity+Cats[ccSemantic].Capacity+Cats[ccMetadata].Capacity);
+	double Num( (Cats[ccText].Sim*ComputeChoquet.GetCriteria(0))+
+	            (Cats[ccMetadata].Sim*ComputeChoquet.GetCriteria(1))+
+	            (Cats[ccSemantic].Sim*ComputeChoquet.GetCriteria(2))+
+	            (Cats[ccSemantic].Sim*ComputeChoquet.GetCriteria(3)) );
+	double Den(ComputeChoquet.GetCriteria(0)+ComputeChoquet.GetCriteria(1)+ComputeChoquet.GetCriteria(2)+ComputeChoquet.GetCriteria(3));
 	return(Num/Den);
 }
 
@@ -250,15 +244,15 @@ template<class cObj1,class cObj2>
 {
 	if(obj1==obj2)
 		return(1.0);
-	if(!Web)
-		Web=Session->GetInsertConceptType(ccLink,"Web","World Wide Web");
+	if(!URI)
+		URI=Session->GetInsertConceptType(ccLink,"URI","Uniform Resource Identifier");
 
 	Desc1=dynamic_cast<cObj1*>(obj1);
 	Desc2=dynamic_cast<cObj2*>(obj2);
 	if(GetLinesType()==otDoc)
-		Concept1=Session->GetConcept(Web,obj1->GetName(),true);
+		Concept1=Session->GetConcept(URI,obj1->GetName(),true);
 	if(GetColsType()==otDoc)
-		Concept2=Session->GetConcept(Web,obj2->GetName(),true);
+		Concept2=Session->GetConcept(URI,obj2->GetName(),true);
 
 	if((!Desc1->IsDefined())||(!Desc2->IsDefined()))
 		return(0.0);
@@ -302,13 +296,18 @@ template<class cObj1,class cObj2>
 	GMatrixMeasure::CreateConfig();
 	InsertParam(new RParamValue("SimType","Text Only"));
 	InsertParam(new RParamValue("Product Factor",0.01));
-	InsertParam(new RParamValue("Textual Capacity",0.01));
-	InsertParam(new RParamValue("Semantic Capacity",0.01));
-	InsertParam(new RParamValue("Metadata Capacity",0.01));
-	InsertParam(new RParamValue("Textual/Semantic Capacity",0.01));
-	InsertParam(new RParamValue("Textual/Metadata Capacity",0.01));
-	InsertParam(new RParamValue("Semantic/Metadata Capacity",0.01));
+	InsertParam(new RParamValue("Text",0.1));
+	InsertParam(new RParamValue("Metadata",0.1));
+	InsertParam(new RParamValue("Semantic",0.1));
+	InsertParam(new RParamValue("Link",0.1));
+	InsertParam(new RParamValue("Text/Metadata",0.1));
+	InsertParam(new RParamValue("Text/Semantic",0.1));
+	InsertParam(new RParamValue("Text/Link",0.1));
+	InsertParam(new RParamValue("Metadata/Semantic",0.1));
+	InsertParam(new RParamValue("Metadata/Link",0.1));
+	InsertParam(new RParamValue("Semantic/Link",0.1));
 	InsertParam(new RParamValue("NbHops",3));
+	InsertParam(new RParamValue("EmitSignal",false));
 }
 
 

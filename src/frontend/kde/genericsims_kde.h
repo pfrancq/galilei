@@ -49,6 +49,11 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
+//include files for current plug-in
+#include <ui_specific.h>
+
+
+//-----------------------------------------------------------------------------
 /**
  * Dialog class to configure a plug-in implementing a tensor space model
  * similarity measure. It must called:
@@ -60,52 +65,9 @@ using namespace GALILEI;
  * }
  * @endcode
  */
-class GGenericSimsDlg : public QGMatrixMeasureDlg
+class GGenericSimsDlg : public QGMatrixMeasureDlg, public Ui_Specific
 {
-	/**
-	 * Similarity measure.
-	 */
-	QComboBox* SimType;
-
-	/**
-	 * Product factor.
-	 */
-	KDoubleNumInput* Factor;
-
-	/**
-	 * Textual Capacity/Weight.
-	 */
-	KDoubleNumInput* TextualCapacity;
-
-	/**
-	 * Semantic Capacity/Weight.
-	 */
-	KDoubleNumInput* SemanticCapacity;
-
-	/**
-	 * Metadata Capacity/Weight.
-	 */
-	KDoubleNumInput* MetadataCapacity;
-
-	/**
-	 * Capacity associated to the pair (Textual,Semantic).
-	 */
-	KDoubleNumInput* TextualSemanticCapacity;
-
-	/**
-	 * Capacity associated to the pair (Textual,Medatadata).
-	 */
-	KDoubleNumInput* TextualMetadataCapacity;
-
-	/**
-	 * Capacity associated to the pair (Semantic,Medatadata).
-	 */
-	KDoubleNumInput* SemanticMetadataCapacity;
-	
-	/**
-	 * Number of hops.
-	 */
-	KIntNumInput* NbHops;
+	Q_OBJECT
 
 public:
 
@@ -149,6 +111,18 @@ public:
     * @return true if it is the case.
     */
    virtual bool IsDlgOK(void);
+
+public slots:
+
+	/**
+	 * Similarity has changed.
+    * @param text
+    */
+	void simTypeChanged(const QString& text);
+
+public:
+
+	~GGenericSimsDlg(void);
 };
 
 

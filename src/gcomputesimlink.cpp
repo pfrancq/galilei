@@ -37,8 +37,6 @@
 // include files for the plug-in
 #include <gcomputesimlink.h>
 
-
-
 //------------------------------------------------------------------------------
 //
 // class GComputeSimLink::Node
@@ -49,37 +47,17 @@
 class GComputeSimLink::Node
 {
 public:
-
-	/**
-	 * Concept.
-	 */
 	GConcept* Concept;
-
-	/**
-	 * Weight of the concept.
-    */
 	double Weight;
-
-	/**
-	 * Document.
-    */
 	GDoc* Doc;
+	bool Search;
 
-	bool MustSearch;
-
-	Node(GConcept* concept) : Concept(concept), Weight(0.0), Doc(0), MustSearch(true)
-	{
-	}
-
-	int Compare(const Node& node) const
-	{
-		return(CompareIds(Concept->GetId(),node.Concept->GetId()));
-	}
-
-	int Compare(const GConcept* concept) const
-	{
-		return(CompareIds(Concept->GetId(),concept->GetId()));
-	}
+	Node(GConcept* concept) : Concept(concept), Weight(0.0), Doc(0), Search(true) {}
+	int Compare(const Node& node) const {return(CompareIds(Concept->GetId(),node.Concept->GetId()));}
+	int Compare(const GConcept* concept) const {return(CompareIds(Concept->GetId(),concept->GetId()));}
+	double GetWeight(void) const {return(Weight);}
+	size_t GetId(void) const {return(Concept->GetId());}
+	GConcept* GetConcept(void) const {return(Concept);}
 };
 
 
@@ -93,13 +71,13 @@ public:
 
 //------------------------------------------------------------------------------
 GComputeSimLink::GComputeSimLink(GSimPlugIn* plugin)
-	: GComputeSim(plugin), Vector1(40), Vector2(40)
+	: GComputeSimMeta(plugin), Neighbors1(40), Neighbors2(40)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GComputeSimLink::Fill(RContainer<Node,true,true>& cont,const GVector* vec,GConcept* concept,double weight,size_t hop)
+void GComputeSimLink::Fill(RContainer<Node,true,true>& cont,const GVector* vec,double weight,size_t hop)
 {
 	// Decrease the hop
 	hop--;
@@ -109,65 +87,29 @@ void GComputeSimLink::Fill(RContainer<Node,true,true>& cont,const GVector* vec,G
 	for(ptr.Start();!ptr.End();ptr.Next())
 	{
 		// Verify that concept is an URL and that it does not correspond to the other object
-		if((ptr()->GetConcept()->GetType()->GetCategory()!=ccLink)&&(ptr()->GetConcept()!=concept))
+		if(ptr()->GetConcept()->GetType()->GetCategory()!=ccLink)
 			continue;
 
-		// Add the node to the container (if necessary) and update its weight
-		Node* node(cont.GetInsertPtr(ptr()->GetConcept()));
-		double Weight(ptr()->GetWeight()*weight);
-		node->Weight+=Weight;
+		// Find the node in the container
+		double Weight(weight*ptr()->GetWeight());
+		Node* Link(cont.GetInsertPtr(ptr()->GetConcept()));
+		Link->Weight+=weight;
 
 		// Must the graph be further expanded
 		if(!hop)
 			continue;
 
 		// Look if it is a known document and use its vector
-		if(node->MustSearch)
+		if(Link->Search)
 		{
-			node->Doc=PlugIn->GetSession()->GetObj(pDoc,node->Concept->GetSearchStr(),true,false);
-			node->MustSearch=false;
+			Link->Doc=PlugIn->GetSession()->GetObj(pDoc,ptr()->GetConcept()->GetSearchStr(),true,true);
+			Link->Search=false;
 		}
-		if(node->Doc)
+		if(Link->Doc)
 		{
-			GVector* Vec(node->Doc->GetVector(vec->GetMetaConcept()));
+			GVector* Vec(Link->Doc->GetVector(vec->GetMetaConcept()));
 			if(Vec)
-				Fill(cont,Vec,concept,Weight,hop);
-		}
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GComputeSimLink::AddLinks(RContainer<Node,true,true>& cont1,RContainer<Node,true,true>& cont2)
-{
-	RCursor<Node> node1(cont1);
-	RCursor<Node> node2(cont2);
-	for(node1.Start(),node2.Start();(!node1.End())&&(!node2.End());node1.Next())
-	{
-		// Skip all concepts with smaller identifier
-		while((!node2.End())&&(node2()->Concept->GetId()<node1()->Concept->GetId()))
-			node2.Next();
-
-		// Same concept -> Add to Num and Den
-		if((!node2.End())&&(node2()->Concept==node1()->Concept))
-		{
-			// If both weight are negative -> pass
-		   if((node1()->Weight<0.0)&&(node2()->Weight<0.0))
-				continue;
-
-			double d;
-			if(fabs(node1()->Weight)>fabs(node2()->Weight))
-			{
-				d=(node2()->Weight*PlugIn->GetIF(node1()->Concept))/node1()->Weight;
-				if(fabs(d-1.0)<PlugIn->GetCutoffFrequency())
-					d=1.0;
-				if(fabs(1.0+d)<PlugIn->GetCutoffFrequency())
-					d=-1.0;
-			}
-			else
-				d=1.0;
-			Num+=d*PlugIn->GetIF(node1()->Concept);
-			Den+=PlugIn->GetIF(node1()->Concept);
+				Fill(cont,Vec,Weight,hop);
 		}
 	}
 }
@@ -176,30 +118,35 @@ void GComputeSimLink::AddLinks(RContainer<Node,true,true>& cont1,RContainer<Node
 //------------------------------------------------------------------------------
 void GComputeSimLink::Compute(GVector* vec1,GVector* vec2,double& sim,size_t& nb)
 {
-	// Fill the container with all the neighbors
-	Vector1.Clear();
-	Vector2.Clear();
-	Fill(Vector1,vec1,PlugIn->GetConcept2(),1.0,PlugIn->GetNbHops());
-	Fill(Vector2,vec2,PlugIn->GetConcept1(),1.0,PlugIn->GetNbHops());
+	// Clear the container
+	Neighbors1.Clear();
+	Neighbors2.Clear();
 
-	// Count the fraction of weighted number of links that are common
-	Num=Den=0.0;
-	nb=Vector1.GetNb()+Vector2.GetNb();
-	AddLinks(Vector1,Vector2);
-	AddLinks(Vector2,Vector1);
-	if(vec1->IsIn(PlugIn->GetConcept2()))
+	// If one vector points to the another object -> insert them
+	if(PlugIn->GetConcept1())
 	{
-		Num+=PlugIn->GetIF(PlugIn->GetConcept2());
-		Den+=PlugIn->GetIF(PlugIn->GetConcept2());
+		GConceptRef* Ref(vec2->GetRef(PlugIn->GetConcept1()));
+		if(Ref)
+		{
+			Node* Link(Neighbors2.GetInsertPtr(PlugIn->GetConcept1()));
+			Link->Weight+=Ref->GetWeight();
+		}
 	}
-	if(vec2->IsIn(PlugIn->GetConcept1()))
+	if(PlugIn->GetConcept2())
 	{
-		Num+=PlugIn->GetIF(PlugIn->GetConcept1());
-		Den+=PlugIn->GetIF(PlugIn->GetConcept1());
+		GConceptRef* Ref(vec1->GetRef(PlugIn->GetConcept2()));
+		if(Ref)
+		{
+			Node* Link(Neighbors1.GetInsertPtr(PlugIn->GetConcept2()));
+			Link->Weight+=Ref->GetWeight();
+		}
 	}
+	Fill(Neighbors1,vec1,1.0,PlugIn->GetNbHops());
+	Fill(Neighbors2,vec2,1.0,PlugIn->GetNbHops());
 
-	// Compute the similarity
-	if(nb)
-		sim=0.5+(Num/(Den*2));
+	// Count the fraction of weighted number of links that are common and different
+	RCursor<Node> ptr1(Neighbors1);
+	RCursor<Node> ptr2(Neighbors2);
+	GComputeSimMeta::Compute(ptr1,ptr2,sim,nb);
 }
 
