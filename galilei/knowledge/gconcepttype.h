@@ -166,7 +166,7 @@ public:
 	/**
     * @return the neutral concept.
     */
-	GConcept GetNeutral(void) const;
+	GConcept* GetNeutral(void) const;
 
 	/**
 	* @return a cursor over the main hash table.

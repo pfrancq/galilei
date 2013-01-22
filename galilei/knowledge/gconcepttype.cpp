@@ -93,7 +93,7 @@ int GConceptType::Compare(const R::RString& name) const
 
 
 //------------------------------------------------------------------------------
-GConcept GConceptType::GetNeutral(void) const
+GConcept* GConceptType::GetNeutral(void) const
 {
 	if(Neutral)
 		const_cast<GConceptType*>(this)->Neutral=Session->InsertConcept(const_cast<GConceptType*>(this),"*");
