@@ -31,4 +31,4 @@ ELSE(disable-kde)
 ENDIF(disable-kde)
 
 SET(SUB_PROJECT featureseval)
-ADD_SUBDIRECTORY(src)
+ADD_SUBDIRECTORY(mutualinfo)

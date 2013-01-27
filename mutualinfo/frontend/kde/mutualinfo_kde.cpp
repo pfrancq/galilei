@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	FeaturesEval_KDE.cpp
+	MutualInfo_KDE.cpp
 
-	Features Evaluation (KDE Part) - Implementation.
+	Mutual Information (KDE Part) - Implementation.
 
-	Copyright 2003-2010 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2013 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -51,7 +51,7 @@ class Config : public KDialog, public Ui_Config
 public:
 	Config(void)
 	{
-		setCaption("Configure Features Plug-In");
+		setCaption("Configure Mutual Information Plug-In");
 		QWidget* widget=new QWidget(this);
 		setupUi(widget);
 		setMainWidget(widget);
@@ -72,9 +72,9 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "FeaturesEval", 0, ki18n("Features Evaluation"),
+	KAboutData aboutData( "mutualinfo", 0, ki18n("Mutual Information"),
 		"1.0", ki18n("Compute different measures evaluating the importance of the features"), KAboutData::License_GPL,
-		ki18n("(C) 2003-2012 by Pascal Francq"),
+		ki18n("(C) 2003-2013 by Pascal Francq"),
 		KLocalizedString(), "http://www.otlet-institute.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	KAboutApplicationDialog dlg(&aboutData);

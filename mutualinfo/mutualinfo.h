@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	FeaturesEval.cpp
+	MutualInfo.cpp
 
-	Features Evaluation - Header.
+	Mutual Information - Header.
 
-	Copyright 2003-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2013 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -29,8 +29,8 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef FeaturesEvalH
-#define FeaturesEvalH
+#ifndef MutualInfoH
+#define MutualInfoH
 
 
 //-----------------------------------------------------------------------------
@@ -51,7 +51,7 @@ using namespace std;
 
 
 //------------------------------------------------------------------------------
-class FeaturesEval : public RObject, public GMeasure
+class MutualInfo : public RObject, public GMeasure
 {
 	/**
 	 * Measures dirty ?
@@ -75,14 +75,14 @@ public:
 	 * @param session        Session.
 	 * @param fac            Factory.
 	 */
-	FeaturesEval(GSession* session,GPlugInFactory* fac);
+	MutualInfo(GSession* session,GPlugInFactory* fac);
 
 	/**
 	 * Virtual method inherits from R::RObject and that must be re-implemented
 	 * in all child classes.
 	 * @return Name of the class.
 	 */
-	virtual R::RCString GetClassName(void) const {return("FeaturesEval");}
+	virtual R::RCString GetClassName(void) const {return("MutualInfo");}
 
 	/**
 	* Access to several information related to the evaluation of a given

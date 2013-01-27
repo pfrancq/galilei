@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	FeaturesEval.cpp
+	MutualInfo.cpp
 
-	Features Evaluation - Implementation.
+	Mutual Information - Implementation.
 
-	Copyright 2003-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2013 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -36,26 +36,26 @@
 // include files for GALILEI
 #include <gdoc.h>
 #include <gsession.h>
-#include <featureseval.h>
+#include <mutualinfo.h>
 
 
 
 //------------------------------------------------------------------------------
 //
-//  Features
+//  MutualInfo
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-FeaturesEval::FeaturesEval(GSession* session,GPlugInFactory* fac)
+MutualInfo::MutualInfo(GSession* session,GPlugInFactory* fac)
 	: RObject(fac->GetName()), GMeasure(session,fac), Dirty(false), MutualInfos(20000), CurWeights(0)
 {
-	InsertObserver(HANDLER(FeaturesEval::Handle),"ObjectChanged");
+	InsertObserver(HANDLER(MutualInfo::Handle),"ObjectChanged");
 }
 
 
 //------------------------------------------------------------------------------
-void FeaturesEval::Measure(size_t measure,...)
+void MutualInfo::Measure(size_t measure,...)
 {
 	va_list ap;
 	va_start(ap,measure);
@@ -89,7 +89,7 @@ void FeaturesEval::Measure(size_t measure,...)
 
 
 //------------------------------------------------------------------------------
-void FeaturesEval::Info(size_t info,...)
+void MutualInfo::Info(size_t info,...)
 {
 	va_list ap;
 	va_start(ap,info);
@@ -118,7 +118,7 @@ void FeaturesEval::Info(size_t info,...)
 
 
 //------------------------------------------------------------------------------
-void FeaturesEval::BuildMutualInformation(void)
+void MutualInfo::BuildMutualInformation(void)
 {
 	// Initialize the vector
 	MutualInfos.Init(Session->GetMaxObjId(otConcept),0.0);
@@ -164,7 +164,7 @@ void FeaturesEval::BuildMutualInformation(void)
 
 
 //------------------------------------------------------------------------------
-void FeaturesEval::Handle(const RNotification& notification)
+void MutualInfo::Handle(const RNotification& notification)
 {
 	// Only document changes
 	GEvent& Event(GetData<GEvent&>(notification));
@@ -185,7 +185,7 @@ void FeaturesEval::Handle(const RNotification& notification)
 
 
 //------------------------------------------------------------------------------
-void FeaturesEval::ApplyConfig(void)
+void MutualInfo::ApplyConfig(void)
 {
 /*	Docs=FindParam<RParamValue>("Docs")->GetBool();
 	ProfDoc=FindParam<RParamValue>("ProfDoc")->GetBool();
@@ -208,7 +208,7 @@ void FeaturesEval::ApplyConfig(void)
 
 
 //------------------------------------------------------------------------------
-void FeaturesEval::CreateConfig(void)
+void MutualInfo::CreateConfig(void)
 {
 /*	InsertParam(new RParamValue("Docs",false));
 	InsertParam(new RParamValue("ProfDoc",false));
@@ -228,4 +228,4 @@ void FeaturesEval::CreateConfig(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("Features Evaluation","Mutual Information","Mutual Information",FeaturesEval)
+CREATE_MEASURE_FACTORY("Features Evaluation","Mutual Information","Mutual Information",MutualInfo)
