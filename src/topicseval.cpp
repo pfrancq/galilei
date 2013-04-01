@@ -59,7 +59,11 @@ public:
 TopicsEval::TopicsEval(GSession* session,GPlugInFactory* fac)
 	: ClusteringEval<GTopic,GDoc>(session,fac,otTopic,otDoc)
 {
-	InsertObserver(HANDLER(TopicsEval::Handle),"ObjectChanged");
+	InsertObserver(HANDLER(TopicsEval::Handle),eNewTopic);
+	InsertObserver(HANDLER(TopicsEval::Handle),eCreateTopic);
+	InsertObserver(HANDLER(TopicsEval::Handle),eTopicModified);
+	InsertObserver(HANDLER(TopicsEval::Handle),eDelTopic);
+	InsertObserver(HANDLER(TopicsEval::Handle),eDestroyTopic);
 }
 
 
@@ -121,9 +125,10 @@ void TopicsEval::ComputeBestLocalRecallPrecision(RCursor<GDoc>& objs,ClusterScor
 //------------------------------------------------------------------------------
 void TopicsEval::Handle(const RNotification& notification)
 {
-	GEvent& Event(GetData<GEvent&>(notification));
-    if(GroupType==Event.Object->GetObjType())
-    	Dirty();
+	GTopic* Topic(dynamic_cast<GTopic*>(notification.GetSender()));
+	if(!Topic)
+		return;
+  	Dirty();
 }
 
 

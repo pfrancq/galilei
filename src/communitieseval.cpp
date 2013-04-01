@@ -57,16 +57,21 @@ public:
 CommunitiesEval::CommunitiesEval(GSession* session,GPlugInFactory* fac)
 	: ClusteringEval<GCommunity,GProfile>(session,fac,otCommunity,otProfile)
 {
-	InsertObserver(HANDLER(CommunitiesEval::Handle),"ObjectChanged");
+	InsertObserver(HANDLER(CommunitiesEval::Handle),eNewCommunity);
+	InsertObserver(HANDLER(CommunitiesEval::Handle),eCreateCommunity);
+	InsertObserver(HANDLER(CommunitiesEval::Handle),eCommunityModified);
+	InsertObserver(HANDLER(CommunitiesEval::Handle),eDelCommunity);
+	InsertObserver(HANDLER(CommunitiesEval::Handle),eDestroyCommunity);
 }
 
 
 //------------------------------------------------------------------------------
 void CommunitiesEval::Handle(const RNotification& notification)
 {
-	GEvent& Event(GetData<GEvent&>(notification));
-    if(GroupType==Event.Object->GetObjType())
-    	Dirty();
+	GCommunity* Community(dynamic_cast<GCommunity*>(notification.GetSender()));
+	if(!Community)
+		return;
+  	Dirty();
 }
 
 

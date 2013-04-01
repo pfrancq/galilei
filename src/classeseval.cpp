@@ -116,16 +116,21 @@ public:
 ClassesEval::ClassesEval(GSession* session,GPlugInFactory* fac)
 	: GMeasure(session,fac), LeafNodes(3000)
 {
-	InsertObserver(HANDLER(ClassesEval::Handle),"ObjectChanged");
+	InsertObserver(HANDLER(ClassesEval::Handle),eNewClass);
+	InsertObserver(HANDLER(ClassesEval::Handle),eCreateClass);
+	InsertObserver(HANDLER(ClassesEval::Handle),eClassModified);
+	InsertObserver(HANDLER(ClassesEval::Handle),eDelClass);
+	InsertObserver(HANDLER(ClassesEval::Handle),eDestroyClass);
 }
 
 
 //------------------------------------------------------------------------------
 void ClassesEval::Handle(const RNotification& notification)
 {
-	GEvent& Event(GetData<GEvent&>(notification));
-    if(otClass==Event.Object->GetObjType())
-    	Dirty();
+	GClass* Class(dynamic_cast<GClass*>(notification.GetSender()));
+	if(!Class)
+		return;
+  	Dirty();
 }
 
 
