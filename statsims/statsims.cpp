@@ -292,7 +292,7 @@ void GStatsSims::DoExportDocsSims(void)
 
 //------------------------------------------------------------------------------
 template<class cObj>
-	double GStatsSims::ComputeInclusion(GDescriptionObject<cObj>* obj1,GDescriptionObject<cObj>* obj2)
+	double GStatsSims::ComputeInclusion(cObj* obj1,cObj* obj2)
 {
 
 	// if one description is empty -> the inclusion is null

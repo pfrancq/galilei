@@ -148,12 +148,12 @@ protected:
 	 * @return the inclusion factor of the lists of weighted information
 	 * entities. The methods computes a ratio (weighted by the tf-idf factors)
 	 * of the elements of the first list being in the second one.
-	 * @param cObj           Object type.
+	 * @tparam cObj          Object type.
 	 * @param obj1           First object.
     * @param obj2           Second object.
 	 */
    template<class cObj>
-      double ComputeInclusion(GDescriptionObject<cObj>* obj1,GDescriptionObject<cObj>* obj2);
+      double ComputeInclusion(cObj* obj1,cObj* obj2);
 
   public:
 

@@ -164,10 +164,10 @@ template<class E1,class E2>
 template<class E1,class E2>
 	void GStatSimElements<E1,E2>::CompareVectors(size_t id1,size_t id2)
 {
-	GDescriptionObject<E1>* Obj1(dynamic_cast<GDescriptionObject<E1>*>(Session->GetObj(ObjType1,id1)));
+	E1* Obj1(dynamic_cast<E1*>(Session->GetObj(ObjType1,id1)));
    if(!Obj1)
        ThrowGException("No "+GetObjType(ObjType1,false,false)+" with identifier "+RString::Number(id1));
-	GDescriptionObject<E2>* Obj2(dynamic_cast<GDescriptionObject<E2>*>(Session->GetObj(ObjType2,id2)));
+	E2* Obj2(dynamic_cast<E2*>(Session->GetObj(ObjType2,id2)));
    if(!Obj2)
        ThrowGException("No "+GetObjType(ObjType2,false,false)+" with identifier "+RString::Number(id2));
 
