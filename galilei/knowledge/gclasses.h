@@ -54,10 +54,10 @@ namespace GALILEI{
  * @author Pascal Francq.
  * @short Classes
  */
-class GClasses : public R::RTree<GClasses,GClass,false>, public GObjects<GClass>
+class GClasses : public R::RTree<GClasses,GClass,false>, public GObjects<GClass,eCreateClass>
 {
-	using GObjects<GClass>::InsertObj;
-	using GObjects<GClass>::DeleteObj;
+	using GObjects<GClass,eCreateClass>::InsertObj;
+	using GObjects<GClass,eCreateClass>::DeleteObj;
 
 public:
 

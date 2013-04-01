@@ -46,7 +46,7 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GClasses::GClasses(size_t max)
-	: RTree<GClasses,GClass,false>(), GObjects<GClass>(max,"Classes",otClass)
+	: RTree<GClasses,GClass,false>(), GObjects<GClass,eCreateClass>(max,"Classes",otClass)
 {
 }
 
@@ -61,7 +61,7 @@ GClasses* GClasses::GetClassTree(void)
 //------------------------------------------------------------------------------
 void GClasses::InsertObj(GClass* parent,GClass* obj)
 {
-	GObjects<GClass>::InsertObj(obj);
+	GObjects<GClass,eCreateClass>::InsertObj(obj);
 	RTree<GClasses,GClass,false>::InsertNode(parent,obj);
 }
 
@@ -70,14 +70,14 @@ void GClasses::InsertObj(GClass* parent,GClass* obj)
 void GClasses::DeleteObj(GClass* obj)
 {
 	RTree<GClasses,GClass,false>::DeleteNode(obj,true);
-	GObjects<GClass>::DeleteObj(obj);
+	GObjects<GClass,eCreateClass>::DeleteObj(obj);
 }
 
 //-----------------------------------------------------------------------------
 void GClasses::Clear(void)
 {
 	RTree<GClasses,GClass,false>::Clear();
-	GObjects<GClass>::Clear(pClass);
+	GObjects<GClass,eCreateClass>::Clear(pClass);
 }
 
 
@@ -85,5 +85,5 @@ void GClasses::Clear(void)
 void GClasses::Clear(const GClass* obj)
 {
 	RTree<GClasses,GClass,false>::Clear();
-	GObjects<GClass>::Clear(obj);
+	GObjects<GClass,eCreateClass>::Clear(obj);
 }

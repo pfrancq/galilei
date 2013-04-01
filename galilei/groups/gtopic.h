@@ -49,7 +49,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Topic.
 */
-class GTopic : public GGroup<GDoc,GTopic,otTopic>
+class GTopic : public GGroup<GDoc,GTopic,otTopic,eCreateTopic,eNewTopic,eDelTopic,eUpdateTopic,eTopicModified>
 {
 	/**
 	 * Method used to correctly instantiate some template methods.
@@ -77,6 +77,11 @@ public:
 	GTopic(GSession* session,size_t id,size_t blockid,const R::RString& name,const R::RDate& u,const R::RDate& c);
 
 	/**
+    * @return the class name.
+    */
+	virtual R::RCString GetClassName(void) const {return("GTopic");}
+
+	/**
 	 * Get the similarity measure that must be used when computing the
 	 * similarity between the documents grouped.
 	 */
@@ -88,7 +93,7 @@ public:
 	*/
 	virtual ~GTopic(void);
 
-   friend class GObjects<GTopic>;
+   friend class GObjects<GTopic,eCreateTopic>;
 };
 
 

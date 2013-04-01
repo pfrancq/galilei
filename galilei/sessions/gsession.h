@@ -126,93 +126,99 @@ public:
 * and 'ForceReCompute'.
 * @short Generic Session.
 */
-class GSession : public R::RObject, virtual public GKB, public R::RConfig, GObjects<GDoc>, GObjects<GTopic>, GObjects<GUser>, GObjects<GProfile>, GObjects<GCommunity>, public GClasses
+class GSession : public R::RObject, virtual public GKB, public R::RConfig,
+	              GObjects<GDoc,eCreateDoc>,
+	              GObjects<GTopic,eCreateTopic>,
+	              GObjects<GUser,eCreateUser>,
+	              GObjects<GProfile,eCreateProfile>,
+	              GObjects<GCommunity,eCreateCommunity>,
+	              public GClasses
 {
 public:
 
-	// Explicit use of methods from GObjects<GDoc>
-   using GObjects<GDoc>::Clear;
-	using GObjects<GDoc>::DoCreateIndex;
-	using GObjects<GDoc>::DoCreateTree;
-	using GObjects<GDoc>::LoadObjs;
-	using GObjects<GDoc>::GetObj;
-	using GObjects<GDoc>::GetObjs;
-	using GObjects<GDoc>::GetNbObjs;
-	using GObjects<GDoc>::InsertObj;
-	using GObjects<GDoc>::DeleteObj;
-	using GObjects<GDoc>::AssignId;
-	using GObjects<GDoc>::GetMaxObjId;
-	using GObjects<GDoc>::LoadDesc;
-	using GObjects<GDoc>::SaveDesc;
-	using GObjects<GDoc>::FlushDesc;
-	using GObjects<GDoc>::LoadTree;
-	using GObjects<GDoc>::SaveTree;
-	using GObjects<GDoc>::FlushTree;
-	using GObjects<GDoc>::UpdateIndex;
-	using GObjects<GDoc>::LoadIndex;
-   using GObjects<GDoc>::BuildIndex;
+	// Explicit use of methods from GObjects<GDoc,eCreateDoc>
+   using GObjects<GDoc,eCreateDoc>::Clear;
+	using GObjects<GDoc,eCreateDoc>::DoCreateIndex;
+	using GObjects<GDoc,eCreateDoc>::DoCreateTree;
+	using GObjects<GDoc,eCreateDoc>::LoadObjs;
+	using GObjects<GDoc,eCreateDoc>::GetObj;
+	using GObjects<GDoc,eCreateDoc>::GetObjs;
+	using GObjects<GDoc,eCreateDoc>::GetNbObjs;
+	using GObjects<GDoc,eCreateDoc>::InsertObj;
+	using GObjects<GDoc,eCreateDoc>::DeleteObj;
+	using GObjects<GDoc,eCreateDoc>::AssignId;
+	using GObjects<GDoc,eCreateDoc>::GetMaxObjId;
+	using GObjects<GDoc,eCreateDoc>::LoadDesc;
+	using GObjects<GDoc,eCreateDoc>::SaveDesc;
+	using GObjects<GDoc,eCreateDoc>::FlushDesc;
+	using GObjects<GDoc,eCreateDoc>::LoadTree;
+	using GObjects<GDoc,eCreateDoc>::SaveTree;
+	using GObjects<GDoc,eCreateDoc>::FlushTree;
+	using GObjects<GDoc,eCreateDoc>::UpdateIndex;
+	using GObjects<GDoc,eCreateDoc>::LoadIndex;
+   using GObjects<GDoc,eCreateDoc>::BuildIndex;
 
-	// Explicit use of methods from GObjects<GTopic>
-   using GObjects<GTopic>::Clear;
-	using GObjects<GTopic>::DoCreateIndex;
-	using GObjects<GTopic>::LoadObjs;
-	using GObjects<GTopic>::GetObj;
-	using GObjects<GTopic>::GetObjs;
-	using GObjects<GTopic>::GetNbObjs;
-	using GObjects<GTopic>::InsertObj;
-	using GObjects<GTopic>::DeleteObj;
-	using GObjects<GTopic>::AssignId;
-	using GObjects<GTopic>::GetMaxObjId;
-	using GObjects<GTopic>::LoadDesc;
-	using GObjects<GTopic>::SaveDesc;
-	using GObjects<GTopic>::FlushDesc;
-	using GObjects<GTopic>::UpdateIndex;
-   using GObjects<GTopic>::BuildIndex;
+	// Explicit use of methods from GObjects<GTopic,eCreateTopic>
+   using GObjects<GTopic,eCreateTopic>::Clear;
+	using GObjects<GTopic,eCreateTopic>::DoCreateIndex;
+	using GObjects<GTopic,eCreateTopic>::LoadObjs;
+	using GObjects<GTopic,eCreateTopic>::GetObj;
+	using GObjects<GTopic,eCreateTopic>::GetObjs;
+	using GObjects<GTopic,eCreateTopic>::GetNbObjs;
+	using GObjects<GTopic,eCreateTopic>::InsertObj;
+	using GObjects<GTopic,eCreateTopic>::DeleteObj;
+	using GObjects<GTopic,eCreateTopic>::AssignId;
+	using GObjects<GTopic,eCreateTopic>::GetMaxObjId;
+	using GObjects<GTopic,eCreateTopic>::LoadDesc;
+	using GObjects<GTopic,eCreateTopic>::SaveDesc;
+	using GObjects<GTopic,eCreateTopic>::FlushDesc;
+	using GObjects<GTopic,eCreateTopic>::UpdateIndex;
+   using GObjects<GTopic,eCreateTopic>::BuildIndex;
 
-	// Explicit use of methods from GObjects<GUser>
-   using GObjects<GUser>::Clear;
-	using GObjects<GUser>::LoadObjs;
-	using GObjects<GUser>::GetObj;
-	using GObjects<GUser>::GetObjs;
-	using GObjects<GUser>::GetNbObjs;
-	using GObjects<GUser>::InsertObj;
-	using GObjects<GUser>::DeleteObj;
-	using GObjects<GUser>::AssignId;
-	using GObjects<GUser>::GetMaxObjId;
+	// Explicit use of methods from GObjects<GUser,eCreateUser>
+   using GObjects<GUser,eCreateUser>::Clear;
+	using GObjects<GUser,eCreateUser>::LoadObjs;
+	using GObjects<GUser,eCreateUser>::GetObj;
+	using GObjects<GUser,eCreateUser>::GetObjs;
+	using GObjects<GUser,eCreateUser>::GetNbObjs;
+	using GObjects<GUser,eCreateUser>::InsertObj;
+	using GObjects<GUser,eCreateUser>::DeleteObj;
+	using GObjects<GUser,eCreateUser>::AssignId;
+	using GObjects<GUser,eCreateUser>::GetMaxObjId;
 
-	// Explicit use of methods from GObjects<GProfile>
-   using GObjects<GProfile>::Clear;
-	using GObjects<GProfile>::DoCreateIndex;
-	using GObjects<GProfile>::LoadObjs;
-	using GObjects<GProfile>::GetObj;
-	using GObjects<GProfile>::GetObjs;
-	using GObjects<GProfile>::GetNbObjs;
-	using GObjects<GProfile>::InsertObj;
-	using GObjects<GProfile>::DeleteObj;
-	using GObjects<GProfile>::AssignId;
-	using GObjects<GProfile>::GetMaxObjId;
-	using GObjects<GProfile>::LoadDesc;
-	using GObjects<GProfile>::SaveDesc;
-	using GObjects<GProfile>::FlushDesc;
-	using GObjects<GProfile>::UpdateIndex;
-   using GObjects<GProfile>::BuildIndex;
+	// Explicit use of methods from GObjects<GProfile,eCreateProfile>
+   using GObjects<GProfile,eCreateProfile>::Clear;
+	using GObjects<GProfile,eCreateProfile>::DoCreateIndex;
+	using GObjects<GProfile,eCreateProfile>::LoadObjs;
+	using GObjects<GProfile,eCreateProfile>::GetObj;
+	using GObjects<GProfile,eCreateProfile>::GetObjs;
+	using GObjects<GProfile,eCreateProfile>::GetNbObjs;
+	using GObjects<GProfile,eCreateProfile>::InsertObj;
+	using GObjects<GProfile,eCreateProfile>::DeleteObj;
+	using GObjects<GProfile,eCreateProfile>::AssignId;
+	using GObjects<GProfile,eCreateProfile>::GetMaxObjId;
+	using GObjects<GProfile,eCreateProfile>::LoadDesc;
+	using GObjects<GProfile,eCreateProfile>::SaveDesc;
+	using GObjects<GProfile,eCreateProfile>::FlushDesc;
+	using GObjects<GProfile,eCreateProfile>::UpdateIndex;
+   using GObjects<GProfile,eCreateProfile>::BuildIndex;
 
-	// Explicit use of methods from GObjects<GCommunity>
-   using GObjects<GCommunity>::Clear;
-	using GObjects<GCommunity>::DoCreateIndex;
-	using GObjects<GCommunity>::LoadObjs;
-	using GObjects<GCommunity>::GetObj;
-	using GObjects<GCommunity>::GetObjs;
-	using GObjects<GCommunity>::GetNbObjs;
-	using GObjects<GCommunity>::InsertObj;
-	using GObjects<GCommunity>::DeleteObj;
-	using GObjects<GCommunity>::AssignId;
-	using GObjects<GCommunity>::GetMaxObjId;
-	using GObjects<GCommunity>::LoadDesc;
-	using GObjects<GCommunity>::SaveDesc;
-	using GObjects<GCommunity>::FlushDesc;
-	using GObjects<GCommunity>::UpdateIndex;
-   using GObjects<GCommunity>::BuildIndex;
+	// Explicit use of methods from GObjects<GCommunity,eCreateCommunity>
+   using GObjects<GCommunity,eCreateCommunity>::Clear;
+	using GObjects<GCommunity,eCreateCommunity>::DoCreateIndex;
+	using GObjects<GCommunity,eCreateCommunity>::LoadObjs;
+	using GObjects<GCommunity,eCreateCommunity>::GetObj;
+	using GObjects<GCommunity,eCreateCommunity>::GetObjs;
+	using GObjects<GCommunity,eCreateCommunity>::GetNbObjs;
+	using GObjects<GCommunity,eCreateCommunity>::InsertObj;
+	using GObjects<GCommunity,eCreateCommunity>::DeleteObj;
+	using GObjects<GCommunity,eCreateCommunity>::AssignId;
+	using GObjects<GCommunity,eCreateCommunity>::GetMaxObjId;
+	using GObjects<GCommunity,eCreateCommunity>::LoadDesc;
+	using GObjects<GCommunity,eCreateCommunity>::SaveDesc;
+	using GObjects<GCommunity,eCreateCommunity>::FlushDesc;
+	using GObjects<GCommunity,eCreateCommunity>::UpdateIndex;
+   using GObjects<GCommunity,eCreateCommunity>::BuildIndex;
 
 	// Explicit use of methods from GClasses
    using GClasses::Clear;
@@ -674,9 +680,11 @@ public:
 	* Add a given document to a subject.
 	* @param doc            Pointer to the document.
 	* @param subjectid      Identifier of the real subject.
-	* @param usedid         Identifier of the subject used.
+	* @param selected       Is the document selected in the subject?
+	*
+	* An notification eUnselectDoc is generated for the document.
 	*/
-	void Insert(GDoc* doc,size_t subjectid,size_t usedid);
+	void Insert(GDoc* doc,size_t subjectid,bool selected);
 
 	/**
 	* Add a given profile to a subject.

@@ -49,7 +49,7 @@ GUser::GUser(GSession* session,size_t id,const R::RString& name,const R::RString
  : GObject(session,id,name,otUser), RContainer<GProfile,false,true>(nb+nb/2+1,nb/2+1), FullName(fullname)
 {
 	if(Id!=R::cNoRef)
-		Emit(GEvent::eObjNew);
+		PostNotification(eNewUser);
 }
 
 
@@ -77,7 +77,7 @@ int GUser::Compare(const size_t id) const
 //------------------------------------------------------------------------------
 int GUser::Compare(const R::RString& name) const
 {
-	return(Name.Compare(name));
+	return(GetName().Compare(name));
 }
 
 
@@ -128,7 +128,7 @@ RString GUser::GetFullName(void) const
 //------------------------------------------------------------------------------
 void GUser::SetName(const RString& name,const RString& fullname)
 {
-	Name=name;
+	RObject::SetName(name);
 	if(fullname.IsEmpty())
 		FullName=name;
 	else
@@ -139,5 +139,5 @@ void GUser::SetName(const RString& name,const RString& fullname)
 //------------------------------------------------------------------------------
 GUser::~GUser(void)
 {
-	Emit(GEvent::eObjDelete);
+	PostNotification(eDelUser);
 }

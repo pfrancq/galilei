@@ -81,9 +81,91 @@ GMatrixMeasure::GMatrixMeasure(GSession* session,GPlugInFactory* fac,tObjType li
 	  Lines(lines), Cols(cols)
 {
 	if(Symmetric&&(Lines!=Cols))
-		throw GException("Symmetric measures are only allowed if the elements are of the same type");
+		ThrowGException("Symmetric measures are only allowed if the elements are of the same type");
 	Name=fac->GetName();
-	InsertObserver(HANDLER(GMatrixMeasure::Handle),"ObjectChanged");
+
+	switch(Lines)
+	{
+		case otDoc:
+			InsertObserver(HANDLER(GMatrixMeasure::HandleLineNew),eNewDoc);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleLineModified),eDocModified);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleLineDel),eDelDoc);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleLineDestroy),eDestroyDoc);
+			break;
+
+		case otTopic:
+			InsertObserver(HANDLER(GMatrixMeasure::HandleLineNew),eNewTopic);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleLineModified),eTopicModified);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleLineDel),eDelTopic);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleLineDestroy),eDestroyTopic);
+			break;
+
+		case otProfile:
+			InsertObserver(HANDLER(GMatrixMeasure::HandleLineNew),eNewProfile);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleLineModified),eProfileModified);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleLineDel),eDelProfile);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleLineDestroy),eDestroyProfile);
+			break;
+
+		case otCommunity:
+			InsertObserver(HANDLER(GMatrixMeasure::HandleLineNew),eNewCommunity);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleLineModified),eCommunityModified);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleLineDel),eDelCommunity);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleLineDestroy),eDestroyCommunity);
+			break;
+
+		case otClass:
+			InsertObserver(HANDLER(GMatrixMeasure::HandleLineNew),eNewClass);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleLineModified),eClassModified);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleLineDel),eDelClass);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleLineDestroy),eDestroyClass);
+			break;
+
+		default:
+			ThrowGException(GetObjType(Lines,true,true)+"are not allowed");
+	}
+
+	switch(Cols)
+	{
+		case otDoc:
+			InsertObserver(HANDLER(GMatrixMeasure::HandleColNew),eNewDoc);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleColModified),eDocModified);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleColDel),eDelDoc);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleColDestroy),eDestroyDoc);
+			break;
+
+		case otTopic:
+			InsertObserver(HANDLER(GMatrixMeasure::HandleColNew),eNewTopic);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleColModified),eTopicModified);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleColDel),eDelTopic);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleColDestroy),eDestroyTopic);
+			break;
+
+		case otProfile:
+			InsertObserver(HANDLER(GMatrixMeasure::HandleColNew),eNewProfile);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleColModified),eProfileModified);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleColDel),eDelProfile);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleColDestroy),eDestroyProfile);
+			break;
+
+		case otCommunity:
+			InsertObserver(HANDLER(GMatrixMeasure::HandleColNew),eNewCommunity);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleColModified),eCommunityModified);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleColDel),eDelCommunity);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleColDestroy),eDestroyCommunity);
+			break;
+
+		case otClass:
+			InsertObserver(HANDLER(GMatrixMeasure::HandleColNew),eNewClass);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleColModified),eClassModified);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleColDel),eDelClass);
+			InsertObserver(HANDLER(GMatrixMeasure::HandleColDestroy),eDestroyClass);
+			break;
+
+		default:
+			ThrowGException(GetObjType(Cols,true,true)+"are not allowed");
+	}
+
 #ifdef DEBUG
 	DebugFile.Open(RIO::Create);
 #endif
@@ -639,7 +721,7 @@ void GMatrixMeasure::DirtyIdentificator(size_t id,bool line,bool file)
 
 			// Identifier correspond to a line in memory -> Line "must" be removed.
 			// RGeneric Matrix is a RMatrix (or derived).
-			RMatrixLine* Line((*static_cast<RMatrix*>(Matrix))[id-1]);
+			RVector* Line((*static_cast<RMatrix*>(Matrix))[id-1]);
 			RNumCursor<double> Cols(Line->GetCols());
 			for(Cols.Start();!Cols.End();Cols.Next())
 				DeleteValue(Cols());
@@ -691,7 +773,7 @@ void GMatrixMeasure::DirtyIdentificator(size_t id,bool line,bool file)
 
 			// Identifier correspond to a line in memory -> Line "must" be removed.
 			// RGeneric Matrix is a RMatrix (or derived).
-			RCursor<RMatrixLine> Lines(static_cast<RMatrix*>(Matrix)->GetLines());
+			RCursor<RVector> Lines(static_cast<RMatrix*>(Matrix)->GetLines());
 			for(Lines.GoTo(start);!Lines.End();Lines.Next())
 				DeleteValue((*Lines())[id-1]);
 			DirtyMem=true;
@@ -745,41 +827,74 @@ void GMatrixMeasure::DestroyIdentificator(size_t id,bool line)
 
 
 //------------------------------------------------------------------------------
-void GMatrixMeasure::Handle(const RNotification& notification)
+void GMatrixMeasure::HandleLineNew(const RNotification& notification)
 {
-	GEvent& Event(GetData<GEvent&>(notification));
+	GObject* Object(dynamic_cast<GObject*>(notification.GetSender()));
+	if(Object)
+		AddIdentificator(Object->GetId(),true);
+}
 
-    bool DoLines(Lines==Event.Object->GetObjType());
-    bool DoCols(Cols==Event.Object->GetObjType());
-	switch(Event.Event)
-	{
-		case GEvent::eObjNew:
-			if(DoLines)
-				AddIdentificator(Event.Object->GetId(),true);
-			if(DoCols)
-				AddIdentificator(Event.Object->GetId(),false);
-			break;
-		case GEvent::eObjModified:
-			if(DoLines)
-				DirtyIdentificator(Event.Object->GetId(),true,true);
-			if(DoCols)
-				DirtyIdentificator(Event.Object->GetId(),false,true);
-			break;
-		case GEvent::eObjDelete:
-			if(DoLines)
-				DeleteIdentificator(Event.Object->GetId(),true);
-			if(DoCols)
-				DeleteIdentificator(Event.Object->GetId(),false);
-			break;
-		case GEvent::eObjDestroyed:
-			if(DoLines)
-				DestroyIdentificator(Event.Object->GetId(),true);
-			if(DoCols)
-				DestroyIdentificator(Event.Object->GetId(),false);
-			break;
-		default:
-			break;
-	}
+
+//------------------------------------------------------------------------------
+void GMatrixMeasure::HandleLineModified(const RNotification& notification)
+{
+	GObject* Object(dynamic_cast<GObject*>(notification.GetSender()));
+	if(Object)
+		DirtyIdentificator(Object->GetId(),true,true);
+}
+
+
+//------------------------------------------------------------------------------
+void GMatrixMeasure::HandleLineDel(const RNotification& notification)
+{
+	GObject* Object(dynamic_cast<GObject*>(notification.GetSender()));
+	if(Object)
+		DeleteIdentificator(Object->GetId(),true);
+}
+
+
+//------------------------------------------------------------------------------
+void GMatrixMeasure::HandleLineDestroy(const RNotification& notification)
+{
+	GObject* Object(dynamic_cast<GObject*>(notification.GetSender()));
+	if(Object)
+		DestroyIdentificator(Object->GetId(),true);
+}
+
+
+//------------------------------------------------------------------------------
+void GMatrixMeasure::HandleColNew(const RNotification& notification)
+{
+	GObject* Object(dynamic_cast<GObject*>(notification.GetSender()));
+	if(Object)
+		AddIdentificator(Object->GetId(),false);
+}
+
+
+//------------------------------------------------------------------------------
+void GMatrixMeasure::HandleColModified(const RNotification& notification)
+{
+	GObject* Object(dynamic_cast<GObject*>(notification.GetSender()));
+	if(Object)
+		DirtyIdentificator(Object->GetId(),false,true);
+}
+
+
+//------------------------------------------------------------------------------
+void GMatrixMeasure::HandleColDel(const RNotification& notification)
+{
+	GObject* Object(dynamic_cast<GObject*>(notification.GetSender()));
+	if(Object)
+		DirtyIdentificator(Object->GetId(),false,true);
+}
+
+
+//------------------------------------------------------------------------------
+void GMatrixMeasure::HandleColDestroy(const RNotification& notification)
+{
+	GObject* Object(dynamic_cast<GObject*>(notification.GetSender()));
+	if(Object)
+		DestroyIdentificator(Object->GetId(),false);
 }
 
 
@@ -1244,7 +1359,7 @@ void GMatrixMeasure::UpdateMem(void)
 				DebugFile<<"Full"<<endl;
 			#endif
 			// Parse the matrix and re-compute all the elements that are dirty
-			RCursor<RMatrixLine> Cur(static_cast<RMatrix*>(Matrix)->GetLines());
+			RCursor<RVector> Cur(static_cast<RMatrix*>(Matrix)->GetLines());
 			for(Cur.Start();!Cur.End();Cur.Next())
 			{
 				GObject* obj1=Session->GetObj(Lines,Cur.GetPos()+1,true);

@@ -62,7 +62,7 @@ void GProfile::PrivateInit(void)
 
 //------------------------------------------------------------------------------
 GProfile::GProfile(GSession* session,GUser* usr,tProfileType type,const R::RString name,bool s)
-  : GDescriptionObject<GProfile>(session,cNoRef,0,otProfile,name,osNew), User(usr), Type(type),
+  : GDescriptionObject<GProfile,eCreateProfile,eNewProfile,eDelProfile>(session,cNoRef,0,otProfile,name,osNew), User(usr), Type(type),
     Fdbks(100,50), Social(s), Updated(RDate::GetToday()), Computed(RDate::Null),
     GroupId(0), Attached(RDate::Null), Score(0.0), Level(0)
 {
@@ -82,7 +82,7 @@ GProfile::GProfile(GSession* session,GUser* usr,tProfileType type,const R::RStri
 
 //------------------------------------------------------------------------------
 GProfile::GProfile(GSession* session,GUser* usr,tProfileType type,size_t id,size_t blockid,const R::RString name,size_t grpid,RDate a,RDate u,RDate c,bool s,double score,char level,size_t nbf)
-  : GDescriptionObject<GProfile>(session,id,blockid,otProfile,name,osNew), User(usr), Type(type),
+  : GDescriptionObject<GProfile,eCreateProfile,eNewProfile,eDelProfile>(session,id,blockid,otProfile,name,osNew), User(usr), Type(type),
     Fdbks(nbf+nbf/2,nbf/2), Social(s), Updated(u), Computed(c),
     GroupId(grpid), Attached(a), Score(score), Level(level)
 {
@@ -117,7 +117,7 @@ int GProfile::Compare(const GProfile* profile) const
 //------------------------------------------------------------------------------
 int GProfile::Compare(const RString& name) const
 {
-	return(Name.Compare(name));
+	return(GetName().Compare(name));
 }
 
 
@@ -132,17 +132,10 @@ int GProfile::Compare(const size_t id) const
 void GProfile::ClearInfos(bool disk)
 {
 	// Clear the information
-	GDescriptionObject<GProfile>::Clear(disk);
+	GDescriptionObject<GProfile,eCreateProfile,eNewProfile,eDelProfile>::Clear(disk);
 
 	// Make sure that it will be re-computed
 	Computed=RDate::Null;
-}
-
-
-//------------------------------------------------------------------------------
-void GProfile::SetName(const RString& name)
-{
-	Name=name;
 }
 
 
@@ -294,6 +287,8 @@ void GProfile::DeleteFdbk(size_t docid)
 //------------------------------------------------------------------------------
 void GProfile::Update(GSession* session,GDescription& desc,bool delref)
 {
+	PostNotification(eUpdateProfile);
+
 	// Remove its references
 	if(delref)
 	{
@@ -318,7 +313,7 @@ void GProfile::Update(GSession* session,GDescription& desc,bool delref)
 	desc.Clear(); // Clear the description
 
 	// Emit an event that it was modified
-	Emit(GEvent::eObjModified);
+	PostNotification(eProfileModified);
 }
 
 

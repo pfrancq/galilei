@@ -180,6 +180,11 @@ public:
 			size_t refclasses,size_t idxclasses);
 
 	/**
+    * @return the class name.
+    */
+	virtual R::RCString GetClassName(void) const {return("GConcept");}
+
+	/**
 	* Compare two concepts.
 	* @param c               Concept used.
 	* @see R::RContainer
@@ -194,11 +199,6 @@ public:
 	int Compare(const R::RString& name) const;
 
 	/**
-	* @return the type of the object.
-	*/
-	virtual tObjType GetObjType(void) const {return(otConcept);}
-
-	/**
 	 * Do a deep copy of the current concept.
 	 * @return Pointer to a new element created.
 	 */
@@ -210,7 +210,7 @@ public:
 	* @param idx             Index of the hash index.
 	*/
 	virtual size_t HashIndex(size_t idx) const
-		{return(Name.HashIndex(idx));}
+		{return(GetName().HashIndex(idx));}
 
 	/**
 	* Get the type of the concept.

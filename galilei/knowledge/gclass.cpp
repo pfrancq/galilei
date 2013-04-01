@@ -56,14 +56,14 @@ void GClass::PrivateInit(void)
 
 //------------------------------------------------------------------------------
 GClass::GClass(GSession* session,const R::RString& name)
-	: R::RNode<GClasses,GClass,false>(), GDescriptionObject<GClass>(session,cNoRef,0,otClass,name,osNew)
+	: R::RNode<GClasses,GClass,false>(), GDescriptionObject<GClass,eCreateClass,eNewClass,eDelClass>(session,cNoRef,0,otClass,name,osNew)
 {
 }
 
 
 //------------------------------------------------------------------------------
 GClass::GClass(GSession* session,size_t id,size_t blockid,const R::RString& name)
-	: R::RNode<GClasses,GClass,false>(), GDescriptionObject<GClass>(session,id,blockid,otClass,name,osNew)
+	: R::RNode<GClasses,GClass,false>(), GDescriptionObject<GClass,eCreateClass,eNewClass,eDelClass>(session,id,blockid,otClass,name,osNew)
 {
 }
 
@@ -72,7 +72,7 @@ GClass::GClass(GSession* session,size_t id,size_t blockid,const R::RString& name
 void GClass::Clear(void)
 {
 	RNode<GClasses,GClass,false>::Clear();
-	GDescriptionObject<GClass>::Clear();
+	GDescriptionObject<GClass,eCreateClass,eNewClass,eDelClass>::Clear();
 }
 
 
@@ -103,6 +103,7 @@ int GClass::Compare(const size_t id) const
 void GClass::Update(GDescription& desc)
 {
 	// Remove its references
+	PostNotification(eUpdateClass);
 	DelRefs(Session,otClass);
 	if(Session->DoCreateIndex(pClass))
 		Session->UpdateIndex(pClass,desc,Id,false);
@@ -119,7 +120,7 @@ void GClass::Update(GDescription& desc)
 	desc.Clear(); // Clear the description
 
 	// Emit an event that it was modified
-	Emit(GEvent::eObjModified);
+	PostNotification(eClassModified);
 }
 
 

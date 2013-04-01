@@ -495,6 +495,7 @@ void GGALILEIApp::Apply(void)
 		Config.AddToList("PlugIns Path",*Cur());
 }
 
+
 //------------------------------------------------------------------------------
 void GGALILEIApp::RunPrg(GSlot* rec,const RString& filename)
 {

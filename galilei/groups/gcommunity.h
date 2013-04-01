@@ -51,7 +51,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Community.
 */
-class GCommunity : public GGroup<GProfile,GCommunity,otCommunity>
+class GCommunity : public GGroup<GProfile,GCommunity,otCommunity,eCreateCommunity,eNewCommunity,eDelCommunity,eUpdateCommunity,eCommunityModified>
 {
 	/**
 	 * Method used to correctly instantiate some template methods.
@@ -77,6 +77,11 @@ public:
 	* @param c               Date of the last computation.
 	*/
 	GCommunity(GSession* session,size_t id,size_t blockid,const R::RString& name,const R::RDate& u,const R::RDate& c);
+
+	/**
+    * @return the class name.
+    */
+	virtual R::RCString GetClassName(void) const {return("GCommunity");}
 
 	/**
 	 * Get the similarity measure that must be used when computing the

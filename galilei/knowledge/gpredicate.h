@@ -35,6 +35,7 @@
 
 //------------------------------------------------------------------------------
 // include files for R
+#include <robject.h>
 
 
 //-----------------------------------------------------------------------------
@@ -53,17 +54,12 @@ namespace GALILEI{
 * @param author Pascal Francq
 * @param short Predicate.
 */
-class GPredicate
+class GPredicate : public R::RObject
 {
 	/**
 	* Identifier of the predicate.
 	*/
 	size_t Id;
-
-	/**
-	* Name of the predicate.
-	*/
-	R::RString Name;
 
 	/**
 	* Short description of the predicate.
@@ -84,6 +80,11 @@ public:
 	* @param desc            Short description.
 	*/
 	GPredicate(size_t id,const R::RString& name,const R::RString& desc);
+
+	/**
+    * @return the class name.
+    */
+	virtual R::RCString GetClassName(void) const {return("GPredicate");}
 
 	/**
 	* Compare two predicates.
@@ -109,11 +110,6 @@ public:
 	 * @param id             Identifier.
 	 */
 	void SetId(size_t id);
-
-	/**
-	* Get the name.
-	*/
-	R::RString GetName(void) const {return(Name);}
 
 	/**
 	* Get the description.

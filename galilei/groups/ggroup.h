@@ -51,22 +51,29 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 /**
 * This class represent a generic group of objects represented by GWeightInfos.
-* @param cObj                Object contained.
-* @param cGroup              Group.
-* @param type                Type of the object.
+* @tparam cObj                Object contained.
+* @tparam cGroup              Group.
+* @tparam type                Type of the object.
+* @tparam hCreate             Notification to post when the object is created.
+* @tparam hNew                Notification to post when the object is created in
+*                             memory.
+* @tparam hDel                Notification to post when the object is deleted
+*                             from memory.
+* @tparam hUpdate             Notification to post when the object will be
+*                             updated.
+* @tparam hModified           Notification to post when the object was modified.
 * @author Pascal Francq
 * @short Generic Group.
 */
-template<class cObj,class cGroup,tObjType type>
-	class GGroup : protected R::RContainer<cObj,false,true>, public GDescriptionObject<cGroup>
+template<class cObj,class cGroup,tObjType type,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel,const R::hNotification& hUpdate,const R::hNotification& hModified>
+	class GGroup : protected R::RContainer<cObj,false,true>, public GDescriptionObject<cGroup,hCreate,hNew,hDel>
 {
 public:
-	using GDescriptionObject<cGroup>::Id;
-	using GDescriptionObject<cGroup>::Copy;
-	using GDescriptionObject<cGroup>::AddRefs;
-	using GDescriptionObject<cGroup>::DelRefs;
-	using GDescriptionObject<cGroup>::State;
-	using GDescriptionObject<cGroup>::Emit;
+	using GDescriptionObject<cGroup,hCreate,hNew,hDel>::Id;
+	using GDescriptionObject<cGroup,hCreate,hNew,hDel>::Copy;
+	using GDescriptionObject<cGroup,hCreate,hNew,hDel>::AddRefs;
+	using GDescriptionObject<cGroup,hCreate,hNew,hDel>::DelRefs;
+	using GDescriptionObject<cGroup,hCreate,hNew,hDel>::State;
 
 protected:
 

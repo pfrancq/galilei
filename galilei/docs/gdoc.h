@@ -61,7 +61,7 @@ namespace GALILEI{
 * the document and must be managed by the developer.
 * @short Document.
 */
-class GDoc : public GDescriptionObject<GDoc>
+class GDoc : public GDescriptionObject<GDoc,eCreateDoc,eNewDoc,eDelDoc>
 {
 protected:
 
@@ -148,6 +148,11 @@ public:
 	* @param a               Date of the last attached.
 	*/
 	GDoc(GSession* session,const R::RURI& uri,const R::RString& name,size_t id,size_t blockid,size_t structid,GLang* lang,const R::RString& mime,size_t grpid,const R::RDate& c,const R::RDate& u,const R::RDate& a);
+
+	/**
+    * @return the class name.
+    */
+	virtual R::RCString GetClassName(void) const {return("GDoc");}
 
 	/**
 	 * Defines that the documents have concept trees.
@@ -262,12 +267,6 @@ public:
 	* @return Pointer to the Language.
 	*/
 	inline GLang* GetLang(void) const {return(Lang);}
-
-	/**
-	* Set the name of the document.
-	* @param name            Name.
-	*/
-	void SetName(const R::RString& name);
 
 	/**
 	* Get the date of the last update of the document content.
@@ -401,7 +400,7 @@ public:
 	friend class GSession;
 	friend class GIndexer;
 	friend class GDocAnalyze;
-   friend class GObjects<GDoc>;
+   friend class GObjects<GDoc,eCreateDoc>;
 };
 
 

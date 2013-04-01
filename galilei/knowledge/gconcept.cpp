@@ -96,14 +96,14 @@ GConcept::GConcept(GSession* session,size_t id, const R::RString& name, GConcept
 //-----------------------------------------------------------------------------
 int GConcept::Compare(const GConcept& c) const
 {
-	return(Name.Compare(c.Name));
+	return(GetName().Compare(c.GetName()));
 }
 
 
 //-----------------------------------------------------------------------------
 int GConcept::Compare(const R::RString& name) const
 {
-	return(Name.Compare(name));
+	return(GetName().Compare(name));
 }
 
 
@@ -407,7 +407,7 @@ double GConcept::GetIF(tObjType ObjType) const
 void GConcept::Clear(void)
 {
 	Id=cNoRef;
-	Name=RString::Null;
+	SetName(RString::Null);
 	NbRefDocs=0;
 	IfDocs=NAN;
 	IndexDocs=0;
@@ -430,7 +430,7 @@ void GConcept::Clear(void)
 //-----------------------------------------------------------------------------
 bool GConcept::IsEmpty(void) const
 {
-	return(Name.IsEmpty());
+	return(GetName().IsEmpty());
 }
 
 

@@ -55,7 +55,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Concepts Class.
 */
-class GClass : public R::RNode<GClasses,GClass,false>, public GDescriptionObject<GClass>
+class GClass : public R::RNode<GClasses,GClass,false>, public GDescriptionObject<GClass,eCreateClass,eNewClass,eDelClass>
 {
     using R::RNode<GClasses,GClass,false>::Clear;
 
@@ -81,6 +81,11 @@ public:
 	* @param name            Name of the class.
 	*/
 	GClass(GSession* session,size_t id,size_t blockid,const R::RString& name);
+
+	/**
+    * @return the class name.
+    */
+	virtual R::RCString GetClassName(void) const {return("GClass");}
 
 	/**
 	 * Clear the node.

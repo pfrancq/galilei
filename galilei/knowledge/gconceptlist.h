@@ -126,6 +126,11 @@ public:
 			size_t reftopics, size_t idxtopics,
 			size_t refclasses,size_t idxclasses);
 
+	/**
+    * @return the class name.
+    */
+	virtual R::RCString GetClassName(void) const {return("GConceptList");}
+
 protected:
 
 	/**

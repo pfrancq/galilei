@@ -97,6 +97,11 @@ public:
 	GStatement(size_t id,GPredicate* predicate,GObject* xi,GObject* xj,double weight);
 
 	/**
+    * @return the class name.
+    */
+	virtual R::RCString GetClassName(void) const {return("GStatement");}
+
+	/**
 	* Compare two statements to classify them.
 	* @param statement       Statement to compare with.
 	* @see R::RContainer.
@@ -136,6 +141,11 @@ public:
 	* Get the weight of the statement.
 	*/
 	double GetWeight(void) const {return(Weight);}
+
+	/**
+	 * Destructor.
+	 */
+	virtual ~GStatement(void);
 };
 
 

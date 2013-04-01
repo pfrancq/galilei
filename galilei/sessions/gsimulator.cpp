@@ -688,7 +688,7 @@ void GSimulator::InitSubject(GSubject* subject,bool selectdocs)
 	for(size_t i=nbdocs+1;--i;ptr++)
 	{
 		if((!MultipleSubjects)&&Session->GetSubject(*ptr)) continue;
-		Session->Insert(*ptr,cNoRef,subject->GetId());
+		Session->Insert(*ptr,subject->GetId(),true);
 	}
 }
 

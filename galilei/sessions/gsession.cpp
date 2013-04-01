@@ -175,11 +175,11 @@ GSession::GSession(size_t id,const RString& name)
 	:
 	  RObject(name),
 	  RConfig("lib/galilei/sessions",name),
-	  GObjects<GDoc>(20000,"Documents",otDoc),
-	  GObjects<GTopic>(200,"Topics",otTopic),
-	  GObjects<GUser>(1000,"Users",otUser),
-	  GObjects<GProfile>(5000,"Profiles",otProfile),
-	  GObjects<GCommunity>(100,"Communities",otCommunity),
+	  GObjects<GDoc,eCreateDoc>(20000,"Documents",otDoc),
+	  GObjects<GTopic,eCreateTopic>(200,"Topics",otTopic),
+	  GObjects<GUser,eCreateUser>(1000,"Users",otUser),
+	  GObjects<GProfile,eCreateProfile>(5000,"Profiles",otProfile),
+	  GObjects<GCommunity,eCreateCommunity>(100,"Communities",otCommunity),
 	  GClasses(300),
 	  Id(id), Name(name),
 	  ValidConfigFile(false), Log("/var/log/galilei/"+name+".log"),
@@ -328,11 +328,11 @@ void GSession::ApplyConfig(void)
 	// Create (if necessary) the directory corresponding to the name of the session
 	// Create all the index files
 	RString Dir(GALILEIApp->GetIndexDir()+RFile::GetDirSeparator()+Name+RFile::GetDirSeparator());
-	GObjects<GDoc>::OpenFiles(this,Name);
-	GObjects<GTopic>::OpenFiles(this,Name);
-	GObjects<GUser>::OpenFiles(this,Name);
-	GObjects<GProfile>::OpenFiles(this,Name);
-	GObjects<GCommunity>::OpenFiles(this,Name);
+	GObjects<GDoc,eCreateDoc>::OpenFiles(this,Name);
+	GObjects<GTopic,eCreateTopic>::OpenFiles(this,Name);
+	GObjects<GUser,eCreateUser>::OpenFiles(this,Name);
+	GObjects<GProfile,eCreateProfile>::OpenFiles(this,Name);
+	GObjects<GCommunity,eCreateCommunity>::OpenFiles(this,Name);
 	GClasses::OpenFiles(this,Name);
 }
 
@@ -462,7 +462,7 @@ void GSession::Reset(tObjType type)
 		case otDoc:
 			ClearRefs(this,otDoc);
 			ClearIndex(this,otDoc);
-			GObjects<GDoc>::Clear(pDoc);
+			GObjects<GDoc,eCreateDoc>::Clear(pDoc);
 			if(SaveResults)
 				Storage->Clear(otDoc);
 			break;
@@ -480,7 +480,7 @@ void GSession::Reset(tObjType type)
 		}
 		case otUser:
 		{
-			GObjects<GUser>::Clear(pUser);
+			GObjects<GUser,eCreateUser>::Clear(pUser);
 			if(SaveResults)
 				Storage->Clear(otUser);
 			break;
@@ -489,7 +489,7 @@ void GSession::Reset(tObjType type)
 		{
 			ClearRefs(this,otProfile);
 			ClearIndex(this,otProfile);
-			GObjects<GProfile>::Clear(pProfile);
+			GObjects<GProfile,eCreateProfile>::Clear(pProfile);
 			if(SaveResults)
 			{
 				Storage->Clear(otProfile);
@@ -501,7 +501,7 @@ void GSession::Reset(tObjType type)
 		case otCommunity:
 			ClearRefs(this,otCommunity);
 			ClearIndex(this,otCommunity);
-			GObjects<GCommunity>::Clear(pCommunity);
+			GObjects<GCommunity,eCreateCommunity>::Clear(pCommunity);
 			if(SaveResults)
 			{
 				Storage->Clear(otCommunity);
@@ -512,7 +512,7 @@ void GSession::Reset(tObjType type)
 		case otTopic:
 			ClearRefs(this,otTopic);
 			ClearIndex(this,otTopic);
-			GObjects<GTopic>::Clear(pTopic);
+			GObjects<GTopic,eCreateTopic>::Clear(pTopic);
 			if(SaveResults)
 			{
 				Storage->Clear(otTopic);
@@ -553,16 +553,16 @@ void GSession::ResetFile(tObjType type,tObjType meta)
 			switch(meta)
 			{
 				case otDescFile:
-					if(GObjects<GDoc>::Desc)
-						GObjects<GDoc>::Desc->Clear();
+					if(GObjects<GDoc,eCreateDoc>::Desc)
+						GObjects<GDoc,eCreateDoc>::Desc->Clear();
 					break;
 				case otTreeFile:
-					if(GObjects<GDoc>::Tree)
-						GObjects<GDoc>::Tree->Clear();
+					if(GObjects<GDoc,eCreateDoc>::Tree)
+						GObjects<GDoc,eCreateDoc>::Tree->Clear();
 					break;
 				case otIndexFile:
-					if(GObjects<GDoc>::Index)
-						GObjects<GDoc>::Index->Clear();
+					if(GObjects<GDoc,eCreateDoc>::Index)
+						GObjects<GDoc,eCreateDoc>::Index->Clear();
 					break;
 				default:
 					ThrowGException(GetObjType(meta,true,true)+" is not a valid file type for documents");
@@ -573,12 +573,12 @@ void GSession::ResetFile(tObjType type,tObjType meta)
 			switch(meta)
 			{
 				case otDescFile:
-					if(GObjects<GProfile>::Desc)
-						GObjects<GProfile>::Desc->Clear();
+					if(GObjects<GProfile,eCreateProfile>::Desc)
+						GObjects<GProfile,eCreateProfile>::Desc->Clear();
 					break;
 				case otIndexFile:
-					if(GObjects<GProfile>::Index)
-						GObjects<GProfile>::Index->Clear();
+					if(GObjects<GProfile,eCreateProfile>::Index)
+						GObjects<GProfile,eCreateProfile>::Index->Clear();
 					break;
 				default:
 					ThrowGException(GetObjType(meta,true,true)+" is not a valid file type for profiles");
@@ -589,12 +589,12 @@ void GSession::ResetFile(tObjType type,tObjType meta)
 			switch(meta)
 			{
 				case otDescFile:
-					if(GObjects<GCommunity>::Desc)
-						GObjects<GCommunity>::Desc->Clear();
+					if(GObjects<GCommunity,eCreateCommunity>::Desc)
+						GObjects<GCommunity,eCreateCommunity>::Desc->Clear();
 					break;
 				case otIndexFile:
-					if(GObjects<GCommunity>::Index)
-						GObjects<GCommunity>::Index->Clear();
+					if(GObjects<GCommunity,eCreateCommunity>::Index)
+						GObjects<GCommunity,eCreateCommunity>::Index->Clear();
 					break;
 				default:
 					ThrowGException(GetObjType(meta,true,true)+" is not a valid file type for communities");
@@ -605,12 +605,12 @@ void GSession::ResetFile(tObjType type,tObjType meta)
 			switch(meta)
 			{
 				case otDescFile:
-					if(GObjects<GTopic>::Desc)
-						GObjects<GTopic>::Desc->Clear();
+					if(GObjects<GTopic,eCreateTopic>::Desc)
+						GObjects<GTopic,eCreateTopic>::Desc->Clear();
 					break;
 				case otIndexFile:
-					if(GObjects<GTopic>::Index)
-						GObjects<GTopic>::Index->Clear();
+					if(GObjects<GTopic,eCreateTopic>::Index)
+						GObjects<GTopic,eCreateTopic>::Index->Clear();
 					break;
 				default:
 					ThrowGException(GetObjType(meta,true,true)+" is not a valid file type for topics");
@@ -621,12 +621,12 @@ void GSession::ResetFile(tObjType type,tObjType meta)
 			switch(meta)
 			{
 				case otDescFile:
-					if(GObjects<GClass>::Desc)
-						GObjects<GClass>::Desc->Clear();
+					if(GObjects<GClass,eCreateClass>::Desc)
+						GObjects<GClass,eCreateClass>::Desc->Clear();
 					break;
 				case otIndexFile:
-					if(GObjects<GClass>::Index)
-						GObjects<GClass>::Index->Clear();
+					if(GObjects<GClass,eCreateClass>::Index)
+						GObjects<GClass,eCreateClass>::Index->Clear();
 					break;
 				default:
 					ThrowGException(GetObjType(meta,true,true)+" is not a valid file type for classes");
@@ -740,19 +740,19 @@ size_t GSession::GetNbObjs(tObjType type) const
 	switch(type)
 	{
 		case otUser:
-			return(GObjects<GUser>::Objects.GetNb());
+			return(GObjects<GUser,eCreateUser>::Objects.GetNb());
 		case otConcept:
 			return(Concepts.GetNb());
 		case otConceptType:
 			return(ConceptTypes.GetNb());
 		case otDoc:
-			return(GObjects<GDoc>::Objects.GetNb());
+			return(GObjects<GDoc,eCreateDoc>::Objects.GetNb());
 		case otProfile:
-			return(GObjects<GProfile>::Objects.GetNb());
+			return(GObjects<GProfile,eCreateProfile>::Objects.GetNb());
 		case otCommunity:
-			return(GObjects<GCommunity>::Objects.GetNb());
+			return(GObjects<GCommunity,eCreateCommunity>::Objects.GetNb());
 		case otTopic:
-			return(GObjects<GTopic>::Objects.GetNb());
+			return(GObjects<GTopic,eCreateTopic>::Objects.GetNb());
 		case otSubject:
 			LoadSubjects();
 			return(Subjects.GetNbNodes());
@@ -772,21 +772,21 @@ size_t GSession::GetMaxObjId(tObjType type) const
 				return(0);
 			return(Concepts[Concepts.GetMaxPos()]->GetId());
 		case otDoc:
-			if(!GObjects<GDoc>::Objects.GetNb())
+			if(!GObjects<GDoc,eCreateDoc>::Objects.GetNb())
 				return(0);
-			return(GObjects<GDoc>::Objects[GObjects<GDoc>::Objects.GetMaxPos()]->GetId());
+			return(GObjects<GDoc,eCreateDoc>::Objects[GObjects<GDoc,eCreateDoc>::Objects.GetMaxPos()]->GetId());
 		case otProfile:
-			if(!GObjects<GProfile>::Objects.GetNb())
+			if(!GObjects<GProfile,eCreateProfile>::Objects.GetNb())
 				return(0);
-			return(GObjects<GProfile>::Objects[GObjects<GProfile>::Objects.GetMaxPos()]->GetId());
+			return(GObjects<GProfile,eCreateProfile>::Objects[GObjects<GProfile,eCreateProfile>::Objects.GetMaxPos()]->GetId());
 		case otCommunity:
-			if(!GObjects<GCommunity>::Objects.GetNb())
+			if(!GObjects<GCommunity,eCreateCommunity>::Objects.GetNb())
 				return(0);
-			return(GObjects<GCommunity>::Objects[GObjects<GCommunity>::Objects.GetMaxPos()]->GetId());
+			return(GObjects<GCommunity,eCreateCommunity>::Objects[GObjects<GCommunity,eCreateCommunity>::Objects.GetMaxPos()]->GetId());
 		case otTopic:
-			if(!GObjects<GTopic>::Objects.GetNb())
+			if(!GObjects<GTopic,eCreateTopic>::Objects.GetNb())
 				return(0);
-			return(GObjects<GTopic>::Objects[GObjects<GTopic>::Objects.GetMaxPos()]->GetId());
+			return(GObjects<GTopic,eCreateTopic>::Objects[GObjects<GTopic,eCreateTopic>::Objects.GetMaxPos()]->GetId());
 		default:
 			ThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
@@ -801,9 +801,9 @@ size_t GSession::GetMaxObjPos(tObjType type) const
 		case otConcept:
 			return(Concepts.GetMaxPos());
 		case otDoc:
-			return(GObjects<GDoc>::Objects.GetMaxPos());
+			return(GObjects<GDoc,eCreateDoc>::Objects.GetMaxPos());
 		case otTopic:
-			return(GObjects<GTopic>::Objects.GetMaxPos());
+			return(GObjects<GTopic,eCreateTopic>::Objects.GetMaxPos());
 		default:
 			ThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
@@ -842,20 +842,20 @@ size_t GSession::GetObjs(tObjType type,GObject** &tab,bool alloc)
 	{
 		case otDoc:
 			if(alloc)
-				tab=new GObject*[GObjects<GDoc>::Objects.GetMaxPos()+1];
-			return(GObjects<GDoc>::Objects.GetTab(reinterpret_cast<void**>(tab)));
+				tab=new GObject*[GObjects<GDoc,eCreateDoc>::Objects.GetMaxPos()+1];
+			return(GObjects<GDoc,eCreateDoc>::Objects.GetTab(reinterpret_cast<void**>(tab)));
 		case otProfile:
 			if(alloc)
-				tab=new GObject*[GObjects<GProfile>::Objects.GetMaxPos()+1];
-			return(GObjects<GProfile>::Objects.GetTab(reinterpret_cast<void**>(tab)));
+				tab=new GObject*[GObjects<GProfile,eCreateProfile>::Objects.GetMaxPos()+1];
+			return(GObjects<GProfile,eCreateProfile>::Objects.GetTab(reinterpret_cast<void**>(tab)));
 		case otCommunity:
 			if(alloc)
-				tab=new GObject*[GObjects<GCommunity>::Objects.GetMaxPos()+1];
-			return(GObjects<GCommunity>::Objects.GetTab(reinterpret_cast<void**>(tab)));
+				tab=new GObject*[GObjects<GCommunity,eCreateCommunity>::Objects.GetMaxPos()+1];
+			return(GObjects<GCommunity,eCreateCommunity>::Objects.GetTab(reinterpret_cast<void**>(tab)));
 		case otTopic:
 			if(alloc)
-				tab=new GObject*[GObjects<GTopic>::Objects.GetMaxPos()+1];
-			return(GObjects<GTopic>::Objects.GetTab(reinterpret_cast<void**>(tab)));
+				tab=new GObject*[GObjects<GTopic,eCreateTopic>::Objects.GetMaxPos()+1];
+			return(GObjects<GTopic,eCreateTopic>::Objects.GetTab(reinterpret_cast<void**>(tab)));
 		default:
 			ThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
@@ -1077,12 +1077,12 @@ void GSession::Init(void)
 {
 	// Create the configuration parameters
 	GSimulator::CreateConfig(this);
-	GObjects<GDoc>::Init(this);
-	GObjects<GTopic>::Init(this);
-	GObjects<GUser>::Init(this);
-	GObjects<GProfile>::Init(this);
-	GObjects<GCommunity>::Init(this);
-	GObjects<GClass>::Init(this);
+	GObjects<GDoc,eCreateDoc>::Init(this);
+	GObjects<GTopic,eCreateTopic>::Init(this);
+	GObjects<GUser,eCreateUser>::Init(this);
+	GObjects<GProfile,eCreateProfile>::Init(this);
+	GObjects<GCommunity,eCreateCommunity>::Init(this);
+	GObjects<GClass,eCreateClass>::Init(this);
 
 	// Create the configuration parameters for the plug-ins
 	R::RCursor<GPlugInManager> Managers(GALILEIApp->GetManagers());
@@ -1101,30 +1101,40 @@ void GSession::Init(void)
 
 
 //------------------------------------------------------------------------------
-void GSession::Insert(GDoc* doc,size_t subjectid,size_t usedid)
+void GSession::Insert(GDoc* doc,size_t subjectid,bool selected)
 {
 	LoadSubjects();
-	GSubject* subject(Subjects.GetNode(subjectid));
-//	if(!subject)
-//		ThrowGException("No subject with identifier '"+RString::Number(subjectid)+"'");
-	if(subject)
-		subject->CategorizedDocs.InsertPtr(doc);
-	GSubject* used(Subjects.GetNode(usedid));
-	if(!used)
-		ThrowGException("No subject with identifier '"+RString::Number(usedid)+"'");
+
+	// Find the subject
+	GSubject* Subject(Subjects.GetNode(subjectid));
+	if(!Subject)
+		ThrowGException("No subject with identifier '"+RString::Number(subjectid)+"'");
+
+	// Look if the document must be insert in CategorizedDocs
+	bool Find;
+	size_t Pos(Subject->CategorizedDocs.GetIndex(doc,Find));
+	if(!Find)
+		Subject->CategorizedDocs.InsertPtrAt(doc,Pos,false);
+
+	// If it is not selected -> nothing to do
+	if(!selected)
+		return;
+
+	// Add the document in Subjects
 	R::RContainer<GSubject,false,false>* line(Subjects.DocsSubjects.GetPtrAt(doc->GetId()));
 	if(!line)
 		Subjects.DocsSubjects.InsertPtrAt(line=new R::RContainer<GSubject,false,false>(10,5),doc->GetId(),true);
-	bool Find;
-	size_t Index(line->GetIndex(*used,Find));
+	Pos=line->GetIndex(*Subject,Find);
 	if(!Find)
-		line->InsertPtrAt(used,Index,false);
-	Index=used->Docs.GetIndex(*doc,Find);
+		line->InsertPtrAt(Subject,Pos,false);
+
+	// Add the document in Subject
+	Pos=Subject->Docs.GetIndex(doc,Find);
 	if(!Find)
-		used->Docs.InsertPtrAt(doc,Index,false);
-	Index=Subjects.SelectedDocs.GetIndex(*doc,Find);
-	if(!Find)
-		Subjects.SelectedDocs.InsertPtrAt(doc,Index,false);
+		Subject->Docs.InsertPtrAt(doc,Pos,false);
+
+	// Emit a selection signal
+	doc->PostNotification(eSelectDoc);
 }
 
 
@@ -1248,7 +1258,7 @@ void GSession::RunTool(const RString& name,const RString& list,GSlot* slot,bool 
 	{
 		Tool->Run(slot);
 	}
-	HANDLEALLEXCEPTIONS(slot,"Error while executing the tool '"+name+"' in '"+list+"'")
+	HANDLEALLEXCEPTIONS(slot,"Error while executing the tool '"+name+"' in '"+list+"': ")
 }
 
 

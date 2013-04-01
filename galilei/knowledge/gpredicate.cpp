@@ -45,7 +45,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 GPredicate::GPredicate(size_t id,const RString& name,const RString& desc)
-	: Id(id), Name(name), Description(desc), Statements(20)
+	: RObject(name), Id(id), Description(desc), Statements(20)
 {
 }
 
@@ -53,14 +53,14 @@ GPredicate::GPredicate(size_t id,const RString& name,const RString& desc)
 //-----------------------------------------------------------------------------
 int GPredicate::Compare(const GPredicate& predicate) const
 {
-	return(Name.Compare(predicate.Name));
+	return(GetName().Compare(predicate.GetName()));
 }
 
 
 //-----------------------------------------------------------------------------
 int GPredicate::Compare(const RString& name) const
 {
-	return(Name.Compare(name));
+	return(GetName().Compare(name));
 }
 
 

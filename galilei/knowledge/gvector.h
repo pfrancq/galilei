@@ -305,19 +305,19 @@ public:
 	virtual ~GVector(void);
 
 	friend class GDescription;
-	friend class GDescriptionObject<GDoc>;
-	friend class GDescriptionObject<GClass>;
-	friend class GDescriptionObject<GTopic>;
-	friend class GDescriptionObject<GUser>;
-	friend class GDescriptionObject<GProfile>;
-	friend class GDescriptionObject<GCommunity>;
+	friend class GDescriptionObject<GDoc,eCreateDoc,eNewDoc,eDelDoc>;
+	friend class GDescriptionObject<GClass,eCreateClass,eNewClass,eDelClass>;
+	friend class GDescriptionObject<GTopic,eCreateTopic,eNewTopic,eDelTopic>;
+	friend class GDescriptionObject<GUser,eCreateUser,eNewUser,eDelUser>;
+	friend class GDescriptionObject<GProfile,eCreateProfile,eNewProfile,eDelProfile>;
+	friend class GDescriptionObject<GCommunity,eCreateCommunity,eNewCommunity,eDelCommunity>;
 	friend class GDoc;
-	friend class GObjects<GDoc>;
-	friend class GObjects<GClass>;
-	friend class GObjects<GTopic>;
-	friend class GObjects<GUser>;
-	friend class GObjects<GProfile>;
-	friend class GObjects<GCommunity>;
+	friend class GObjects<GDoc,eCreateDoc>;
+	friend class GObjects<GClass,eCreateClass>;
+	friend class GObjects<GTopic,eCreateTopic>;
+	friend class GObjects<GUser,eCreateUser>;
+	friend class GObjects<GProfile,eCreateProfile>;
+	friend class GObjects<GCommunity,eCreateCommunity>;
 	friend class GSession;
 };
 

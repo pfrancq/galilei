@@ -74,6 +74,11 @@ public:
 	GUser(GSession* session,size_t id,const R::RString& name,const R::RString& fullname,size_t nb=5);
 
 	/**
+    * @return the class name.
+    */
+	virtual R::RCString GetClassName(void) const {return("GUser");}
+
+	/**
 	* Compare two users by comparing their identifier.
 	* @see R::RContainer
 	* @param user            User.

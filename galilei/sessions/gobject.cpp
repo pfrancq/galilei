@@ -44,7 +44,7 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GObject::GObject(GSession* session,size_t id,const RString& name,tObjType objtype)
-	: Session(session), Id(id), Name(name), ObjType(objtype)
+	: RObject(name), Session(session), Id(id), ObjType(objtype)
 {
 	if(!Session)
 		ThrowGException("Cannot allocate an object without a session");
@@ -53,7 +53,7 @@ GObject::GObject(GSession* session,size_t id,const RString& name,tObjType objtyp
 
 //------------------------------------------------------------------------------
 GObject::GObject(const GObject* obj)
-	: Session(obj->Session),Id(obj->Id), Name(obj->Name), ObjType(obj->ObjType)
+	: RObject(obj->GetName()), Session(obj->Session),Id(obj->Id), ObjType(obj->ObjType)
 {
 }
 
@@ -70,7 +70,14 @@ void GObject::SetId(size_t id)
 //------------------------------------------------------------------------------
 R::RString GObject::GetSearchStr(void) const
 {
-	return(Name);
+	return(GetName());
+}
+
+
+//------------------------------------------------------------------------------
+void GObject::HandlerNotFound(const RNotification&)
+{
+
 }
 
 

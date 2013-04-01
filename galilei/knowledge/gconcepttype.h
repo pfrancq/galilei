@@ -122,6 +122,11 @@ public:
 	GConceptType(GSession* session,tConceptCat cat,size_t id,const R::RString& name,const R::RString& desc,size_t s);
 
 	/**
+    * @return the class name.
+    */
+	virtual R::RCString GetClassName(void) const {return("GConceptType");}
+
+	/**
 	* Set the references of a given language. This method is called when
 	* connecting to and disconnecting from a session.
 	* @param refdocs         Number of documents referenced.

@@ -39,18 +39,18 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-template<class C>
-	GDescriptionObject<C>::GDescriptionObject(GSession* session,size_t id,size_t blockid,tObjType objtype,const R::RString& name,tObjState state)
+template<class C,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel>
+	GDescriptionObject<C,hCreate,hNew,hDel>::GDescriptionObject(GSession* session,size_t id,size_t blockid,tObjType objtype,const R::RString& name,tObjState state)
 	: GObject(session,id,name,objtype), GDescription(), State(state), BlockId(blockid)
 {
 	if(Id!=R::cNoRef)
-		Emit(GEvent::eObjNew);
+		PostNotification(hNew);
 }
 
 
 //------------------------------------------------------------------------------
-template<class C>
-	bool GDescriptionObject<C>::LoadVectors(void)
+template<class C,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel>
+	bool GDescriptionObject<C,hCreate,hNew,hDel>::LoadVectors(void)
 {
 	if(BlockId)
 	{
@@ -64,8 +64,8 @@ template<class C>
 
 
 //------------------------------------------------------------------------------
-template<class C>
-	void GDescriptionObject<C>::SetState(tObjState state)
+template<class C,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel>
+	void GDescriptionObject<C,hCreate,hNew,hDel>::SetState(tObjState state)
 {
 	if((!Vectors)&&(state==osDelete))
 	{
@@ -76,20 +76,20 @@ template<class C>
 
 
 //------------------------------------------------------------------------------
-template<class C>
-	void GDescriptionObject<C>::SetId(size_t id)
+template<class C,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel>
+	void GDescriptionObject<C,hCreate,hNew,hDel>::SetId(size_t id)
 {
 	if(id==R::cNoRef)
 		ThrowGException("Cannot assign cNoRef to a "+GALILEI::GetObjType(ObjType,false,false));
 	Id=id;
-	Emit(GEvent::eObjNew);
+	PostNotification(hNew);
 }
 
 
 
 //------------------------------------------------------------------------------
-template<class C>
-	void GDescriptionObject<C>::Copy(GConcept* concept,const R::RContainer<GConceptRef,false,true>& list)
+template<class C,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel>
+	void GDescriptionObject<C,hCreate,hNew,hDel>::Copy(GConcept* concept,const R::RContainer<GConceptRef,false,true>& list)
 {
 	State=osUpToDate;
 	GDescription::Copy(concept,list);
@@ -97,8 +97,8 @@ template<class C>
 
 
 //------------------------------------------------------------------------------
-template<class C>
-	void GDescriptionObject<C>::Clear(bool disk)
+template<class C,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel>
+	void GDescriptionObject<C,hCreate,hNew,hDel>::Clear(bool disk)
 {
 	GDescription::Clear();
 	if(disk)
@@ -107,8 +107,8 @@ template<class C>
 
 
 //------------------------------------------------------------------------------
-template<class C>
-	void GDescriptionObject<C>::SaveDesc(void)
+template<class C,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel>
+	void GDescriptionObject<C,hCreate,hNew,hDel>::SaveDesc(void)
 {
 	if(!Vectors)
 		return;
@@ -117,10 +117,10 @@ template<class C>
 
 
 //------------------------------------------------------------------------------
-template<class C>
-	GDescriptionObject<C>::~GDescriptionObject(void)
+template<class C,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel>
+	GDescriptionObject<C,hCreate,hNew,hDel>::~GDescriptionObject(void)
 {
-	Emit(GEvent::eObjDelete);
+	PostNotification(hDel);
 
 	try
 	{

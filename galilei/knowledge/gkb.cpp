@@ -407,7 +407,7 @@ GConcept* GKB::RenameConcept(GConcept* concept,const R::RString& name)
 	{
 		// Rename really the concept
 		concept->GetType()->DeleteConcept(concept);
-		concept->Name=name;
+		concept->SetName(name);
 		concept->GetType()->InsertConcept(concept);
 		Storage->SaveConcept(concept);
 		return(concept);

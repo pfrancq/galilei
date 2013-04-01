@@ -61,14 +61,14 @@ void GTopic::PrivateInit(void)
 
 //------------------------------------------------------------------------------
 GTopic::GTopic(GSession* session,const RString& name)
-	: GGroup<GDoc,GTopic,otTopic>(session,cNoRef,0,name,RDate::GetToday(),RDate::Null)
+	: GGroup<GDoc,GTopic,otTopic,eCreateTopic,eNewTopic,eDelTopic,eUpdateTopic,eTopicModified>(session,cNoRef,0,name,RDate::GetToday(),RDate::Null)
 {
 }
 
 
 //------------------------------------------------------------------------------
 GTopic::GTopic(GSession* session,size_t id,size_t blockid,const RString& name,const RDate& u,const RDate& c)
-	: GGroup<GDoc,GTopic,otTopic>(session,id,blockid,name,u,c)
+	: GGroup<GDoc,GTopic,otTopic,eCreateTopic,eNewTopic,eDelTopic,eUpdateTopic,eTopicModified>(session,id,blockid,name,u,c)
 {
 }
 

@@ -6,7 +6,7 @@
 
 	GALILEI Header - Header.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2013 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -48,6 +48,7 @@
 #include <rrandom.h>
 #include <rdebug.h>
 #include <rnotificationcenter.h>
+#include <robject.h>
 
 
 
@@ -139,6 +140,95 @@ enum tObjState
  * @param upper               First letter in uppercase ?
  */
 R::RString GetState(tObjState state,bool upper);
+
+
+//------------------------------------------------------------------------------
+// Events
+ /** A document was created in the system.*/
+extern const R::hNotification eCreateDoc;
+/** A document was created in memory.*/
+extern const R::hNotification eNewDoc;
+/** A document will be updated.*/
+extern const R::hNotification eUpdateDoc;
+/** A document was modified. */
+extern const R::hNotification eDocModified;
+/** A document will be deleted from memory.*/
+extern const R::hNotification eDelDoc;
+/** A document will be destroyed from the system.*/
+extern const R::hNotification eDestroyDoc;
+/** A document was selected.*/
+extern const R::hNotification eSelectDoc;
+/** A document as unselected.*/
+extern const R::hNotification eUnselectDoc;
+/** A topic was created in the system.*/
+extern const R::hNotification eCreateTopic;
+/** A topic was created in memory.*/
+extern const R::hNotification eNewTopic;
+/** A topic will be updated.*/
+extern const R::hNotification eUpdateTopic;
+/** A topic was modified.*/
+extern const R::hNotification eTopicModified;
+/** A topic will be deleted from memory.*/
+extern const R::hNotification eDelTopic;
+/** A topic will be destroyed from the system.*/
+extern const R::hNotification eDestroyTopic;
+/** An user was created in the system.*/
+extern const R::hNotification eCreateUser;
+/** An user was created in memory.*/
+extern const R::hNotification eNewUser;
+/** An user will be updated.*/
+extern const R::hNotification eUpdateUser;
+/** An user was modified.*/
+extern const R::hNotification eUserModified;
+/** An user will be deleted from memory.*/
+extern const R::hNotification eDelUser;
+/** An user will be destroyed from the system.*/
+extern const R::hNotification eDestroyUser;
+/** A profile was created in the system.*/
+extern const R::hNotification eCreateProfile;
+/** A profile was created in memory.*/
+extern const R::hNotification eNewProfile;
+/** A profile will be updated.*/
+extern const R::hNotification eUpdateProfile;
+/** A profile was modified.*/
+extern const R::hNotification eProfileModified;
+/** A profile will be deleted from memory.*/
+extern const R::hNotification eDelProfile;
+/** A profile will be destroyed from the system.*/
+extern const R::hNotification eDestroyProfile;
+/** A community was created in the system.*/
+extern const R::hNotification eCreateCommunity;
+/** A community was created in memory.*/
+extern const R::hNotification eNewCommunity;
+/** A community will be updated.*/
+extern const R::hNotification eUpdateCommunity;
+/** A community was modified.*/
+extern const R::hNotification eCommunityModified;
+/** A community will be deleted from memory.*/
+extern const R::hNotification eDelCommunity;
+/** A community will be destroyed from the system.*/
+extern const R::hNotification eDestroyCommunity;
+/** A class was created in the system.*/
+extern const R::hNotification eCreateClass;
+/** A class was created in memory.*/
+extern const R::hNotification eNewClass;
+/** A class will be updated.*/
+extern const R::hNotification eUpdateClass;
+/** A class was modified.*/
+extern const R::hNotification eClassModified;
+/** A class will be deleted from memory.*/
+extern const R::hNotification eDelClass;
+/** A class will be destroyed from the system.*/
+extern const R::hNotification eDestroyClass;
+
+
+//------------------------------------------------------------------------------
+/**
+* Get a string representing a event.
+* @param event               Event.
+* @param upper               First letter in uppercase ?
+*/
+R::RString GetEvent(R::hNotification event,bool upper);
 
 
 //------------------------------------------------------------------------------
@@ -335,7 +425,7 @@ class GConceptRef;
 class GVector;
 class GDescription;
 class GDescriptionSet;
-template<class C> class GDescriptionObject;
+template<class C,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel> class GDescriptionObject;
 class GClass;
 class GClasses;
 
@@ -391,7 +481,7 @@ class GCommunityCalc;
 //------------------------------------------------------------------------------
 // forward class declaration - Session Part
 class GObject;
-template<class C> class GObjects;
+template<class C,const R::hNotification& hCreate> class GObjects;
 class GBasicSession;
 class GSession;
 class GSlot;
@@ -432,55 +522,6 @@ extern const GProfile* pProfile;
 extern const GCommunity* pCommunity;
 /** Null pointer for GSubject.*/
 extern const GSubject* pSubject;
-
-
-//------------------------------------------------------------------------------
-/**
- * The GEvent provides information when the notification message
- * "ObjectChanged" is emitted.
- * @author Pascal Francq
- * @short Event information.
- */
-struct GEvent
-{
-	/**
-	* GALILEI event.
-	* @short Event
-	*/
-	enum tEvent
-	{
-		eUnknow                  /** Unknown event.*/,
-		eObjCreated              /** An object was created in the system.*/,
-		eObjNew                  /** An object was created in memory.*/,
-		eObjModified             /** An object was modified.*/,
-		eObjDelete               /** An Object will be deleted from memory.*/,
-		eObjDestroyed            /** An object was destroyed from the system.*/
-	};
-
-	/**
-	 * Event.
-	 */
-	tEvent Event;
-
-	/**
-	 * Object.
-	 */
-	const GObject* Object;
-
-	/**
-	 * Construct the event.
-	 * @param event          Type of the event.
-	 * @param object         Object about which the signal is emitted.
-	 */
-	GEvent(tEvent event,const GObject* object) : Event(event), Object(object) {}
-
-	/**
-	* Get a string representing a event.
-	* @param event               Event.
-	* @param upper               First letter in uppercase ?
-	*/
-	static R::RString GetEvent(tEvent event,bool upper);
-};
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

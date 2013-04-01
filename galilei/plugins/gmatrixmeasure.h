@@ -472,11 +472,54 @@ private:
 	void DestroyIdentificator(size_t id,bool line);
 
 	/**
-	 * This method handles the modification of the status of a given
-	 * object.
+	 * This method handles a notification that an object was created in memory.
 	 * @param notification   Notification received.
 	 */
-	void Handle(const R::RNotification& notification);
+	void HandleLineNew(const R::RNotification& notification);
+
+	/**
+	 * This method handles a notification that an object was modified.
+	 * @param notification   Notification received.
+	 */
+	void HandleLineModified(const R::RNotification& notification);
+
+	/**
+	 * This method handles a notification that an object was deleted from memory.
+	 * @param notification   Notification received.
+	 */
+	void HandleLineDel(const R::RNotification& notification);
+
+	/**
+	 * This method handles a notification that an object was destroyed from the
+	 * system.
+	 * @param notification   Notification received.
+	 */
+	void HandleLineDestroy(const R::RNotification& notification);
+
+	/**
+	 * This method handles a notification that an object was created in memory.
+	 * @param notification   Notification received.
+	 */
+	void HandleColNew(const R::RNotification& notification);
+
+	/**
+	 * This method handles a notification that an object was modified.
+	 * @param notification   Notification received.
+	 */
+	void HandleColModified(const R::RNotification& notification);
+
+	/**
+	 * This method handles a notification that an object was deleted from memory.
+	 * @param notification   Notification received.
+	 */
+	void HandleColDel(const R::RNotification& notification);
+
+	/**
+	 * This method handles a notification that an object was destroyed from the
+	 * system.
+	 * @param notification   Notification received.
+	 */
+	void HandleColDestroy(const R::RNotification& notification);
 
 	/**
 	 * Update the sparse matrix. All the measures are re-computed and stored

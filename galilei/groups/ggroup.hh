@@ -35,17 +35,17 @@
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
-	GALILEI::GGroup<cObj,cGroup,type>::GGroup(GSession* session,size_t id,size_t blockid,const R::RString& name,const R::RDate& u,const R::RDate& c)
-	: R::RContainer<cObj,false,true>(20,10), GDescriptionObject<cGroup>(session,id,blockid,type,name,osNew),
+template<class cObj,class cGroup,GALILEI::tObjType type,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel,const R::hNotification& hUpdate,const R::hNotification& hModified>
+	GALILEI::GGroup<cObj,cGroup,type,hCreate,hNew,hDel,hUpdate,hModified>::GGroup(GSession* session,size_t id,size_t blockid,const R::RString& name,const R::RDate& u,const R::RDate& c)
+	: R::RContainer<cObj,false,true>(20,10), GDescriptionObject<cGroup,hCreate,hNew,hDel>(session,id,blockid,type,name,osNew),
 	  Updated(u), Computed(c), Data(0)
 {
 }
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
-	GSubjectData<cObj>* GALILEI::GGroup<cObj,cGroup,type>::GetData(void) const
+template<class cObj,class cGroup,GALILEI::tObjType type,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel,const R::hNotification& hUpdate,const R::hNotification& hModified>
+	GSubjectData<cObj>* GALILEI::GGroup<cObj,cGroup,type,hCreate,hNew,hDel,hUpdate,hModified>::GetData(void) const
 {
 	if(!Data)
 		const_cast<GGroup*>(this)->Data=new GSubjectData<cObj>();
@@ -54,16 +54,16 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
-	int GALILEI::GGroup<cObj,cGroup,type>::Compare(const GGroup& grp) const
+template<class cObj,class cGroup,GALILEI::tObjType type,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel,const R::hNotification& hUpdate,const R::hNotification& hModified>
+	int GALILEI::GGroup<cObj,cGroup,type,hCreate,hNew,hDel,hUpdate,hModified>::Compare(const GGroup& grp) const
 {
 	return(R::CompareIds(Id,grp.Id));
 }
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
-	int GALILEI::GGroup<cObj,cGroup,type>::Compare(const GGroup* grp) const
+template<class cObj,class cGroup,GALILEI::tObjType type,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel,const R::hNotification& hUpdate,const R::hNotification& hModified>
+	int GALILEI::GGroup<cObj,cGroup,type,hCreate,hNew,hDel,hUpdate,hModified>::Compare(const GGroup* grp) const
 {
 	if(!grp)
 		return(1);
@@ -72,40 +72,40 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
-	int GALILEI::GGroup<cObj,cGroup,type>::Compare(const size_t id) const
+template<class cObj,class cGroup,GALILEI::tObjType type,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel,const R::hNotification& hUpdate,const R::hNotification& hModified>
+	int GALILEI::GGroup<cObj,cGroup,type,hCreate,hNew,hDel,hUpdate,hModified>::Compare(const size_t id) const
 {
 	return(R::CompareIds(Id,id));
 }
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
-	R::RDate GALILEI::GGroup<cObj,cGroup,type>::GetUpdated(void) const
+template<class cObj,class cGroup,GALILEI::tObjType type,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel,const R::hNotification& hUpdate,const R::hNotification& hModified>
+	R::RDate GALILEI::GGroup<cObj,cGroup,type,hCreate,hNew,hDel,hUpdate,hModified>::GetUpdated(void) const
 {
 	return(Updated);
 }
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
-	R::RDate GALILEI::GGroup<cObj,cGroup,type>::GetComputed(void) const
+template<class cObj,class cGroup,GALILEI::tObjType type,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel,const R::hNotification& hUpdate,const R::hNotification& hModified>
+	R::RDate GALILEI::GGroup<cObj,cGroup,type,hCreate,hNew,hDel,hUpdate,hModified>::GetComputed(void) const
 {
 	return(Computed);
 }
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
-	bool GALILEI::GGroup<cObj,cGroup,type>::IsIn(const cObj* obj) const
+template<class cObj,class cGroup,GALILEI::tObjType type,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel,const R::hNotification& hUpdate,const R::hNotification& hModified>
+	bool GALILEI::GGroup<cObj,cGroup,type,hCreate,hNew,hDel,hUpdate,hModified>::IsIn(const cObj* obj) const
 {
 	return(R::RContainer<cObj,false,true>::IsIn(*obj));
 }
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
-	void GALILEI::GGroup<cObj,cGroup,type>::DeleteObj(cObj* obj)
+template<class cObj,class cGroup,GALILEI::tObjType type,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel,const R::hNotification& hUpdate,const R::hNotification& hModified>
+	void GALILEI::GGroup<cObj,cGroup,type,hCreate,hNew,hDel,hUpdate,hModified>::DeleteObj(cObj* obj)
 {
 	obj->SetGroup(0);
 	R::RContainer<cObj,false,true>::DeletePtr(*obj);
@@ -116,8 +116,8 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
-	void GALILEI::GGroup<cObj,cGroup,type>::InsertObj(cObj* obj)
+template<class cObj,class cGroup,GALILEI::tObjType type,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel,const R::hNotification& hUpdate,const R::hNotification& hModified>
+	void GALILEI::GGroup<cObj,cGroup,type,hCreate,hNew,hDel,hUpdate,hModified>::InsertObj(cObj* obj)
 {
 	R::RContainer<cObj,false,true>::InsertPtr(obj);
 //	State=osUpdated;
@@ -128,8 +128,8 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
-	void GALILEI::GGroup<cObj,cGroup,type>::InsertPtr(cObj* obj)
+template<class cObj,class cGroup,GALILEI::tObjType type,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel,const R::hNotification& hUpdate,const R::hNotification& hModified>
+	void GALILEI::GGroup<cObj,cGroup,type,hCreate,hNew,hDel,hUpdate,hModified>::InsertPtr(cObj* obj)
 {
 	InsertProfile(obj);
 	if(Data)
@@ -138,8 +138,8 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
-	void GALILEI::GGroup<cObj,cGroup,type>::DeleteObjs(void)
+template<class cObj,class cGroup,GALILEI::tObjType type,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel,const R::hNotification& hUpdate,const R::hNotification& hModified>
+	void GALILEI::GGroup<cObj,cGroup,type,hCreate,hNew,hDel,hUpdate,hModified>::DeleteObjs(void)
 {
 //	State=osUpdated;
 	R::RCursor<cObj> Objs(*this);
@@ -151,32 +151,32 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
-	R::RCursor<cObj> GALILEI::GGroup<cObj,cGroup,type>::GetObjs(void) const
+template<class cObj,class cGroup,GALILEI::tObjType type,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel,const R::hNotification& hUpdate,const R::hNotification& hModified>
+	R::RCursor<cObj> GALILEI::GGroup<cObj,cGroup,type,hCreate,hNew,hDel,hUpdate,hModified>::GetObjs(void) const
 {
 	return(R::RCursor<cObj>(*this));
 }
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
-	R::RCursor<cObj> GALILEI::GGroup<cObj,cGroup,type>::GetCursor(void) const
+template<class cObj,class cGroup,GALILEI::tObjType type,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel,const R::hNotification& hUpdate,const R::hNotification& hModified>
+	R::RCursor<cObj> GALILEI::GGroup<cObj,cGroup,type,hCreate,hNew,hDel,hUpdate,hModified>::GetCursor(void) const
 {
 	return(R::RCursor<cObj>(*this));
 }
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
-	size_t GALILEI::GGroup<cObj,cGroup,type>::GetNbObjs(void) const
+template<class cObj,class cGroup,GALILEI::tObjType type,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel,const R::hNotification& hUpdate,const R::hNotification& hModified>
+	size_t GALILEI::GGroup<cObj,cGroup,type,hCreate,hNew,hDel,hUpdate,hModified>::GetNbObjs(void) const
 {
 	return(R::RContainer<cObj,false,true>::GetNb());
 }
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
-	cObj* GALILEI::GGroup<cObj,cGroup,type>::RelevantObj(double& avgsim) const
+template<class cObj,class cGroup,GALILEI::tObjType type,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel,const R::hNotification& hUpdate,const R::hNotification& hModified>
+	cObj* GALILEI::GGroup<cObj,cGroup,type,hCreate,hNew,hDel,hUpdate,hModified>::RelevantObj(double& avgsim) const
 {
 	cObj* rel;
 	double sum;
@@ -219,8 +219,8 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
-	cObj* GALILEI::GGroup<cObj,cGroup,type>::RelevantObj(void) const
+template<class cObj,class cGroup,GALILEI::tObjType type,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel,const R::hNotification& hUpdate,const R::hNotification& hModified>
+	cObj* GALILEI::GGroup<cObj,cGroup,type,hCreate,hNew,hDel,hUpdate,hModified>::RelevantObj(void) const
 {
 	double d;
 	return(RelevantObj(d));
@@ -228,8 +228,8 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
-	double GALILEI::GGroup<cObj,cGroup,type>::ComputeSumSim(GMeasure* measure,const cObj* obj) const
+template<class cObj,class cGroup,GALILEI::tObjType type,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel,const R::hNotification& hUpdate,const R::hNotification& hModified>
+	double GALILEI::GGroup<cObj,cGroup,type,hCreate,hNew,hDel,hUpdate,hModified>::ComputeSumSim(GMeasure* measure,const cObj* obj) const
 {
 	double sum;
 
@@ -248,8 +248,8 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
-	void GALILEI::GGroup<cObj,cGroup,type>::Clear(void)
+template<class cObj,class cGroup,GALILEI::tObjType type,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel,const R::hNotification& hUpdate,const R::hNotification& hModified>
+	void GALILEI::GGroup<cObj,cGroup,type,hCreate,hNew,hDel,hUpdate,hModified>::Clear(void)
 {
 	GDescription::Clear();
 	if(Data)
@@ -258,9 +258,11 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
-	void GALILEI::GGroup<cObj,cGroup,type>::Update(GSession* session,GDescription& desc,bool delref)
+template<class cObj,class cGroup,GALILEI::tObjType type,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel,const R::hNotification& hUpdate,const R::hNotification& hModified>
+	void GALILEI::GGroup<cObj,cGroup,type,hCreate,hNew,hDel,hUpdate,hModified>::Update(GSession* session,GDescription& desc,bool delref)
 {
+	R::RObject::PostNotification(hUpdate);
+
 	// Remove its references
 	if(delref)
 	{
@@ -284,13 +286,14 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 	// Emit an event that it was modified
 	if(Data)
 		Data->Dirty();
-	Emit(GEvent::eObjModified);
+
+	R::RObject::PostNotification(hModified);
 }
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
-	size_t GALILEI::GGroup<cObj,cGroup,type>::GetNbObjs(const GSubject* subject) const
+template<class cObj,class cGroup,GALILEI::tObjType type,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel,const R::hNotification& hUpdate,const R::hNotification& hModified>
+	size_t GALILEI::GGroup<cObj,cGroup,type,hCreate,hNew,hDel,hUpdate,hModified>::GetNbObjs(const GSubject* subject) const
 {
 	size_t tot;
 	R::RCursor<cObj> Obj(*this);
@@ -302,8 +305,8 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
-	void GALILEI::GGroup<cObj,cGroup,type>::HasUpdate(cObj* obj)
+template<class cObj,class cGroup,GALILEI::tObjType type,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel,const R::hNotification& hUpdate,const R::hNotification& hModified>
+	void GALILEI::GGroup<cObj,cGroup,type,hCreate,hNew,hDel,hUpdate,hModified>::HasUpdate(cObj* obj)
 {
 	if(R::RContainer<cObj,false,true>::GetPtr(*obj))
 		Updated.SetToday();
@@ -311,8 +314,8 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
-	GALILEI::GGroup<cObj,cGroup,type>::~GGroup(void)
+template<class cObj,class cGroup,GALILEI::tObjType type,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel,const R::hNotification& hUpdate,const R::hNotification& hModified>
+	GALILEI::GGroup<cObj,cGroup,type,hCreate,hNew,hDel,hUpdate,hModified>::~GGroup(void)
 {
 	R::RCursor<cObj> Obj(*this);
 	for(Obj.Start();!Obj.End();Obj.Next())

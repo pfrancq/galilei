@@ -577,7 +577,7 @@ public:
 	virtual ~GDocAnalyze(void);
 
 	friend class GSession;
-	friend class GObjects<GDoc>;
+	friend class GObjects<GDoc,eCreateDoc>;
 };
 
 

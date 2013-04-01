@@ -63,7 +63,7 @@ void GDoc::PrivateInit(void)
 
 //------------------------------------------------------------------------------
 GDoc::GDoc(GSession* session,const RURI& uri,const RString& name,GLang* lang,const RString& mime)
-	: GDescriptionObject<GDoc>(session,cNoRef,0,otDoc,name,osNew), URI(uri),
+	: GDescriptionObject<GDoc,eCreateDoc,eNewDoc,eDelDoc>(session,cNoRef,0,otDoc,name,osNew), URI(uri),
 	  Lang(lang),MIMEType(mime), Updated(RDate::GetToday()), Computed(RDate::Null),
 	  Fdbks(0), GroupId(0), Attached(RDate::Null),
 	  StructId(0), Tree(0)
@@ -80,7 +80,7 @@ GDoc::GDoc(GSession* session,const RURI& uri,const RString& name,GLang* lang,con
 
 //------------------------------------------------------------------------------
 GDoc::GDoc(GSession* session,const RURI& uri,const RString& name,size_t id,size_t blockid,size_t structid,GLang* lang,const RString& mime,size_t grpid,const RDate& c,const RDate& u,const RDate& a)
-	: GDescriptionObject<GDoc>(session,id,blockid,otDoc,name,osNew), URI(uri),
+	: GDescriptionObject<GDoc,eCreateDoc,eNewDoc,eDelDoc>(session,id,blockid,otDoc,name,osNew), URI(uri),
 	  Lang(lang),MIMEType(mime), Updated(u), Computed(c),
 	  Fdbks(0), GroupId(grpid), Attached(a),
 	  StructId(structid), Tree(0)
@@ -152,7 +152,7 @@ int GDoc::Compare(const GLang* lang) const
 void GDoc::ClearInfos(bool disk)
 {
 	// Clear the information
-	GDescriptionObject<GDoc>::Clear(disk);
+	GDescriptionObject<GDoc,eCreateDoc,eNewDoc,eDelDoc>::Clear(disk);
 
 	// Make sure that it will be re-computed
 	Computed=RDate::Null;
@@ -233,13 +233,6 @@ RDate GDoc::GetAttached(void) const
 void GDoc::SetURI(RURI uri)
 {
 	URI=uri;
-}
-
-
-//------------------------------------------------------------------------------
-void GDoc::SetName(const RString& name)
-{
-	Name=name;
 }
 
 
@@ -396,6 +389,9 @@ size_t GDoc::GetNbFdbks(void) const
 //------------------------------------------------------------------------------
 void GDoc::Update(GLang* lang,GDescription& desc,bool ram,bool delref)
 {
+	if(Id!=cNoRef)
+		PostNotification(eUpdateDoc);
+
 	// Look if the references must be modified
 	if(delref&&(!ram))
 	{
@@ -434,7 +430,7 @@ void GDoc::Update(GLang* lang,GDescription& desc,bool ram,bool delref)
 
 	// Emit an event that it was modified
 	if(Id!=cNoRef)
-		Emit(GEvent::eObjModified);
+		PostNotification(eDocModified);
 }
 
 

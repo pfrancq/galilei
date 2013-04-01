@@ -54,7 +54,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Profile.
 */
-class GProfile : public GDescriptionObject<GProfile>
+class GProfile : public GDescriptionObject<GProfile,eCreateProfile,eNewProfile,eDelProfile>
 {
 protected:
 
@@ -147,6 +147,11 @@ public:
 			 size_t grpid,R::RDate a,R::RDate u,R::RDate c,bool s,double score,char level,size_t nbf);
 
 	/**
+    * @return the class name.
+    */
+	virtual R::RCString GetClassName(void) const {return("GProfile");}
+
+	/**
 	* Compare two profiles by comparing their identifier.
 	* @see R::RContainer
 	* @param profile         Profile.
@@ -189,13 +194,6 @@ public:
 	 * @return the type of the profile.
 	 */
 	tProfileType GetProfileType(void) const {return(Type);}
-
-	/**
-	 * Set the name of the profile.
-	 * @param name           Name of the profile.
-	 * @return
-	 */
-	void SetName(const R::RString& name);
 
 	/**
 	* Get the user of the profile.

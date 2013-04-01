@@ -48,10 +48,15 @@ namespace GALILEI{
  * The GDescriptionObject provides a generic class for a object of a given type
  * with a specific identifier that is represented by a description.
  * @tparam C                 Class of the object.
+ * @tparam hCreate           Notification to post when the object is created.
+ * @tparam hNew              Notification to post when the object is created in
+ *                           memory.
+ * @tparam hDel              Notification to post when the object is deleted
+ *                           from memory.
  * @author Pascal Francq
  * @short Generic Vector Object
  */
-template<class C>
+template<class C,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel>
 	class GDescriptionObject : public GObject, public GDescription
 {
 protected:
@@ -167,7 +172,7 @@ public:
 	 */
 	virtual ~GDescriptionObject(void);
 
-	friend class GObjects<C>;
+	friend class GObjects<C,hCreate>;
 	friend class GSession;
 	friend class GDocAnalyze;
 };

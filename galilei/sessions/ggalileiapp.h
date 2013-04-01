@@ -230,6 +230,7 @@ public:
 
 	/**
 	* Get the plug-ins of a given manager.
+	* @tparam plugin         Class of the plug-in.
 	* @param mng             Name of the manager to be found.
 	* @param list            List.
 	*/
@@ -296,6 +297,7 @@ public:
 
 	/**
 	* Get a plug-in of a given manager.
+	* @tparam plugin         Class of the plug-in.
 	* @param mng             Name of the manager to be found.
 	* @param name            Name of the plug-in.
 	* @param list            List.
@@ -312,6 +314,7 @@ public:
 
 	/**
 	* Get a plug-in of a given manager.
+	* @tparam plugin         Class of the plug-in.
 	* @param mng             Name of the manager to be found.
 	* @param name            Name of the plug-in.
 	* @param need            If the parameter is non-null and the plug-in
@@ -344,6 +347,7 @@ public:
 
 	/**
 	* Get the current plug-in of a given manager.
+	* @tparam plugin         Class of the plug-in.
 	* @param mng             Name of the manager to be found.
 	* @param list            List.
 	* @param need            If the parameter is non-null and the plug-in
@@ -364,6 +368,7 @@ public:
 
 	/**
 	* Get the current plug-in of a given manager.
+	* @tparam plugin         Class of the plug-in.
 	* @param mng             Name of the manager to be found.
 	* @param need            If the parameter is non-null and the plug-in
 	*                        doesn't exist, generate an exception.

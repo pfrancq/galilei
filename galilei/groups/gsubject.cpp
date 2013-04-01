@@ -68,6 +68,10 @@ GSubject::GSubject(GSession* session,size_t id,const RString& name,bool u)
 //------------------------------------------------------------------------------
 void GSubject::ReInit(void)
 {
+	// Emit a selection signal
+	RCursor<GDoc> Doc(Docs);
+	for(Doc.Start();!Doc.End();Doc.Next())
+		Doc()->PostNotification(eUnselectDoc);
 	Profiles.Clear();
 	Docs.Clear();
 	WhereDocs.Clear();

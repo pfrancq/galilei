@@ -69,3 +69,9 @@ void GStatement::SetId(size_t id)
 {
 	Id=id;
 }
+
+
+//-----------------------------------------------------------------------------
+GStatement::~GStatement(void)
+{
+}

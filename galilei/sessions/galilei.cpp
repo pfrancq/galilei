@@ -6,7 +6,7 @@
 
 	GALILEI Header - Implementation.
 
-	Copyright 2005-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2005-2013 by Pascal Francq (pascal@francq.info).
 	Copyright 2005-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -52,6 +52,52 @@ const GUser* GALILEI::pUser(0);
 const GProfile* GALILEI::pProfile(0);
 const GCommunity* GALILEI::pCommunity(0);
 const GSubject* GALILEI::pSubject(0);
+
+
+
+//------------------------------------------------------------------------------
+//
+// Events pointers
+//
+//------------------------------------------------------------------------------
+const hNotification GALILEI::eCreateDoc(NotificationCenter.GetNotificationHandle("CreateDoc"));
+const hNotification GALILEI::eNewDoc(NotificationCenter.GetNotificationHandle("NewDoc"));
+const hNotification GALILEI::eUpdateDoc(NotificationCenter.GetNotificationHandle("UpdateDoc"));
+const hNotification GALILEI::eDocModified(NotificationCenter.GetNotificationHandle("DocModified"));
+const hNotification GALILEI::eDelDoc(NotificationCenter.GetNotificationHandle("DelDoc"));
+const hNotification GALILEI::eDestroyDoc(NotificationCenter.GetNotificationHandle("DestroyDoc"));
+const hNotification GALILEI::eSelectDoc(NotificationCenter.GetNotificationHandle("SelectDoc"));
+const hNotification GALILEI::eUnselectDoc(NotificationCenter.GetNotificationHandle("UnselectDoc"));
+const hNotification GALILEI::eCreateTopic(NotificationCenter.GetNotificationHandle("CreateTopic"));
+const hNotification GALILEI::eNewTopic(NotificationCenter.GetNotificationHandle("NewTopic"));
+const hNotification GALILEI::eUpdateTopic(NotificationCenter.GetNotificationHandle("UpdateTopic"));
+const hNotification GALILEI::eTopicModified(NotificationCenter.GetNotificationHandle("TopicModified"));
+const hNotification GALILEI::eDelTopic(NotificationCenter.GetNotificationHandle("DelTopic"));
+const hNotification GALILEI::eDestroyTopic(NotificationCenter.GetNotificationHandle("DestroyTopic"));
+const hNotification GALILEI::eCreateUser(NotificationCenter.GetNotificationHandle("CreateUser"));
+const hNotification GALILEI::eNewUser(NotificationCenter.GetNotificationHandle("NewUser"));
+const hNotification GALILEI::eUpdateUser(NotificationCenter.GetNotificationHandle("UpdateUser"));
+const hNotification GALILEI::eUserModified(NotificationCenter.GetNotificationHandle("UserModified"));
+const hNotification GALILEI::eDelUser(NotificationCenter.GetNotificationHandle("DelUser"));
+const hNotification GALILEI::eDestroyUser(NotificationCenter.GetNotificationHandle("DestroyUser"));
+const hNotification GALILEI::eCreateProfile(NotificationCenter.GetNotificationHandle("CreateProfile"));
+const hNotification GALILEI::eNewProfile(NotificationCenter.GetNotificationHandle("NewProfile"));
+const hNotification GALILEI::eUpdateProfile(NotificationCenter.GetNotificationHandle("UpdateProfile"));
+const hNotification GALILEI::eProfileModified(NotificationCenter.GetNotificationHandle("ProfileModified"));
+const hNotification GALILEI::eDelProfile(NotificationCenter.GetNotificationHandle("DelProfile"));
+const hNotification GALILEI::eDestroyProfile(NotificationCenter.GetNotificationHandle("DestroyProfile"));
+const hNotification GALILEI::eCreateCommunity(NotificationCenter.GetNotificationHandle("CreateCommunity"));
+const hNotification GALILEI::eNewCommunity(NotificationCenter.GetNotificationHandle("NewCommunity"));
+const hNotification GALILEI::eUpdateCommunity(NotificationCenter.GetNotificationHandle("UpdateCommunity"));
+const hNotification GALILEI::eCommunityModified(NotificationCenter.GetNotificationHandle("CommunityModified"));
+const hNotification GALILEI::eDelCommunity(NotificationCenter.GetNotificationHandle("DelCommunity"));
+const hNotification GALILEI::eDestroyCommunity(NotificationCenter.GetNotificationHandle("DestroyCommunity"));
+const hNotification GALILEI::eCreateClass(NotificationCenter.GetNotificationHandle("CreateClass"));
+const hNotification GALILEI::eNewClass(NotificationCenter.GetNotificationHandle("NewClass"));
+const hNotification GALILEI::eUpdateClass(NotificationCenter.GetNotificationHandle("UpdateClass"));
+const hNotification GALILEI::eClassModified(NotificationCenter.GetNotificationHandle("ClassModified"));
+const hNotification GALILEI::eDelClass(NotificationCenter.GetNotificationHandle("DelClass"));
+const hNotification GALILEI::eDestroyClass(NotificationCenter.GetNotificationHandle("DestroyClass"));
 
 
 
@@ -223,6 +269,27 @@ RString GALILEI::GetState(tObjState state,bool upper)
 
 
 //------------------------------------------------------------------------------
+RString GALILEI::GetEvent(hNotification event,bool upper)
+{
+	if(event==eNewDoc)
+		return(Str("document created in memory",upper));
+	if(event==eCreateDoc)
+		return(Str("document created in system",upper));
+	if(event==eDocModified)
+		return(Str("document modified",upper));
+	if(event==eDelDoc)
+		return(Str("document deleted from memory",upper));
+	if(event==eDestroyDoc)
+		return(Str("document deleted from system",upper));
+	if(event==eSelectDoc)
+		return(Str("document selected from subjects",upper));
+	if(event==eUnselectDoc)
+		return(Str("document unselected from subject",upper));
+	return("'"+RString(NotificationCenter.GetNotificationName(event)())+"' is not a valid GALILEI event");
+}
+
+
+//------------------------------------------------------------------------------
 RString GALILEI::GetConceptCat(tConceptCat cat,bool upper,bool plural)
 {
 	switch(cat)
@@ -250,28 +317,6 @@ tConceptCat GALILEI::ConceptCat_cast(size_t cat)
 	if(cat>=4)
 		ThrowGException("'"+RString::Number(cat)+"' is not a valid concept category value");
 	return(static_cast<tConceptCat>(cat));
-}
-
-
-//------------------------------------------------------------------------------
-RString GEvent::GetEvent(tEvent event,bool upper)
-{
-	switch(event)
-	{
-		case eUnknow:
-			return(Str("unknown",upper));
-		case eObjNew:
-			return(Str("object created in memory",upper));
-		case eObjCreated:
-			return(Str("object created in system",upper));
-		case eObjModified:
-			return(Str("object modified",upper));
-		case eObjDelete:
-			return(Str("object deleted from memory",upper));
-		case eObjDestroyed:
-			return(Str("object deleted from system",upper));
-	}
-	ThrowGException("'"+RString::Number(event)+"' is not a valid event type value");
 }
 
 

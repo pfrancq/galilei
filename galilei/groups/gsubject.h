@@ -170,6 +170,8 @@ public:
 
 	/**
 	* Initialize the subject (reset all profiles assigned).
+	*
+	* An notification eUnselectDoc is generated for each document.
 	*/
 	void ReInit(void);
 

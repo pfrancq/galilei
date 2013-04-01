@@ -61,6 +61,7 @@ namespace GALILEI{
  * This class represents a set of objects (class C). It aims is to encapsulate
  * all the storage aspects of the management.
  * @tparam C                  The class of the objects managed.
+ * @tparam hCreate            Notification to post when the object is created.
  *
  * To manage correctly the objects, the list uses two static member functions of
  * the class representing the elements (class C):
@@ -89,7 +90,7 @@ namespace GALILEI{
  * @author Pascal Francq
  * @short Stored Objects.
  */
-template<class C>
+template<class C,const R::hNotification& hCreate>
 	class GObjects : virtual GKB, protected R::RObjectContainer<C,true>
 {
 protected:

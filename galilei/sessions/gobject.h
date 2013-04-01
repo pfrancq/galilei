@@ -33,6 +33,11 @@
 
 
 //------------------------------------------------------------------------------
+// include files for R
+#include <robject.h>
+
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 
@@ -49,7 +54,7 @@ namespace GALILEI{
  * @author Pascal Francq
  * @short Generic Object
  */
-class GObject
+class GObject : public R::RObject
 {
 protected:
 
@@ -62,11 +67,6 @@ protected:
 	 * Identifier of the object.
 	 */
 	size_t Id;
-
-	/**
-	 * Name of the object.
-	 */
-	R::RString Name;
 
 	/**
 	* Type of the object.
@@ -89,6 +89,11 @@ public:
 	 * @param obj            Original object.
 	 */
 	GObject(const GObject* obj);
+
+	/**
+    * @return the class name.
+    */
+	virtual R::RCString GetClassName(void) const {return("GObject");}
 
 	/**
 	 * Defines if the objects have a description.
@@ -120,11 +125,6 @@ public:
 	void SetId(size_t id);
 
 	/**
-	* @return the name of the object.
-	*/
-	inline R::RString GetName(void) const {return(Name);}
-
-	/**
 	 * Get a string that represents the object when a search has to be
 	 * performed in the list. By default, it is its name.
 	 * @return the string used for searching an object.
@@ -137,23 +137,21 @@ public:
 	inline tObjType GetObjType(void) const {return(ObjType);}
 
 	/**
-	 * Emit a notification concerning the change of an object.
+	 * Handler called when a notification posted is not catched. In GALILEI,
+	 * this function does nothing.
+	 * @param notification    Notification posted.
 	 */
-	inline void Emit(GEvent::tEvent event) const
-	{
-		GEvent Event(event,this);
-		R::NotificationCenter.PostNotification<GEvent&>("ObjectChanged",Event);
-	}
+	virtual void HandlerNotFound(const R::RNotification& notification);
 
 	/**
 	 * Destruct the object.
 	 */
 	virtual ~GObject(void);
 
-	friend class GObjects<GTopic>;
-	friend class GObjects<GCommunity>;
-	friend class GObjects<GDoc>;
-	friend class GObjects<GProfile>;
+	friend class GObjects<GTopic,eCreateTopic>;
+	friend class GObjects<GCommunity,eCreateCommunity>;
+	friend class GObjects<GDoc,eCreateDoc>;
+	friend class GObjects<GProfile,eCreateProfile>;
 };
 
 

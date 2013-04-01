@@ -73,8 +73,8 @@ GConceptList::GConceptList(GSession* session,GConceptType* type)
 GConceptList::GConceptList(GSession* session,GConceptType* type,const R::RString& name,R::RContainer<GConcept,false,true>& concepts)
 	: GConcept(session,name,type), Concepts(concepts)
 {
-	if(Name.IsEmpty())
-		Name=GetDef();
+	if(GetName().IsEmpty())
+		SetName(GetDef());
 }
 
 

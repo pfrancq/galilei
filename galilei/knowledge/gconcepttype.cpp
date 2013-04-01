@@ -74,21 +74,21 @@ void GConceptType::SetReferences(size_t refdocs,size_t refprofiles,size_t refcom
 //-----------------------------------------------------------------------------
 int GConceptType::Compare(const GConceptType& type) const
 {
-	return(Name.Compare(type.Name));
+	return(GetName().Compare(type.GetName()));
 }
 
 
 //-----------------------------------------------------------------------------
 int GConceptType::Compare(const GConceptType* type) const
 {
-	return(Name.Compare(type->Name));
+	return(GetName().Compare(type->GetName()));
 }
 
 
 //------------------------------------------------------------------------------
 int GConceptType::Compare(const R::RString& name) const
 {
-	return(Name.Compare(name));
+	return(GetName().Compare(name));
 }
 
 
