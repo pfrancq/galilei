@@ -50,7 +50,11 @@
 MutualInfo::MutualInfo(GSession* session,GPlugInFactory* fac)
 	: RObject(fac->GetName()), GMeasure(session,fac), Dirty(false), MutualInfos(20000), CurWeights(0)
 {
-	InsertObserver(HANDLER(MutualInfo::Handle),"ObjectChanged");
+	InsertObserver(HANDLER(MutualInfo::Handle),eNewDoc);
+	InsertObserver(HANDLER(MutualInfo::Handle),eCreateDoc);
+	InsertObserver(HANDLER(MutualInfo::Handle),eDocModified);
+	InsertObserver(HANDLER(MutualInfo::Handle),eDelDoc);
+	InsertObserver(HANDLER(MutualInfo::Handle),eDestroyDoc);
 }
 
 
@@ -167,20 +171,11 @@ void MutualInfo::BuildMutualInformation(void)
 void MutualInfo::Handle(const RNotification& notification)
 {
 	// Only document changes
-	GEvent& Event(GetData<GEvent&>(notification));
-	if(Event.Object->GetObjType()!=otDoc)
+	GDoc* Doc(dynamic_cast<GDoc*>(notification.GetSender()));
+	if(!Doc)
 		return;
 
-	switch(Event.Event)
-	{
-		case GEvent::eObjNew:
-		case GEvent::eObjModified:
-		case GEvent::eObjDelete:
-		case GEvent::eObjDestroyed:
-			Dirty=true;
-		default:
-			break;
-	}
+	Dirty=true;
 }
 
 
