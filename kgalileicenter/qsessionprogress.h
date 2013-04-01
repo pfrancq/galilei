@@ -489,6 +489,19 @@ public:
 	virtual void Alert(const R::RString& msg);
 
 	/**
+	* Method called when executing a sequence of instruction to output some
+	* information.
+	* @param str            String to output.
+	*/
+	virtual void WriteStr(const R::RString& str);
+
+	/**
+	* This is used by the caller to interact. Typically, it is used to give the
+	* control of the process to the GUI.
+	*/
+	virtual void Interact(void);
+
+	/**
 	 * The 'Cancel' Button was called.
 	 */
 	virtual void reject(void);

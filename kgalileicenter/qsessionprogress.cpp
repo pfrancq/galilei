@@ -174,6 +174,10 @@ void QCreateSession::DoIt(void)
 		return;
 	Parent->setLabelText("Load Users/Profiles/Feedbacks ...");
 	App->getSession()->LoadObjs(static_cast<GUser*>(0));
+	if(App->getSession()->MustBreak())
+		return;
+	Parent->setLabelText("Load Subjects ...");
+	App->getSession()->LoadSubjects();
 }
 
 
@@ -468,6 +472,20 @@ void QSessionProgressDlg::Error(const R::RString& msg)
 void QSessionProgressDlg::Alert(const R::RString&)
 {
 	//KMessageBox::information(0,ToQString(msg),"GALILEI Alert");
+}
+
+
+//------------------------------------------------------------------------------
+void QSessionProgressDlg::WriteStr(const R::RString& str)
+{
+	setLabelText(ToQString(str));
+}
+
+
+//------------------------------------------------------------------------------
+void QSessionProgressDlg::Interact(void)
+{
+	QCoreApplication::processEvents();
 }
 
 
