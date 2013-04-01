@@ -259,25 +259,7 @@ void GStorageMySQL::LoadSubjects(void)
 		{
 			GDoc* d=Session->GetObj(pDoc,docs[0].ToSizeT());
 			if(!d) continue;
-			size_t UsedId,CatId;
-
-			switch(docs[2].ToSizeT())
-			{
-				case 0:
-					CatId=docs[1].ToSizeT();
-					UsedId=cNoRef;
-					break;
-				case 1:
-					CatId=cNoRef;
-					UsedId=docs[1].ToSizeT();
-					break;
-				case 2:
-					CatId=UsedId=docs[1].ToSizeT();
-					break;
-				default:
-					ThrowGException("'used' field cannot only takes 0,1 or 2");
-			}
-			Session->Insert(d,CatId,UsedId);
+			Session->Insert(d,docs[1].ToSizeT(),docs[2].ToSizeT());
 		}
 
 		// Make links between profiles and subjects
@@ -335,11 +317,11 @@ void GStorageMySQL::SaveSubject(GSubject* subject)
 			// Look if the document is also selected in this subject
 			RString used;
 			if(subject->IsIn(Docs()))
-				used="'2')";  // Categorized and selected
+				used="'1')";  // Categorized and selected
 			else
 				used="'0')"; // Just categorized
 
-			// Look if the couple(subject,doc) is already in the database
+			// Insert the couple(subject,doc) in the database
 			sSql="INSERT INTO subjectsbydocs(subjectid,docid,used) VALUES("+Num(subject->GetId())+","+Num(Docs()->GetId())+","+used;
 			RQuery(Db,sSql);
 		}
