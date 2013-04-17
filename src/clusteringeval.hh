@@ -72,7 +72,7 @@ template<class cGroup,class cObj>
 
 	cGroup* Cluster(static_cast<cGroup*>(Session->GetObj(GroupType,id)));
 	if(!Cluster)
-		ThrowGException("'"+RString::Number(id)+"' is not a valid "+GetObjType(GroupType,false,false));
+		mThrowGException("'"+RString::Number(id)+"' is not a valid "+GetObjType(GroupType,false,false));
 	ClusterScore<cGroup>* g(ClustersScore.GetPtr(Cluster));
 
 	switch(measure)
@@ -194,7 +194,7 @@ template<class cGroup,class cObj>
 		InGrp=Grps()->Group->GetNbObjs();
 		NbObjs+=InGrp;
 		Grps()->Precision=Grps()->Recall=0.0;
-		RAssert(InGrp);
+		mAssert(InGrp);
 		RCursor<cObj> Objs(Grps()->Group->GetObjs());
 		if(InGrp==1)
 		{
@@ -348,7 +348,7 @@ template<class cGroup,class cObj>
 			mes="Profiles";
 			break;
 		default:
-			ThrowGException(GetObjType(ObjType,true,true)+" are not elements that are grouped");
+			mThrowGException(GetObjType(ObjType,true,true)+" are not elements that are grouped");
 	}
 	GMeasure* Sim(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures",mes+" Similarities"));
 

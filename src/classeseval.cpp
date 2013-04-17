@@ -175,7 +175,7 @@ void ClassesEval::Info(size_t measure,...)
 			(*res)=RankTree;
 			break;
 		default:
-			ThrowGException("Only 0 is allowed as measure");
+			mThrowGException("Only 0 is allowed as measure");
 	};
 }
 
@@ -198,7 +198,7 @@ void ClassesEval::ComputeRankTree(void)
 			SubjectName=Name;
 		GSubject* Subject(Session->GetSubject(SubjectName));
 		if(!Subject)
-			ThrowGException("No correspondence between the class '"+SubjectName+"' and a subject");
+			mThrowGException("No correspondence between the class '"+SubjectName+"' and a subject");
 		LeafNodes.InsertPtr(new ClassSubject(Classes(),Subject));
 	}
 	cout<<LeafNodes.GetNb()<<" leaf nodes to compare"<<endl;
