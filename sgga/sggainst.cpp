@@ -70,7 +70,7 @@ SGGAInstDoc::SGGAInstDoc(GSession* ses,RCursor<GDoc> objs,RParamsSG* p,RDebug *d
 	Disagree=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Document Disagreements");
 
 	if((!Sims)||(!Agree)||(!Disagree))
-		ThrowGException(GetObjType(Type,true,true)+" are not supported");
+		mThrowGException(GetObjType(Type,true,true)+" are not supported");
 }
 
 
@@ -126,7 +126,7 @@ SGGAInstProfile::SGGAInstProfile(GSession* ses,RCursor<GProfile> objs,RParamsSG*
 	Disagree=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profile Disagreements");
 
 	if((!Sims)||(!Agree)||(!Disagree))
-		ThrowGException(GetObjType(Type,true,true)+" are not supported");
+		mThrowGException(GetObjType(Type,true,true)+" are not supported");
 }
 
 
