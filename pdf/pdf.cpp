@@ -105,7 +105,7 @@ void GFilterPDF::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 	{
 		delete globalParams;
 		delete pdf;
-		ThrowGException("Not valid PDF file");
+		mThrowGException("Not valid PDF file");
 	}
 	TextBufOutputDev::Encoding=RTextEncoding::GetTextEncoding(globalParams->getTextEncodingName()->getCString());
 

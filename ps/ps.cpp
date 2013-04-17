@@ -232,7 +232,7 @@ void GFilterPS::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 		if (gs==0)
 		{
 			perror(cmd);
-			ThrowGException("Not valid PS file");
+			mThrowGException("Not valid PS file");
 		}
 	#endif
 
@@ -240,7 +240,7 @@ void GFilterPS::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 	if (status)
 	{
 		cerr<<cmd<<": internal error "<<status<<endl;
-		ThrowGException("Not valid PS file");
+		mThrowGException("Not valid PS file");
 	}
 	if (cork)
 	{
@@ -248,7 +248,7 @@ void GFilterPS::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 		if (status)
 		{
 			cerr<<cmd<<": internal error "<<status<<endl;
-			ThrowGException("Not valid PS file");
+			mThrowGException("Not valid PS file");
 		}
 	}
 
@@ -270,7 +270,7 @@ void GFilterPS::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 		{
 			cerr<<cmd<<": internal error "<<status<<endl;
 			delete[] CharBuffer;
-			ThrowGException("Not valid PS file");
+			mThrowGException("Not valid PS file");
 		}
 		if(word)
 		{
@@ -291,7 +291,7 @@ void GFilterPS::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 	{
 		cerr<<cmd<<": internal error "<<status<<endl;
 		delete[] CharBuffer;
-		ThrowGException("Not valid PS file");
+		mThrowGException("Not valid PS file");
 	}
 
 	// Look for the content

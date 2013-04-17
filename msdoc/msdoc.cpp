@@ -193,7 +193,7 @@ void GFilterMSDoc::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file
 	TableHandler = new  wvWare::TableHandler();
 
 	if(!Parser)
-		ThrowGException("The file in use has incompatible format");
+		mThrowGException("The file in use has incompatible format");
 
 	Parser->setSubDocumentHandler(this);
 	Parser->setTextHandler(this);
@@ -201,9 +201,9 @@ void GFilterMSDoc::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file
 	ReadMetaData();
 
 	if(!Parser->parse())
-		ThrowGException("An error occurs during file parsing");
+		mThrowGException("An error occurs during file parsing");
 	if(!bodyFound)
-		ThrowGException("The document body was not found : wrong format");
+		mThrowGException("The document body was not found : wrong format");
 
 	// process SubDocQueue
 	while(! SubDocQueue.empty())
