@@ -272,7 +272,7 @@ template<class cObj1,class cObj2>
 			sim=SimilarityChoquet();
 			break;
 		default:
-			ThrowGException("No similarity model defined.");
+			mThrowGException("No similarity model defined.");
 			break;
 	}
 	//std::cout<<"Sim("<<obj1->GetId()<<","<<obj2->GetId()<<")="<<sim<<std::endl;
