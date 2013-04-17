@@ -258,7 +258,7 @@ void KViewDicts::delConcept(void)
 //-----------------------------------------------------------------------------
 void KViewDicts::newStatement(void)
 {
-	RToDo("KViewDicts::newStatement(void)");
+	mToDo("KViewDicts::newStatement(void)");
 }
 
 
@@ -269,7 +269,7 @@ void KViewDicts::delStatement(void)
 	if(!ptr) return;
 	if(KMessageBox::warningYesNo(this,"Do you want to delete the current statement?","Warning")==KMessageBox::No)
 		return;
-	RToDo("KViewDicts::delStatement(void)");
+	mToDo("KViewDicts::delStatement(void)");
 }
 
 

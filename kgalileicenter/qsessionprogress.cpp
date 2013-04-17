@@ -464,7 +464,7 @@ void QSessionProgressDlg::Warning(const R::RString&)
 //------------------------------------------------------------------------------
 void QSessionProgressDlg::Error(const R::RString& msg)
 {
-	ThrowGException(msg);
+	mThrowGException(msg);
 }
 
 

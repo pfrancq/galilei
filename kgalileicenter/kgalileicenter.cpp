@@ -520,7 +520,7 @@ void KGALILEICenter::showDocs(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenter::exportDocs(void)
 {
-	ThrowGException("Export documents is not implemented");
+	mThrowGException("Export documents is not implemented");
 //	QString file(KFileDialog::getSaveFileName(KUrl(),"*.*",this,"Choose file where to export the files descriptions"));
 //	if(!file.isEmpty())
 //	{
@@ -631,7 +631,7 @@ void KGALILEICenter::docsAnalyze(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenter::docsIndexer(void)
 {
-	ThrowGException("docsIndexer not implemented");
+	mThrowGException("docsIndexer not implemented");
 //	QString dir(KFileDialog::getExistingDirectory(KUrl(),this,"Choose directory where to export the files"));
 //	if(!dir.isEmpty())
 //	{
