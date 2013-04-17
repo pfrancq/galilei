@@ -165,11 +165,11 @@ public:
 		Cout=FindParam<RParamValue>("Cout")->GetBool();
 		RString Tmp(FindParam<RParamValue>("MeasureType")->Get());
 		if((Tmp!="Complete")&&(Tmp!="Nearest Neighbors"))
-			ThrowGException("'"+Tmp+"' is invalid : Only 'Complete' or 'Nearest Neighbors' are allowed for the type of measure");
+			mThrowGException("'"+Tmp+"' is invalid : Only 'Complete' or 'Nearest Neighbors' are allowed for the type of measure");
 		MeasureType=Tmp;
 		Tmp=FindParam<RParamValue>("kMeansType")->Get();
 		if((Tmp!="Normal")&&(Tmp!="Kernel"))
-			ThrowGException("'"+Tmp+"' is invalid : Only 'Normal' or 'Kernel' are allowed for the type of measure");
+			mThrowGException("'"+Tmp+"' is invalid : Only 'Normal' or 'Kernel' are allowed for the type of measure");
 		kMeansType=Tmp;
 	}
 
