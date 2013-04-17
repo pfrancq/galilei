@@ -219,7 +219,7 @@ void SubsLevel::ComputeDocsConfidence(void)
 void SubsLevel::Run(void)
 {
 	if(!NbLevels)
-		ThrowGException("Number of levels cannot be null");
+		mThrowGException("Number of levels cannot be null");
 
 	ComputeProfilesConfidence();
 	if(Session->MustSaveResults())
