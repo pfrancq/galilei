@@ -86,7 +86,7 @@ GDoc::GDoc(GSession* session,const RURI& uri,const RString& name,size_t id,size_
 	  StructId(structid), Tree(0)
 {
 	// Verify if the topic exists in memory
-	RAssert(GroupId!=cNoRef);
+	mAssert(GroupId!=cNoRef);
 	if(GroupId)
 	{
 		GTopic* grp=Session->GetObj(pTopic,GroupId,false,false);
@@ -215,7 +215,7 @@ void GDoc::SetTree(GConceptTree& tree)
 //------------------------------------------------------------------------------
 void GDoc::SetGroup(size_t groupid)
 {
-	RAssert(groupid!=cNoRef);
+	mAssert(groupid!=cNoRef);
 	GroupId=groupid;
 	if(GroupId)
 		Attached.SetToday();

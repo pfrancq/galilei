@@ -72,7 +72,7 @@ GConcept::GConcept(GSession* session,const RString& name,GConceptType* type)
 	  NbRefClasses(0), IfClasses(NAN), IndexClasses(0)
 {
 	if(!type)
-		ThrowGException("Cannot create a concept no type");
+		mThrowGException("Cannot create a concept no type");
 }
 
 
@@ -137,7 +137,7 @@ size_t GConcept::GetIndex(tObjType ObjType) const
 		case otClass:
 			return(IndexClasses);
 		default:
-			ThrowGException("Unknown type for concept "+RString::Number(Id));
+			mThrowGException("Unknown type for concept "+RString::Number(Id));
 	}
 }
 
@@ -163,7 +163,7 @@ void GConcept::SetIndex(tObjType ObjType,size_t index)
 			IndexClasses=index;
 			break;
 		default:
-			ThrowGException("Unknown type for concept "+RString::Number(Id));
+			mThrowGException("Unknown type for concept "+RString::Number(Id));
 	}
 	if(Session->MustSaveResults())
 		Session->GetStorage()->SaveIndex(this,ObjType,index);
@@ -191,7 +191,7 @@ void GConcept::ClearIndex(tObjType ObjType)
 			IndexClasses=0;
 			break;
 		default:
-			ThrowGException("Unknown type for concept "+RString::Number(Id));
+			mThrowGException("Unknown type for concept "+RString::Number(Id));
 	}
 }
 
@@ -227,7 +227,7 @@ size_t GConcept::IncRef(tObjType ObjType)
 			return(NbRefClasses);
 			break;
 		default:
-			ThrowGException("Unknown type for concept "+RString::Number(Id));
+			mThrowGException("Unknown type for concept "+RString::Number(Id));
 			break;
 	}
 }
@@ -240,41 +240,41 @@ size_t GConcept::DecRef(tObjType ObjType)
 	{
 		case otDoc:
 			if(!NbRefDocs)
-				ThrowGException("Cannot decrease null number of references for documents for concept "+RString::Number(Id));
+				mThrowGException("Cannot decrease null number of references for documents for concept "+RString::Number(Id));
 			NbRefDocs--;
 			IfDocs=NAN;
 			return(NbRefDocs);
 			break;
 		case otProfile:
 			if(!NbRefProfiles)
-				ThrowGException("Cannot decrease null number of references for profiles for concept "+RString::Number(Id));
+				mThrowGException("Cannot decrease null number of references for profiles for concept "+RString::Number(Id));
 			NbRefProfiles--;
 			IfProfiles=NAN;
 			return(NbRefProfiles);
 			break;
 		case otCommunity:
 			if(!NbRefCommunities)
-				ThrowGException("Cannot decrease null number of references for groups for concept "+RString::Number(Id));
+				mThrowGException("Cannot decrease null number of references for groups for concept "+RString::Number(Id));
 			NbRefCommunities--;
 			IfCommunities=NAN;
 			return(NbRefCommunities);
 			break;
 		case otTopic:
 			if(!NbRefTopics)
-				ThrowGException("Cannot decrease null number of references for topics for concept "+RString::Number(Id));
+				mThrowGException("Cannot decrease null number of references for topics for concept "+RString::Number(Id));
 			NbRefTopics--;
 			IfTopics=NAN;
 			return(NbRefTopics);
 			break;
 		case otClass:
 			if(!NbRefClasses)
-				ThrowGException("Cannot decrease null number of references for classes for concept "+RString::Number(Id));
+				mThrowGException("Cannot decrease null number of references for classes for concept "+RString::Number(Id));
 			NbRefClasses--;
 			IfClasses=NAN;
 			return(NbRefClasses);
 			break;
 		default:
-			ThrowGException("Unknown type for concept "+RString::Number(Id));
+			mThrowGException("Unknown type for concept "+RString::Number(Id));
 			break;
 	}
 }
@@ -307,7 +307,7 @@ void GConcept::ClearRefs(tObjType ObjType)
 			IfClasses=NAN;
 			break;
 		default:
-			ThrowGException(GALILEI::GetObjType(ObjType,true,true)+" have no references");
+			mThrowGException(GALILEI::GetObjType(ObjType,true,true)+" have no references");
 			break;
 	}
 }
@@ -334,7 +334,7 @@ size_t GConcept::GetRef(tObjType ObjType) const
 			return(NbRefClasses);
 			break;
 		default:
-			ThrowGException("Unknown type for concept "+RString::Number(Id));
+			mThrowGException("Unknown type for concept "+RString::Number(Id));
 			break;
 	}
 	return(0);
@@ -397,7 +397,7 @@ double GConcept::GetIF(tObjType ObjType) const
 			return(IfClasses);
 			break;
 		default:
-			ThrowGException("Unknown type for concept "+RString::Number(Id));
+			mThrowGException("Unknown type for concept "+RString::Number(Id));
 			break;
 	}
 }

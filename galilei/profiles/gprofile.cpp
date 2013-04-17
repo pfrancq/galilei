@@ -67,7 +67,7 @@ GProfile::GProfile(GSession* session,GUser* usr,tProfileType type,const R::RStri
     GroupId(0), Attached(RDate::Null), Score(0.0), Level(0)
 {
 	if(!User)
-		ThrowGException("New profile has no parent user");
+		mThrowGException("New profile has no parent user");
 	User->InsertPtr(this);
 
 	// Verify if the community exists in memory
@@ -87,7 +87,7 @@ GProfile::GProfile(GSession* session,GUser* usr,tProfileType type,size_t id,size
     GroupId(grpid), Attached(a), Score(score), Level(level)
 {
 	if(!User)
-		ThrowGException("Profile "+RString::Number(id)+" has no parent user");
+		mThrowGException("Profile "+RString::Number(id)+" has no parent user");
 	User->InsertPtr(this);
 
 	// Verify if the community exists in memory
@@ -245,7 +245,7 @@ RCursor<GFdbk> GProfile::GetFdbks(void) const
 bool GProfile::InsertFdbk(size_t docid,tFdbkType fdbk,const R::RDate& done)
 {
 	if(fdbk==ftUnknown)
-		ThrowGException("Cannot add an unknown feedback to profile +'"+RString::Number(Id)+"' for document '"+RString::Number(docid)+"'");
+		mThrowGException("Cannot add an unknown feedback to profile +'"+RString::Number(Id)+"' for document '"+RString::Number(docid)+"'");
 
 	bool NewFdbk(false);
 

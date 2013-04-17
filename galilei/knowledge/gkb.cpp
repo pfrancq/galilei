@@ -75,7 +75,7 @@ GConceptType* GKB::GetConceptType(char id,bool null)
 	{
 	}
 	if((!type)&&(!null))
-		ThrowGException("Unknown concept type "+RString::Number(id));
+		mThrowGException("Unknown concept type "+RString::Number(id));
 	return(type);
 }
 
@@ -113,7 +113,7 @@ GConceptType* GKB::GetConceptType(const RString& name,bool null)
 	{
 	}
 	if((!type)&&(!null))
-		ThrowGException("Unknown concept type '"+name+"'");
+		mThrowGException("Unknown concept type '"+name+"'");
 	return(type);
 }
 
@@ -135,10 +135,10 @@ void GKB::InsertConceptType(tConceptCat cat,char id,const R::RString& name,const
 GConcept* GKB::GetConcept(size_t id)
 {
 	if(id>Concepts.GetMaxPos())
-		ThrowGException("'"+RString::Number(id)+"' is not a valid concept identifier");
+		mThrowGException("'"+RString::Number(id)+"' is not a valid concept identifier");
 	GConcept* concept(Concepts[id]);
 	if(!concept)
-		ThrowGException("'"+RString::Number(id)+"' is not a valid concept identifier");
+		mThrowGException("'"+RString::Number(id)+"' is not a valid concept identifier");
 	return(concept);
 }
 
@@ -154,7 +154,7 @@ R::RCursor<GConcept> GKB::GetConcepts(void) const
 void GKB::DeleteConcept(GConcept* concept)
 {
 	if((!concept)||(!concept->GetType()))
-		ThrowGException("Cannot delete concept");
+		mThrowGException("Cannot delete concept");
 	Storage->DeleteConcept(concept);
 	concept->GetType()->DeleteConcept(concept);
 	Concepts.DeletePtrAt(concept->GetId(),false);
@@ -196,7 +196,7 @@ GPredicate* GKB::GetPredicate(size_t id,bool null)
 	if(!type)
 	{
 		if(!null)
-			ThrowGException("Unknown relation type "+RString::Number(id));
+			mThrowGException("Unknown relation type "+RString::Number(id));
 		return(0);
 	}
 	return(type);
@@ -210,7 +210,7 @@ GPredicate* GKB::GetPredicate(const RString& name,bool null)
 	if(!type)
 	{
 		if(!null)
-			ThrowGException("Unknown relation type "+name);
+			mThrowGException("Unknown relation type "+name);
 		return(0);
 	}
 	return(type);
@@ -230,7 +230,7 @@ GStatement* GKB::GetStatement(size_t id)
 {
 	GStatement* Statement(Statements[id]);
 	if(!Statement)
-		ThrowGException("'"+RString::Number(id)+"' is not a valid concept identifier");
+		mThrowGException("'"+RString::Number(id)+"' is not a valid concept identifier");
 	return(Statement);
 }
 
@@ -245,7 +245,7 @@ GConcept* GKB::GetConcept(GConceptType* type,const R::RString& concept,bool null
 		if(null)
 			return(0);
 		else
-			ThrowGException("Unknown concept '"+concept+"' for the type '"+type->GetName()+"'");
+			mThrowGException("Unknown concept '"+concept+"' for the type '"+type->GetName()+"'");
 	}
 	return(ptr);
 }
@@ -255,7 +255,7 @@ GConcept* GKB::GetConcept(GConceptType* type,const R::RString& concept,bool null
 GConcept* GKB::InsertConcept(GConceptType* type,const R::RString& concept)
 {
 	if((concept.IsEmpty())||(!type))
-		ThrowGException("Cannot insert the concept");
+		mThrowGException("Cannot insert the concept");
 
 	bool InDirect(false);
 
@@ -288,13 +288,13 @@ GConcept* GKB::InsertConcept(const GConcept* concept)
 {
 	GConceptType* Type;
 	if((!concept)||(!(Type=concept->GetType())))
-		ThrowGException("Cannot insert the concept");
+		mThrowGException("Cannot insert the concept");
 
 	bool InDirect(false);
 
 	// Invalid concept are not inserted
 	if(concept->IsEmpty())
-		ThrowGException("Empty concept cannot be inserted into a dictionary - id="+RString::Number(concept->GetId()));
+		mThrowGException("Empty concept cannot be inserted into a dictionary - id="+RString::Number(concept->GetId()));
 
 	// Look if the data exists in the dictionary. If not, create and insert it.
 	GConcept* ptr(Type->GetConcept(concept->GetName()));
@@ -353,18 +353,18 @@ void GKB::InsertStatement(size_t id,size_t predicate,size_t xi,tObjType xitype,s
 //	GObject* Xi(GetObj(xitype,xi));
 	GObject* Xi(0);
 	if(!Xi)
-		ThrowGException("Object "+RString::Number(xi)+" is not a "+GetObjType(xitype,false,false));
+		mThrowGException("Object "+RString::Number(xi)+" is not a "+GetObjType(xitype,false,false));
 
 	// Get the concept related to the object
 	//GObject* Xj(GetObj(xjtype,xj));
 	GObject* Xj(0);
 	if(!Xj)
-		ThrowGException("Object "+RString::Number(xj)+" is not a "+GetObjType(xjtype,false,false));
+		mThrowGException("Object "+RString::Number(xj)+" is not a "+GetObjType(xjtype,false,false));
 
 	// Find the predicate
 	GPredicate* Predicate(PredicatesByIds[predicate]);
 	if(!Predicate)
-		ThrowGException("Predicate "+RString::Number(predicate)+" does not exist");
+		mThrowGException("Predicate "+RString::Number(predicate)+" does not exist");
 
 	// Insert the statement
 	bool InDirect(true);
@@ -387,7 +387,7 @@ void GKB::InsertStatement(size_t id,size_t predicate,size_t xi,tObjType xitype,s
 GConcept* GKB::RenameConcept(GConcept* concept,const R::RString& name)
 {
 	if((!concept)||(!concept->GetType()))
-		ThrowGException("Cannot rename concept");
+		mThrowGException("Cannot rename concept");
 
 	// Look if the new name is not  already in the dictionary
 	GConcept* ptr=concept->GetType()->GetConcept(name);

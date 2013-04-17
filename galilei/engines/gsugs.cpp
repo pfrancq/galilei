@@ -70,7 +70,7 @@ GSugs::GSugs(tObjType type,size_t id,size_t max)
 	: RContainer<GSuggestion,true,false>(max), Type(type), Id(id)
 {
 	if((Type!=otProfile)&&(Type!=otCommunity))
-		ThrowGException("Suggestions only for profiles or groups");
+		mThrowGException("Suggestions only for profiles or groups");
 }
 
 
@@ -78,7 +78,7 @@ GSugs::GSugs(tObjType type,size_t id,size_t max)
 int GSugs::Compare(const GSugs& sugs) const
 {
 	if(Type!=sugs.Type)
-		ThrowGException("Suggestions must be from the same type");
+		mThrowGException("Suggestions must be from the same type");
 	return(CompareIds(Id,sugs.Id));
 }
 

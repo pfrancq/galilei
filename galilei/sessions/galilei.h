@@ -393,7 +393,7 @@ public:
 	* if(!ptr)
 	* 	throw GException(__PRETTY_FUNCTION__,__LINE__,"ptr cannot be a null pointer");
 	* @endcode
-	* @see The ThrowGException marco.
+	* @see The mThrowGException marco.
 	* @param func            Function producing the error.
 	* @param where           Line position of the error.
 	* @param str             Message of the error.
@@ -411,7 +411,7 @@ public:
 
 //------------------------------------------------------------------------------
 // Macro to generate a GException
-#define ThrowGException(msg) throw GALILEI::GException(__PRETTY_FUNCTION__,__LINE__,msg)
+#define mThrowGException(msg) throw GALILEI::GException(__PRETTY_FUNCTION__,__LINE__,msg)
 
 
 //------------------------------------------------------------------------------

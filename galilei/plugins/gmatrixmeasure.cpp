@@ -81,7 +81,7 @@ GMatrixMeasure::GMatrixMeasure(GSession* session,GPlugInFactory* fac,tObjType li
 	  Lines(lines), Cols(cols)
 {
 	if(Symmetric&&(Lines!=Cols))
-		ThrowGException("Symmetric measures are only allowed if the elements are of the same type");
+		mThrowGException("Symmetric measures are only allowed if the elements are of the same type");
 	Name=fac->GetName();
 
 	switch(Lines)
@@ -122,7 +122,7 @@ GMatrixMeasure::GMatrixMeasure(GSession* session,GPlugInFactory* fac,tObjType li
 			break;
 
 		default:
-			ThrowGException(GetObjType(Lines,true,true)+"are not allowed");
+			mThrowGException(GetObjType(Lines,true,true)+"are not allowed");
 	}
 
 	switch(Cols)
@@ -163,7 +163,7 @@ GMatrixMeasure::GMatrixMeasure(GSession* session,GPlugInFactory* fac,tObjType li
 			break;
 
 		default:
-			ThrowGException(GetObjType(Cols,true,true)+"are not allowed");
+			mThrowGException(GetObjType(Cols,true,true)+"are not allowed");
 	}
 
 #ifdef DEBUG
@@ -261,7 +261,7 @@ void GMatrixMeasure::ApplyConfig(void)
 			Type=NearestNeighbors;
 			break;
 		default:
-			ThrowGException("Type '"+FindParam<RParamValue>("Type")->Get()+"' is not a valid type");
+			mThrowGException("Type '"+FindParam<RParamValue>("Type")->Get()+"' is not a valid type");
 	}
 	ForceCompute=FindParam<RParamValue>("ForceCompute")->GetBool();
 	FastNN=FindParam<RParamValue>("FastNN")->GetBool();
@@ -459,7 +459,7 @@ void GMatrixMeasure::Info(size_t info,...)
 		va_end(ap);
 
 		if(Type!=NearestNeighbors)
-			ThrowGException("Cannot ask for nearest neighbors if the matrix is not configured to it");
+			mThrowGException("Cannot ask for nearest neighbors if the matrix is not configured to it");
 
 		if(InMemory)
 		{
@@ -473,7 +473,7 @@ void GMatrixMeasure::Info(size_t info,...)
 			(*Vec)=((*static_cast<const RMaxMatrix*>(Matrix))[id-1]);
 		}
 		else
-			ThrowGException("Nearest neighbors matrix must be stored in memory");
+			mThrowGException("Nearest neighbors matrix must be stored in memory");
 	}
 	else
 	{
@@ -481,7 +481,7 @@ void GMatrixMeasure::Info(size_t info,...)
 		va_end(ap);
 
 		if(info>2)
-			ThrowGException("'"+RString::Number(info)+"' not a valid information");
+			mThrowGException("'"+RString::Number(info)+"' not a valid information");
 
 		if(!AutomaticMinMeasure)
 		{
@@ -1060,7 +1060,7 @@ void GMatrixMeasure::UpdateNearestNeighborsRAM(void)
 	if(NbSamples>NbElements-1)
 		NbSamples=NbElements-1;
 	if(NbSamples<NbNearest)
-		ThrowGException("NbSamples<=NbNearest");
+		mThrowGException("NbSamples<=NbNearest");
 
 	// Structures
 	RMaxValue* CurSample;
@@ -1130,7 +1130,7 @@ void GMatrixMeasure::UpdateNearestNeighborsRAM(void)
 			// Fill Samples with the NbNearest of element
 			size_t CurNbSamples(Fill(Samples,Neighbors,Element()));
 			if(CurNbSamples!=NbNearest)
-				ThrowGException("Problem "+RString::Number(Element()->GetNb())+"!="+RString::Number(NbNearest));
+				mThrowGException("Problem "+RString::Number(Element()->GetNb())+"!="+RString::Number(NbNearest));
 
 			// Fill the rest with the nearest neighbors of the nearest neighbors
 			size_t CurRank(0);   // Current position treated in each neighbors
@@ -1205,7 +1205,7 @@ void GMatrixMeasure::UpdateNearestNeighborsFast(void)
 	if(NbSamples>NbElements-1)
 		NbSamples=NbElements-1;
 	if(NbSamples<NbNearest)
-		ThrowGException("NbSamples<=NbNearest");
+		mThrowGException("NbSamples<=NbNearest");
 
 	// Structures
 	RMaxMatrix Samples(dynamic_cast<RMaxMatrix*>(Matrix)->GetNbLines(),NbElements,true,NbSamples);

@@ -173,7 +173,7 @@ void GSubject::CreateDescription(void)
 			{
 				// No, it has no documents
 				if(!Docs.GetNb())
-					ThrowGException("Leaf subject '"+Name+"' has no documents attached");
+					mThrowGException("Leaf subject '"+Name+"' has no documents attached");
 
 				// Compute the center of gravitation of all documents
 				RCursor<GDoc> Cur(Docs);
@@ -299,7 +299,7 @@ size_t GSubject::GetNbIdealGroups(tObjType type) const
 				nb++;
 			break;
 		default:
-			ThrowGException(GetObjType(type,true,true)+" are not assigned to subjects");
+			mThrowGException(GetObjType(type,true,true)+" are not assigned to subjects");
 	}
 	RNodeCursor<GSubjects,GSubject> Cur(this);
 	for(Cur.Start();!Cur.End();Cur.Next())

@@ -76,9 +76,9 @@ GDocFragment::GDocFragment(GMetaEngine* owner,GDoc* doc,size_t pos,size_t first,
 	  Pos(pos), First(first), Last(last), Ranking(0), Rankings(10,5)
 {
 	if(!Owner)
-		ThrowGException("No meta-engine assigned to document fragment");
+		mThrowGException("No meta-engine assigned to document fragment");
 	if(!Doc)
-		ThrowGException("Invalid document passed");
+		mThrowGException("Invalid document passed");
 	Rankings.InsertPtr(new GDocRanking(Doc->GetId(),ranking,engine));
 }
 
@@ -89,7 +89,7 @@ GDocFragment::GDocFragment(GMetaEngine* owner,const R::RString& uri,const R::RSt
 	  First(0), Last(cNoRef), Ranking(0), Rankings(10,5)
 {
 	if(!Owner)
-		ThrowGException("No meta-engine assigned to document fragment");
+		mThrowGException("No meta-engine assigned to document fragment");
 	Rankings.InsertPtr(new GDocRanking(0,ranking,engine));
 }
 

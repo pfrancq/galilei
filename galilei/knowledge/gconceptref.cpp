@@ -83,7 +83,7 @@ int GConceptRef::Compare(const GConcept& concept) const
 int GConceptRef::Compare(const GConcept* concept) const
 {
 	if(!concept)
-		ThrowGException("null pointer");
+		mThrowGException("null pointer");
 	return(CompareIds(Concept->Id,concept->Id));
 }
 

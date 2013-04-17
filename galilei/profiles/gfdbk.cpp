@@ -114,7 +114,7 @@ tFdbkType GFdbk::ErrorFdbk(tFdbkType fdbk,double PercErr,RRandom& rand)
 				else
 					return(ftFuzzyRelevant);
 			default:
-				ThrowGException(GetFdbkType(fdbk,true)+" is not supported");
+				mThrowGException(GetFdbkType(fdbk,true)+" is not supported");
 		}
 	}
 	return(fdbk);

@@ -180,7 +180,7 @@ GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
 		// Go trough all MIME types
 		RXMLTag* Types=xml.GetTag("mimeTypes");
 		if(!Types)
-			ThrowGException("MIME type file \"/etc/galilei/galilei.mimes\" is invalid");
+			mThrowGException("MIME type file \"/etc/galilei/galilei.mimes\" is invalid");
 		RNodeCursor<RXMLStruct,RXMLTag> Cur(Types);
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
@@ -236,7 +236,7 @@ GSession* GGALILEIApp::GetSession(const R::RString& name,bool created)
 	if(Session)
 		return(Session);
 	else if(!created)
-		ThrowGException("Session '"+name+"' does not exist");
+		mThrowGException("Session '"+name+"' does not exist");
 
 	// Create and load the session
 	try
@@ -460,7 +460,7 @@ RCursor<GPlugInFactory> GGALILEIApp::GetFactories(const R::RString& mng,const R:
 {
 	GPlugInManager* ptr(GetPtr(mng));
 	if(!ptr)
-		ThrowGException("'"+mng+"' is not a valid plug-ins manager");
+		mThrowGException("'"+mng+"' is not a valid plug-ins manager");
 	return(ptr->GetFactories(list));
 }
 
@@ -470,7 +470,7 @@ GPlugInFactory* GGALILEIApp::GetFactory(const R::RString& mng,const R::RString& 
 {
 	GPlugInManager* ptr(GetPtr(mng));
 	if(!ptr)
-		ThrowGException("'"+mng+"' is not a valid plug-ins manager");
+		mThrowGException("'"+mng+"' is not a valid plug-ins manager");
 	return(ptr->GetFactory(name,list,need));
 }
 
@@ -480,7 +480,7 @@ GPlugInFactory* GGALILEIApp::GetCurrentFactory(const R::RString& mng,const R::RS
 {
 	GPlugInManager* ptr(GetPtr(mng));
 	if(!ptr)
-		ThrowGException("'"+mng+"' is not a valid plug-ins manager");
+		mThrowGException("'"+mng+"' is not a valid plug-ins manager");
 	return(ptr->GetCurrentFactory(list,need));
 }
 
@@ -508,22 +508,22 @@ void GGALILEIApp::RunPrg(GSlot* rec,const RString& filename)
 	catch(GException& e)
 	{
 		Log.WriteLog(RString("Error: ")+e.GetMsg());
-		ThrowGException(RString("Error: ")+e.GetMsg());
+		mThrowGException(RString("Error: ")+e.GetMsg());
 	}
 	catch(RException& e)
 	{
 		Log.WriteLog(RString("Error: ")+e.GetMsg());
-		ThrowGException(RString("Error: ")+e.GetMsg());
+		mThrowGException(RString("Error: ")+e.GetMsg());
 	}
 	catch(std::exception& e)
 	{
 		Log.WriteLog(RString("Error: ")+e.what());
-		ThrowGException(RString("Error: ")+e.what());
+		mThrowGException(RString("Error: ")+e.what());
 	}
 	catch(...)
 	{
 		Log.WriteLog("Error while processing");
-		ThrowGException("Error while processing");
+		mThrowGException("Error while processing");
 	}
 }
 
@@ -532,7 +532,7 @@ void GGALILEIApp::RunPrg(GSlot* rec,const RString& filename)
 GFilter* GGALILEIApp::FindMIMEType(GDoc* doc) const
 {
 	if(!doc)
-		ThrowGException("Invalid document passed");
+		mThrowGException("Invalid document passed");
 
 	// Guess the MIME type if necessary
 	if(doc->GetMIMEType().IsEmpty())
@@ -547,12 +547,12 @@ GFilter* GGALILEIApp::FindMIMEType(GDoc* doc) const
 			}
 	}
 	if(doc->GetMIMEType().IsEmpty())
-		ThrowGException("Cannot find MIME type for "+doc->GetURI()());
+		mThrowGException("Cannot find MIME type for "+doc->GetURI()());
 
 	// If no filter -> Exception
 	GMIMEFilter* ptr=MIMES.GetPtr(doc->GetMIMEType());
 	if(!ptr)
-		ThrowGException("Cannot treat the MIME type '"+doc->GetMIMEType()+"'");
+		mThrowGException("Cannot treat the MIME type '"+doc->GetMIMEType()+"'");
 	return(ptr->Filter);
 }
 

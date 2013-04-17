@@ -107,7 +107,7 @@ void GConceptList::BuildFromDef(const R::RString& def)
 		Old=Pos+1;
 		GConcept* ptr=Session->GetConcept(Id.ToSizeT());
 		if(!ptr)
-			ThrowGException("Concept "+Id+" does not exist");
+			mThrowGException("Concept "+Id+" does not exist");
 		Concepts.InsertPtr(ptr);
 	}
 }

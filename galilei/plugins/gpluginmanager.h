@@ -397,14 +397,14 @@ public:
 		{
 			List=Data.Lists->GetPtr(list);
 			if(!List)
-				ThrowGException("No type '"+list+"' available for '"+Name+"'");
+				mThrowGException("No type '"+list+"' available for '"+Name+"'");
 		}
 		else
 			List=Data.List;
 
 		plugin* ptr(dynamic_cast<plugin*>(List->Plugins.GetPtr(name,PluginsType!=ptOrdered)));
 		if((!ptr)&need)
-			ThrowGException(R::RString("No enabled plug-in '")+name+"' available for '"+Name+"'");
+			mThrowGException(R::RString("No enabled plug-in '")+name+"' available for '"+Name+"'");
 		return(ptr);
 	}
 
@@ -432,7 +432,7 @@ public:
 		{
 			List=Data.Lists->GetPtr(list);
 			if(!List)
-				ThrowGException("No type '"+list+"' available for '"+Name+"'");
+				mThrowGException("No type '"+list+"' available for '"+Name+"'");
 		}
 		else
 		{
@@ -481,7 +481,7 @@ public:
 		{
 			List=Data.Lists->GetPtr(list);
 			if(!List)
-				ThrowGException("No type '"+list+"' available for '"+Name+"' ("+list+")");
+				mThrowGException("No type '"+list+"' available for '"+Name+"' ("+list+")");
 		}
 		else
 			List=Data.List;
@@ -489,9 +489,9 @@ public:
 		if((!List->Current)&&need)
 		{
 			if(PluginsType==ptListSelect)
-				ThrowGException("No current plug-in available for '"+list+"' from '"+Name+"'");
+				mThrowGException("No current plug-in available for '"+list+"' from '"+Name+"'");
 			else
-				ThrowGException("No current plug-in available for '"+Name+"'");
+				mThrowGException("No current plug-in available for '"+Name+"'");
 		}
 		if(!List->Current)
 			return(0);
@@ -499,9 +499,9 @@ public:
 		if((!plug)&&need)
 		{
 			if(PluginsType==ptListSelect)
-				ThrowGException("plug-in '"+List->Current->GetName()+"' of '"+list+"' is not enabled");
+				mThrowGException("plug-in '"+List->Current->GetName()+"' of '"+list+"' is not enabled");
 			else
-				ThrowGException("plug-in '"+List->Current->GetName()+"' of '"+Name+"' is not enabled");
+				mThrowGException("plug-in '"+List->Current->GetName()+"' of '"+Name+"' is not enabled");
 		}
 		return(plug);
 	}

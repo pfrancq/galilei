@@ -81,7 +81,7 @@ void GPlugInList::CreateConfig(void)
 		}
 		catch(...)
 		{
-			ThrowGException("Problem when creating the configurations of the plug-in '"+PlugIn->GetName()+"'");
+			mThrowGException("Problem when creating the configurations of the plug-in '"+PlugIn->GetName()+"'");
 		}
 		if(Mng->PluginsType==GPlugInManager::ptOrdered)
 		{
@@ -303,7 +303,7 @@ void GPlugInManager::CreateConfig(RConfig* config)
 				}
 				catch(...)
 				{
-					ThrowGException("Problem when creating the configurations of the plug-in '"+Cur()->GetName()+"'");
+					mThrowGException("Problem when creating the configurations of the plug-in '"+Cur()->GetName()+"'");
 				}
 			}
 			break;
@@ -365,7 +365,7 @@ void GPlugInManager::ReadConfig(RConfig* config)
 				}
 				catch(...)
 				{
-					ThrowGException("Problem when applying the configurations of the plug-in '"+PlugIns()->GetName()+"'");
+					mThrowGException("Problem when applying the configurations of the plug-in '"+PlugIns()->GetName()+"'");
 				}
 			}
 		}
@@ -381,7 +381,7 @@ void GPlugInManager::ReadConfig(RConfig* config)
 			}
 			catch(...)
 			{
-				ThrowGException("Problem when applying the configurations of the plug-in '"+PlugIns()->GetName()+"'");
+				mThrowGException("Problem when applying the configurations of the plug-in '"+PlugIns()->GetName()+"'");
 			}
 		}
 	}
@@ -473,7 +473,7 @@ void GPlugInManager::RegisterPlugIn(GPlugIn* plugin,bool enable)
 	{
 		List=Data.Lists->GetPtr(plugin->GetFactory()->GetList());
 		if(!List)
-			ThrowGException("Invalid list of plug-ins '"+plugin->GetFactory()->GetList()+"' in '"+Name+"'");
+			mThrowGException("Invalid list of plug-ins '"+plugin->GetFactory()->GetList()+"' in '"+Name+"'");
 	}
 	else
 	{
@@ -501,10 +501,10 @@ RCursor<GPlugInList> GPlugInManager::GetPlugInLists(void) const
 GPlugInList* GPlugInManager::GetPlugInList(const R::RString& list,int need) const
 {
 	if(PluginsType!=ptListSelect)
-		ThrowGException("No plug-ins list for manager '"+Name+"'");
+		mThrowGException("No plug-ins list for manager '"+Name+"'");
 	GPlugInList* List(Data.Lists->GetPtr(list));
 	if((!List)&&need)
-		ThrowGException("No plug-ins list '"+list+"' for manager '"+Name+"'");
+		mThrowGException("No plug-ins list '"+list+"' for manager '"+Name+"'");
 	return(List);
 }
 
@@ -517,7 +517,7 @@ GPlugInFactory* GPlugInManager::GetFactory(const R::RString& name,const R::RStri
 	{
 		List=Data.Lists->GetPtr(list);
 		if(!List)
-			ThrowGException("No type '"+list+"' available for '"+Name+"'");
+			mThrowGException("No type '"+list+"' available for '"+Name+"'");
 	}
 	else
 		List=Data.List;
@@ -537,7 +537,7 @@ size_t GPlugInManager::GetNbFactories(const RString& list) const
 	{
 		List=Data.Lists->GetPtr(list);
 		if(!List)
-			ThrowGException("No type '"+list+"' available for '"+Name+"'");
+			mThrowGException("No type '"+list+"' available for '"+Name+"'");
 	}
 	else
 		List=Data.List;
@@ -554,7 +554,7 @@ R::RCursor<GPlugInFactory> GPlugInManager::GetFactories(const R::RString& list) 
 	{
 		List=Data.Lists->GetPtr(list);
 		if(!List)
-			ThrowGException("No type '"+list+"' available for '"+Name+"'");
+			mThrowGException("No type '"+list+"' available for '"+Name+"'");
 	}
 	else
 	{
@@ -577,7 +577,7 @@ size_t GPlugInManager::GetNbPlugIns(const RString& list) const
 	{
 		List=Data.Lists->GetPtr(list);
 		if(!List)
-			ThrowGException("No type '"+list+"' available for '"+Name+"'");
+			mThrowGException("No type '"+list+"' available for '"+Name+"'");
 	}
 	else
 		List=Data.List;
@@ -593,7 +593,7 @@ void GPlugInManager::SetCurrentPlugIn(const R::RString& name,const R::RString& l
 	{
 		List=Data.Lists->GetPtr(list);
 		if((!List)&&need)
-			ThrowGException("No type '"+list+"' available for '"+Name+"'");
+			mThrowGException("No type '"+list+"' available for '"+Name+"'");
 		if(!List)
 			return;
 	}
@@ -606,9 +606,9 @@ void GPlugInManager::SetCurrentPlugIn(const R::RString& name,const R::RString& l
 	if((!List->Current)&&need)
 	{
 		if(PluginsType==ptListSelect)
-			ThrowGException("No plug-in '"+name+"' available for '"+Name+"' in category '"+list+"'");
+			mThrowGException("No plug-in '"+name+"' available for '"+Name+"' in category '"+list+"'");
 		else
-			ThrowGException("No plug-in '"+name+"' available for '"+Name+"'");
+			mThrowGException("No plug-in '"+name+"' available for '"+Name+"'");
 	}
 }
 
@@ -621,13 +621,13 @@ GPlugInFactory* GPlugInManager::GetCurrentFactory(const R::RString& list,int nee
 	{
 		List=Data.Lists->GetPtr(list);
 		if(!List)
-			ThrowGException("No type '"+list+"' available for '"+Name+"'");
+			mThrowGException("No type '"+list+"' available for '"+Name+"'");
 	}
 	else
 		List=Data.List;
 
 	if((!List->Current)&&need)
-		ThrowGException("No current plug-in available for '"+Name+"'");
+		mThrowGException("No current plug-in available for '"+Name+"'");
 	return(List->Current);
 }
 

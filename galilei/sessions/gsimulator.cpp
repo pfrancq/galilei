@@ -910,7 +910,7 @@ void GSimulator::BuildIdealCommunities(void)
 {
 	GCommunityCalc* CalcDesc(GALILEIApp->GetCurrentPlugIn<GCommunityCalc>("CommunityCalc"));
 	if(!CalcDesc)
-		ThrowGException("No current plug-in to compute the communities");
+		mThrowGException("No current plug-in to compute the communities");
 
 	CopyIdealGroups<GCommunity,GProfile,GCommunityCalc>(otProfile,otCommunity,CalcDesc);
 	if(Session->MustSaveResults())
@@ -932,7 +932,7 @@ void GSimulator::BuildIdealTopics(void)
 {
 	GTopicCalc* CalcDesc(GALILEIApp->GetCurrentPlugIn<GTopicCalc>("TopicCalc"));
 	if(!CalcDesc)
-		ThrowGException("No current plug-in to compute the topics");
+		mThrowGException("No current plug-in to compute the topics");
 
 	CopyIdealGroups<GTopic,GDoc,GTopicCalc>(otDoc,otTopic,CalcDesc);
 	if(Session->MustSaveResults())

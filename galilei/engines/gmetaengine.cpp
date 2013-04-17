@@ -59,7 +59,7 @@ GMetaEngine::GMetaEngine(GSession* session,GPlugInFactory* fac)
 RString GMetaEngine::GetTextFragment(GDocFragment* fragment)
 {
 	if(!fragment->GetDoc())
-		ThrowGException("Invalid document passed");
+		mThrowGException("Invalid document passed");
 
 	// Find the filter for this document
 	R::RSmartTempFile TmpFile;
@@ -83,7 +83,7 @@ RString GMetaEngine::GetTextFragment(GDocFragment* fragment)
 void GMetaEngine::AddResult(size_t docid,size_t pos,size_t first,size_t last,double ranking,const GEngine* engine)
 {
 	if((ranking<0)||(ranking>1))
-		ThrowGException("Ranking must be included in [0,1]");
+		mThrowGException("Ranking must be included in [0,1]");
 
 	GDoc* Doc(Session->GetObj(pDoc,docid));
 	RURI URI(Doc->GetURI());
@@ -103,7 +103,7 @@ void GMetaEngine::AddResult(size_t docid,size_t pos,size_t first,size_t last,dou
 void GMetaEngine::AddResult(const RString& uri,const RString& title,const RString fragment,double ranking,const GEngine* engine)
 {
 	if((ranking<0)||(ranking>1))
-		ThrowGException("Ranking must be included in [0,1]");
+		mThrowGException("Ranking must be included in [0,1]");
 
 	// Test if URI is already there
 	bool Find;

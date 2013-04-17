@@ -221,7 +221,7 @@ RString GALILEI::GetObjType(tObjType type,bool upper,bool plural)
 			return(Str("reference",upper));
 
 	}
-	ThrowGException("'"+RString::Number(type)+"' is not a valid object type value");
+	mThrowGException("'"+RString::Number(type)+"' is not a valid object type value");
 }
 
 
@@ -229,7 +229,7 @@ RString GALILEI::GetObjType(tObjType type,bool upper,bool plural)
 tObjType GALILEI::ObjType_cast(size_t objtype)
 {
 	if(objtype>=otReference)
-		ThrowGException("'"+RString::Number(objtype)+"' is not a valid object type value");
+		mThrowGException("'"+RString::Number(objtype)+"' is not a valid object type value");
 	return(static_cast<tObjType>(objtype));
 }
 
@@ -264,7 +264,7 @@ RString GALILEI::GetState(tObjState state,bool upper)
 		case osNeedLoad:
 			return(Str("must load information",upper));
 	}
-	ThrowGException("'"+RString::Number(state)+"' is not a valid state value");
+	mThrowGException("'"+RString::Number(state)+"' is not a valid state value");
 }
 
 
@@ -307,7 +307,7 @@ RString GALILEI::GetConceptCat(tConceptCat cat,bool upper,bool plural)
 				return(Str("links",upper));
 			return(Str("link",upper));
 	}
-	ThrowGException("'"+RString::Number(cat)+"' is not a valid concept category value");
+	mThrowGException("'"+RString::Number(cat)+"' is not a valid concept category value");
 }
 
 
@@ -315,7 +315,7 @@ RString GALILEI::GetConceptCat(tConceptCat cat,bool upper,bool plural)
 tConceptCat GALILEI::ConceptCat_cast(size_t cat)
 {
 	if(cat>=4)
-		ThrowGException("'"+RString::Number(cat)+"' is not a valid concept category value");
+		mThrowGException("'"+RString::Number(cat)+"' is not a valid concept category value");
 	return(static_cast<tConceptCat>(cat));
 }
 
@@ -334,7 +334,7 @@ RString GALILEI::GetFdbkType(tFdbkType type,bool upper)
 		case ftIrrelevant:
 			return(Str("irrelevant",upper));
 	}
-	ThrowGException("'"+RString::Number(type)+"' is not a valid feedback type value");
+	mThrowGException("'"+RString::Number(type)+"' is not a valid feedback type value");
 }
 
 
@@ -347,7 +347,7 @@ tFdbkType GALILEI::GetFdbkType(unsigned int type)
 		case 1 : return(ftRelevant);
 		case 2 : return(ftFuzzyRelevant);
 		case 3 : return(ftIrrelevant);
-		default: ThrowGException("'"+RString::Number(type)+"' is not a valid feedback type value");
+		default: mThrowGException("'"+RString::Number(type)+"' is not a valid feedback type value");
 	}
 }
 
@@ -368,7 +368,7 @@ RString GALILEI::GetProfileType(tProfileType type,bool upper,bool plural)
 				return(Str("expertise's",upper));
 			return(Str("expertise",upper));
 	}
-	ThrowGException("'"+RString::Number(type)+"' is not a valid profile type value");
+	mThrowGException("'"+RString::Number(type)+"' is not a valid profile type value");
 }
 
 

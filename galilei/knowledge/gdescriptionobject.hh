@@ -80,7 +80,7 @@ template<class C,const R::hNotification& hCreate,const R::hNotification& hNew,co
 	void GDescriptionObject<C,hCreate,hNew,hDel>::SetId(size_t id)
 {
 	if(id==R::cNoRef)
-		ThrowGException("Cannot assign cNoRef to a "+GALILEI::GetObjType(ObjType,false,false));
+		mThrowGException("Cannot assign cNoRef to a "+GALILEI::GetObjType(ObjType,false,false));
 	Id=id;
 	PostNotification(hNew);
 }

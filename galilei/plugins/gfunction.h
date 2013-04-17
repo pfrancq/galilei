@@ -85,7 +85,7 @@ public:
 	* void Call(size_t number,void* param,void* ret)
 	* {
    *   if(number!=1)
-   *     ThrowGException("Only 1 is a valid function");
+   *     mThrowGException("Only 1 is a valid function");
 	*   R::RString* str(static_cast<R::RString*>(param));
    *   size_t* len(static_cast<size_t*>(ret));
    *   (*len)=str->GetLen();

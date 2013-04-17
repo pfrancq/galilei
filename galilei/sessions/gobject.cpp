@@ -47,7 +47,7 @@ GObject::GObject(GSession* session,size_t id,const RString& name,tObjType objtyp
 	: RObject(name), Session(session), Id(id), ObjType(objtype)
 {
 	if(!Session)
-		ThrowGException("Cannot allocate an object without a session");
+		mThrowGException("Cannot allocate an object without a session");
 }
 
 
@@ -62,7 +62,7 @@ GObject::GObject(const GObject* obj)
 void GObject::SetId(size_t id)
 {
 	if(Id!=cNoRef)
-		ThrowGException("Object '"+RString::Number(Id)+"' has already an identifier");
+		mThrowGException("Object '"+RString::Number(Id)+"' has already an identifier");
 	Id=id;
 }
 

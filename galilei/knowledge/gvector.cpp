@@ -67,7 +67,7 @@ GVector::GVector(GConcept* metaconcept)
 	  MaxAbsWeight(NAN)
 {
 	if(!metaconcept)
-		ThrowGException("cannot create a vector with an invalid concept");
+		mThrowGException("cannot create a vector with an invalid concept");
 }
 
 
@@ -77,7 +77,7 @@ GVector::GVector(GConcept* metaconcept,size_t max)
 	  MaxAbsWeight(NAN)
 {
 	if(!metaconcept)
-		ThrowGException("cannot create a vector with an invalid concept");
+		mThrowGException("cannot create a vector with an invalid concept");
 }
 
 
@@ -132,7 +132,7 @@ int GVector::Compare(const GConcept& metaconcept) const
 int GVector::Compare(const GConcept* metaconcept) const
 {
 	if(!metaconcept)
-		ThrowGException("null pointer");
+		mThrowGException("null pointer");
 	return(CompareIds(MetaConcept->Id,metaconcept->Id));
 }
 
@@ -141,7 +141,7 @@ int GVector::Compare(const GConcept* metaconcept) const
 GConceptRef* GVector::GetRef(const GConceptRef* ref)
 {
 	if(!ref)
-		ThrowGException("null pointer");
+		mThrowGException("null pointer");
 	return(GetInsertPtr(ref->GetConcept()));
 }
 
@@ -150,7 +150,7 @@ GConceptRef* GVector::GetRef(const GConceptRef* ref)
 GConceptRef* GVector::GetRef(GConcept* concept)
 {
 	if(!concept)
-		ThrowGException("null pointer");
+		mThrowGException("null pointer");
 	return(GetInsertPtr(concept));
 }
 
@@ -159,7 +159,7 @@ GConceptRef* GVector::GetRef(GConcept* concept)
 void GVector::InsertRef(GConceptRef* ref)
 {
 	if(!ref)
-		ThrowGException("null pointer");
+		mThrowGException("null pointer");
 
 	// If NAN -> Recomputing is necessary
 	if(MaxWeight!=MaxWeight)
@@ -182,7 +182,7 @@ void GVector::InsertRef(GConceptRef* ref)
 void GVector::DeleteRef(GConceptRef* ref)
 {
 	if(!ref)
-		ThrowGException("null pointer");
+		mThrowGException("null pointer");
 
 	// Invalid maximum weights
 	MaxWeight=NAN;
@@ -196,7 +196,7 @@ void GVector::DeleteRef(GConceptRef* ref)
 void GVector::DeleteRef(const GConcept* concept)
 {
 	if(!concept)
-		ThrowGException("null pointer");
+		mThrowGException("null pointer");
 
 	// Invalid maximum weights
 	MaxWeight=NAN;
@@ -294,7 +294,7 @@ void GVector::Print(R::RString msg)
 void GVector::Intersection(const GVector& vector)
 {
 	if(MetaConcept!=vector.MetaConcept)
-		ThrowGException("Operation does work only with vectors associated with the same meta-concept");
+		mThrowGException("Operation does work only with vectors associated with the same meta-concept");
 
 	RContainer<GConceptRef,false,false> ToDel(20);
 	RCursor<GConceptRef> Cur(*this);
@@ -330,7 +330,7 @@ GVector& GVector::operator=(const GVector& vector)
 GVector& GVector::operator+=(const GVector& vector)
 {
 	if(MetaConcept!=vector.MetaConcept)
-		ThrowGException("Operation does work only with vectors associated with the same meta-concept");
+		mThrowGException("Operation does work only with vectors associated with the same meta-concept");
 
 	// Invalid maximum weights
 	MaxWeight=NAN;
@@ -350,7 +350,7 @@ GVector& GVector::operator+=(const GVector& vector)
 GVector& GVector::operator-=(const GVector& vector)
 {
 	if(MetaConcept!=vector.MetaConcept)
-		ThrowGException("Operation does work only with vectors associated with the same meta-concept");
+		mThrowGException("Operation does work only with vectors associated with the same meta-concept");
 
 	// Invalid maximum weights
 	MaxWeight=NAN;
@@ -411,7 +411,7 @@ GVector::~GVector(void)
 GVector GALILEI::operator+(const GVector &arg1,const GVector &arg2)
 {
 	if(arg1.GetMetaConcept()!=arg2.GetMetaConcept())
-		ThrowGException("Operation does work only with vectors associated with the same meta-concept");
+		mThrowGException("Operation does work only with vectors associated with the same meta-concept");
 
 	GVector res(arg1);
 	res+=arg2;
@@ -423,7 +423,7 @@ GVector GALILEI::operator+(const GVector &arg1,const GVector &arg2)
 GVector GALILEI::operator-(const GVector &arg1,const GVector &arg2)
 {
 	if(arg1.GetMetaConcept()!=arg2.GetMetaConcept())
-		ThrowGException("Operation does work only with vectors associated with the same meta-concept");
+		mThrowGException("Operation does work only with vectors associated with the same meta-concept");
 
 	GVector res(arg1);
 	res-=arg2;

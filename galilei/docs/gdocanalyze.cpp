@@ -158,7 +158,7 @@ void GDocAnalyze::SetCurrentVector(GVector* vector)
 {
 	// Verify this vector is a valid one
 	if(vector!=Description.GetInsertVector(vector->GetMetaConcept()))
-		ThrowGException("Invalid vector");
+		mThrowGException("Invalid vector");
 	CurVector=vector;
 }
 
@@ -186,7 +186,7 @@ GTokenOccur* GDocAnalyze::AddToken(const RString& token,tTokenType type,double w
 	{
 		Token=(*Hash2)[Idx];
 		if(Token->Type!=type)
-			ThrowGException("The token '"+token+"' exists with different token type");
+			mThrowGException("The token '"+token+"' exists with different token type");
 	}
 	else
 	{
@@ -285,7 +285,7 @@ GTokenOccur* GDocAnalyze::AddToken(const R::RString& token,tTokenType type,GConc
 	if(Occur->Token->Concept)
 	{
 		if(Occur->Token->Concept!=concept)
-			ThrowGException("Token  '"+token+"' associated to multiple concepts");
+			mThrowGException("Token  '"+token+"' associated to multiple concepts");
 	}
 	else
 		Occur->Token->Concept=concept;
@@ -337,7 +337,7 @@ void GDocAnalyze::ExtractDCMI(const R::RString& element,const R::RString& value,
 	// Find the vector corresponding to the concept
 	GConcept* Metadata(GetDCMI()->GetConcept(element));
 	if(!Metadata)
-		ThrowGException("'"+element+"' is not a valid DCMI element");
+		mThrowGException("'"+element+"' is not a valid DCMI element");
 	ExtractText(value,Metadata,pos,depth,spos);
 }
 
@@ -369,7 +369,7 @@ void GDocAnalyze::AssignPlugIns(void)
 {
 	Tokenizer=GALILEIApp->GetCurrentPlugIn<GTokenizer>("Tokenizer");
 	if(!Tokenizer)
-		ThrowGException("No tokenizer selected");
+		mThrowGException("No tokenizer selected");
 	Analyzers=GALILEIApp->GetPlugIns<GAnalyzer>("Analyzer");
 }
 
@@ -434,7 +434,7 @@ void GDocAnalyze::ReplaceToken(GToken* token,RString value)
 void GDocAnalyze::MoveToken(GTokenOccur* occur,R::RString value)
 {
 	if(!occur)
-		ThrowGException("Null token occurrence");
+		mThrowGException("Null token occurrence");
 
 	// If current token has the value -> nothing to do
 	GToken* Token(occur->Token);
@@ -498,9 +498,9 @@ void GDocAnalyze::MoveToken(GTokenOccur* occur,R::RString value)
 void GDocAnalyze::MoveToken(GTokenOccur* occur,GConcept* concept)
 {
 	if(!occur)
-		ThrowGException("Null token occurrence");
+		mThrowGException("Null token occurrence");
 	if(!concept)
-		ThrowGException("Null concept");
+		mThrowGException("Null concept");
 
 	// If current token has the concept -> nothing to do
 	GToken* Token(occur->Token);
@@ -520,7 +520,7 @@ void GDocAnalyze::MoveToken(GTokenOccur* occur,GConcept* concept)
 		// Copy the occurrence from one token to another.
 		GToken* NewToken((*Hash2)[Idx]);
 		if(NewToken->Concept!=concept)
-			ThrowGException("Token '"+Value+"' associated to multiple concepts");
+			mThrowGException("Token '"+Value+"' associated to multiple concepts");
 		if(NewToken->Type==ttDeleted)
 			NewToken->Type=occur->Token->Type;
 		Token->Occurs.DeletePtr(*occur);

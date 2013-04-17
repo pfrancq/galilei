@@ -238,7 +238,7 @@ public:
 	{
 		GPlugInManager* ptr(GetPtr(mng));
 		if(!ptr)
-			ThrowGException("'"+mng+"' is not a valid plug-ins manager");
+			mThrowGException("'"+mng+"' is not a valid plug-ins manager");
 		return(ptr->GetPlugIns<plugin>(list));
 	}
 
@@ -276,7 +276,7 @@ public:
 	{
 		GPlugInFactory* Factory(GetFactory(mng,name,list,need));
 		if(!Factory)
-			ThrowGException("'"+mng+"' is not a valid plug-in");
+			mThrowGException("'"+mng+"' is not a valid plug-in");
 		return(Factory->GetPlugIn());
 	}
 
@@ -291,7 +291,7 @@ public:
 	{
 		GPlugInFactory* Factory(GetFactory(mng,name,need));
 		if(!Factory)
-			ThrowGException("'"+mng+"' is not a valid plug-in");
+			mThrowGException("'"+mng+"' is not a valid plug-in");
 		return(Factory->GetPlugIn());
 	}
 
@@ -308,7 +308,7 @@ public:
 	{
 		GPlugInManager* ptr(GetPtr(mng));
 		if(!ptr)
-			ThrowGException("'"+mng+"' is not a valid plug-ins manager");
+			mThrowGException("'"+mng+"' is not a valid plug-ins manager");
 		return(ptr->GetPlugIn<plugin>(name,list,need));
 	}
 
@@ -359,7 +359,7 @@ public:
 		if(!ptr)
 		{
 			if(need)
-				ThrowGException("'"+mng+"' is not a valid plug-ins manager");
+				mThrowGException("'"+mng+"' is not a valid plug-ins manager");
 			else
 				return(0);
 		}
@@ -390,7 +390,7 @@ public:
 	{
 		GPlugInManager* ptr(GetPtr(mng));
 		if(!ptr)
-			ThrowGException("'"+mng+"' is not a valid plug-ins manager");
+			mThrowGException("'"+mng+"' is not a valid plug-ins manager");
 		ptr->SetCurrentPlugIn(name,list,need);
 	}
 

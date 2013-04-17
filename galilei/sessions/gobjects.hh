@@ -228,7 +228,7 @@ template<class C,const R::hNotification& hCreate>
 		if(null)
 			return(0);
 		else
-			ThrowGException("Unknown "+GetObjType(Type,false,false)+" "+R::RString::Number(id));
+			mThrowGException("Unknown "+GetObjType(Type,false,false)+" "+R::RString::Number(id));
 	}
 	return(Obj);
 }
@@ -254,7 +254,7 @@ template<class C,const R::hNotification& hCreate>
 		if(null)
 			return(0);
 		else
-			ThrowGException("Unknown "+GetObjType(Type,false,false)+" '"+name+"'");
+			mThrowGException("Unknown "+GetObjType(Type,false,false)+" '"+name+"'");
 	}
 	return(Obj);
 }
@@ -291,7 +291,7 @@ template<class C,const R::hNotification& hCreate>
 	void GObjects<C,hCreate>::LoadDesc(const C*,R::RContainer<GVector,true,true>* &vectors,size_t blockid,size_t id)
 {
 	if(!Desc)
-		ThrowGException(GetObjType(Type,true,true)+" do not have descriptions");
+		mThrowGException(GetObjType(Type,true,true)+" do not have descriptions");
 
 	try
 	{
@@ -330,11 +330,11 @@ template<class C,const R::hNotification& hCreate>
 	}
 	catch(R::RIOException e)
 	{
-		ThrowGException(e.GetMsg());
+		mThrowGException(e.GetMsg());
 	}
 	catch(std::bad_alloc)
 	{
-		ThrowGException("Cannot create a vector for "+GetObjType(Type,false,false)+" "+R::RString::Number(id));
+		mThrowGException("Cannot create a vector for "+GetObjType(Type,false,false)+" "+R::RString::Number(id));
 	}
 }
 
@@ -344,7 +344,7 @@ template<class C,const R::hNotification& hCreate>
 	void GObjects<C,hCreate>::SaveDesc(const C*,const R::RContainer<GVector,true,true>& vectors,size_t& blockid,size_t id)
 {
 	if(!Desc)
-		ThrowGException(GetObjType(Type,true,true)+" do not have descriptions");
+		mThrowGException(GetObjType(Type,true,true)+" do not have descriptions");
 
 	try
 	{
@@ -386,7 +386,7 @@ template<class C,const R::hNotification& hCreate>
 	}
 	catch(R::RIOException e)
 	{
-		ThrowGException(e.GetMsg());
+		mThrowGException(e.GetMsg());
 	}
 }
 
@@ -396,7 +396,7 @@ template<class C,const R::hNotification& hCreate>
 	void GObjects<C,hCreate>::FlushDesc(const C*)
 {
 	if(!Desc)
-		ThrowGException(GetObjType(Type,true,true)+" do not have descriptions");
+		mThrowGException(GetObjType(Type,true,true)+" do not have descriptions");
 	Desc->Flush();
 }
 
@@ -407,7 +407,7 @@ template<class C,const R::hNotification& hCreate>
 	void GObjects<C,hCreate>::LoadIndex(const C*,GConcept* concept,R::RNumContainer<size_t,true>& refs)
 {
 	if(!Index)
-		ThrowGException(GetObjType(Type,true,true)+" do not have index");
+		mThrowGException(GetObjType(Type,true,true)+" do not have index");
 
 	size_t Refs(concept->GetIndex(Type));
 	if(!Refs)
@@ -424,7 +424,7 @@ template<class C,const R::hNotification& hCreate>
 	void GObjects<C,hCreate>::UpdateIndex(const C*,const GDescription& desc,size_t id,bool add)
 {
 	if(!Index)
-		ThrowGException(GetObjType(Type,true,true)+" do not have index");
+		mThrowGException(GetObjType(Type,true,true)+" do not have index");
 
 	// Go trough each vector
 	R::RCursor<GVector> Vector(desc.GetVectors());
@@ -465,7 +465,7 @@ template<class C,const R::hNotification& hCreate>
 	void GObjects<C,hCreate>::BuildIndex(const C*)
 {
 	if(!Index)
-		ThrowGException(GetObjType(Type,true,true)+" do not have index");
+		mThrowGException(GetObjType(Type,true,true)+" do not have index");
 
 	// Clear the file and put all block identifier of concepts to 0.
 	Index->Clear();
@@ -593,7 +593,7 @@ template<class C,const R::hNotification& hCreate>
 	void GObjects<C,hCreate>::LoadTree(const C*,GConceptTree* &tree,size_t blockid,size_t id)
 {
 	if(!Tree)
-		ThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
+		mThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
 
 	try
 	{
@@ -618,7 +618,7 @@ template<class C,const R::hNotification& hCreate>
 	catch(R::RIOException e)
 	{
 		std::cerr<<e.GetMsg()<<std::endl;
-		ThrowGException(e.GetMsg());
+		mThrowGException(e.GetMsg());
 	}
 }
 
@@ -631,7 +631,7 @@ template<class C,const R::hNotification& hCreate>
 		return;
 
 	if(!Tree)
-		ThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
+		mThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
 
 	try
 	{
@@ -658,7 +658,7 @@ template<class C,const R::hNotification& hCreate>
 	catch(R::RIOException e)
 	{
 		std::cerr<<e.GetMsg()<<std::endl;
-		ThrowGException(e.GetMsg());
+		mThrowGException(e.GetMsg());
 	}
 }
 
@@ -671,7 +671,7 @@ template<class C,const R::hNotification& hCreate>
 		return;
 
 	if(!Tree)
-		ThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
+		mThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
 	Tree->Flush();
 }
 

@@ -167,7 +167,7 @@ void GConceptType::IncRef(tObjType ObjType)
 			nb=NbRefClasses;
 			break;
 		default:
-			ThrowGException(GALILEI::GetObjType(ObjType,true,true)+" have no references");
+			mThrowGException(GALILEI::GetObjType(ObjType,true,true)+" have no references");
 			break;
 	}
 	if(Session->SaveResults)
@@ -184,36 +184,36 @@ void GConceptType::DecRef(tObjType ObjType)
 	{
 		case otDoc:
 			if(!NbRefDocs)
-				ThrowGException("Cannot decrease null number of references for documents");
+				mThrowGException("Cannot decrease null number of references for documents");
 			NbRefDocs--;
 			nb=NbRefDocs;
 			break;
 		case otProfile:
 			if(!NbRefProfiles)
-				ThrowGException("Cannot decrease null number of references for profiles");
+				mThrowGException("Cannot decrease null number of references for profiles");
 			NbRefProfiles--;
 			nb=NbRefProfiles;
 			break;
 		case otCommunity:
 			if(!NbRefCommunities)
-				ThrowGException("Cannot decrease null number of references for communities");
+				mThrowGException("Cannot decrease null number of references for communities");
 			NbRefCommunities--;
 			nb=NbRefCommunities;
 			break;
 		case otTopic:
 			if(!NbRefTopics)
-				ThrowGException("Cannot decrease null number of references for topics");
+				mThrowGException("Cannot decrease null number of references for topics");
 			NbRefTopics--;
 			nb=NbRefTopics;
 			break;
 		case otClass:
 			if(!NbRefClasses)
-				ThrowGException("Cannot decrease null number of references for classes");
+				mThrowGException("Cannot decrease null number of references for classes");
 			NbRefClasses--;
 			nb=NbRefClasses;
 			break;
 		default:
-			ThrowGException(GALILEI::GetObjType(ObjType,true,true)+" have no references");
+			mThrowGException(GALILEI::GetObjType(ObjType,true,true)+" have no references");
 			break;
 	}
 	if(Session->SaveResults)
@@ -242,7 +242,7 @@ size_t GConceptType::GetRef(tObjType ObjType) const
 			return(NbRefClasses);
 			break;
 		default:
-			ThrowGException(GALILEI::GetObjType(ObjType,true,true)+" have no references");
+			mThrowGException(GALILEI::GetObjType(ObjType,true,true)+" have no references");
 			break;
 	}
 	return(0);
@@ -270,7 +270,7 @@ void GConceptType::ClearRefs(tObjType ObjType)
 			NbRefClasses=0;
 			break;
 		default:
-			ThrowGException(GALILEI::GetObjType(ObjType,true,true)+" have no references");
+			mThrowGException(GALILEI::GetObjType(ObjType,true,true)+" have no references");
 			break;
 	}
 }

@@ -535,7 +535,7 @@ void GSession::Reset(tObjType type)
 			Subjects.Clear();
 			break;
 		default:
-			ThrowGException(GetObjType(type,true,true)+" are not managed");
+			mThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
 
 	// Send a notification
@@ -565,7 +565,7 @@ void GSession::ResetFile(tObjType type,tObjType meta)
 						GObjects<GDoc,eCreateDoc>::Index->Clear();
 					break;
 				default:
-					ThrowGException(GetObjType(meta,true,true)+" is not a valid file type for documents");
+					mThrowGException(GetObjType(meta,true,true)+" is not a valid file type for documents");
 			}
 			break;
 
@@ -581,7 +581,7 @@ void GSession::ResetFile(tObjType type,tObjType meta)
 						GObjects<GProfile,eCreateProfile>::Index->Clear();
 					break;
 				default:
-					ThrowGException(GetObjType(meta,true,true)+" is not a valid file type for profiles");
+					mThrowGException(GetObjType(meta,true,true)+" is not a valid file type for profiles");
 			}
 			break;
 
@@ -597,7 +597,7 @@ void GSession::ResetFile(tObjType type,tObjType meta)
 						GObjects<GCommunity,eCreateCommunity>::Index->Clear();
 					break;
 				default:
-					ThrowGException(GetObjType(meta,true,true)+" is not a valid file type for communities");
+					mThrowGException(GetObjType(meta,true,true)+" is not a valid file type for communities");
 			}
 			break;
 
@@ -613,7 +613,7 @@ void GSession::ResetFile(tObjType type,tObjType meta)
 						GObjects<GTopic,eCreateTopic>::Index->Clear();
 					break;
 				default:
-					ThrowGException(GetObjType(meta,true,true)+" is not a valid file type for topics");
+					mThrowGException(GetObjType(meta,true,true)+" is not a valid file type for topics");
 			}
 			break;
 
@@ -629,12 +629,12 @@ void GSession::ResetFile(tObjType type,tObjType meta)
 						GObjects<GClass,eCreateClass>::Index->Clear();
 					break;
 				default:
-					ThrowGException(GetObjType(meta,true,true)+" is not a valid file type for classes");
+					mThrowGException(GetObjType(meta,true,true)+" is not a valid file type for classes");
 			}
 			break;
 
 		default:
-			ThrowGException(GetObjType(type,true,true)+" have no files associated");
+			mThrowGException(GetObjType(type,true,true)+" have no files associated");
 	}
 
 		// Send a notification
@@ -711,7 +711,7 @@ void GSession::ForceReCompute(tObjType type)
 			break;
 		}
 		default:
-			ThrowGException(GetObjType(type,true,true)+" are not allowed");
+			mThrowGException(GetObjType(type,true,true)+" are not allowed");
 	}
 
 	// Send a notification
@@ -757,7 +757,7 @@ size_t GSession::GetNbObjs(tObjType type) const
 			LoadSubjects();
 			return(Subjects.GetNbNodes());
 		default:
-			ThrowGException(GetObjType(type,true,true)+" are not managed");
+			mThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
 }
 
@@ -788,7 +788,7 @@ size_t GSession::GetMaxObjId(tObjType type) const
 				return(0);
 			return(GObjects<GTopic,eCreateTopic>::Objects[GObjects<GTopic,eCreateTopic>::Objects.GetMaxPos()]->GetId());
 		default:
-			ThrowGException(GetObjType(type,true,true)+" are not managed");
+			mThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
 }
 
@@ -805,7 +805,7 @@ size_t GSession::GetMaxObjPos(tObjType type) const
 		case otTopic:
 			return(GObjects<GTopic,eCreateTopic>::Objects.GetMaxPos());
 		default:
-			ThrowGException(GetObjType(type,true,true)+" are not managed");
+			mThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
 }
 
@@ -830,7 +830,7 @@ GObject* GSession::GetObj(tObjType type,size_t id,bool null)
 		case otTopic:
 			return(GetObj(pTopic,id,null));
 		default:
-			ThrowGException(GetObjType(type,true,true)+" are not managed");
+			mThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
 }
 
@@ -857,7 +857,7 @@ size_t GSession::GetObjs(tObjType type,GObject** &tab,bool alloc)
 				tab=new GObject*[GObjects<GTopic,eCreateTopic>::Objects.GetMaxPos()+1];
 			return(GObjects<GTopic,eCreateTopic>::Objects.GetTab(reinterpret_cast<void**>(tab)));
 		default:
-			ThrowGException(GetObjType(type,true,true)+" are not managed");
+			mThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
 }
 
@@ -947,7 +947,7 @@ const GSubject* GSession::GetSubject(GDoc* doc) const
 	if(!line)
 		return(0);
 	if(line->GetNb()>1)
-		ThrowGException("Document has multiple subjects");
+		mThrowGException("Document has multiple subjects");
 	return((*line)[0]);
 }
 
@@ -1013,7 +1013,7 @@ void GSession::GroupDocs(GSlot* rec)
 	// How to compute the topic descriptions
 	GTopicCalc* CalcDesc(GALILEIApp->GetCurrentPlugIn<GTopicCalc>("TopicCalc"));
 	if(!CalcDesc)
-		ThrowGException("No current method to compute topic descriptions");
+		mThrowGException("No current method to compute topic descriptions");
 
     // Group the documents
 	Grouping->Grouping(rec,ClusterSelectedDocs);
@@ -1108,7 +1108,7 @@ void GSession::Insert(GDoc* doc,size_t subjectid,bool selected)
 	// Find the subject
 	GSubject* Subject(Subjects.GetNode(subjectid));
 	if(!Subject)
-		ThrowGException("No subject with identifier '"+RString::Number(subjectid)+"'");
+		mThrowGException("No subject with identifier '"+RString::Number(subjectid)+"'");
 
 	// Look if the document must be insert in CategorizedDocs
 	bool Find;
@@ -1144,7 +1144,7 @@ void GSession::Insert(GProfile* profile,size_t subjectid)
 	LoadSubjects();
 	GSubject* subject(Subjects.Subjects.GetPtr(subjectid));
 	if(!subject)
-		ThrowGException("No subject with identifier '"+RString::Number(subjectid)+"'");
+		mThrowGException("No subject with identifier '"+RString::Number(subjectid)+"'");
 	Subjects.ProfilesSubject.InsertPtrAt(subject,profile->GetId(),true);
 	subject->Profiles.InsertPtr(profile);
 }
@@ -1163,7 +1163,7 @@ void GSession::Insert(GSubject* to,GSubject* subject)
 bool GSession::InsertFdbk(size_t profid,size_t docid,tFdbkType fdbk,R::RDate done,bool load)
 {
 	if(fdbk==ftUnknown)
-		ThrowGException("Cannot add an unknown feedback to profile +'"+RString::Number(Id)+"' for document '"+RString::Number(docid)+"'");
+		mThrowGException("Cannot add an unknown feedback to profile +'"+RString::Number(Id)+"' for document '"+RString::Number(docid)+"'");
 
 	bool NewFdbk(false);
 	GProfile* prof(GetObj(pProfile,profid,false));
@@ -1253,7 +1253,7 @@ void GSession::RunTool(const RString& name,const RString& list,GSlot* slot,bool 
 {
 	GTool* Tool(GALILEIApp->GetPlugIn<GTool>("Tools",name,list));
 	if((!Tool)&&need)
-		ThrowGException("Tool '"+name+"' does not exist in '"+list+"'");
+		mThrowGException("Tool '"+name+"' does not exist in '"+list+"'");
 	try
 	{
 		Tool->Run(slot);
