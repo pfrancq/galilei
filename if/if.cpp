@@ -295,7 +295,7 @@ void If::Measure(size_t measure,...)
 			idx=4;
 			break;
 		default:
-			ThrowGException(GetObjType(type,true,false)+" is not allowed for the tf/idf.");
+			mThrowGException(GetObjType(type,true,false)+" is not allowed for the tf/idf.");
 	}
 
 	switch(measure)
@@ -315,7 +315,7 @@ void If::Measure(size_t measure,...)
 		}
 		break;
 		default:
-			ThrowGException(RString::Number(measure)+" is not allowed as measure.");
+			mThrowGException(RString::Number(measure)+" is not allowed as measure.");
 	}
 }
 
@@ -342,7 +342,7 @@ void If::Info(size_t info,...)
 				(*res)="TfIdfs";
 				break;
 			default:
-				ThrowGException(RString::Number(2)+" is not allowed as features weight.");
+				mThrowGException(RString::Number(2)+" is not allowed as features weight.");
 		}
 	}
 	va_end(ap);
@@ -418,7 +418,7 @@ void If::ApplyConfig(void)
 	DocsIncs=FindParam<RParamValue>("DocsIncs")->Get();
 	RString Tmp(FindParam<RParamValue>("MeasureType")->Get());
 	if((Tmp!="Complete")&&(Tmp!="Nearest Neighbors"))
-		ThrowGException("'"+Tmp+"' is invalid : Only 'Complete' or 'Nearest Neighbors' are allowed for the type of measure");
+		mThrowGException("'"+Tmp+"' is invalid : Only 'Complete' or 'Nearest Neighbors' are allowed for the type of measure");
 	MeasureType=Tmp;*/
 	//CurWeights=FindParam<RParamValue>("CurWeights")->GetUInt();
 }

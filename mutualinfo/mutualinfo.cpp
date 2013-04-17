@@ -82,12 +82,12 @@ void MutualInfo::Measure(size_t measure,...)
 					(*res)=MutualInfos[id];
 					break;
 				default:
-					ThrowGException(RString::Number(CurWeights)+" is not allowed as features weight.");
+					mThrowGException(RString::Number(CurWeights)+" is not allowed as features weight.");
 			}
 		}
 		break;
 		default:
-			ThrowGException(RString::Number(measure)+" is not allowed as measure.");
+			mThrowGException(RString::Number(measure)+" is not allowed as measure.");
 	}
 }
 
@@ -114,7 +114,7 @@ void MutualInfo::Info(size_t info,...)
 				(*res)="MutualInfos";
 				break;
 			default:
-				ThrowGException(RString::Number(CurWeights)+" is not allowed as features weight.");
+				mThrowGException(RString::Number(CurWeights)+" is not allowed as features weight.");
 		}
 	}
 	va_end(ap);
@@ -196,7 +196,7 @@ void MutualInfo::ApplyConfig(void)
 	DocsIncs=FindParam<RParamValue>("DocsIncs")->Get();
 	RString Tmp(FindParam<RParamValue>("MeasureType")->Get());
 	if((Tmp!="Complete")&&(Tmp!="Nearest Neighbors"))
-		ThrowGException("'"+Tmp+"' is invalid : Only 'Complete' or 'Nearest Neighbors' are allowed for the type of measure");
+		mThrowGException("'"+Tmp+"' is invalid : Only 'Complete' or 'Nearest Neighbors' are allowed for the type of measure");
 	MeasureType=Tmp;*/
 	CurWeights=FindParam<RParamValue>("CurWeights")->GetUInt();
 }
