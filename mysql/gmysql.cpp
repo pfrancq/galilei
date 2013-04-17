@@ -216,7 +216,7 @@ size_t GStorageMySQL::GetNbSaved(tObjType type)
 				return(GetCount("concepts"));
 
 			default:
-				ThrowGException(GetObjType(type,true,true)+" are not supported");
+				mThrowGException(GetObjType(type,true,true)+" are not supported");
 		}
 	}
 	catch(RDbException e)
@@ -443,7 +443,7 @@ void GStorageMySQL::Clear(tObjType objtype)
 				ResetAutoIncrement=true;
 				break;
 			default:
-				ThrowGException("Cannot clear "+GetObjType(objtype,false,true)+" from storage");
+				mThrowGException("Cannot clear "+GetObjType(objtype,false,true)+" from storage");
 		}
 
 		// Clear the table and reset eventually the auto-increment field
@@ -734,7 +734,7 @@ void GStorageMySQL::SaveRefs(const GConcept* concept,tObjType what,size_t refs)
 				sSql="UPDATE concepts SET refclasses="+Num(refs)+" WHERE conceptid="+Num(concept->GetId());
 				break;
 			default:
-				ThrowGException("This type of objects do not have descriptions");
+				mThrowGException("This type of objects do not have descriptions");
 		};
 		RQuery(Db,sSql);
 	}
@@ -770,7 +770,7 @@ void GStorageMySQL::SaveIndex(const GConcept* concept,tObjType what,size_t index
 				sSql="UPDATE concepts SET indexclasses="+Num(index)+" WHERE conceptid="+Num(concept->GetId());
 				break;
 			default:
-				ThrowGException("This type of objects do not have index");
+				mThrowGException("This type of objects do not have index");
 		};
 		RQuery(Db,sSql);
 	}
@@ -807,7 +807,7 @@ void GStorageMySQL::ClearIndex(tObjType what)
 				sSql="UPDATE concepts SET indexclasses='0'";
 				break;
 			default:
-				ThrowGException("This type of objects do not have index");
+				mThrowGException("This type of objects do not have index");
 		};
 		RQuery(Db,sSql);
 	}
@@ -852,7 +852,7 @@ void GStorageMySQL::SaveRefs(GConceptType* type,tObjType what,size_t refs)
 				break;
 			}
 			default:
-				ThrowGException("This type of objects do not have descriptions");
+				mThrowGException("This type of objects do not have descriptions");
 		};
 	}
 	catch(RDbException e)
@@ -901,7 +901,7 @@ void GStorageMySQL::ClearRefs(tObjType what)
 				break;
 			}
 			default:
-				ThrowGException("This type of objects do not have descriptions");
+				mThrowGException("This type of objects do not have descriptions");
 		};
 	}
 	catch(RDbException e)
@@ -2032,7 +2032,7 @@ void GStorageMySQL::SaveSugs(const GSugs& sugs,size_t max)
 			Id="communityid";
 			break;
 		default:
-			ThrowGException("Invalid list of suggestions");
+			mThrowGException("Invalid list of suggestions");
 	}
 	RQuery Del(Db,"DELETE FROM "+Table+" WHERE "+Id+"="+Num(sugs.GetAddresseeId()));
 	RString InsSql("INSERT INTO "+Table+"("+Id+",docid,ranking,proposed,info) VALUES("+Num(sugs.GetAddresseeId())+",");
@@ -2059,7 +2059,7 @@ void GStorageMySQL::LoadSugs(GSugs& sugs)
 			Id="communityid";
 			break;
 		default:
-			ThrowGException("Invalid list of suggestions");
+			mThrowGException("Invalid list of suggestions");
 	}
 
 	try
