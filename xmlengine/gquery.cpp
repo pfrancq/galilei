@@ -121,7 +121,7 @@ bool GQuery::CreateToken(GQueryNode* parent,const RString& str)
 		if(OnlyKeyword)
 		{
 			if(Namespaces>1)
-				ThrowGException("Multiple ':' in '"+str+"'");
+				mThrowGException("Multiple ':' in '"+str+"'");
 
 			// Only one word
 			if(str.IsEmpty())
@@ -140,7 +140,7 @@ bool GQuery::CreateToken(GQueryNode* parent,const RString& str)
 				Car++;
 			}
 			if(NbQuotes>2)
-				ThrowGException("Too many '\"' in '"+str+"'");
+				mThrowGException("Too many '\"' in '"+str+"'");
 
 			GQueryNode* Token(NewNode(Keyword,Namespaces));
 			InsertNode(parent,Token);
@@ -151,7 +151,7 @@ bool GQuery::CreateToken(GQueryNode* parent,const RString& str)
 		{
 			// Several words ?
 			if(OnlyNonSpaces)
-				ThrowGException("Invalid non-alphanumeric character '"+(*Car)+"' in '"+str+"'");
+				mThrowGException("Invalid non-alphanumeric character '"+(*Car)+"' in '"+str+"'");
 
 			// A space acts as a AND operator ; find first space
 			Car=str();
@@ -166,9 +166,9 @@ bool GQuery::CreateToken(GQueryNode* parent,const RString& str)
 			GQueryNode* Token(NewNode(toAND));
 			InsertNode(parent,Token);
 			if(!CreateToken(Token,ClearString(str.Mid(0,Pos))))
-				ThrowGException("Not a left expression in '"+str+"'");
+				mThrowGException("Not a left expression in '"+str+"'");
 			if(!CreateToken(Token,ClearString(RString(Car))))
-				ThrowGException("Not a right expression in '"+str+"'");
+				mThrowGException("Not a right expression in '"+str+"'");
 		}
 	}
 	else
@@ -179,10 +179,10 @@ bool GQuery::CreateToken(GQueryNode* parent,const RString& str)
 		{
 			Car++; // Skip it
 			if(!(*Car))
-				ThrowGException("Invalid not expression '"+str+"'");
+				mThrowGException("Invalid not expression '"+str+"'");
 			Op=GetNotOperator(*Car);
 			if(Op==toNOP)
-				ThrowGException("Invalid not expression '"+str+"'");
+				mThrowGException("Invalid not expression '"+str+"'");
 		}
 		Car++; // Skip it
 
@@ -190,9 +190,9 @@ bool GQuery::CreateToken(GQueryNode* parent,const RString& str)
 		GQueryNode* Token(NewNode(Op));
 		InsertNode(parent,Token);
 		if(!CreateToken(Token,ClearString(str.Mid(0,Pos))))
-			ThrowGException("Not a left expression in '"+str+"'");
+			mThrowGException("Not a left expression in '"+str+"'");
 		if(!CreateToken(Token,ClearString(RString(Car))))
-			ThrowGException("Not a right expression in '"+str+"'");
+			mThrowGException("Not a right expression in '"+str+"'");
 	}
 	return(true);
 }
@@ -236,7 +236,7 @@ RString GQuery::ClearString(const RString& str)
 	}
 
 	if(((*Car)==0)||((*Car)!=')'))
-		ThrowGException("No ) Found in '"+str+"'");
+		mThrowGException("No ) Found in '"+str+"'");
 
 	size_t Len(Pos-Begin);
 
@@ -244,7 +244,7 @@ RString GQuery::ClearString(const RString& str)
 	Car++;
 
 	if((*Car)!=0)
-		ThrowGException("Something found after ')' in '"+str+"'");
+		mThrowGException("Something found after ')' in '"+str+"'");
 
 	return(New.Mid(Begin,Len));
 }
@@ -318,7 +318,7 @@ void GQuery::ApplyOperator(tQueryOperator op,GResNodes* left,GResNodes* right,GR
 	else if(op==toAND)
 	{
 		if((res->GetNbNodes())||(left->GetDocId()!=right->GetDocId()))
-			ThrowGException("Big Problem");
+			mThrowGException("Big Problem");
 
 		// Tree of both nodes
 		const GConceptTree* Tree(Engine->GetTree(left->GetDocId()));

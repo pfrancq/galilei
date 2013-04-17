@@ -120,7 +120,7 @@ GQueryNode::GQueryNode(GSession* session,const RString& str,bool type)
 tQueryOperator GQueryNode::GetOperator(void) const
 {
 	if(Type!=ttOperator)
-		ThrowGException("Query token is not an operator");
+		mThrowGException("Query token is not an operator");
 	return(Value.Operator);
 }
 
@@ -129,7 +129,7 @@ tQueryOperator GQueryNode::GetOperator(void) const
 GConcept* GQueryNode::GetConcept(void) const
 {
 	if(Type!=ttConcept)
-		ThrowGException("Query token is not a concept");
+		mThrowGException("Query token is not a concept");
 	return(Value.Concept);
 }
 
