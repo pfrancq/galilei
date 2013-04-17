@@ -166,10 +166,10 @@ template<class E1,class E2>
 {
 	E1* Obj1(dynamic_cast<E1*>(Session->GetObj(ObjType1,id1)));
    if(!Obj1)
-       ThrowGException("No "+GetObjType(ObjType1,false,false)+" with identifier "+RString::Number(id1));
+       mThrowGException("No "+GetObjType(ObjType1,false,false)+" with identifier "+RString::Number(id1));
 	E2* Obj2(dynamic_cast<E2*>(Session->GetObj(ObjType2,id2)));
    if(!Obj2)
-       ThrowGException("No "+GetObjType(ObjType2,false,false)+" with identifier "+RString::Number(id2));
+       mThrowGException("No "+GetObjType(ObjType2,false,false)+" with identifier "+RString::Number(id2));
 
 	// See the common concepts : Parse the vector to found those associated wit the same concept
    RCursor<GVector> Vec1(Obj1->GetVectors());
@@ -281,7 +281,7 @@ template<class E1,class E2>
 					// Treat the similarity
 					Measure->Measure(0,Cur1()->GetId(),Cur2()->GetId(),&tmp);
 					if(tmp<0.0)
-						ThrowGException("Negative similarity : Similarity ∈ [0,1]");
+						mThrowGException("Negative similarity : Similarity ∈ [0,1]");
 
 					Inter+=tmp;
 					if(tmp>MaxInter)
@@ -301,7 +301,7 @@ template<class E1,class E2>
 				// Treat the similarity
 				Measure->Measure(0,Cur1()->GetId(),Cur2()->GetId(),&tmp);
 				if(tmp<0.0)
-					ThrowGException("Negative similarity : Similarity ∈ [0,1]");
+					mThrowGException("Negative similarity : Similarity ∈ [0,1]");
 
 				Intra+=tmp;
 				if(tmp<MinIntra)
@@ -404,7 +404,7 @@ template<class E1,class E2>
 					double tmp;
 					Measure->Measure(0,Cur1()->GetId(),Cur2()->GetId(),&tmp);
 					if(tmp<0.0)
-						ThrowGException("Negative similarity : Similarity ∈ [0,1]");
+						mThrowGException("Negative similarity : Similarity ∈ [0,1]");
 					avg+=tmp;
 				}
 				avg/=static_cast<double>(nb);
@@ -523,5 +523,5 @@ template<class E1,class E2>
 	else if(type=="Nearest Neighbors")
 		RunNearestNeighbors();
 	else
-		ThrowGException("'"+type+"' is invalid : Only 'Complete' or 'Nearest Neighbors' are allowed for the type of measure");
+		mThrowGException("'"+type+"' is invalid : Only 'Complete' or 'Nearest Neighbors' are allowed for the type of measure");
 }

@@ -244,7 +244,7 @@ void GStatsSims::ApplyConfig(void)
 	DocsIncs=FindParam<RParamValue>("DocsIncs")->Get();
 	RString Tmp(FindParam<RParamValue>("MeasureType")->Get());
 	if((Tmp!="Complete")&&(Tmp!="Nearest Neighbors"))
-		ThrowGException("'"+Tmp+"' is invalid : Only 'Complete' or 'Nearest Neighbors' are allowed for the type of measure");
+		mThrowGException("'"+Tmp+"' is invalid : Only 'Complete' or 'Nearest Neighbors' are allowed for the type of measure");
 	MeasureType=Tmp;
 }
 
