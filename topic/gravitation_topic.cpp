@@ -124,7 +124,7 @@ void GTopicCalcGravitation::Compute(const GTopic* grp)
 	{
 		case 1: ComputeCentroid(grp); break;
 		case 2: ComputePrototype(grp); break;
-		default: ThrowGException("No valid topic description computing method");
+		default: mThrowGException("No valid topic description computing method");
 	}
 }
 

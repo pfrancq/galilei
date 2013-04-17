@@ -128,7 +128,7 @@ void GCommunityCalcGravitation::Compute(const GCommunity* grp)
 	{
 		case 1: ComputeCentroid(grp); break;
 		case 2: ComputePrototype(grp); break;
-		default: ThrowGException("No valid community description computing method");
+		default: mThrowGException("No valid community description computing method");
 	}
 }
 
