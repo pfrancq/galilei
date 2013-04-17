@@ -97,7 +97,7 @@ void GMetaEngineSum::ApplyConfig(void)
 			Type=kCombinations;
 			break;
 		default:
-			ThrowGException(RString::Number(type)+" is not a valid query type");
+			mThrowGException(RString::Number(type)+" is not a valid query type");
 	}
 }
 
