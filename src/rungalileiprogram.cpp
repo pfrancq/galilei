@@ -60,7 +60,8 @@ void RunGALILEIProgram::Run(void)
 	cout<<"Copyright 1999-2011 by the Paul Otlet Institute"<<endl;
 
 	// Look if a program must be executed or a console mode launched
-	RString Prg(GetParamValue("run"));
+	RString Prg;
+	GetParamValue("run",Prg);
 	if(!Prg.IsEmpty())
 	{
 		// Execute a program
