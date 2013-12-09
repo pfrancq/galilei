@@ -40,6 +40,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 
 
 //------------------------------------------------------------------------------
@@ -97,11 +98,35 @@ static char *make_temp(BUNDLE b)
   /* Return pathname of temporary file containing bundle "b".  Caller
      should unlink file (and, technically, free pathname). */
   FILE *f;
-#ifdef VMS
-  char *path = tempnam("SYS$SCRATCH:", ".ps2t");
+
+#if defined(_BSD_SOURCE)   || defined(__APPLE_)
+	static char path[250]="";
+	FILE *sfp;
+	int fd(-1);
+
+	#ifdef VMS
+		strncpy(path, "SYS$SCRATCH:.ps2tXXXXXX", sizeof(path));
+	#else
+		strncpy(path, "/tmp/,ps2tXXXXXX", sizeof(path));
+	#endif
+	if ((fd = mkstemp(path)) == -1 || (sfp = fdopen(fd, "w+")) == NULL)
+	{
+		if (fd != -1)
+		{
+			unlink(path);
+			close(fd);
+		}
+	   mThrowGException(strerror(errno));
+	}
+	close(fd);
 #else
-  char *path = tempnam("/tmp", ",ps2t");
+	#ifdef VMS
+		char *path = tempnam("SYS$SCRATCH:", ".ps2t");
+	#else
+		char *path = tempnam("/tmp", ",ps2t");
+	#endif
 #endif
+
   f = fopen(path, "w");
   if (f==NULL) {perror(cmd); exit(1);}
   putbundle(b, f);
@@ -130,7 +155,7 @@ static int cleanup() {
       else if (WIFSIGNALED(gsstatus)) status = 4;
     }
   }
-  if (rotate_path!=NULL & strcmp(rotate_path, "")!=0) unlink(rotate_path);
+  if ((rotate_path!=NULL) & (strcmp(rotate_path, "")!=0)) unlink(rotate_path);
   if (ocr_path!=NULL) unlink(ocr_path);
 #ifdef VMS
   if (cmdfile!=NULL) unlink(cmdfile);

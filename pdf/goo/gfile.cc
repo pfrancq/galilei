@@ -481,7 +481,7 @@ GBool openTempFile(GString **name, FILE **f, char *mode, char *ext) {
   int fd;
 
   if (ext) {
-#if HAVE_MKSTEMPS
+#if HAVE_MKSTEMPS || defined(__GNUC__)
     if ((s = getenv("TMPDIR"))) {
       *name = new GString(s);
     } else {
@@ -498,7 +498,7 @@ GBool openTempFile(GString **name, FILE **f, char *mode, char *ext) {
     fd = open((*name)->getCString(), O_WRONLY | O_CREAT | O_EXCL, 0600);
 #endif
   } else {
-#if HAVE_MKSTEMP
+#if HAVE_MKSTEMP || defined(__GNUC__)
     if ((s = getenv("TMPDIR"))) {
       *name = new GString(s);
     } else {
