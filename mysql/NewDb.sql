@@ -108,6 +108,7 @@ CREATE TABLE `classes` (
   `classid` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(250) collate utf8_bin NOT NULL default '',
   `parent` int(11) unsigned default '0',
+  `calculated` date NOT NULL,
   `blockid` int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (`classid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -184,7 +185,7 @@ CREATE TABLE `docsbyprofiles` (
   `fdbk` int(3) NOT NULL,
   `done` date NOT NULL,
   `langid` char(2) NOT NULL,
-  `computed` date NOT NULL,
+  `calculated` date NOT NULL,
   `updated` date NOT NULL,
   KEY `profileidx` (`profileid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -203,7 +204,6 @@ CREATE TABLE `profiles` (
   `profiletype` int(3) unsigned NOT NULL,
   `description` varchar(100) collate utf8_bin NOT NULL,
   `social` tinyint(1) NOT NULL default '1',
-  `subjectid` int(11) unsigned NOT NULL default '0',
   `attached` date NOT NULL,
   `communityid` int(11) unsigned NOT NULL default '0',
   `calculated` date default NULL,
@@ -226,7 +226,7 @@ CREATE TABLE `subjects` (
   `subjectid` int(11) unsigned NOT NULL,
   `name` varchar(250) collate utf8_bin NOT NULL,
   `parent` int(11) unsigned NOT NULL,
-  `used` BOOL default '1',
+  `selected` BOOL default '1',
   PRIMARY KEY  (`subjectid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
@@ -241,10 +241,26 @@ SET character_set_client = utf8;
 CREATE TABLE `subjectsbydocs` (
   `subjectid` int(11) unsigned NOT NULL,
   `docid` int(11) unsigned NOT NULL,
-  `used` int(1) unsigned NOT NULL,
+  `used` bool default '0',
    PRIMARY KEY  (`subjectid`,`docid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
+
+--
+-- Table structure for table `subjectsbyprofiles`
+--
+
+DROP TABLE IF EXISTS `subjectsbyprofiles`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `subjectsbyprofiles` (
+  `subjectid` int(11) unsigned NOT NULL,
+  `profileid` int(11) unsigned NOT NULL,
+  `used` bool default '0',
+   PRIMARY KEY  (`profileid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
 
 --
 -- Table structure for table `sugsbygroups`

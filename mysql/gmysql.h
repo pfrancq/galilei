@@ -6,7 +6,7 @@
 
 	Storage Manager using a MySQL Database - Header.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2004 by Julien Lamoral.
 	Copyright 2001-2004 by Valery Vandaele.
 	Copyright 2001-2004 by David Wartel.
@@ -196,14 +196,14 @@ public:
 	/**
 	* Load the Subjects.
 	*/
-	virtual void LoadSubjects(void);
+	virtual void LoadObjs(const GSubject* obj);
 
 	/**
-	 * Save the subject, including the information on the documents (and which
+	 * Save a subject, including the information on the documents (and which
 	 * ones are used) and the profiles assigned to them.
 	 * @param subject        Subject to save.
 	 */
-	virtual void SaveSubject(GSubject* subject);
+	virtual void SaveObj(GSubject* subject);
 
 	/**
 	* Execute a sequence of steps needed to construct data. Typically, this
