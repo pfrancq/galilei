@@ -2,12 +2,11 @@
 
 	GALILEI Research Project
 
-	ProfilesGroupsSims.cpp
+	ChoquetEstimation_KDE.cpp
 
-	Similarities between documents and groups - Implementation.
+	Estimation of the parameters of the Choquet Intregral (KDE Part) - Implementation.
 
-	Copyright 2005-2014 by Pascal Francq (pascal@francq.info).
-	Copyright 2005-2008 by the Université Libre de Bruxelles (ULB).
+	Copyright 2013-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -27,28 +26,38 @@
 */
 
 
-
 //------------------------------------------------------------------------------
-// include files for GALILEI
-#include <genericsims.h>
+// include files for R/GALILEI
+#include <rqt.h>
+#include <gplugin.h>
+using namespace R;
 using namespace GALILEI;
 
 
+//-----------------------------------------------------------------------------
+// include files for KDE
+#include <kaboutdata.h>
+#include <kaboutapplicationdialog.h>
+#include <KDE/KLocale>
+
 
 //------------------------------------------------------------------------------
-//
-//  GProfilesProfilesSims
-//
+extern "C" {
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GProfilesCommunitiesSims : public GGenericSims<GProfile,GCommunity>
+void About(void)
 {
-public:
-	GProfilesCommunitiesSims(GSession* session,GPlugInFactory* fac) : GGenericSims<GProfile,GCommunity>(session,fac,otProfile,otCommunity) {}
-	virtual R::RCString GetClassName(void) const {return("GProfilesCommunitiesSims");}
-};
+	KAboutData aboutData("Choquet Integral Estimation", 0, ki18n("ChoquetEstimation"),
+		"1.0", ki18n("Evaluate the parameters of the choquet Integral"), KAboutData::License_GPL,
+		ki18n("(C) 2013 by Pascal Francq"),
+		KLocalizedString(), "http://www.otlet-institute.org", "pascal@francq.info");
+	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
+	KAboutApplicationDialog dlg(&aboutData);
+	dlg.exec();
+}
 
 
 //------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("Profile/Community Similarities","Tensor Space Model","Tensor Space Model",GProfilesCommunitiesSims)
+}     // end of extern
+//------------------------------------------------------------------------------

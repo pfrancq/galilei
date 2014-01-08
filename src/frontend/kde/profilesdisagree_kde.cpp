@@ -6,7 +6,7 @@
 
 	Disagreement between profiles (KDE Part) - Implementation.
 
-	Copyright 2003-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -111,7 +111,7 @@ void About(void)
 {
 	KAboutData aboutData( "profilesdisagree", 0, ki18n("Count Method"),
 		"1.0", ki18n("The count method is used to compute the disagreement ratios between profiles."), KAboutData::License_GPL,
-		ki18n("(C) 2003-2012 by Pascal Francq\n(C) 2003-2008 by the Université Libre de Bruxelles (ULB)"),
+		ki18n("(C) 2003-2014 by Pascal Francq\n(C) 2003-2008 by the Université Libre de Bruxelles (ULB)"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	KAboutApplicationDialog dlg(&aboutData);

@@ -1,5 +1,5 @@
 PROJECT(multi-space)
-INCLUDE_DIRECTORIES(.)
+INCLUDE_DIRECTORIES(. ${GECODE_INCLUDE_DIR})
 
 
 # Create a generic library with the computational methods
@@ -35,6 +35,10 @@ IF(WIN32)
         TARGET_LINK_LIBRARIES(${plugin} galilei roptimization rcore rmath)
   ENDFOREACH(plugin ${plugins})
 
+  ADD_LIBRARY(choquetestimation STATIC choquetestimation.cpp)
+  SET_TARGET_PROPERTIES(choquetestimation PROPERTIES LINK_FLAGS "/NODEFAULTLIB:MSVCRTD;MSVCRT;LIBCMT;LIBCMTD")
+  TARGET_LINK_LIBRARIES(choquetestimation galilei roptimization rmath rcore gecodechoquet ${Gecode_LIBRARIES})
+    
 ELSE(WIN32)
 
     # Create plug-ins
@@ -54,4 +58,9 @@ ELSE(WIN32)
     TARGET_LINK_LIBRARIES(${plugin} galilei roptimization rcore rmath dl)
   ENDFOREACH(plugin ${plugins})
 
+  ADD_LIBRARY(choquetestimation SHARED choquetestimation.cpp)
+  ADD_SOURCE_FILE(choquetestimation frontend choquetestimation_INCLUDES)
+  ADD_FRONTEND(choquetestimation 2 2 2.0.0 lib "r/galilei" choquetestimation_INCLUDES)
+  TARGET_LINK_LIBRARIES(choquetestimation galilei roptimization rcore rmath dl gecodechoquet ${Gecode_LIBRARIES})
+    
 ENDIF(WIN32)

@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GComputeSimMeta.h
+	ChoquetSim.h
 
-	Metadata Similarity Measure - Implementation.
+	Choquet Similarity - Header.
 
-	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
+	Copyright 2013-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -27,23 +27,30 @@
 
 
 
-//------------------------------------------------------------------------------
-// include files for the plug-in
-#include <gcomputesimmeta.h>
+//-----------------------------------------------------------------------------
+#ifndef ChoquetSimH
+#define ChoquetSimH
 
 
+//-----------------------------------------------------------------------------
+// General variables
+const size_t NbCriteria(4);
+const size_t cText(0);
+const size_t cMetadata(1);
+const size_t cSemantic(2);
+const size_t cLink(3);
+
 
 //------------------------------------------------------------------------------
-//
-// class GComputeSimMeta
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-void GComputeSimMeta::Compute(const GVector* vec1,const GVector* vec2,double& sim,size_t& nb)
+// Information receive by the similarity plug-in
+struct sInfo
 {
-	RConstCursor<GConceptRef> ptr1(vec1->GetRefs());
-	RConstCursor<GConceptRef> ptr2(vec2->GetRefs());
-	Compute(ptr1,ptr2,sim,nb);
-}
+	double Text;
+	double Metadata;
+	double Semantic;
+	double Link;
+};
 
+
+//-----------------------------------------------------------------------------
+#endif

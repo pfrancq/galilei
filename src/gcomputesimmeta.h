@@ -6,7 +6,7 @@
 
 	Metadata Similarity Measure - Header.
 
-	Copyright 2003-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2003 by Valery Vandaele.
 	Copyright 2003-2007 by the Université Libre de Bruxelles (ULB).
 
@@ -65,7 +65,7 @@ public:
     * @param nb              Number of comparisons done.
     */
 	template<class e>
-		void Compute(RCursor<e>& ptr1,RCursor<e>& ptr2,double& sim,size_t& nb)
+		void Compute(RConstCursor<e>& ptr1,RConstCursor<e>& ptr2,double& sim,size_t& nb)
 	{
 		double Num(0.0), Den(0.0);
 		nb=0.0;
@@ -126,7 +126,7 @@ public:
     * @param sim             Similarity computed.
     * @param nb              Number of comparisons done.
     */
-	virtual void Compute(GVector* vec1,GVector* vec2,double& sim,size_t& nb);
+	virtual void Compute(const GVector* vec1,const GVector* vec2,double& sim,size_t& nb);
 };
 
 

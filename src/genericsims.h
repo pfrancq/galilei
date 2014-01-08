@@ -6,7 +6,7 @@
 
 	Generic Tensor Space Model Similarity Measure - Header.
 
-	Copyright 2003-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2003 by Valery Vandaele.
 	Copyright 2003-2007 by the Université Libre de Bruxelles (ULB).
 
@@ -57,6 +57,7 @@
 //------------------------------------------------------------------------------
 // include files for the plug-in
 #include <gsimplugin.h>
+#include <choquetsim.h>
 
 
 //------------------------------------------------------------------------------

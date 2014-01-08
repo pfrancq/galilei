@@ -6,7 +6,7 @@
 
 	Generic Similarity Measure - Header.
 
-	Copyright 2003-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -81,7 +81,7 @@ public:
     * @param sim             Similarity computed.
     * @param nb              Number of comparisons done.
     */
-	virtual void Compute(GVector* vec1,GVector* vec2,double& sim,size_t& nb)=0;
+	virtual void Compute(const GVector* vec1,const GVector* vec2,double& sim,size_t& nb)=0;
 
 	/**
 	 * Destructor.

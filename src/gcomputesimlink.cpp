@@ -6,7 +6,7 @@
 
 	Link Similarity Measure - Implementation.
 
-	Copyright 2003-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -83,7 +83,7 @@ void GComputeSimLink::Fill(RContainer<Node,true,true>& cont,const GVector* vec,d
 	hop--;
 
 	// Go trough the links
-	RCursor<GConceptRef> ptr(vec->GetRefs());
+	RConstCursor<GConceptRef> ptr(vec->GetRefs());
 	for(ptr.Start();!ptr.End();ptr.Next())
 	{
 		// Verify that concept is an URL and that it does not correspond to the other object
@@ -107,7 +107,7 @@ void GComputeSimLink::Fill(RContainer<Node,true,true>& cont,const GVector* vec,d
 		}
 		if(Link->Doc)
 		{
-			GVector* Vec(Link->Doc->GetVector(vec->GetMetaConcept()));
+			const GVector* Vec(Link->Doc->GetVector(vec->GetMetaConcept()));
 			if(Vec)
 				Fill(cont,Vec,Weight,hop);
 		}
@@ -116,7 +116,7 @@ void GComputeSimLink::Fill(RContainer<Node,true,true>& cont,const GVector* vec,d
 
 
 //------------------------------------------------------------------------------
-void GComputeSimLink::Compute(GVector* vec1,GVector* vec2,double& sim,size_t& nb)
+void GComputeSimLink::Compute(const GVector* vec1,const GVector* vec2,double& sim,size_t& nb)
 {
 	// Clear the container
 	Neighbors1.Clear();
@@ -125,7 +125,7 @@ void GComputeSimLink::Compute(GVector* vec1,GVector* vec2,double& sim,size_t& nb
 	// If one vector points to the another object -> insert them
 	if(PlugIn->GetConcept1())
 	{
-		GConceptRef* Ref(vec2->GetRef(PlugIn->GetConcept1()));
+		const GConceptRef* Ref(vec2->GetRef(PlugIn->GetConcept1()));
 		if(Ref)
 		{
 			Node* Link(Neighbors2.GetInsertPtr(PlugIn->GetConcept1()));
@@ -134,7 +134,7 @@ void GComputeSimLink::Compute(GVector* vec1,GVector* vec2,double& sim,size_t& nb
 	}
 	if(PlugIn->GetConcept2())
 	{
-		GConceptRef* Ref(vec1->GetRef(PlugIn->GetConcept2()));
+		const GConceptRef* Ref(vec1->GetRef(PlugIn->GetConcept2()));
 		if(Ref)
 		{
 			Node* Link(Neighbors1.GetInsertPtr(PlugIn->GetConcept2()));
@@ -145,8 +145,8 @@ void GComputeSimLink::Compute(GVector* vec1,GVector* vec2,double& sim,size_t& nb
 	Fill(Neighbors2,vec2,1.0,PlugIn->GetNbHops());
 
 	// Count the fraction of weighted number of links that are common and different
-	RCursor<Node> ptr1(Neighbors1);
-	RCursor<Node> ptr2(Neighbors2);
+	RConstCursor<Node> ptr1(Neighbors1);
+	RConstCursor<Node> ptr2(Neighbors2);
 	GComputeSimMeta::Compute(ptr1,ptr2,sim,nb);
 }
 

@@ -1,0 +1,5 @@
+IF(KDE4_FOUND)
+    SET(choquetestimation_AVAILABLE_FRONTENDS kde)
+    SET(choquetestimation_kde_DEPENDENCY rcorekde ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
+    ADD_FRONTEND_SOURCE_FILE(choquetestimation_frontend choquetestimation kde choquetestimation_INCLUDES)
+ENDIF(KDE4_FOUND)

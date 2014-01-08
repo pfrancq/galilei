@@ -6,7 +6,7 @@
 
 	Cosine Similarity Measure - Implementation.
 
-	Copyright 2003-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -40,13 +40,13 @@
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void GComputeSimCos::Compute(GVector* vec1,GVector* vec2,double& sim,size_t& nb)
+void GComputeSimCos::Compute(const GVector* vec1,const GVector* vec2,double& sim,size_t& nb)
 {
 	double Num(0.0),Norm1(0.0),Norm2(0.0);
 	nb=0;
 
-	RCursor<GConceptRef> ptr1(vec1->GetRefs());
-	RCursor<GConceptRef> ptr2(vec2->GetRefs());
+	RConstCursor<GConceptRef> ptr1(vec1->GetRefs());
+	RConstCursor<GConceptRef> ptr2(vec2->GetRefs());
 	for(ptr1.Start(),ptr2.Start();!ptr1.End();ptr1.Next())
 	{
 		double w1(ptr1()->GetWeight()*PlugIn->GetIF(ptr1()->GetConcept()));

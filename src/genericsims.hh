@@ -6,7 +6,7 @@
 
 	Generic Tensor Space Model Similarity Measure - Inline Implementation.
 
-	Copyright 2003-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2003 by Valery Vandaele.
 	Copyright 2003-2007 by the Université Libre de Bruxelles (ULB).
 
@@ -100,16 +100,6 @@ template<class cObj1,class cObj2>
 
 
 //------------------------------------------------------------------------------
-struct sInfo
-{
-	double Text;
-	double Metadata;
-	double Semantic;
-	double Link;
-};
-
-
-//------------------------------------------------------------------------------
 template<class cObj1,class cObj2>
 	bool GGenericSims<cObj1,cObj2>::ComputeSims(bool filter,tConceptCat cat)
 {
@@ -120,8 +110,8 @@ template<class cObj1,class cObj2>
 	Cats[ccLink].Sim = Cats[ccLink].Nb = 0.0;
 
 	// Get two cursors over the vectors
-	RCursor<GVector> Vec1(Desc1->GetVectors());
-	RCursor<GVector> Vec2(Desc2->GetVectors());
+	RConstCursor<GVector> Vec1(Desc1->GetVectors());
+	RConstCursor<GVector> Vec2(Desc2->GetVectors());
 
 	// Go trough the vectors of the first object
 	for(Vec1.Start();!Vec1.End();Vec1.Next())

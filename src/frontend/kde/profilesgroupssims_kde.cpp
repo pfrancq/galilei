@@ -6,7 +6,7 @@
 
 	Similarities between documents and groups (KDE Part) - Implementation.
 
-	Copyright 2005-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2005-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2005-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -50,7 +50,7 @@ void About(void)
 {
 	KAboutData aboutData( "profilesgroupssims", 0, ki18n("Profiles/communities Similarities"),
 		"1.0", ki18n("Method to compute the similarities between communities and profiles"), KAboutData::License_GPL,
-		ki18n("(C) 2005-2012 by Pascal Francq\n(C) 2005-2008 by the Université Libre de Bruxelles (ULB)"),
+		ki18n("(C) 2005-2014 by Pascal Francq\n(C) 2005-2008 by the Université Libre de Bruxelles (ULB)"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	KAboutApplicationDialog dlg(&aboutData);
