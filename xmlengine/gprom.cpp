@@ -6,7 +6,7 @@
 
 	Document Fragment PROMETHEE Ranking - Implementation.
 
-	Copyright 2004-2012 by Pascal Francq.
+	Copyright 2004-2014 by Pascal Francq.
    Copyright 2004-2005 by Jean-Baptiste Valsamis.
 	Copyright 2005-2009 by Faïza Abbaci.
 
@@ -198,12 +198,12 @@ double GProm::ComputeTfIdf(GResNode* node)
 	// Weighted average of the tf-idf factors of each concept of the query in the document
 	double Num(0.0);
 	double Den(0.0);
-	RCursor<GVector> Vector(Doc->GetVectors());
+	RConstCursor<GVector> Vector(Doc->GetVectors());
 	for(Vector.Start();!Vector.End();Vector.Next())
 	{
 		double Local(0.0);
 		double MaxWeight(0.0);
-		RCursor<GConceptRef> Ref(Vector()->GetRefs());
+		RConstCursor<GConceptRef> Ref(Vector()->GetRefs());
 		for(Ref.Start();!Ref.End();Ref.Next())
 		{
 			if(fabs(Ref()->GetWeight())>MaxWeight)

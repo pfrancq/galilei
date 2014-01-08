@@ -6,7 +6,7 @@
 
 	XML Search Engine (KDE Part) - Implementation.
 
-	Copyright 2004-2012 by Pascal Francq.
+	Copyright 2004-2014 by Pascal Francq.
    Copyright 2004-2005 by Jean-Baptiste Valsamis.
 	Copyright 2005-2009 by Faïza Abbaci.
 
@@ -79,7 +79,7 @@ extern "C" {
 void About(void)
 {
 	KAboutData aboutData("xmlengine", 0,ki18n("XML Search Engine"), "2.0", ki18n("This is a XML search engine."), KAboutData::License_GPL,
-					ki18n("(C) 2004-2012 by Pascal Francq\n (C) 2004-2005 by Jean-Baptiste Valsamis\n(C) 2005-2009 by Faïza Abbaci"), KLocalizedString(), "http://www.otlet-institute.org", "pascal@francq.info");
+					ki18n("(C) 2004-2014 by Pascal Francq\n (C) 2004-2005 by Jean-Baptiste Valsamis\n(C) 2005-2009 by Faïza Abbaci"), KLocalizedString(), "http://www.otlet-institute.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Faiza Abbaci"),ki18n("Contributor"));
 	aboutData.addAuthor(ki18n("Jean-Baptiste Valsamis"),ki18n("Contributor"));

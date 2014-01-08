@@ -6,7 +6,7 @@
 
 	Concept Node Set - Header.
 
-	Copyright 2004-2012 by Pascal Francq.
+	Copyright 2004-2014 by Pascal Francq.
    Copyright 2004-2005 by Jean-Baptiste Valsamis.
 	Copyright 2005-2009 by Faïza Abbaci.
 
