@@ -6,7 +6,7 @@
 
 	Feedback-based Profile Computing Method - Implementation.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -104,7 +104,10 @@ void GProfileCalcFeedback::Compute(const GProfile* profile)
 
 	// If incremental mode -> copy information of the profile in Internal.
 	if(IncrementalMode&&profile->IsDefined())
-		Internal+=Alpha*(*profile);
+	{
+		Internal=(*profile)();
+		Internal*=Alpha;
+	}
 
 	// Go through all documents, add the frequencies of the words of "OK"
 	// documents and subtract the frequencies of the words of "KO" documents.
@@ -123,10 +126,10 @@ void GProfileCalcFeedback::Compute(const GProfile* profile)
 			continue;
 
 		// Normalize the description and add it to corresponding set
-		Tmp=(*Doc);
+		Tmp=(*Doc)();
 		Tmp.Normalize();
 		Desc[Fdbk()->GetFdbk()]+=Tmp;
-		Sets[Fdbk()->GetFdbk()]->InsertDescription(Doc);
+		Sets[Fdbk()->GetFdbk()]->InsertDescription(&(*Doc)());
 	}
 
 	// Multiply by the if factors
