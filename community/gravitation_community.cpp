@@ -6,7 +6,7 @@
 
 	Community Description Computing Method - Implementation.
 
-	Copyright 2002-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2002-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2002-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -95,10 +95,10 @@ void GCommunityCalcGravitation::ComputeCentroid(const GCommunity* grp)
 	RCursor<GProfile> Prof(grp->GetObjs());
 	for(Prof.Start();!Prof.End();Prof.Next())
 	{
-		Tmp=(*Prof());
+		Tmp=(*Prof())();
 		Tmp.Normalize();
 		Internal+=Tmp;
-		Profiles.InsertDescription(Prof());
+		Profiles.InsertDescription(&(*Prof())());
 	}
 
 	// Multiply by the if factors and divided by the number of profiles
@@ -117,7 +117,7 @@ void GCommunityCalcGravitation::ComputePrototype(const GCommunity* grp)
 	if(!Prototype)
 		Description.Clear();
 	else
-		Description=(*Prototype);
+		Description=(*Prototype)();
 }
 
 

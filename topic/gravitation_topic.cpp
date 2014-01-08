@@ -6,7 +6,7 @@
 
 	Topic Description Computing Method - Implementation.
 
-	Copyright 2008-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2008-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -94,10 +94,10 @@ void GTopicCalcGravitation::ComputeCentroid(const GTopic* grp)
 	RCursor<GDoc> Doc(grp->GetObjs());
 	for(Doc.Start();!Doc.End();Doc.Next())
 	{
-		Tmp=(*Doc());
+		Tmp=(*Doc())();
 		Tmp.Normalize();
 		Internal+=Tmp;
-		Docs.InsertDescription(Doc());
+		Docs.InsertDescription(&(*Doc())());
 	}
 
 	// Multiply by the if factors and divided by the number of documents
@@ -113,7 +113,7 @@ void GTopicCalcGravitation::ComputeCentroid(const GTopic* grp)
 void GTopicCalcGravitation::ComputePrototype(const GTopic* grp)
 {
 	GDoc* Prototype(grp->RelevantObj());
-	Description=(*Prototype);
+	Description=((*Prototype)());
 }
 
 
