@@ -6,7 +6,7 @@
 
 	Meta-engine based on a Weighted Sum - Implementation.
 
-   Copyright 2003-2012 by Pascal Francq.
+   Copyright 2003-2014 by Pascal Francq.
 	Copyright 2003-2004 by Valery Vandaele.
 	Copyright 2003-2008 Université Libre de Bruxelles (ULB).
 

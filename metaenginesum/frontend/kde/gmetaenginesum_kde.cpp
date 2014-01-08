@@ -6,7 +6,7 @@
 
 	Meta-engine based on a Weighted Sum - Implementation (KDE Part).
 
-   Copyright 2003-2012 by Pascal Francq.
+   Copyright 2003-2014 by Pascal Francq.
 	Copyright 2003-2004 by Valery Vandaele.
 	Copyright 2003-2008 Université Libre de Bruxelles (ULB).
 
@@ -85,7 +85,7 @@ void About(void)
 {
 	KAboutData aboutData("metaengine", 0, ki18n("Meta Engine"),
 		"1.0", ki18n("This is a meta engine."), KAboutData::License_GPL,
-		ki18n("(C) 2003-2012 by Pascal Francq\n(C)2003-2004 by Valery Vandaele\n(C) 2003-2008 by Université Libre de Bruxelles\n"),
+		ki18n("(C) 2003-2014 by Pascal Francq\n(C)2003-2004 by Valery Vandaele\n(C) 2003-2008 by Université Libre de Bruxelles\n"),
 		KLocalizedString(), "http://www.otlet-institute.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Valery Vandaele"),ki18n("Contributor") );
