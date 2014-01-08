@@ -6,7 +6,7 @@
 
 	Features Statistics - Header.
 
-	Copyright 2010-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2010-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -91,13 +91,20 @@ public:
 	 * @param concept        Concept to compare with.
 	 * @return a value usable by RContainer.
 	 */
+	int Compare(const ConceptData& concept) const {return(Concept->Compare(concept.Concept));}
+
+	/**
+	 * Compare two concept data
+	 * @param concept        Concept to compare with.
+	 * @return a value usable by RContainer.
+	 */
 	int Compare(const GConcept& concept) const {return(Concept->Compare(concept));}
 
 	/**
 	 * Treat an concept reference.
 	 * @param ref            Concept to treat.
 	 */
-	void Treat(GConceptRef* ref);
+	void Treat(const GConceptRef* ref);
 
 	/**
 	 * Add the statistics related to the concept to a statistics matrix.

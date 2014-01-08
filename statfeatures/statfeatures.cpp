@@ -6,7 +6,7 @@
 
 	Features Statistics - Implementation.
 
-	Copyright 2010-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2010-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -70,7 +70,7 @@ ConceptData::ConceptData(GConcept* concept)
 
 
 //------------------------------------------------------------------------------
-void ConceptData::Treat(GConceptRef* ref)
+void ConceptData::Treat(const GConceptRef* ref)
 {
 	double weight(ref->GetWeight()*Concept->GetIF(otDoc));
 	if(weight>MaxWeight)
@@ -133,15 +133,15 @@ void StatFeatures::Run(GSlot*)
 	Data.Clear();
 
 	// Go through the documents.
-	R::RCursor<GDoc> Docs(Session->GetObjs(pDoc));
+	RCursor<GDoc> Docs(Session->GetObjs(pDoc));
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		// Go through each vectors
-		RCursor<GVector> Vector(Docs()->GetVectors());
+		RConstCursor<GVector> Vector(Docs()->GetVectors());
 		for(Vector.Start();!Vector.End();Vector.Next())
 		{
 			// Go through each concepts
-			RCursor<GConceptRef> Words(Vector()->GetRefs());
+			RConstCursor<GConceptRef> Words(Vector()->GetRefs());
 			for(Words.Start();!Words.End();Words.Next())
 			{
 				ConceptData* Concept(Data.GetInsertPtrAt(Words()->GetConcept(),Words()->GetId()));
