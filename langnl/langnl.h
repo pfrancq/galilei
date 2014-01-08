@@ -6,7 +6,7 @@
 
 	Dutch Language - Header.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001 by Nicolas Kumps.
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 

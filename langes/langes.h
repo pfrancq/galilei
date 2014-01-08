@@ -7,7 +7,7 @@
 	Spanish Language - Header.
 
 	Copyright 2001-2011 by the Snowball Project.
-	Copyright 2001-2012 by Pascal Francq.
+	Copyright 2001-2014 by Pascal Francq.
 	Copyright 2001 by David Wartel.
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
