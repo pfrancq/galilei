@@ -6,7 +6,7 @@
 
 	Compute Profiles and Documents Confidence - Header.
 
-	Copyright 2005-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2005-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2005 by David Wartel.
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 

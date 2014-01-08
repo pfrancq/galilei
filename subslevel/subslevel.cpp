@@ -6,7 +6,7 @@
 
 	Compute Profiles and Documents Confidence - Implementation
 
-	Copyright 2005-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2005-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2005 by David Wartel.
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
@@ -174,12 +174,10 @@ void SubsLevel::ComputeProfilesConfidence(void)
 		if(ptr)
 		{
 			double Score(ptr->Score/static_cast<double>(ptr->NbDocs));
-			Profiles()->SetConfidence(Score,(Score*100+LevelWidth-1)/LevelWidth);
+			Session->SetConfidence(Profiles(),Score,(Score*100+LevelWidth-1)/LevelWidth);
 		}
 		else
-			Profiles()->SetConfidence(0,0);
-		if(Session->MustSaveResults())
-			Session->GetStorage()->SaveObj(Profiles());
+			Session->SetConfidence(Profiles(),0,0);
 	}
 }
 
