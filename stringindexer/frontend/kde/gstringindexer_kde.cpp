@@ -6,7 +6,7 @@
 
 	String Indexer - Implementation.
 
-	Copyright 2011-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2011-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -80,7 +80,7 @@ void About(void)
 {
 	KAboutData aboutData( "String Indexer", 0, ki18n("String Indexer"),
 		"1.0", ki18n("This analyzer simply index the tokens as textual concepts."), KAboutData::License_GPL,
-		ki18n("(C) 2011-2012 by Paul Otlet Institute"),
+		ki18n("(C) 2011-2014 by Paul Otlet Institute"),
 		KLocalizedString(), "http://www.otlet-institute.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	KAboutApplicationDialog dlg(&aboutData);
