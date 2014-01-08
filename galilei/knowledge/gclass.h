@@ -6,7 +6,7 @@
 
 	Class regrouping concepts - Header.
 
-	Copyright 2009-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2009-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -55,14 +55,14 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Concepts Class.
 */
-class GClass : public R::RNode<GClasses,GClass,false>, public GDescriptionObject<GClass,eCreateClass,eNewClass,eDelClass>
+class GClass : public R::RNode<GClasses,GClass,false>, public GDescriptionObject<GClass>
 {
     using R::RNode<GClasses,GClass,false>::Clear;
 
 	/**
-	 * Method used to correctly instantiate some template methods.
-	 */
-	void PrivateInit(void);
+	* Date of last class computation.
+	*/
+	R::RDate Computed;
 
 public:
 
@@ -79,8 +79,9 @@ public:
 	* @param id              Identifier.
 	* @param blockid         Identifier of the block.
 	* @param name            Name of the class.
+	* @param c               Date of the last computation.
 	*/
-	GClass(GSession* session,size_t id,size_t blockid,const R::RString& name);
+	GClass(GSession* session,size_t id,size_t blockid,const R::RString& name,const R::RDate& c);
 
 	/**
     * @return the class name.
@@ -117,11 +118,31 @@ public:
 	int Compare(const size_t id) const;
 
 	/**
-	* Assign a description to the class.
-	* @param desc            Description.
-	* \warning The vectors are cleared by this method.
+	* Get the date of the last analysis of the document.
+	* @return the date.
+	*/
+	R::RDate GetComputed(void) const {return(Computed);}
+
+private:
+
+	/**
+	* Update the representation of the class once a computation was done. The
+	* computed date and the status are updated.
+	*
+	* If the class is an internal one, the following steps are done:
+	* * -# An 'hClasses[oeAboutToBeUpdated]' notification is send.
+	* -# The references are updated.
+	* -# Existing in memory description is replaced.
+	* -# If necessary, the class and its description are saved.
+	* -# An 'hClasses[oeUpdated]' notification is send.
+	*
+	* If the topic is an external one, its description is replaced.
+	* @param desc            Description to assign.
+	* \warning The description is cleared by this method.
 	*/
 	void Update(GDescription& desc);
+
+public:
 
 	/**
 	 * Get the cost of an Up operation of the current node. The method adds a
@@ -145,6 +166,9 @@ public:
 
 	friend class GOntlogy;
 	friend class GSession;
+	friend class GClasses;
+	friend class R::RNodeCursor<GClasses,GClass>;
+	friend class R::RTree<GClasses,GClass,false>;
 };
 
 

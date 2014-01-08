@@ -6,7 +6,7 @@
 
 	Description Set - Implementation.
 
-	Copyright 2006-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2006-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2006-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -88,7 +88,7 @@ double GDescriptionSet::GetIF(size_t conceptid)
 		RCursor<const GDescription> Desc(Set);
 		for(Desc.Start();!Desc.End();Desc.Next())
 		{
-			RCursor<GVector> Vector(Desc()->GetVectors());
+			RConstCursor<GVector> Vector(Desc()->GetVectors());
 			if(!Vector.GetNb()) continue;
 
 			// Init
@@ -98,7 +98,7 @@ double GDescriptionSet::GetIF(size_t conceptid)
 			// Parse the vectors
 			for(Vector.Start();!Vector.End();Vector.Next())
 			{
-				RCursor<GConceptRef> ptr(Vector()->GetRefs());
+				RConstCursor<GConceptRef> ptr(Vector()->GetRefs());
 				if(!ptr.GetNb())
 					continue;
 

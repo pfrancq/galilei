@@ -6,7 +6,7 @@
 
 	Generic Group - Header.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -65,15 +65,16 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Generic Group.
 */
-template<class cObj,class cGroup,tObjType type,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel,const R::hNotification& hUpdate,const R::hNotification& hModified>
-	class GGroup : protected R::RContainer<cObj,false,true>, public GDescriptionObject<cGroup,hCreate,hNew,hDel>
+template<class cObj,class cGroup,tObjType type>
+	class GGroup : protected R::RContainer<cObj,false,true>, public GDescriptionObject<cGroup>
 {
 public:
-	using GDescriptionObject<cGroup,hCreate,hNew,hDel>::Id;
-	using GDescriptionObject<cGroup,hCreate,hNew,hDel>::Copy;
-	using GDescriptionObject<cGroup,hCreate,hNew,hDel>::AddRefs;
-	using GDescriptionObject<cGroup,hCreate,hNew,hDel>::DelRefs;
-	using GDescriptionObject<cGroup,hCreate,hNew,hDel>::State;
+	using GDescriptionObject<cGroup>::Id;
+	using GDescriptionObject<cGroup>::Copy;
+	using GDescriptionObject<cGroup>::AddRefs;
+	using GDescriptionObject<cGroup>::DelRefs;
+	using GDescriptionObject<cGroup>::State;
+	using GDescriptionObject<cGroup>::Session;
 
 protected:
 
@@ -242,16 +243,6 @@ public:
 	void Clear(void);
 
 	/**
-	* Assign a new description to the group.
-	* @param session         Session.
-	* @param desc            Description.
-   * @param delref          Delete the references (must be set to true if the
-	*                        group has already a description).
-	* \warning The description is cleared by this method.
-	*/
-	void Update(GSession* session,GDescription& desc,bool delref);
-
-	/**
 	* Compute the number of objects of a given group that are also in a
 	* subject.
 	* @param subject         Subject.
@@ -270,6 +261,7 @@ public:
 	virtual ~GGroup(void);
 
 	friend class GSubjects;
+	friend class GSession;
 };
 
 

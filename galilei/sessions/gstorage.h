@@ -6,7 +6,7 @@
 
 	Generic Storage Manager - Header.
 
-	Copyright 2003-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -48,6 +48,9 @@ namespace GALILEI{
 /**
 * The GStorage provides a representation for a storage manager. This storage
 * manager is responsible to load and save data.
+*
+* Most methods are private because they are automatically called by the
+* managing classes (GSession, GObjects, etc.).
 * @author GALILEI Team
 * @short Generic Storage Manager.
 */
@@ -126,23 +129,25 @@ public:
 	R::RDate GetFilter(void) const;
 
 	/**
+	* Execute a sequence of steps needed to construct data. Typically, this
+	* can be a SQL file.
+	* @param filename        Name of the file.
+	*/
+	virtual void ExecuteData(const R::RString& filename)=0;
+
+private:
+
+	/**
 	* Load the Subjects.
 	*/
-	virtual void LoadSubjects(void)=0;
+	virtual void LoadObjs(const GSubject*)=0;
 
 	/**
 	 * Save the subject, including the information on the documents (and which
 	 * ones are used) and the profiles assigned to them.
 	 * @param subject        Subject to save.
 	 */
-	virtual void SaveSubject(GSubject* subject)=0;
-
-	/**
-	* Execute a sequence of steps needed to construct data. Typically, this
-	* can be a SQL file.
-	* @param filename        Name of the file.
-	*/
-	virtual void ExecuteData(const R::RString& filename)=0;
+	virtual void SaveObj(GSubject* subject)=0;
 
 	/**
 	* Clear the information of a given object type from the storage.
@@ -186,6 +191,8 @@ public:
 	*/
 	virtual void DeleteConcept(GConcept* concept)=0;
 
+public:
+
 	/**
 	* Load the name of specific concept.
 	* @param id              Identifier of the concept.
@@ -198,6 +205,8 @@ public:
 	* @param type            Type of the concept.
 	*/
 	virtual size_t LoadConcept(const R::RString name,GConceptType* type)=0;
+
+private:
 
 	/**
 	* Save a concept in the database.
@@ -449,6 +458,8 @@ public:
 	*/
 	virtual void SaveObj(GCommunity* grp)=0;
 
+public:
+
 	/**
 	 * Save the relevant documents associated with a given community.
 	 * @param docs           List of relevant.
@@ -460,6 +471,8 @@ public:
 	 * @param docs           List of relevant.
 	 */
 	virtual void LoadDocs(GCommunityDocs& docs)=0;
+
+private:
 
 	// @} Communities
 
@@ -508,6 +521,8 @@ public:
 	*/
 	// @{
 
+public:
+
 	/**
 	* Save a list of suggestions.
 	* @param sugs            Suggestions.
@@ -529,7 +544,30 @@ public:
 	*/
 	virtual ~GStorage(void);
 
+	// Only classes allowed to have a direct access to the methods of a storage
+	friend class GGALILEIApp;
 	friend class GSession;
+	friend class GConceptType;
+	friend class GConcept;
+	friend class GKB;
+	friend class GClasses;
+	friend class GClass;
+	friend class GDoc;
+	friend class GTopic;
+	friend class GGroup<GDoc,GTopic,otTopic>;
+	friend class GUser;
+	friend class GProfile;
+	friend class GCommunity;
+	friend class GGroup<GProfile,GCommunity,otCommunity>;
+	friend class GObjects<GDoc,hDocs>;
+	friend class GObjects<GClass,hClasses>;
+	friend class GObjects<GTopic,hTopics>;
+	friend class GObjects<GUser,hUsers>;
+	friend class GObjects<GProfile,hProfiles>;
+	friend class GObjects<GCommunity,hCommunities>;
+	friend class GDocAnalyze;
+	friend class GSimulator;
+	friend class GSubjects;
 };
 
 

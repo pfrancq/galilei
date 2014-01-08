@@ -6,7 +6,7 @@
 
 	Description - Header.
 
-	Copyright 2009-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2009-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -70,9 +70,9 @@ public:
 	 */
 	GDescription(void);
 
-   /**
+	/**
 	 * Copy constructor.
-    * @param src            Source description.
+	* @param src            Source description.
 	 */
 	GDescription(const GDescription& src);
 
@@ -104,7 +104,14 @@ public:
 	 * if necessary.
 	 * @return a cursor of GVector.
 	 */
-	R::RCursor<GVector> GetVectors(void) const;
+	R::RConstCursor<GVector> GetVectors(void) const;
+
+	/**
+	 * Get the vectors associated to the object. The whole description is loaded
+	 * if necessary.
+	 * @return a cursor of GVector.
+	 */
+	R::RCursor<GVector> GetVectors(void);
 
 	/**
 	 * Get the vector associated to a meta-concept. The whole description is
@@ -169,36 +176,20 @@ protected:
 	*/
 	void Copy(GConcept* metaconcept,const R::RContainer<GConceptRef,false,true>& list);
 
-	/**
-	* Add the references for the concepts for a given object type. This
-	* information is used for the inverse frequency factors.
-	* @param session         Session.
-	* @param ObjType         Object type.
-	*/
-	void AddRefs(GSession* session,tObjType ObjType) const;
-
-	/**
-	* Delete the references for the concepts for a given object type. This
-	* information is used for the inverse frequency factors.
-	* @param session         Session.
-	* @param ObjType         Object type.
-	*/
-	void DelRefs(GSession* session,tObjType ObjType) const;
-
 public:
 
-    /**
-     * Normalize the vectors.
-     */
-    void Normalize(void);
+	/**
+	* Normalize the vectors.
+	*/
+	void Normalize(void);
 
-   /**
-    * Multiply each weight by its inverse frequency factor based on a given set.
-    * @param set            Document Set.
-    */
-    void MultiplyIF(GDescriptionSet& set);
+	/**
+	* Multiply each weight by its inverse frequency factor based on a given set.
+	* @param set            Document Set.
+	*/
+	void MultiplyIF(GDescriptionSet& set);
 
-   /**
+	/**
 	 * Assignment operator for the descriptions.
 	 * @param desc           Description to assign.
 	 */
@@ -232,6 +223,12 @@ public:
 	 * Destruct the object.
 	 */
 	virtual ~GDescription(void);
+
+	friend class GDoc;
+	friend class GClass;
+	friend class GTopic;
+	friend class GProfile;
+	friend class GCommunity;
 };
 
 

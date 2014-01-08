@@ -6,7 +6,7 @@
 
 	Subject - Implementation.
 
-	Copyright 2002-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2002-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2002-2004 by Julien Lamoral.
 	Copyright 2002-2004 by David Wartel.
 	Copyright 2002-2008 by the Université Libre de Bruxelles (ULB).
@@ -57,8 +57,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSubject::GSubject(GSession* session,size_t id,const RString& name,bool u)
-	 : RNode<GSubjects,GSubject,true>(), Session(session), Id(id), Name(name), Used(u),
+GSubject::GSubject(GSession* session,size_t id,const RString& name,bool used)
+	 : RNode<GSubjects,GSubject,true>(), Session(session), Id(id), Name(name), Used(used),
 	   CategorizedDocs(1000), Docs(1000), WhereDocs(1000), Profiles(10,5),
 	   Community(0), Topic(0)
 {
@@ -69,9 +69,6 @@ GSubject::GSubject(GSession* session,size_t id,const RString& name,bool u)
 void GSubject::ReInit(void)
 {
 	// Emit a selection signal
-	RCursor<GDoc> Doc(Docs);
-	for(Doc.Start();!Doc.End();Doc.Next())
-		Doc()->PostNotification(eUnselectDoc);
 	Profiles.Clear();
 	Docs.Clear();
 	WhereDocs.Clear();
@@ -179,7 +176,7 @@ void GSubject::CreateDescription(void)
 				RCursor<GDoc> Cur(Docs);
 				for(Cur.Start();!Cur.End();Cur.Next())
 				{
-					RCursor<GVector> Vector(Cur()->GetVectors());
+					RConstCursor<GVector> Vector(Cur()->GetVectors());
 					for(Vector.Start();!Vector.End();Vector.End())
 					{
 						GVector* MyVector(Vectors->GetInsertPtr(Vector()->GetMetaConcept()));
@@ -284,7 +281,7 @@ void GSubject::AssignIdeal(GTopic* top)
 
 
 //------------------------------------------------------------------------------
-size_t GSubject::GetNbIdealGroups(tObjType type) const
+size_t GSubject::GetNbObjs(const GSubject*,tObjType type) const
 {
 	size_t nb(0);
 
@@ -303,21 +300,7 @@ size_t GSubject::GetNbIdealGroups(tObjType type) const
 	}
 	RNodeCursor<GSubjects,GSubject> Cur(this);
 	for(Cur.Start();!Cur.End();Cur.Next())
-		nb+=Cur()->GetNbIdealGroups(type);
-	return(nb);
-}
-
-
-//------------------------------------------------------------------------------
-size_t GSubject::GetNbTopicsDocs(void) const
-{
-	size_t nb(0);
-
-	if(Docs.GetNb())
-		nb++;
-	RNodeCursor<GSubjects,GSubject> Cur(this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		nb+=Cur()->GetNbTopicsDocs();
+		nb+=Cur()->GetNbObjs(pSubject,type);
 	return(nb);
 }
 
@@ -486,7 +469,7 @@ double GSubject::GetUpOperationCost(void) const
 
 	if(Parent)
 	{
-		RCursor<GVector> Vector(GetVectors());
+		RConstCursor<GVector> Vector(GetVectors());
 		for(Vector.Start();!Vector.End();Vector.Next())
 		{
 			// Look if the parent has a vector for that concept
@@ -505,7 +488,7 @@ double GSubject::GetUpOperationCost(void) const
 	else
 	{
 		// No parent -> all the concepts references are to be 'added'.
-		RCursor<GVector> Vector(GetVectors());
+		RConstCursor<GVector> Vector(GetVectors());
 		for(Vector.Start();!Vector.End();Vector.Next())
 			Cost+=Vector()->GetNb();
 	}
@@ -518,29 +501,4 @@ double GSubject::GetUpOperationCost(void) const
 GSubject::~GSubject(void)
 {
 	delete Vectors;
-}
-
-
-
-//------------------------------------------------------------------------------
-//
-//  GSubjects
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GSubjects::GSubjects(size_t max)
-	: RTree<GSubjects,GSubject,true>(), Subjects(max), SelectedDocs(0), DocsSubjects(0),
-	  ProfilesSubject(0), SubjectsLoaded(false), DescType(sdNames)
-{
-}
-
-//------------------------------------------------------------------------------
-void GSubjects::Clear(void)
-{
-	RTree<GSubjects,GSubject,true>::Clear();
-	ProfilesSubject.Clear();
-	SelectedDocs.Clear();
-	DocsSubjects.Clear();
-	MaxDepth=0;
 }

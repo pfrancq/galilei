@@ -6,7 +6,7 @@
 
 	Class regrouping concepts - Implementation.
 
-	Copyright 2009-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2009-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -45,25 +45,17 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void GClass::PrivateInit(void)
-{
-	SetState(osNew);
-	SaveDesc();
-	AddRefs(Session,otClass);
-	SetId(cNoRef);
-}
-
-
-//------------------------------------------------------------------------------
-GClass::GClass(GSession* session,const R::RString& name)
-	: R::RNode<GClasses,GClass,false>(), GDescriptionObject<GClass,eCreateClass,eNewClass,eDelClass>(session,cNoRef,0,otClass,name,osNew)
+GClass::GClass(GSession* session,const RString& name)
+	: R::RNode<GClasses,GClass,false>(), GDescriptionObject<GClass>(session,cNoRef,0,otClass,name),
+	  Computed(RDate::Null)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GClass::GClass(GSession* session,size_t id,size_t blockid,const R::RString& name)
-	: R::RNode<GClasses,GClass,false>(), GDescriptionObject<GClass,eCreateClass,eNewClass,eDelClass>(session,id,blockid,otClass,name,osNew)
+GClass::GClass(GSession* session,size_t id,size_t blockid,const RString& name,const RDate& c)
+	: R::RNode<GClasses,GClass,false>(), GDescriptionObject<GClass>(session,id,blockid,otClass,name),
+	  Computed(c)
 {
 }
 
@@ -72,7 +64,7 @@ GClass::GClass(GSession* session,size_t id,size_t blockid,const R::RString& name
 void GClass::Clear(void)
 {
 	RNode<GClasses,GClass,false>::Clear();
-	GDescriptionObject<GClass,eCreateClass,eNewClass,eDelClass>::Clear();
+	GDescriptionObject<GClass>::Clear();
 }
 
 
@@ -102,25 +94,67 @@ int GClass::Compare(const size_t id) const
 //------------------------------------------------------------------------------
 void GClass::Update(GDescription& desc)
 {
-	// Remove its references
-	PostNotification(eUpdateClass);
-	DelRefs(Session,otClass);
-	if(Session->DoCreateIndex(pClass))
-		Session->UpdateIndex(pClass,desc,Id,false);
+	bool Save(Session->MustSaveResults());  // Must the results be saved on disk?
+	bool NullDesc;                          // The description must not stayed in memory?
 
-	// Assign information
-	State=osUpdated;
-	GDescription::operator=(desc);
+	// Look if the class is internal one : Modify the references and indexes
+	if(Id!=cNoRef)
+	{
+		// Emit an event that it is about to updated
+		PostNotification(hClasses[oeAboutToBeUpdated]);
 
-	// Update its references
-	AddRefs(Session,otClass);
-	if(Session->DoCreateIndex(pClass))
-		Session->UpdateIndex(pClass,desc,Id,true);
+		// Modify the references
+		DelRefs(Session,otClass);
 
-	desc.Clear(); // Clear the description
+		// Look if the index must be modified
+		if(Save&&Session->DoCreateIndex(pClass))
+			Session->UpdateIndex(pClass,desc,Id,false);
+	}
 
-	// Emit an event that it was modified
-	PostNotification(eClassModified);
+	// The description must be saved only for external classes or when a description is already loaded
+	if((Id==cNoRef)||Vectors)
+	{
+		GDescription::operator=(desc);
+		NullDesc=false;
+	}
+	else
+	{
+		Vectors=desc.Vectors;
+		NullDesc=true;
+	}
+
+	// Set the computed date and the status
+	Computed.SetToday();
+	State=osLatest;
+
+	// Look if the class is internal one : Modify the references and indexes
+	if(Id!=cNoRef)
+	{
+		// Modify the references
+		AddRefs(Session,otClass);
+
+		// Look if the index must be modified and the description and tree saved
+		if(Save)
+		{
+			if(Session->DoCreateIndex(pClass))
+				Session->UpdateIndex(pClass,desc,Id,true);
+
+			if(desc.IsDefined())
+				Session->SaveDesc(pClass,*desc.Vectors,BlockId,Id);
+
+			Session->Storage->SaveObj(this);
+		}
+
+		// Emit an event that it was updated
+		PostNotification(hClasses[oeUpdated]);
+
+		// Verify if description must stay in memory
+		if(NullDesc)
+			Vectors=0;
+	}
+
+	// Clear the description
+	desc.Clear();
 }
 
 
@@ -131,11 +165,11 @@ double GClass::GetUpOperationCost(void) const
 
 	if(Parent)
 	{
-		RCursor<GVector> Vector(GetVectors());
+		RConstCursor<GVector> Vector(GetVectors());
 		for(Vector.Start();!Vector.End();Vector.Next())
 		{
 			// Look if the parent has a vector for that concept
-			GVector* Correspondance(Parent->GetVector(Vector()->GetMetaConcept()));
+			const GVector* Correspondance(Parent->GetVector(Vector()->GetMetaConcept()));
 			if(Correspondance)
 			{
 				// The cost is the difference between the number of information entities of
@@ -150,7 +184,7 @@ double GClass::GetUpOperationCost(void) const
 	else
 	{
 		// No parent -> all the concepts references are to be 'added'.
-		RCursor<GVector> Vector(GetVectors());
+		RConstCursor<GVector> Vector(GetVectors());
 		for(Vector.Start();!Vector.End();Vector.Next())
 			Cost+=Vector()->GetNb();
 	}

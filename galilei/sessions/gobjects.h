@@ -6,7 +6,7 @@
 
 	Object List - Header.
 
-	Copyright 2011-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2011-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -61,7 +61,8 @@ namespace GALILEI{
  * This class represents a set of objects (class C). It aims is to encapsulate
  * all the storage aspects of the management.
  * @tparam C                  The class of the objects managed.
- * @tparam hCreate            Notification to post when the object is created.
+ * @tparam hEvents            Array of notification to post concerning an
+ *                            object.
  *
  * To manage correctly the objects, the list uses two static member functions of
  * the class representing the elements (class C):
@@ -71,11 +72,10 @@ namespace GALILEI{
  * @endcode
  *
  * The first one specifies if the corresponding objects have descriptions (such
- * as documents) or not (such as concept types). The second one specifies if
- * the objects have a structure (documents) or not (all the other objects a
- * priori).
+ * as documents) or not (such as users). The second one specifies if the objects
+ * have a structure (documents) or not (all the other objects a priori).
  *
- * The fist parameter of several methods is a pseudo-parameter. It is used to
+ * The first parameter of several methods is a pseudo-parameter. It is used to
  * differentiate methods with identical names. Several null pointer constants
  * called pDoc, pProfile,etc. are defined and can be used for this parameter. In
  * practice, these methods are called as followed:
@@ -90,7 +90,7 @@ namespace GALILEI{
  * @author Pascal Francq
  * @short Stored Objects.
  */
-template<class C,const R::hNotification& hCreate>
+template<class C,const R::hNotification* hEvents>
 	class GObjects : virtual GKB, protected R::RObjectContainer<C,true>
 {
 protected:
@@ -104,6 +104,11 @@ protected:
 	 * Type of the objects.
 	 */
 	tObjType Type;
+
+	/**
+	 * Maximum objects to managed in memory.
+	 */
+	size_t MaxObjs;
 
 	/**
 	 * Description of the objects.
@@ -131,19 +136,19 @@ protected:
 	R::RIndexFile* Tree;
 
 	/**
-	 * Temporary vector of references.
-	 */
-	R::RNumContainer<size_t,true> tmpRefs;
-
-	/**
 	 * Are the objects loaded.
 	 */
 	bool Loaded;
 
 	/**
-	 * Maximum objects to managed in memory.
+	* Selected objects.
+	*/
+	R::RContainer<C,false,true> Selected;
+
+	/**
+	 * Temporary vector of references.
 	 */
-	size_t MaxObjs;
+	R::RNumContainer<size_t,true> tmpRefs;
 
 public:
 
@@ -169,20 +174,21 @@ public:
 	void OpenFiles(R::RConfig* config,R::RString subdir);
 
 	/**
-	 * @return if an index is create.
-    * @param obj            Pseudo-parameter.
-    */
+	* @return if an index is create.
+	* @param obj            Pseudo-parameter.
+	*/
 	inline bool DoCreateIndex(const C* obj) const;
 
 	 /**
-	 * @return if the concept trees are created.
-    * @param obj            Pseudo-parameter.
-    */
+	* @return if the concept trees are created.
+	* @param obj            Pseudo-parameter.
+	*/
 	inline bool DoCreateTree(const C* obj) const;
 
 	/**
 	* Insert an object.
 	* @param obj             object to insert.
+	* @param selected        Specify if the object is selected or not.
 	* @param parent          Parent object. This parameter is only used by
 	*                        GClasses.
 	*/
@@ -251,6 +257,8 @@ public:
 	 */
 	C* GetObj(const C* obj,const R::RString& name,bool load=true,bool null=false);
 
+protected:
+
 	/**
 	* Assign an identifier to an object.
 	* @param obj             Object.
@@ -289,6 +297,8 @@ public:
 	 */
 	void FlushDesc(const C* obj);
 
+public:
+
 	/**
 	 * Load the identifiers of all objects of a given type described by a
 	 * specific concept.
@@ -297,6 +307,8 @@ public:
 	 * @param refs           Identifiers of the objects.
 	 */
 	void LoadIndex(const C* obj,GConcept* concept,R::RNumContainer<size_t,true>& refs);
+
+protected:
 
    /**
 	 * Update the index of a given object that is only described by a
@@ -307,6 +319,8 @@ public:
 	 * @param add            Object must be added or removed from the index.
 	 */
 	void UpdateIndex(const C* obj,const GDescription& desc,size_t id,bool add);
+
+public:
 
 	/**
 	 * Build the index of all the objects of a given type from scratch. Since
@@ -345,6 +359,8 @@ public:
 	 */
 	void LoadTree(const C* obj,GConceptTree* &tree,size_t blockid,size_t id);
 
+protected:
+
 	/**
 	 * Save the concept tree of a given document.
 	 * @param obj            Pseudo-parameter.
@@ -361,12 +377,19 @@ public:
 	 */
 	void FlushTree(const C* obj);
 
+public:
+
 	/**
 	 * Destructor.
 	 */
 	virtual ~GObjects(void);
 
 	friend class GDocAnalyze;
+	friend class GDoc;
+	friend class GClass;
+	friend class GTopic;
+	friend class GProfile;
+	friend class GCommunity;
 };
 
 

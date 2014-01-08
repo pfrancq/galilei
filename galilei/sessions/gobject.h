@@ -6,7 +6,7 @@
 
 	Generic GALILEI Object - Header.
 
-	Copyright 2009-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2009-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -137,7 +137,7 @@ public:
 	inline tObjType GetObjType(void) const {return(ObjType);}
 
 	/**
-	 * Handler called when a notification posted is not catched. In GALILEI,
+	 * Handler called when a notification posted is not caught. In GALILEI,
 	 * this function does nothing.
 	 * @param notification    Notification posted.
 	 */
@@ -148,10 +148,10 @@ public:
 	 */
 	virtual ~GObject(void);
 
-	friend class GObjects<GTopic,eCreateTopic>;
-	friend class GObjects<GCommunity,eCreateCommunity>;
-	friend class GObjects<GDoc,eCreateDoc>;
-	friend class GObjects<GProfile,eCreateProfile>;
+	friend class GObjects<GDoc,hDocs>;
+	friend class GObjects<GTopic,hTopics>;
+	friend class GObjects<GProfile,hProfiles>;
+	friend class GObjects<GCommunity,hCommunities>;
 };
 
 

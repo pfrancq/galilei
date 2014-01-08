@@ -6,7 +6,7 @@
 
 	Concept - Implementation.
 
-	Copyright 2006-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2006-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2006-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -407,7 +407,7 @@ double GConcept::GetIF(tObjType ObjType) const
 void GConcept::Clear(void)
 {
 	Id=cNoRef;
-	SetName(RString::Null);
+	Name=RString::Null;
 	NbRefDocs=0;
 	IfDocs=NAN;
 	IndexDocs=0;

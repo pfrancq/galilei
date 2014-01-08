@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GSubjects.h
+	GSubject.h
 
 	Subject - Header.
 
-	Copyright 2002-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2002-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2002-2004 by Julien Lamoral.
 	Copyright 2002-2004 by David Wartel.
 	Copyright 2002-2008 by the Université Libre de Bruxelles (ULB).
@@ -159,9 +159,9 @@ public:
 	* @param session         Session.
 	* @param id              Identifier of the subject.
 	* @param name            Name of the subject.
-	* @param u               Used?
+	* @param used            Used?
 	*/
-	GSubject(GSession* session,size_t id,const R::RString& name,bool u);
+	GSubject(GSession* session,size_t id,const R::RString& name,bool used);
 
 	/**
 	* @return number of child subjects.
@@ -304,16 +304,12 @@ public:
 	GTopic* GetIdealTopic(void) const {return(Topic);}
 
 	/**
-	* Get the number of groups of a given type (otProfile or otDoc) associated
-	* to a the subject (and its sub-subjects).
+	* Get the number of subjects of a given type (otProfile or otDoc) associated
+	* to a the subject (and eventually its sub-subjects).
+	* @param obj             Pseudo-parameter.
 	* @param type            Type.
 	*/
-	size_t GetNbIdealGroups(tObjType type) const;
-
-	/**
-	* Compute the number of topics (and its sub-topics) containing a document.
-	*/
-	size_t GetNbTopicsDocs(void) const;
+	size_t GetNbObjs(const GSubject* obj,tObjType type) const;
 
 	/**
 	* Compute the number of profiles of a given community that are also in the
@@ -336,7 +332,12 @@ public:
 	*/
 	size_t GetNbDocs(const R::RContainer<GDoc,false,false>* docs) const;
 
-public:
+	/**
+	* Get the number of objects of a given type (otProfile or otDoc) associated
+	* to a the subject.
+	* @param type            Type.
+	*/
+	size_t GetNbObjs(tObjType type) const;
 
 	/**
 	* Get a cursor over the profiles contained in the subject.
@@ -363,13 +364,6 @@ public:
 	* @endcode
 	*/
 	R::RCursor<GDoc> GetObjs(const GDoc*) const;
-
-	/**
-	* Get the number of objects of a given type associated to this subject.
-	* @param type            Type.
-	* @returns size_t
-	*/
-	size_t GetNbObjs(tObjType type) const;
 
 	/**
 	* Get a cursor over the all the documents contained in the subject.
@@ -440,83 +434,6 @@ public:
 	friend class R::RNode<GSubjects,GSubject,true>;
 	friend class R::RNodeCursor<GSubjects,GSubject>;
 	friend class GSimulator;
-};
-
-
-//------------------------------------------------------------------------------
-/**
- * The GSubjects provides just a tree of GSubject.
- * @author Pascal Francq.
- * @short Subjects
- */
-class GSubjects : public R::RTree<GSubjects,GSubject,true>
-{
-    using R::RTree<GSubjects,GSubject,true>::Clear;
-
-	/**
-	 * Ordered container of subjects.
-	 */
-	R::RContainer<GSubject,false,true> Subjects;
-
-	/**
-	 * Container of selected documents.
-	 */
-	R::RContainer<GDoc,false,true> SelectedDocs;
-
-	/**
-	 * Subjects for the documents (the identifier of the document provides the
-	 * index in the container).
-	 */
-	R::RContainer<R::RContainer<GSubject,false,false>,true,false> DocsSubjects;
-
-	/**
-	 * Subjects for the profiles (the identifier of the profile provides the
-	 * index in the container).
-	 */
-	R::RContainer<GSubject,false,false> ProfilesSubject;
-
-	/**
-	 * Specify if the subjects are loaded or not.
-	 */
-	bool SubjectsLoaded;
-
-	/**
-	 * Type of the description.
-	 */
-	tSubjectDesc DescType;
-
-public:
-
-	/**
-	* Construct a tree of subjects.
-	* @param max            Initial size of subjects.
-	*/
-	GSubjects(size_t max);
-
-private:
-
-	/**
-	 * Fill an array with all the subjects.
-    * @param subjects       Array to fill.
-    * @return the number of subjects.
-    */
-	inline size_t GetTab(GSubject** subjects) {return(Subjects.GetTab(subjects));}
-
-	/**
-    * @return  a cursor over the subjects.
-    */
-	R::RCursor<GSubject> GetSubjects(void) const {return(R::RCursor<GSubject>(Subjects));}
-
-   /**
-    * Clear the tree.
-    */
-   virtual void Clear(void);
-
-	friend class R::RTree<GSubjects,GSubject,true>;
-	friend class R::RNode<GSubjects,GSubject,true>;
-	friend class R::RNodeCursor<GSubjects,GSubject>;
-	friend class GSubject;
-	friend class GSession;
 };
 
 

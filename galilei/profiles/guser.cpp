@@ -6,7 +6,7 @@
 
 	User - Implementation.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -46,10 +46,9 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GUser::GUser(GSession* session,size_t id,const R::RString& name,const R::RString& fullname,size_t nb)
- : GObject(session,id,name,otUser), RContainer<GProfile,false,true>(nb+nb/2+1,nb/2+1), FullName(fullname)
+ : GObject(session,id,name,otUser), RContainer<GProfile,false,true>(nb),
+	FullName(fullname), State(osLatest)
 {
-	if(Id!=R::cNoRef)
-		PostNotification(eNewUser);
 }
 
 
@@ -126,18 +125,6 @@ RString GUser::GetFullName(void) const
 
 
 //------------------------------------------------------------------------------
-void GUser::SetName(const RString& name,const RString& fullname)
-{
-	RObject::SetName(name);
-	if(fullname.IsEmpty())
-		FullName=name;
-	else
-		FullName=fullname;
-}
-
-
-//------------------------------------------------------------------------------
 GUser::~GUser(void)
 {
-	PostNotification(eDelUser);
 }

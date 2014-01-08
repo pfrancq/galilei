@@ -6,7 +6,7 @@
 
 	Application handling a GALILEI Session - Implementing.
 
-	Copyright 2006-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2006-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2006-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -243,6 +243,7 @@ GSession* GGALILEIApp::GetSession(const R::RString& name,bool created)
 	{
 		// A new session must be created and its configuration read
 		Sessions.InsertPtr(Session=new GSession(Sessions.GetNb(),name));
+		Session->State=osOnDemand;
 		RCursor<GPlugInManager> Cur(*this);
 		for(Cur.Start();!Cur.End();Cur.Next())
 			Cur()->Create(Session);
@@ -270,6 +271,7 @@ GSession* GGALILEIApp::GetSession(const R::RString& name,bool created)
 		Log.WriteLog("Plug-ins connected to session '"+name+"'");
 
 		// Return the session
+		Session->State=osLatest;
 		return(Session);
 	}
 	catch(RException& e)

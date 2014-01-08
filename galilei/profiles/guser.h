@@ -6,7 +6,7 @@
 
 	User - Header.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -152,18 +152,11 @@ public:
 	R::RString GetFullName(void) const;
 
 	/**
-	 * Set the name of the user.
-	 * @param name           Name of the user.
-	 * @param fullname       Full name of the user. If null string, the name is
-	 *                       used.
-	 * @return
-	 */
-	void SetName(const R::RString& name,const R::RString& fullname=R::RString::Null);
-
-	/**
 	* Destruct a user.
 	*/
 	virtual ~GUser(void);
+
+	friend class GSession;
 };
 
 

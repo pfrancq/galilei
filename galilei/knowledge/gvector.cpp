@@ -6,7 +6,7 @@
 
 	Concept Reference Vector - Implementation.
 
-	Copyright 2002-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2002-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2002-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -138,11 +138,29 @@ int GVector::Compare(const GConcept* metaconcept) const
 
 
 //------------------------------------------------------------------------------
-GConceptRef* GVector::GetRef(const GConceptRef* ref)
+const GConceptRef* GVector::GetRef(GConceptRef* ref) const
+{
+	if(!ref)
+		mThrowGException("null pointer");
+	return(const_cast<GVector*>(this)->GetInsertPtr(ref->GetConcept()));
+}
+
+
+//------------------------------------------------------------------------------
+GConceptRef* GVector::GetRef(GConceptRef* ref)
 {
 	if(!ref)
 		mThrowGException("null pointer");
 	return(GetInsertPtr(ref->GetConcept()));
+}
+
+
+//------------------------------------------------------------------------------
+const GConceptRef* GVector::GetRef(GConcept* concept) const
+{
+	if(!concept)
+		mThrowGException("null pointer");
+	return(const_cast<GVector*>(this)->GetInsertPtr(concept));
 }
 
 

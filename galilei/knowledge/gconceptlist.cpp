@@ -6,7 +6,7 @@
 
 	XML Index - Implementation.
 
-	Copyright 2007-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2007-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2007-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -74,7 +74,7 @@ GConceptList::GConceptList(GSession* session,GConceptType* type,const R::RString
 	: GConcept(session,name,type), Concepts(concepts)
 {
 	if(GetName().IsEmpty())
-		SetName(GetDef());
+		Name=GetDef();
 }
 
 

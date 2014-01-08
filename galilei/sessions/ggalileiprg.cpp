@@ -6,7 +6,7 @@
 
 	Program running a Session object  - Implementation.
 
-	Copyright 2002-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2002-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2002-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -1183,16 +1183,11 @@ public:
 		if(!Owner)
 			throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
 
-		if(args.GetNb()!=1)
-			throw RPrgException(prg,"Method needs one parameter");
-		bool RAM;
-		if((args[0]->GetValue(prg))=="0")
-			RAM=false;
-		else
-			RAM=true;
+		if(args.GetNb())
+			throw RPrgException(prg,"Method needs no parameter");
 		if(!GALILEIApp->GetCurrentPlugIn<GDocAnalyze>("DocAnalyze"))
 			throw RPrgException(prg,"No Document Analyzing Method chosen.");
-		Owner->Session->AnalyzeDocs(RAM,dynamic_cast<GSlot*>(o));
+		Owner->Session->AnalyzeDocs(dynamic_cast<GSlot*>(o));
 	}
 };
 

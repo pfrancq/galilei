@@ -6,7 +6,7 @@
 
 	Generic GALILEI Session - Implementation.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2004 by Julien Lamoral.
 	Copyright 2001-2004 by Valery Vandaele.
 	Copyright 2001-2004 by David Wartel.
@@ -54,7 +54,7 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GKB::GKB(void)
-	: Storage(0), SaveResults(true),
+	: State(osLatest), Storage(0), SaveResults(true),
 	  ConceptTypes(20), ConceptTypesByIds(20),
 	  Concepts(50000,10000),
 	  Predicates(30), PredicatesByIds(30), Statements(5000,5000)
@@ -407,7 +407,7 @@ GConcept* GKB::RenameConcept(GConcept* concept,const R::RString& name)
 	{
 		// Rename really the concept
 		concept->GetType()->DeleteConcept(concept);
-		concept->SetName(name);
+		concept->Name=name;
 		concept->GetType()->InsertConcept(concept);
 		Storage->SaveConcept(concept);
 		return(concept);

@@ -6,7 +6,7 @@
 
 	Community - Header.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -51,13 +51,8 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Community.
 */
-class GCommunity : public GGroup<GProfile,GCommunity,otCommunity,eCreateCommunity,eNewCommunity,eDelCommunity,eUpdateCommunity,eCommunityModified>
+class GCommunity : public GGroup<GProfile,GCommunity,otCommunity>
 {
-	/**
-	 * Method used to correctly instantiate some template methods.
-	 */
-	void PrivateInit(void);
-
 public:
 
 	/**
@@ -100,6 +95,23 @@ public:
 	 * @param docs           List that will be filled (and cleared before).
 	 */
 	void GetRelevantDocs(GCommunityDocs& docs);
+
+	/**
+	* Update the representation of the community once a computation was done. The
+	* computed date and the status are updated.
+	*
+	* If the community is an internal one, the following steps are done:
+	* -# An 'hCommunities[oeAboutToBeUpdated]' notification is send.
+	* -# The references are updated.
+	* -# Existing in memory description is replaced.
+	* -# If necessary, the community and its description are saved.
+	* -# An 'hCommunities[oeUpdated]' notification is send.
+	*
+	* If the community is an external one, its description is replaced.
+	* @param desc            Description to assign.
+	* \warning The description is cleared by this method.
+	*/
+	void Update(GDescription& desc);
 
 	/**
 	* Destructor of a group.

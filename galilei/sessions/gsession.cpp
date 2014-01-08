@@ -6,7 +6,7 @@
 
 	Generic GALILEI Session - Implementation.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2004 by Julien Lamoral.
 	Copyright 2001-2004 by Valery Vandaele.
 	Copyright 2001-2004 by David Wartel.
@@ -175,21 +175,23 @@ GSession::GSession(size_t id,const RString& name)
 	:
 	  RObject(name),
 	  RConfig("lib/galilei/sessions",name),
-	  GObjects<GDoc,eCreateDoc>(20000,"Documents",otDoc),
-	  GObjects<GTopic,eCreateTopic>(200,"Topics",otTopic),
-	  GObjects<GUser,eCreateUser>(1000,"Users",otUser),
-	  GObjects<GProfile,eCreateProfile>(5000,"Profiles",otProfile),
-	  GObjects<GCommunity,eCreateCommunity>(100,"Communities",otCommunity),
+	  GObjects<GDoc,hDocs>(20000,"Documents",otDoc),
+	  GObjects<GTopic,hTopics>(200,"Topics",otTopic),
+	  GObjects<GUser,hUsers>(1000,"Users",otUser),
+	  GObjects<GProfile,hProfiles>(5000,"Profiles",otProfile),
+	  GObjects<GCommunity,hCommunities>(100,"Communities",otCommunity),
 	  GClasses(300),
 	  Id(id), Name(name),
 	  ValidConfigFile(false), Log("/var/log/galilei/"+name+".log"),
 	  CurrentRandom(1), Random(RRandom::Good,1),
 	  ExternBreak(false),
-	  Simulator(0), Subjects(200), DocAnalyze(this)
+	  Simulator(0), DocAnalyze(this)
 
 {
 	// Log files
 	Log.Open(RIO::Append);
+
+	//reinterpret_cast<RString*>(-1)
 }
 
 
@@ -230,7 +232,7 @@ void GSession::SetCurrentRandom(int rand)
 
 
 //------------------------------------------------------------------------------
-void GSession::AnalyzeDoc(GDoc* doc,bool ram,GSlot* rec)
+void GSession::AnalyzeDoc(GDoc* doc,GSlot* rec)
 {
 	if(rec)
 	{
@@ -239,12 +241,12 @@ void GSession::AnalyzeDoc(GDoc* doc,bool ram,GSlot* rec)
 	}
 	if(ExternBreak) return;
 
-	DocAnalyze.Analyze(doc,ram);
+	DocAnalyze.Analyze(doc);
 }
 
 
 //------------------------------------------------------------------------------
-void GSession::AnalyzeDocs(bool ram,GSlot* rec)
+void GSession::AnalyzeDocs(GSlot* rec)
 {
 	// Opens and appends the Log File for all errors occurring in the filter or analyze phase.
 	if(rec)
@@ -262,7 +264,7 @@ void GSession::AnalyzeDocs(bool ram,GSlot* rec)
 	{
 		try
 		{
-			AnalyzeDoc(Docs(),ram,rec);
+			AnalyzeDoc(Docs(),rec);
 		}
 		// If a log file specified -> write to it and it is OK
 		// If no log file specified -> Propagate error
@@ -328,11 +330,11 @@ void GSession::ApplyConfig(void)
 	// Create (if necessary) the directory corresponding to the name of the session
 	// Create all the index files
 	RString Dir(GALILEIApp->GetIndexDir()+RFile::GetDirSeparator()+Name+RFile::GetDirSeparator());
-	GObjects<GDoc,eCreateDoc>::OpenFiles(this,Name);
-	GObjects<GTopic,eCreateTopic>::OpenFiles(this,Name);
-	GObjects<GUser,eCreateUser>::OpenFiles(this,Name);
-	GObjects<GProfile,eCreateProfile>::OpenFiles(this,Name);
-	GObjects<GCommunity,eCreateCommunity>::OpenFiles(this,Name);
+	GObjects<GDoc,hDocs>::OpenFiles(this,Name);
+	GObjects<GTopic,hTopics>::OpenFiles(this,Name);
+	GObjects<GUser,hUsers>::OpenFiles(this,Name);
+	GObjects<GProfile,hProfiles>::OpenFiles(this,Name);
+	GObjects<GCommunity,hCommunities>::OpenFiles(this,Name);
 	GClasses::OpenFiles(this,Name);
 }
 
@@ -355,17 +357,8 @@ void GSession::CalcProfile(GProfile* profile,GProfileCalc* method,GLinkCalc* lin
 
 	if(ExternBreak) return;
 	if(!profile->MustCompute()) return;
-	bool Save(SaveResults&&(profile->GetId()!=cNoRef));
-	bool DelRefs(profile->IsDefined());
 	method->Compute(profile);
-	profile->Update(this,method->Description,DelRefs);
-	if(Save)
-	{
-		if(profile->IsDefined())
-			profile->SaveDesc();
-		Storage->SaveObj(profile);
-		profile->SetState(osSaved);
-	}
+	profile->Update(method->Description);
 }
 
 
@@ -462,7 +455,7 @@ void GSession::Reset(tObjType type)
 		case otDoc:
 			ClearRefs(this,otDoc);
 			ClearIndex(this,otDoc);
-			GObjects<GDoc,eCreateDoc>::Clear(pDoc);
+			GObjects<GDoc,hDocs>::Clear(pDoc);
 			if(SaveResults)
 				Storage->Clear(otDoc);
 			break;
@@ -480,7 +473,7 @@ void GSession::Reset(tObjType type)
 		}
 		case otUser:
 		{
-			GObjects<GUser,eCreateUser>::Clear(pUser);
+			GObjects<GUser,hUsers>::Clear(pUser);
 			if(SaveResults)
 				Storage->Clear(otUser);
 			break;
@@ -489,7 +482,7 @@ void GSession::Reset(tObjType type)
 		{
 			ClearRefs(this,otProfile);
 			ClearIndex(this,otProfile);
-			GObjects<GProfile,eCreateProfile>::Clear(pProfile);
+			GObjects<GProfile,hProfiles>::Clear(pProfile);
 			if(SaveResults)
 			{
 				Storage->Clear(otProfile);
@@ -501,7 +494,7 @@ void GSession::Reset(tObjType type)
 		case otCommunity:
 			ClearRefs(this,otCommunity);
 			ClearIndex(this,otCommunity);
-			GObjects<GCommunity,eCreateCommunity>::Clear(pCommunity);
+			GObjects<GCommunity,hCommunities>::Clear(pCommunity);
 			if(SaveResults)
 			{
 				Storage->Clear(otCommunity);
@@ -512,7 +505,7 @@ void GSession::Reset(tObjType type)
 		case otTopic:
 			ClearRefs(this,otTopic);
 			ClearIndex(this,otTopic);
-			GObjects<GTopic,eCreateTopic>::Clear(pTopic);
+			GObjects<GTopic,hTopics>::Clear(pTopic);
 			if(SaveResults)
 			{
 				Storage->Clear(otTopic);
@@ -532,7 +525,7 @@ void GSession::Reset(tObjType type)
 			}
 			break;
 		case otSubject:
-			Subjects.Clear();
+			GSubjects::Clear();
 			break;
 		default:
 			mThrowGException(GetObjType(type,true,true)+" are not managed");
@@ -553,16 +546,16 @@ void GSession::ResetFile(tObjType type,tObjType meta)
 			switch(meta)
 			{
 				case otDescFile:
-					if(GObjects<GDoc,eCreateDoc>::Desc)
-						GObjects<GDoc,eCreateDoc>::Desc->Clear();
+					if(GObjects<GDoc,hDocs>::Desc)
+						GObjects<GDoc,hDocs>::Desc->Clear();
 					break;
 				case otTreeFile:
-					if(GObjects<GDoc,eCreateDoc>::Tree)
-						GObjects<GDoc,eCreateDoc>::Tree->Clear();
+					if(GObjects<GDoc,hDocs>::Tree)
+						GObjects<GDoc,hDocs>::Tree->Clear();
 					break;
 				case otIndexFile:
-					if(GObjects<GDoc,eCreateDoc>::Index)
-						GObjects<GDoc,eCreateDoc>::Index->Clear();
+					if(GObjects<GDoc,hDocs>::Index)
+						GObjects<GDoc,hDocs>::Index->Clear();
 					break;
 				default:
 					mThrowGException(GetObjType(meta,true,true)+" is not a valid file type for documents");
@@ -573,12 +566,12 @@ void GSession::ResetFile(tObjType type,tObjType meta)
 			switch(meta)
 			{
 				case otDescFile:
-					if(GObjects<GProfile,eCreateProfile>::Desc)
-						GObjects<GProfile,eCreateProfile>::Desc->Clear();
+					if(GObjects<GProfile,hProfiles>::Desc)
+						GObjects<GProfile,hProfiles>::Desc->Clear();
 					break;
 				case otIndexFile:
-					if(GObjects<GProfile,eCreateProfile>::Index)
-						GObjects<GProfile,eCreateProfile>::Index->Clear();
+					if(GObjects<GProfile,hProfiles>::Index)
+						GObjects<GProfile,hProfiles>::Index->Clear();
 					break;
 				default:
 					mThrowGException(GetObjType(meta,true,true)+" is not a valid file type for profiles");
@@ -589,12 +582,12 @@ void GSession::ResetFile(tObjType type,tObjType meta)
 			switch(meta)
 			{
 				case otDescFile:
-					if(GObjects<GCommunity,eCreateCommunity>::Desc)
-						GObjects<GCommunity,eCreateCommunity>::Desc->Clear();
+					if(GObjects<GCommunity,hCommunities>::Desc)
+						GObjects<GCommunity,hCommunities>::Desc->Clear();
 					break;
 				case otIndexFile:
-					if(GObjects<GCommunity,eCreateCommunity>::Index)
-						GObjects<GCommunity,eCreateCommunity>::Index->Clear();
+					if(GObjects<GCommunity,hCommunities>::Index)
+						GObjects<GCommunity,hCommunities>::Index->Clear();
 					break;
 				default:
 					mThrowGException(GetObjType(meta,true,true)+" is not a valid file type for communities");
@@ -605,12 +598,12 @@ void GSession::ResetFile(tObjType type,tObjType meta)
 			switch(meta)
 			{
 				case otDescFile:
-					if(GObjects<GTopic,eCreateTopic>::Desc)
-						GObjects<GTopic,eCreateTopic>::Desc->Clear();
+					if(GObjects<GTopic,hTopics>::Desc)
+						GObjects<GTopic,hTopics>::Desc->Clear();
 					break;
 				case otIndexFile:
-					if(GObjects<GTopic,eCreateTopic>::Index)
-						GObjects<GTopic,eCreateTopic>::Index->Clear();
+					if(GObjects<GTopic,hTopics>::Index)
+						GObjects<GTopic,hTopics>::Index->Clear();
 					break;
 				default:
 					mThrowGException(GetObjType(meta,true,true)+" is not a valid file type for topics");
@@ -621,12 +614,12 @@ void GSession::ResetFile(tObjType type,tObjType meta)
 			switch(meta)
 			{
 				case otDescFile:
-					if(GObjects<GClass,eCreateClass>::Desc)
-						GObjects<GClass,eCreateClass>::Desc->Clear();
+					if(GObjects<GClass,hClasses>::Desc)
+						GObjects<GClass,hClasses>::Desc->Clear();
 					break;
 				case otIndexFile:
-					if(GObjects<GClass,eCreateClass>::Index)
-						GObjects<GClass,eCreateClass>::Index->Clear();
+					if(GObjects<GClass,hClasses>::Index)
+						GObjects<GClass,hClasses>::Index->Clear();
 					break;
 				default:
 					mThrowGException(GetObjType(meta,true,true)+" is not a valid file type for classes");
@@ -720,19 +713,6 @@ void GSession::ForceReCompute(tObjType type)
 }
 
 
-//-----------------------------------------------------------------------------
-size_t GSession::FillSelectedDocs(GDoc** docs)
-{
-	return(Subjects.SelectedDocs.GetTab(docs,1,Subjects.SelectedDocs.GetMaxPos()));
-}
-
-
-//-----------------------------------------------------------------------------
-size_t GSession::FillSubjects(GSubject** subjects)
-{
-	return(Subjects.GetTab(subjects));
-}
-
 
 //------------------------------------------------------------------------------
 size_t GSession::GetNbObjs(tObjType type) const
@@ -740,22 +720,23 @@ size_t GSession::GetNbObjs(tObjType type) const
 	switch(type)
 	{
 		case otUser:
-			return(GObjects<GUser,eCreateUser>::Objects.GetNb());
+			return(GObjects<GUser,hUsers>::Objects.GetNb());
 		case otConcept:
 			return(Concepts.GetNb());
 		case otConceptType:
 			return(ConceptTypes.GetNb());
 		case otDoc:
-			return(GObjects<GDoc,eCreateDoc>::Objects.GetNb());
+			return(GObjects<GDoc,hDocs>::Objects.GetNb());
 		case otProfile:
-			return(GObjects<GProfile,eCreateProfile>::Objects.GetNb());
+			return(GObjects<GProfile,hProfiles>::Objects.GetNb());
 		case otCommunity:
-			return(GObjects<GCommunity,eCreateCommunity>::Objects.GetNb());
+			return(GObjects<GCommunity,hCommunities>::Objects.GetNb());
 		case otTopic:
-			return(GObjects<GTopic,eCreateTopic>::Objects.GetNb());
+			return(GObjects<GTopic,hTopics>::Objects.GetNb());
+		case otClass:
+			return(GClasses::Objects.GetNb());
 		case otSubject:
-			LoadSubjects();
-			return(Subjects.GetNbNodes());
+			return(GetNbObjs(pSubject));
 		default:
 			mThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
@@ -772,21 +753,25 @@ size_t GSession::GetMaxObjId(tObjType type) const
 				return(0);
 			return(Concepts[Concepts.GetMaxPos()]->GetId());
 		case otDoc:
-			if(!GObjects<GDoc,eCreateDoc>::Objects.GetNb())
+			if(!GObjects<GDoc,hDocs>::Objects.GetNb())
 				return(0);
-			return(GObjects<GDoc,eCreateDoc>::Objects[GObjects<GDoc,eCreateDoc>::Objects.GetMaxPos()]->GetId());
+			return(GObjects<GDoc,hDocs>::Objects[GObjects<GDoc,hDocs>::Objects.GetMaxPos()]->GetId());
 		case otProfile:
-			if(!GObjects<GProfile,eCreateProfile>::Objects.GetNb())
+			if(!GObjects<GProfile,hProfiles>::Objects.GetNb())
 				return(0);
-			return(GObjects<GProfile,eCreateProfile>::Objects[GObjects<GProfile,eCreateProfile>::Objects.GetMaxPos()]->GetId());
+			return(GObjects<GProfile,hProfiles>::Objects[GObjects<GProfile,hProfiles>::Objects.GetMaxPos()]->GetId());
 		case otCommunity:
-			if(!GObjects<GCommunity,eCreateCommunity>::Objects.GetNb())
+			if(!GObjects<GCommunity,hCommunities>::Objects.GetNb())
 				return(0);
-			return(GObjects<GCommunity,eCreateCommunity>::Objects[GObjects<GCommunity,eCreateCommunity>::Objects.GetMaxPos()]->GetId());
+			return(GObjects<GCommunity,hCommunities>::Objects[GObjects<GCommunity,hCommunities>::Objects.GetMaxPos()]->GetId());
 		case otTopic:
-			if(!GObjects<GTopic,eCreateTopic>::Objects.GetNb())
+			if(!GObjects<GTopic,hTopics>::Objects.GetNb())
 				return(0);
-			return(GObjects<GTopic,eCreateTopic>::Objects[GObjects<GTopic,eCreateTopic>::Objects.GetMaxPos()]->GetId());
+			return(GObjects<GTopic,hTopics>::Objects[GObjects<GTopic,hTopics>::Objects.GetMaxPos()]->GetId());
+		case otClass:
+			if(!GClasses::Objects.GetNb())
+				return(0);
+			return(GClasses::Objects[GClasses::Objects.GetMaxPos()]->GetId());
 		default:
 			mThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
@@ -801,9 +786,9 @@ size_t GSession::GetMaxObjPos(tObjType type) const
 		case otConcept:
 			return(Concepts.GetMaxPos());
 		case otDoc:
-			return(GObjects<GDoc,eCreateDoc>::Objects.GetMaxPos());
+			return(GObjects<GDoc,hDocs>::Objects.GetMaxPos());
 		case otTopic:
-			return(GObjects<GTopic,eCreateTopic>::Objects.GetMaxPos());
+			return(GObjects<GTopic,hTopics>::Objects.GetMaxPos());
 		default:
 			mThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
@@ -842,68 +827,24 @@ size_t GSession::GetObjs(tObjType type,GObject** &tab,bool alloc)
 	{
 		case otDoc:
 			if(alloc)
-				tab=new GObject*[GObjects<GDoc,eCreateDoc>::Objects.GetMaxPos()+1];
-			return(GObjects<GDoc,eCreateDoc>::Objects.GetTab(reinterpret_cast<void**>(tab)));
+				tab=new GObject*[GObjects<GDoc,hDocs>::Objects.GetMaxPos()+1];
+			return(GObjects<GDoc,hDocs>::Objects.GetTab(reinterpret_cast<void**>(tab)));
 		case otProfile:
 			if(alloc)
-				tab=new GObject*[GObjects<GProfile,eCreateProfile>::Objects.GetMaxPos()+1];
-			return(GObjects<GProfile,eCreateProfile>::Objects.GetTab(reinterpret_cast<void**>(tab)));
+				tab=new GObject*[GObjects<GProfile,hProfiles>::Objects.GetMaxPos()+1];
+			return(GObjects<GProfile,hProfiles>::Objects.GetTab(reinterpret_cast<void**>(tab)));
 		case otCommunity:
 			if(alloc)
-				tab=new GObject*[GObjects<GCommunity,eCreateCommunity>::Objects.GetMaxPos()+1];
-			return(GObjects<GCommunity,eCreateCommunity>::Objects.GetTab(reinterpret_cast<void**>(tab)));
+				tab=new GObject*[GObjects<GCommunity,hCommunities>::Objects.GetMaxPos()+1];
+			return(GObjects<GCommunity,hCommunities>::Objects.GetTab(reinterpret_cast<void**>(tab)));
 		case otTopic:
 			if(alloc)
-				tab=new GObject*[GObjects<GTopic,eCreateTopic>::Objects.GetMaxPos()+1];
-			return(GObjects<GTopic,eCreateTopic>::Objects.GetTab(reinterpret_cast<void**>(tab)));
+				tab=new GObject*[GObjects<GTopic,hTopics>::Objects.GetMaxPos()+1];
+			return(GObjects<GTopic,hTopics>::Objects.GetTab(reinterpret_cast<void**>(tab)));
 		default:
 			mThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
 }
-
-
-//-----------------------------------------------------------------------------
-size_t GSession::GetMaxDepth(void) const
-{
-	LoadSubjects();
-	return(Subjects.MaxDepth);
-}
-
-
-//-----------------------------------------------------------------------------
-size_t GSession::GetNbIdealGroups(tObjType type) const
-{
-	LoadSubjects();
-	size_t nb(0);
-	RNodeCursor<GSubjects,GSubject> Cur(Subjects);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		nb+=Cur()->GetNbIdealGroups(type);
-	return(nb);
-}
-
-
-//------------------------------------------------------------------------------
-size_t GSession::GetNbSubjects(GDoc* doc) const
-{
-	LoadSubjects();
-	const R::RContainer<GSubject,false,false>* line(Subjects.DocsSubjects.GetPtrAt(doc->GetId()));
-	if(!line)
-		return(0);
-	return(line->GetNb());
-}
-
-
-//-----------------------------------------------------------------------------
-size_t GSession::GetNbTopicsDocs(void) const
-{
-	LoadSubjects();
-	size_t nb(0);
-	RNodeCursor<GSubjects,GSubject> Cur(Subjects);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		nb+=Cur()->GetNbTopicsDocs();
-	return(nb);
-}
-
 
 
 //------------------------------------------------------------------------------
@@ -915,92 +856,6 @@ GSimulator* GSession::GetSimulator(void) const
 		Simulator->ApplyParams();
 	}
 	return(Simulator);
-}
-
-
-//------------------------------------------------------------------------------
-GSubject* GSession::GetSubject(size_t id) const
-{
-	LoadSubjects();
-	return(Subjects.Subjects.GetPtr(id));
-}
-
-
-//------------------------------------------------------------------------------
-const GSubject* GSession::GetSubject(GCommunity* com) const
-{
-	LoadSubjects();
-	RCursor<GSubject> Cur(GetSubjects());
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		if(Cur()->Community==com)
-			return(Cur());
-	}
-	return(0);
-}
-
-
-//------------------------------------------------------------------------------
-const GSubject* GSession::GetSubject(GDoc* doc) const
-{
-	const R::RContainer<GSubject,false,false>* line(Subjects.DocsSubjects.GetPtrAt(doc->GetId()));
-	if(!line)
-		return(0);
-	if(line->GetNb()>1)
-		mThrowGException("Document has multiple subjects");
-	return((*line)[0]);
-}
-
-
-//------------------------------------------------------------------------------
-GSubject* GSession::GetSubject(const RString& name) const
-{
-	LoadSubjects();
-	return(Subjects.GetNode(name));
-}
-
-
-//------------------------------------------------------------------------------
-const GSubject* GSession::GetSubject(GProfile* prof) const
-{
-	LoadSubjects();
-	return(Subjects.ProfilesSubject.GetPtrAt(prof->GetId()));
-}
-
-
-//------------------------------------------------------------------------------
-RCursor<GSubject> GSession::GetSubjects(void) const
-{
-	LoadSubjects();
-	return(Subjects.GetSubjects());
-}
-
-
-//------------------------------------------------------------------------------
-R::RCursor<GSubject> GSession::GetSubjects(GDoc* doc) const
-{
-	LoadSubjects();
-	const R::RContainer<GSubject,false,false>* line(Subjects.DocsSubjects.GetPtrAt(doc->GetId()));
-	if(line)
-		return(R::RCursor<GSubject>(*line));
-	return(R::RCursor<GSubject>());
-}
-
-
-//------------------------------------------------------------------------------
-RNodeCursor<GSubjects,GSubject> GSession::GetSubjects(const GSubject* subject) const
-{
-	LoadSubjects();
-	if(subject)
-		return(RNodeCursor<GSubjects,GSubject>(subject));
-	return(RNodeCursor<GSubjects,GSubject>(Subjects));
-}
-
-
-//------------------------------------------------------------------------------
-double GSession::GetUpOperationsCost(const GSubject* u,const GSubject* v) const
-{
-	return(Subjects.GetUpOperationsCost(u,v));
 }
 
 
@@ -1023,17 +878,8 @@ void GSession::GroupDocs(GSlot* rec)
 	for(Topic.Start();!Topic.End();Topic.Next())
 	{
 		// Compute the topic description
-		bool DelRefs(Topic()->IsDefined());
 		CalcDesc->Compute(Topic());
-		Topic()->Update(this,CalcDesc->Description,DelRefs);
-
-		if(SaveResults)
-		{
-			if(Topic()->IsDefined())
-				Topic()->SaveDesc();
-			Storage->SaveObj(Topic());
-			Topic()->SetState(osSaved);
-		}
+		Topic()->Update(CalcDesc->Description);
 	}
 	FlushDesc(pTopic);   // Force to save all topics description
 }
@@ -1056,17 +902,8 @@ void GSession::GroupProfiles(GSlot* rec)
 	for(Community.Start();!Community.End();Community.Next())
 	{
 		// Compute the community description
-		bool DelRefs(Community()->IsDefined());
 		CalcDesc->Compute(Community());
-		Community()->Update(this,CalcDesc->Description,DelRefs);
-
-		if(SaveResults)
-		{
-			if(Community()->IsDefined())
-				Community()->SaveDesc();
-			Storage->SaveObj(Community());
-			Community()->SetState(osSaved);
-		}
+		Community()->Update(CalcDesc->Description);
 	}
 	FlushDesc(pCommunity);   // Force to save all communities description
 }
@@ -1077,12 +914,12 @@ void GSession::Init(void)
 {
 	// Create the configuration parameters
 	GSimulator::CreateConfig(this);
-	GObjects<GDoc,eCreateDoc>::Init(this);
-	GObjects<GTopic,eCreateTopic>::Init(this);
-	GObjects<GUser,eCreateUser>::Init(this);
-	GObjects<GProfile,eCreateProfile>::Init(this);
-	GObjects<GCommunity,eCreateCommunity>::Init(this);
-	GObjects<GClass,eCreateClass>::Init(this);
+	GObjects<GDoc,hDocs>::Init(this);
+	GObjects<GTopic,hTopics>::Init(this);
+	GObjects<GUser,hUsers>::Init(this);
+	GObjects<GProfile,hProfiles>::Init(this);
+	GObjects<GCommunity,hCommunities>::Init(this);
+	GClasses::Init(this);
 
 	// Create the configuration parameters for the plug-ins
 	R::RCursor<GPlugInManager> Managers(GALILEIApp->GetManagers());
@@ -1097,65 +934,6 @@ void GSession::Init(void)
 
 	// This is valid configuration file
 	ValidConfigFile=true;
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::Insert(GDoc* doc,size_t subjectid,bool selected)
-{
-	LoadSubjects();
-
-	// Find the subject
-	GSubject* Subject(Subjects.GetNode(subjectid));
-	if(!Subject)
-		mThrowGException("No subject with identifier '"+RString::Number(subjectid)+"'");
-
-	// Look if the document must be insert in CategorizedDocs
-	bool Find;
-	size_t Pos(Subject->CategorizedDocs.GetIndex(doc,Find));
-	if(!Find)
-		Subject->CategorizedDocs.InsertPtrAt(doc,Pos,false);
-
-	// If it is not selected -> nothing to do
-	if(!selected)
-		return;
-
-	// Add the document in Subjects
-	R::RContainer<GSubject,false,false>* line(Subjects.DocsSubjects.GetPtrAt(doc->GetId()));
-	if(!line)
-		Subjects.DocsSubjects.InsertPtrAt(line=new R::RContainer<GSubject,false,false>(10,5),doc->GetId(),true);
-	Pos=line->GetIndex(*Subject,Find);
-	if(!Find)
-		line->InsertPtrAt(Subject,Pos,false);
-
-	// Add the document in Subject
-	Pos=Subject->Docs.GetIndex(doc,Find);
-	if(!Find)
-		Subject->Docs.InsertPtrAt(doc,Pos,false);
-
-	// Emit a selection signal
-	doc->PostNotification(eSelectDoc);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::Insert(GProfile* profile,size_t subjectid)
-{
-	LoadSubjects();
-	GSubject* subject(Subjects.Subjects.GetPtr(subjectid));
-	if(!subject)
-		mThrowGException("No subject with identifier '"+RString::Number(subjectid)+"'");
-	Subjects.ProfilesSubject.InsertPtrAt(subject,profile->GetId(),true);
-	subject->Profiles.InsertPtr(profile);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::Insert(GSubject* to,GSubject* subject)
-{
-	LoadSubjects();
-	Subjects.InsertNode(to,subject);
-	Subjects.Subjects.InsertPtr(subject);
 }
 
 
@@ -1181,43 +959,6 @@ bool GSession::InsertFdbk(size_t profid,size_t docid,tFdbkType fdbk,R::RDate don
 
 
 //------------------------------------------------------------------------------
-bool GSession::IsFromParentSubject(GDoc* doc,const GSubject* s) const
-{
-	LoadSubjects();
-
-	// Verify that a parent exist and that it is not the root node
-	if(!s->Parent)
-		return(false);
-
-	for(s=s->Parent;!s;s=s->Parent)
-		if(s->Docs.IsIn(doc))
-			return(true);
-	return(false);
-}
-
-
-//------------------------------------------------------------------------------
-bool GSession::IsFromSubject(GDoc* doc,const GSubject* s) const
-{
-	LoadSubjects();
-	const R::RContainer<GSubject,false,false>* line(Subjects.DocsSubjects.GetPtrAt(doc->GetId()));
-	if(!line)
-		return(false);
-	return(line->IsIn(*s));
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::LoadSubjects(void) const
-{
-	if(Subjects.SubjectsLoaded)
-		return;
-	const_cast<GSession*>(this)->Subjects.SubjectsLoaded=true;
-	const_cast<GSession*>(this)->Storage->LoadSubjects();
-}
-
-
-//------------------------------------------------------------------------------
 void GSession::RequestMetaEngine(const R::RString query)
 {
 	GMetaEngine* MetaEngine(GALILEIApp->GetCurrentPlugIn<GMetaEngine>("MetaEngine"));
@@ -1234,17 +975,7 @@ void GSession::ReInit(void)
 	Reset(otCommunity);
 	Reset(otProfile);
 	Reset(otUser);
-
-	// Re-initialize the subjects
-	LoadSubjects();
-	RNodeCursor<GSubjects,GSubject> Subject(Subjects);
-	for(Subject.Start();!Subject.End();Subject.Next())
-		Subject()->ReInit();
-
-	// Clear the documents and profiles assignment
-	Subjects.ProfilesSubject.Clear();
-	Subjects.DocsSubjects.Clear();
-	Subjects.SelectedDocs.Clear();
+	GSubjects::ReInit();
 }
 
 
@@ -1259,109 +990,6 @@ void GSession::RunTool(const RString& name,const RString& list,GSlot* slot,bool 
 		Tool->Run(slot);
 	}
 	HANDLEALLEXCEPTIONS(slot,"Error while executing the tool '"+name+"' in '"+list+"': ")
-}
-
-
-
-//------------------------------------------------------------------------------
-void GSession::SetDescType(tSubjectDesc type)
-{
-	if(type!=Subjects.DescType)
-	{
-		// All descriptions of the subjects must be deleted.
-		RCursor<GSubject> Cur(GetSubjects());
-		for(Cur.Start();!Cur.End();Cur.Next())
-		{
-			if(Cur()->Vectors)
-			{
-				delete Cur()->Vectors;
-				Cur()->Vectors=0;
-			}
-		}
-	}
-	Subjects.DescType=type;
-}
-
-
-//------------------------------------------------------------------------------
-struct NewGenericSubject
-{
-	GSubject* Subject;
-	GSubject* Parent;
-
-	NewGenericSubject(GSubject* subject,GSubject* parent) : Subject(subject), Parent(parent) {}
-	int Compare(const NewGenericSubject&) const {return(-1);}
-};
-void GSession::TestSubjects(void)
-{
-	RContainer<GSubject,false,false> ToDel(500); // Subjects to delete
-	RContainer<NewGenericSubject,true,false> ToIns(500);   // Subjects to insert
-
-	size_t NbNoLeaf(0);
-	size_t NbLeaf(0);
-	RCursor<GSubject> Cur(GetSubjects());
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		GSubject* Subject(Cur());
-		if(Subject->GetNbSubjects()&&Subject->Docs.GetNb())
-		{
-			// If no child subjects have documents or children -> it is OK.
-			bool OK(true);
-			RNodeCursor<GSubjects,GSubject> Cur2(Subject);
-			for(Cur2.Start();(!Cur2.End())&&OK;Cur2.Next())
-				if(Cur2()->GetNbSubjects()||Cur2()->CategorizedDocs.GetNb())
-					OK=false;
-			if(!OK)
-			{
-				NbNoLeaf++;
-
-				// Create a new subject
-				GSubject* NewSubject(new GSubject(this,Subjects.GetNbNodes()+NbNoLeaf,Subject->Name+" general",true));
-				ToIns.InsertPtr(new NewGenericSubject(NewSubject,Cur()));
-
-				// Transfer all the document from Cur() to subject
-				RCursor<GDoc> Docs(Subject->CategorizedDocs);
-				for(Docs.Start();!Docs.End();Docs.Next())
-					NewSubject->CategorizedDocs.InsertPtr(Docs());
-				Docs.Set(Subject->Docs);
-				for(Docs.Start();!Docs.End();Docs.Next())
-					NewSubject->Docs.InsertPtr(Docs());
-				Subject->CategorizedDocs.Clear();
-				Subject->Docs.Clear();
-			}
-		}
-		else if(!Subject->GetNbSubjects()&&!Subject->CategorizedDocs.GetNb())
-		{
-			ToDel.InsertPtr(Subject);
-			NbLeaf++;
-		}
-	}
-
-	// Delete the nodes
-	Cur.Set(ToDel);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		Subjects.DeleteNode(Cur(),true);
-
-	// Insert the nodes
-	RCursor<NewGenericSubject> New(ToIns);
-	for(New.Start();!New.End();New.Next())
-		Insert(New()->Parent,New()->Subject);
-
-	// Save if necessary
-	if(MustSaveResults())
-	{
-		Storage->Clear(otSubject);
-		Cur=GetSubjects();
-		for(Cur.Start();!Cur.End();Cur.Next())
-			Storage->SaveSubject(Cur());
-	}
-
-	cout<<"There are "<<GetNbObjs(otSubject)<<" subjects:"<<endl;
-	if(NbNoLeaf)
-		cout<<"  "<<NbNoLeaf<<" non-leaf subjects have some documents attached"<<endl;
-	if(NbLeaf)
-		cout<<"  "<<NbLeaf<<" leaf subjects have no documents attached"<<endl;
-	cout<<"  "<<static_cast<double>(NbNoLeaf+NbLeaf)*100.0/static_cast<double>(GetNbObjs(otSubject))<<"% of invalid subjects"<<endl;
 }
 
 
@@ -1386,6 +1014,47 @@ void GSession::UpdateCommunity(size_t profid)
 {
 	GProfile* prof(GetObj(pProfile,profid,false,false));
 	UpdateCommunity(prof);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::SetName(GUser* user,const RString& name,const RString& fullname)
+{
+	user->Name=name;
+	if(fullname.IsEmpty())
+		user->FullName=name;
+	else
+		user->FullName=fullname;
+	if((!Storage->IsAllInMemory())||(SaveResults))
+		Storage->SaveObj(user);
+}
+
+
+//-----------------------------------------------------------------------------
+void GSession::SetName(GProfile* prof,const RString& name)
+{
+	prof->Name=name;
+	if((!Storage->IsAllInMemory())||(SaveResults))
+		Storage->SaveObj(prof);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::SetSocial(GProfile* prof,bool social)
+{
+	prof->Social=social;
+	if((!Storage->IsAllInMemory())||(SaveResults))
+		Storage->SaveObj(prof);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::SetConfidence(GProfile* prof,double score,char level)
+{
+	prof->Score=score;
+	prof->Level=level;
+	if((!Storage->IsAllInMemory())||(SaveResults))
+		Storage->SaveObj(prof);
 }
 
 
@@ -1451,11 +1120,11 @@ bool GSession::IsDefined(const RContainer<GVector,true,true>& vectors)
 void GSession::Assign(GClass* theclass,GDescription& desc)
 {
 	theclass->Update(desc);
-	if(SaveResults)
-	{
-		theclass->SaveDesc();
-		Storage->SaveObj(theclass);
-	}
+//	if(SaveResults)
+//	{
+//		theclass->SaveDesc();
+//		Storage->SaveObj(theclass);
+//	}
 }
 
 

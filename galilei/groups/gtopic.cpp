@@ -6,7 +6,7 @@
 
 	Topic - Implementation.
 
-	Copyright 2008-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2008-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -50,27 +50,90 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void GTopic::PrivateInit(void)
-{
-	SetState(osNew);
-	SaveDesc();
-	AddRefs(Session,otTopic);
-	SetId(cNoRef);
-}
-
-
-//------------------------------------------------------------------------------
 GTopic::GTopic(GSession* session,const RString& name)
-	: GGroup<GDoc,GTopic,otTopic,eCreateTopic,eNewTopic,eDelTopic,eUpdateTopic,eTopicModified>(session,cNoRef,0,name,RDate::GetToday(),RDate::Null)
+	: GGroup<GDoc,GTopic,otTopic>(session,cNoRef,0,name,RDate::GetToday(),RDate::Null)
 {
 }
 
 
 //------------------------------------------------------------------------------
 GTopic::GTopic(GSession* session,size_t id,size_t blockid,const RString& name,const RDate& u,const RDate& c)
-	: GGroup<GDoc,GTopic,otTopic,eCreateTopic,eNewTopic,eDelTopic,eUpdateTopic,eTopicModified>(session,id,blockid,name,u,c)
+	: GGroup<GDoc,GTopic,otTopic>(session,id,blockid,name,u,c)
 {
 }
+
+
+//------------------------------------------------------------------------------
+void GTopic::Update(GDescription& desc)
+{
+	bool Save(Session->MustSaveResults());  // Must the results be saved on disk?
+	bool NullDesc;                          // The description must not stayed in memory?
+
+	// Look if the topic is internal one : Modify the references and indexes
+	if(Id!=cNoRef)
+	{
+		// Emit an event that it is about to be updated
+		PostNotification(hTopics[oeAboutToBeUpdated]);
+
+		// Modify the references
+		DelRefs(Session,otTopic);
+
+		// Look if the index must be modified
+		if(Save&&Session->DoCreateIndex(pTopic))
+			Session->UpdateIndex(pTopic,desc,Id,false);
+	}
+
+	// The description must be saved only for external topics or when a description is already loaded
+	if((Id==cNoRef)||Vectors)
+	{
+		GDescription::operator=(desc);
+		NullDesc=false;
+	}
+	else
+	{
+		Vectors=desc.Vectors;
+		NullDesc=true;
+	}
+
+	// Set the computed date and the status
+	Computed.SetToday();
+	State=osLatest;
+
+	// Look if the topic is internal one : Modify the references and indexes
+	if(Id!=cNoRef)
+	{
+		// Modify the references
+		AddRefs(Session,otTopic);
+
+		// Look if the index must be modified and the description and tree saved
+		if(Save)
+		{
+			if(Session->DoCreateIndex(pTopic))
+				Session->UpdateIndex(pTopic,desc,Id,true);
+
+			if(desc.IsDefined())
+				Session->SaveDesc(pTopic,*desc.Vectors,BlockId,Id);
+
+			Session->Storage->SaveObj(this);
+		}
+
+		// Emit an event that it was updated
+		PostNotification(hTopics[oeUpdated]);
+
+		// Verify if description must stay in memory
+		if(NullDesc)
+			Vectors=0;
+	}
+
+	// Clear the description
+	desc.Clear();
+
+	// Data must be set to dirty
+	if(Data)
+		Data->Dirty();
+}
+
+
 
 
 //------------------------------------------------------------------------------

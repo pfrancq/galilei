@@ -6,7 +6,7 @@
 
 	GALILEI Documentation - Header.
 
-	Copyright 2009-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2009-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -55,9 +55,26 @@ namespace GALILEI{
  * inheriting from GGALILEIApp. This class will manage the plug-ins and their
  * configurations. A global variable GALILEIApp is created.
  *
- * To work on a given "world" (a given set of documents and profiles), the
- * application should create a session through GALILEIApp.CreateSession. To
+ * To work on a given "world" (a given set of documents, users and profiles),
+ * the application should create a session through GALILEIApp.CreateSession. To
  * delete the session, GALILEIApp.DeleteSession should be called.
+ *
+ * The GSession is a complex class that inherits from several other classes that
+ * represent all the objects that are managed. These include :
+ * - GKB represents the knowledge base. It is a root class (virtually) inherited
+ *   by many of the parent classes of GSession (and all of the classes described
+ *   below).
+ * - GObjects<GDoc,hDocs> manages documents.
+ * - GObjects<GTopic,hTopics> manages topics (clusters of documents).
+ * - GObjects<GUser,hUsers> manages users.
+ * - GObjects<GProfile,hProfiles> manages profiles (a user has multiple
+ *   profiles).
+ * - GObjects<GCommunity,hCommunities> manages communities (clusters of
+ *   profiles).
+ * - GClasses manages classes (hierarchy of documents).
+ * - GSubjects manages subjects. A subject is an "ideal" group of documents and
+ *   profiles. It is uses for validation purposes (to verify if the topics and
+ *   communities computed are similar to groupings provided).
  */
 
 

@@ -6,7 +6,7 @@
 
 	Object List - Inline implementation.
 
-	Copyright 2011-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2011-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -44,17 +44,17 @@ const size_t SizeT3=3*sizeof(size_t);
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	GObjects<C,hCreate>::GObjects(size_t size,const R::RString& name,tObjType type)
-		: R::RObjectContainer<C,true>(1,size), ObjName(name), Type(type),
-		  Desc(0), Index(0), Tree(0), tmpRefs(size/2), Loaded(false), MaxObjs(0)
+template<class C,const R::hNotification* hEvents>
+	GObjects<C,hEvents>::GObjects(size_t size,const R::RString& name,tObjType type)
+		: R::RObjectContainer<C,true>(1,size), ObjName(name), Type(type), MaxObjs(0),
+		  Desc(0), Index(0), Tree(0), Loaded(false), Selected(size), tmpRefs(size/2)
 {
 }
 
 
 //------------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	void GObjects<C,hCreate>::Init(R::RConfig* config)
+template<class C,const R::hNotification* hEvents>
+	void GObjects<C,hEvents>::Init(R::RConfig* config)
 {
 	if(C::HasDesc())
 	{
@@ -84,8 +84,8 @@ template<class C,const R::hNotification& hCreate>
 
 
 //-----------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	void GObjects<C,hCreate>::OpenFiles(R::RConfig* config,R::RString subdir)
+template<class C,const R::hNotification* hEvents>
+	void GObjects<C,hEvents>::OpenFiles(R::RConfig* config,R::RString subdir)
 {
 	R::RString Dir(GALILEIApp->GetIndexDir()+R::RFile::GetDirSeparator()+subdir+R::RFile::GetDirSeparator());
 	try
@@ -150,64 +150,64 @@ template<class C,const R::hNotification& hCreate>
 
 
 //-----------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	bool GObjects<C,hCreate>::DoCreateIndex(const C*) const
+template<class C,const R::hNotification* hEvents>
+	bool GObjects<C,hEvents>::DoCreateIndex(const C*) const
 {
 	return(CreateIndex);
 }
 
 
 //-----------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	bool GObjects<C,hCreate>::DoCreateTree(const C*) const
+template<class C,const R::hNotification* hEvents>
+	bool GObjects<C,hEvents>::DoCreateTree(const C*) const
 {
 	return(CreateTree);
 }
 
 
 //-----------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	void GObjects<C,hCreate>::Clear(const C*)
+template<class C,const R::hNotification* hEvents>
+	void GObjects<C,hEvents>::Clear(const C*)
 {
 	R::RObjectContainer<C,true>::Clear();
 }
 
 
 //-----------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	size_t GObjects<C,hCreate>::GetNbObjs(const C*) const
+template<class C,const R::hNotification* hEvents>
+	size_t GObjects<C,hEvents>::GetNbObjs(const C*) const
 {
 	return(R::RObjectContainer<C,true>::GetNbObjs());
 }
 
 
 //-----------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	size_t GObjects<C,hCreate>::GetMaxObjId(const C*) const
+template<class C,const R::hNotification* hEvents>
+	size_t GObjects<C,hEvents>::GetMaxObjId(const C*) const
 {
 	return(R::RObjectContainer<C,true>::GetMaxObjId());
 }
 
 
 //-----------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	R::RCursor<C> GObjects<C,hCreate>::GetObjs(const C*) const
+template<class C,const R::hNotification* hEvents>
+	R::RCursor<C> GObjects<C,hEvents>::GetObjs(const C*) const
 {
 	return(R::RObjectContainer<C,true>::GetObjs(1));
 }
 
 
 //-----------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	size_t GObjects<C,hCreate>::GetObjs(C** &tab,bool alloc)
+template<class C,const R::hNotification* hEvents>
+	size_t GObjects<C,hEvents>::GetObjs(C** &tab,bool alloc)
 {
 	return(R::RObjectContainer<C,true>::GetObjs(tab,alloc,1));
 }
 
 
 //-------------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	C* GObjects<C,hCreate>::GetObj(const C*,size_t id,bool load,bool null)
+template<class C,const R::hNotification* hEvents>
+	C* GObjects<C,hEvents>::GetObj(const C*,size_t id,bool load,bool null)
 {
 	C* Obj(R::RObjectContainer<C,true>::GetObj(id));
 	if(Obj)
@@ -217,9 +217,11 @@ template<class C,const R::hNotification& hCreate>
 	if(load&&(!Storage->IsAllInMemory()))
 	{
 		// Load it and put in the list
+		State=osOnDemand;
 		Storage->LoadObj(Obj,id);
 		if(Obj)
 			InsertObj(Obj);
+		State=osLatest;
 	}
 
 	// Manage an non-existing object
@@ -235,18 +237,20 @@ template<class C,const R::hNotification& hCreate>
 
 
 //-------------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	C* GObjects<C,hCreate>::GetObj(const C*,const R::RString& name,bool load,bool null)
+template<class C,const R::hNotification* hEvents>
+	C* GObjects<C,hEvents>::GetObj(const C*,const R::RString& name,bool load,bool null)
 {
 	C* Obj(R::RObjectContainer<C,true>::GetObj(name));
 
 	if(load&&(!Storage->IsAllInMemory()))
 	{
 		// Load it and put in the list
+		State=osOnDemand;
 		C* Obj(0);
 		Storage->LoadObj(Obj,name);
 		if(Obj)
 			InsertObj(Obj);
+		State=osLatest;
 	}
 
 	if(!Obj)
@@ -261,8 +265,8 @@ template<class C,const R::hNotification& hCreate>
 
 
 //------------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	void GObjects<C,hCreate>::AssignId(C* obj)
+template<class C,const R::hNotification* hEvents>
+	void GObjects<C,hEvents>::AssignId(C* obj)
 {
 	// If all groups are not in memory -> use the database
 	if(!Storage->IsAllInMemory())
@@ -276,19 +280,21 @@ template<class C,const R::hNotification& hCreate>
 
 
 //------------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	void GObjects<C,hCreate>::LoadObjs(const C* obj)
+template<class C,const R::hNotification* hEvents>
+	void GObjects<C,hEvents>::LoadObjs(const C* obj)
 {
 	if(Loaded)
 		return;
+	State=osOnDemand;
 	Storage->LoadObjs(obj);
 	Loaded=true;
+	State=osLatest;
 }
 
 
 //------------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	void GObjects<C,hCreate>::LoadDesc(const C*,R::RContainer<GVector,true,true>* &vectors,size_t blockid,size_t id)
+template<class C,const R::hNotification* hEvents>
+	void GObjects<C,hEvents>::LoadDesc(const C*,R::RContainer<GVector,true,true>* &vectors,size_t blockid,size_t id)
 {
 	if(!Desc)
 		mThrowGException(GetObjType(Type,true,true)+" do not have descriptions");
@@ -340,8 +346,8 @@ template<class C,const R::hNotification& hCreate>
 
 
 //------------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	void GObjects<C,hCreate>::SaveDesc(const C*,const R::RContainer<GVector,true,true>& vectors,size_t& blockid,size_t id)
+template<class C,const R::hNotification* hEvents>
+	void GObjects<C,hEvents>::SaveDesc(const C*,const R::RContainer<GVector,true,true>& vectors,size_t& blockid,size_t id)
 {
 	if(!Desc)
 		mThrowGException(GetObjType(Type,true,true)+" do not have descriptions");
@@ -392,8 +398,8 @@ template<class C,const R::hNotification& hCreate>
 
 
 //------------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	void GObjects<C,hCreate>::FlushDesc(const C*)
+template<class C,const R::hNotification* hEvents>
+	void GObjects<C,hEvents>::FlushDesc(const C*)
 {
 	if(!Desc)
 		mThrowGException(GetObjType(Type,true,true)+" do not have descriptions");
@@ -403,8 +409,8 @@ template<class C,const R::hNotification& hCreate>
 
 
 //------------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	void GObjects<C,hCreate>::LoadIndex(const C*,GConcept* concept,R::RNumContainer<size_t,true>& refs)
+template<class C,const R::hNotification* hEvents>
+	void GObjects<C,hEvents>::LoadIndex(const C*,GConcept* concept,R::RNumContainer<size_t,true>& refs)
 {
 	if(!Index)
 		mThrowGException(GetObjType(Type,true,true)+" do not have index");
@@ -420,24 +426,24 @@ template<class C,const R::hNotification& hCreate>
 
 
 //------------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	void GObjects<C,hCreate>::UpdateIndex(const C*,const GDescription& desc,size_t id,bool add)
+template<class C,const R::hNotification* hEvents>
+	void GObjects<C,hEvents>::UpdateIndex(const C*,const GDescription& desc,size_t id,bool add)
 {
 	if(!Index)
 		mThrowGException(GetObjType(Type,true,true)+" do not have index");
 
 	// Go trough each vector
-	R::RCursor<GVector> Vector(desc.GetVectors());
+	R::RConstCursor<GVector> Vector(desc.GetVectors());
 	for(Vector.Start();!Vector.End();Vector.Next())
 	{
 		// Update the index for all concepts
-		R::RCursor<GConceptRef> Cur(Vector()->GetRefs());
+		R::RConstCursor<GConceptRef> Cur(Vector()->GetRefs());
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
 			// Read the vector representing the current index
 			GConcept* Concept(Cur()->GetConcept());
 			if(Concept->GetIndex(Type))
-				Index->Read(Concept->GetIndex(Type),Concept->GetId(),GObjects<C,hCreate>::tmpRefs);
+				Index->Read(Concept->GetIndex(Type),Concept->GetId(),GObjects<C,hEvents>::tmpRefs);
 			else
 				tmpRefs.Clear();
 
@@ -461,8 +467,8 @@ template<class C,const R::hNotification& hCreate>
 
 
 //------------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	void GObjects<C,hCreate>::BuildIndex(const C*)
+template<class C,const R::hNotification* hEvents>
+	void GObjects<C,hEvents>::BuildIndex(const C*)
 {
 	if(!Index)
 		mThrowGException(GetObjType(Type,true,true)+" do not have index");
@@ -484,7 +490,7 @@ template<class C,const R::hNotification& hCreate>
 	}
 
 	// Go trough each object
-	R::RCursor<C> Cur(GObjects<C,hCreate>::GetObjs(static_cast<C*>(0)));
+	R::RCursor<C> Cur(GObjects<C,hEvents>::GetObjs(static_cast<C*>(0)));
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		// Position the block file to the correct position and read the size
@@ -518,7 +524,7 @@ template<class C,const R::hNotification& hCreate>
 				{
 					size_t idx(Concept->GetIndex(Type));
 					Index->Write(idx,Concept->GetId(),tmpRefs);
-					Concept->SetIndex(GObjects<C,hCreate>::Type,idx);
+					Concept->SetIndex(GObjects<C,hEvents>::Type,idx);
 
 					// If no cache is asked -> Save each time
 					if(Index->GetCacheType()==R::RBlockFile::WriteThrough)
@@ -540,8 +546,8 @@ template<class C,const R::hNotification& hCreate>
 
 
 //------------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	void GObjects<C,hCreate>::LoadNode(GConceptTree* tree,GConceptNode* parent)
+template<class C,const R::hNotification* hEvents>
+	void GObjects<C,hEvents>::LoadNode(GConceptTree* tree,GConceptNode* parent)
 {
 	// Load the information concerning the current node
 	tTokenType type;
@@ -563,8 +569,8 @@ template<class C,const R::hNotification& hCreate>
 
 
 //------------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	void GObjects<C,hCreate>::SaveNode(GConceptNode* node)
+template<class C,const R::hNotification* hEvents>
+	void GObjects<C,hEvents>::SaveNode(GConceptNode* node)
 {
 	// Save the information concerning the current node
 	tTokenType type(node->GetType());
@@ -589,8 +595,8 @@ template<class C,const R::hNotification& hCreate>
 
 
 //------------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	void GObjects<C,hCreate>::LoadTree(const C*,GConceptTree* &tree,size_t blockid,size_t id)
+template<class C,const R::hNotification* hEvents>
+	void GObjects<C,hEvents>::LoadTree(const C*,GConceptTree* &tree,size_t blockid,size_t id)
 {
 	if(!Tree)
 		mThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
@@ -624,8 +630,8 @@ template<class C,const R::hNotification& hCreate>
 
 
 //------------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	void GObjects<C,hCreate>::SaveTree(const C*,const GConceptTree& tree,size_t& blockid,size_t id)
+template<class C,const R::hNotification* hEvents>
+	void GObjects<C,hEvents>::SaveTree(const C*,const GConceptTree& tree,size_t& blockid,size_t id)
 {
 	if(!CreateTree)
 		return;
@@ -664,8 +670,8 @@ template<class C,const R::hNotification& hCreate>
 
 
 //------------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	void GObjects<C,hCreate>::FlushTree(const C*)
+template<class C,const R::hNotification* hEvents>
+	void GObjects<C,hEvents>::FlushTree(const C*)
 {
 	if(!CreateTree)
 		return;
@@ -677,31 +683,33 @@ template<class C,const R::hNotification& hCreate>
 
 
 //-----------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	void GObjects<C,hCreate>::InsertObj(C* obj,C*)
+template<class C,const R::hNotification* hEvents>
+	void GObjects<C,hEvents>::InsertObj(C* obj,C*)
 {
 	// If it is a new one, it should perhaps be saved
-	if(R::RObjectContainer<C,true>::InsertObj(obj)||(obj->GetState()==osCreated))
+	if(R::RObjectContainer<C,true>::InsertObj(obj)||(State!=osOnDemand))
 	{
 		// If new one and all documents are in memory -> store it in the database
 		if(Storage->IsAllInMemory())
 			Storage->SaveObj(obj);
-		obj->PostNotification(hCreate);
+		obj->PostNotification(hEvents[oeAdded]);
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	void GObjects<C,hCreate>::DeleteObj(C* obj)
+template<class C,const R::hNotification* hEvents>
+	void GObjects<C,hEvents>::DeleteObj(C* obj)
 {
-	 R::RObjectContainer<C,true>::DeleteObj(obj);
+	obj->PostNotification(hEvents[oeAboutToBeDeleted]);
+	R::RObjectContainer<C,true>::DeleteObj(obj);
+	Selected.DeletePtr(obj);
 }
 
 
 //-----------------------------------------------------------------------------
-template<class C,const R::hNotification& hCreate>
-	GObjects<C,hCreate>::~GObjects(void)
+template<class C,const R::hNotification* hEvents>
+	GObjects<C,hEvents>::~GObjects(void)
 {
 	delete Desc;
 	delete Index;

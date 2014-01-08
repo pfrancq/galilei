@@ -6,7 +6,7 @@
 
 	Class regrouping concepts - Implementation.
 
-	Copyright 2009-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2009-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -46,7 +46,7 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GClasses::GClasses(size_t max)
-	: RTree<GClasses,GClass,false>(), GObjects<GClass,eCreateClass>(max,"Classes",otClass)
+	: RTree<GClasses,GClass,false>(), GObjects<GClass,hClasses>(max,"Classes",otClass)
 {
 }
 
@@ -61,7 +61,7 @@ GClasses* GClasses::GetClassTree(void)
 //------------------------------------------------------------------------------
 void GClasses::InsertObj(GClass* parent,GClass* obj)
 {
-	GObjects<GClass,eCreateClass>::InsertObj(obj);
+	GObjects<GClass,hClasses>::InsertObj(obj);
 	RTree<GClasses,GClass,false>::InsertNode(parent,obj);
 }
 
@@ -70,14 +70,14 @@ void GClasses::InsertObj(GClass* parent,GClass* obj)
 void GClasses::DeleteObj(GClass* obj)
 {
 	RTree<GClasses,GClass,false>::DeleteNode(obj,true);
-	GObjects<GClass,eCreateClass>::DeleteObj(obj);
+	GObjects<GClass,hClasses>::DeleteObj(obj);
 }
 
 //-----------------------------------------------------------------------------
 void GClasses::Clear(void)
 {
 	RTree<GClasses,GClass,false>::Clear();
-	GObjects<GClass,eCreateClass>::Clear(pClass);
+	GObjects<GClass,hClasses>::Clear(pClass);
 }
 
 
@@ -85,5 +85,5 @@ void GClasses::Clear(void)
 void GClasses::Clear(const GClass* obj)
 {
 	RTree<GClasses,GClass,false>::Clear();
-	GObjects<GClass,eCreateClass>::Clear(obj);
+	GObjects<GClass,hClasses>::Clear(obj);
 }

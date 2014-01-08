@@ -6,7 +6,7 @@
 
 	Profile - Implementation.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -51,18 +51,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void GProfile::PrivateInit(void)
-{
-	SetState(osNew);
-	SaveDesc();
-	AddRefs(Session,otProfile);
-	SetId(cNoRef);
-}
-
-
-//------------------------------------------------------------------------------
 GProfile::GProfile(GSession* session,GUser* usr,tProfileType type,const R::RString name,bool s)
-  : GDescriptionObject<GProfile,eCreateProfile,eNewProfile,eDelProfile>(session,cNoRef,0,otProfile,name,osNew), User(usr), Type(type),
+  : GDescriptionObject<GProfile>(session,cNoRef,0,otProfile,name), User(usr), Type(type),
     Fdbks(100,50), Social(s), Updated(RDate::GetToday()), Computed(RDate::Null),
     GroupId(0), Attached(RDate::Null), Score(0.0), Level(0)
 {
@@ -82,7 +72,7 @@ GProfile::GProfile(GSession* session,GUser* usr,tProfileType type,const R::RStri
 
 //------------------------------------------------------------------------------
 GProfile::GProfile(GSession* session,GUser* usr,tProfileType type,size_t id,size_t blockid,const R::RString name,size_t grpid,RDate a,RDate u,RDate c,bool s,double score,char level,size_t nbf)
-  : GDescriptionObject<GProfile,eCreateProfile,eNewProfile,eDelProfile>(session,id,blockid,otProfile,name,osNew), User(usr), Type(type),
+  : GDescriptionObject<GProfile>(session,id,blockid,otProfile,name), User(usr), Type(type),
     Fdbks(nbf+nbf/2,nbf/2), Social(s), Updated(u), Computed(c),
     GroupId(grpid), Attached(a), Score(score), Level(level)
 {
@@ -132,17 +122,10 @@ int GProfile::Compare(const size_t id) const
 void GProfile::ClearInfos(bool disk)
 {
 	// Clear the information
-	GDescriptionObject<GProfile,eCreateProfile,eNewProfile,eDelProfile>::Clear(disk);
+	GDescriptionObject<GProfile>::Clear(disk);
 
 	// Make sure that it will be re-computed
 	Computed=RDate::Null;
-}
-
-
-//------------------------------------------------------------------------------
-void GProfile::SetSocial(bool social)
-{
-	Social=social;
 }
 
 
@@ -168,14 +151,6 @@ void GProfile::SetGroup(size_t groupid)
 RDate GProfile::GetAttached(void) const
 {
 	return(Attached);
-}
-
-
-//------------------------------------------------------------------------------
-void GProfile::SetConfidence(double score,char level)
-{
-	Score=score;
-	Level=level;
 }
 
 
@@ -285,35 +260,72 @@ void GProfile::DeleteFdbk(size_t docid)
 
 
 //------------------------------------------------------------------------------
-void GProfile::Update(GSession* session,GDescription& desc,bool delref)
+void GProfile::Update(GDescription& desc)
 {
-	PostNotification(eUpdateProfile);
+	bool Save(Session->MustSaveResults());  // Must the results be saved on disk?
+	bool NullDesc;                          // The description must not stayed in memory?
 
-	// Remove its references
-	if(delref)
+	// Look if the profile is internal one : Modify the references and indexes
+	if(Id!=cNoRef)
 	{
+		// Emit an event that it is about to be updated
+		PostNotification(hProfiles[oeAboutToBeUpdated]);
+
+		// Modify the references
 		DelRefs(Session,otProfile);
-		if(Session->DoCreateIndex(pProfile))
-			session->UpdateIndex(pProfile,desc,Id,false);
+
+		// Look if the index must be modified
+		if(Save&&Session->DoCreateIndex(pProfile))
+			Session->UpdateIndex(pProfile,desc,Id,false);
 	}
 
-	// Assign information
-	State=osUpdated;
+	// The description must be saved only for external profiles or when a description is already loaded
+	if((Id==cNoRef)||Vectors)
+	{
+		GDescription::operator=(desc);
+		NullDesc=false;
+	}
+	else
+	{
+		Vectors=desc.Vectors;
+		NullDesc=true;
+	}
+
+	// Set the computed date and the status
 	Computed.SetToday();
-	GDescription::operator=(desc);
+	State=osLatest;
 
-	// Update the group were it belongs
-	Session->UpdateCommunity(this);
+	// Look if the profile is internal one : Modify the references and indexes
+	if(Id!=cNoRef)
+	{
+		// Update the group were it belongs
+		Session->UpdateCommunity(this);
 
-	// Update its references
-	AddRefs(Session,otProfile);
-	if(Session->DoCreateIndex(pProfile))
-		session->UpdateIndex(pProfile,desc,Id,true);
+		// Modify the references
+		AddRefs(Session,otProfile);
 
-	desc.Clear(); // Clear the description
+		// Look if the index must be modified and the description and tree saved
+		if(Save)
+		{
+			if(Session->DoCreateIndex(pProfile))
+				Session->UpdateIndex(pProfile,desc,Id,true);
 
-	// Emit an event that it was modified
-	PostNotification(eProfileModified);
+			if(desc.IsDefined())
+				Session->SaveDesc(pProfile,*desc.Vectors,BlockId,Id);
+
+			Session->Storage->SaveObj(this);
+		}
+
+		// Emit an event that it was updated
+		PostNotification(hProfiles[oeUpdated]);
+
+		// Verify if description must stay in memory
+		if(NullDesc)
+			Vectors=0;
+	}
+
+	// Clear the description
+	desc.Clear();
 }
 
 

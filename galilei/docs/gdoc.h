@@ -6,7 +6,7 @@
 
 	Document - Header.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -61,7 +61,7 @@ namespace GALILEI{
 * the document and must be managed by the developer.
 * @short Document.
 */
-class GDoc : public GDescriptionObject<GDoc,eCreateDoc,eNewDoc,eDelDoc>
+class GDoc : public GDescriptionObject<GDoc>
 {
 protected:
 
@@ -86,7 +86,7 @@ protected:
 	R::RDate Updated;
 
 	/**
-	* Date of last document's analysis.
+	* Date of last document computation.
 	*/
 	R::RDate Computed;
 
@@ -114,11 +114,6 @@ protected:
 	 * Tree representing the document.
     */
 	GConceptTree* Tree;
-
-	/**
-	 * Method used to correctly instantiate some template methods.
-	 */
-	void PrivateInit(void);
 
 public:
 
@@ -272,25 +267,19 @@ public:
 	* Get the date of the last update of the document content.
 	* @return the date.
 	*/
-	R::RDate GetUpdated(void) const;
-
-	/**
-	* Set the date of the last update of the document content.
-	* @param date            Date.
-	*/
-	void SetUpdated(R::RDate& date);
+	R::RDate GetUpdated(void) const {return(Updated);}
 
 	/**
 	* Get the date of the last analysis of the document.
 	* @return the date.
 	*/
-	R::RDate GetComputed(void) const;
+	R::RDate GetComputed(void) const {return(Computed);}
 
 	/**
 	* Get the MIME type of the document.
 	* @returns String.
 	*/
-	R::RString GetMIMEType(void) const;
+	R::RString GetMIMEType(void) const {return(MIMEType);}
 
 	/**
 	* Set the MIME type of the document.
@@ -307,7 +296,7 @@ public:
 	* Get the date of the last attachment.
 	* @return the date.
 	*/
-	R::RDate GetAttached(void) const;
+	R::RDate GetAttached(void) const {return(Attached);}
 
 	/**
 	* Get the topic holding the document.
@@ -377,20 +366,33 @@ public:
 	*/
 	size_t GetNbFdbks(void) const;
 
-private:
+	/**
+	* Set the date of the last update of the document content.
+	* @param doc             Document updated.
+	* @param date            Date of the update.
+	*/
+	void SetUpdated(R::RDate& date);
 
 	/**
-	* Assign a new description to the document.
-	* @param lang            Pointer to the language.
-	* @param desc            Description.
-	* @param ram             Must the information be maintained is RAM.
-	* @param delref          Delete the references (must be set to true if the
-	*                        document has already a description).
-	* \warning The description is cleared by this method.
+	* Update the representation of the document once a computation was done. The
+	* computed date and the status are updated.
+	*
+	* If the document is an internal one, the following steps are done:
+	* -# An 'hDocs[oeAboutToUpdated]' notification is send.
+	* -# The references are updated.
+	* -# Existing in memory description and tree are replaced.
+	* -# If necessary, the document, its description and its tree are saved.
+	* -# An 'hDocs[oeUpdated]' notification is send.
+	*
+	* If the document is an external one, its description and tree are
+	* replaced.
+	* @param lang            Language to assign.
+	* @param desc            Description to assign.
+	* @param tree            Tree to assign.
+	* \warning The description and the tree are cleared by this method.
 	*/
-	void Update(GLang* lang,GDescription& desc,bool ram,bool delref);
+	void Update(GLang* lang,GDescription& desc,GConceptTree& tree);
 
-public:
 
 	/**
 	* Destruct the document.
@@ -400,7 +402,7 @@ public:
 	friend class GSession;
 	friend class GIndexer;
 	friend class GDocAnalyze;
-   friend class GObjects<GDoc,eCreateDoc>;
+   friend class GObjects<GDoc,hDocs>;
 };
 
 

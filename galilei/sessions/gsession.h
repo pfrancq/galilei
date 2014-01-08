@@ -6,7 +6,7 @@
 
 	Generic GALILEI Session - Header.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2004 by Julien Lamoral.
 	Copyright 2001-2004 by Valery Vandaele.
 	Copyright 2001-2004 by David Wartel.
@@ -49,7 +49,7 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <gdocfragment.h>
-#include <gsubject.h>
+#include <gsubjects.h>
 #include <gobjects.h>
 #include <gclasses.h>
 #include <gvector.h>
@@ -126,102 +126,105 @@ public:
 * and 'ForceReCompute'.
 * @short Generic Session.
 */
-class GSession : public R::RObject, virtual public GKB, public R::RConfig,
-	              GObjects<GDoc,eCreateDoc>,
-	              GObjects<GTopic,eCreateTopic>,
-	              GObjects<GUser,eCreateUser>,
-	              GObjects<GProfile,eCreateProfile>,
-	              GObjects<GCommunity,eCreateCommunity>,
-	              public GClasses
+class GSession : public R::RObject,                    // Session receives and sends messages
+	              virtual public GKB,                   // It has a knowledge base
+	              public R::RConfig,                    // It has a configuration file
+	              GObjects<GDoc,hDocs>,                 // It manages documents
+	              GObjects<GTopic,hTopics>,             // It manages topics
+	              GObjects<GUser,hUsers>,               // It manages users
+	              GObjects<GProfile,hProfiles>,         // It manages profiles
+	              GObjects<GCommunity,hCommunities>,    // It manages communities
+	              public GClasses,                      // It manages classes
+	              public GSubjects                      // It manages subjects
 {
 public:
 
 	// Explicit use of methods from GObjects<GDoc,eCreateDoc>
-   using GObjects<GDoc,eCreateDoc>::Clear;
-	using GObjects<GDoc,eCreateDoc>::DoCreateIndex;
-	using GObjects<GDoc,eCreateDoc>::DoCreateTree;
-	using GObjects<GDoc,eCreateDoc>::LoadObjs;
-	using GObjects<GDoc,eCreateDoc>::GetObj;
-	using GObjects<GDoc,eCreateDoc>::GetObjs;
-	using GObjects<GDoc,eCreateDoc>::GetNbObjs;
-	using GObjects<GDoc,eCreateDoc>::InsertObj;
-	using GObjects<GDoc,eCreateDoc>::DeleteObj;
-	using GObjects<GDoc,eCreateDoc>::AssignId;
-	using GObjects<GDoc,eCreateDoc>::GetMaxObjId;
-	using GObjects<GDoc,eCreateDoc>::LoadDesc;
-	using GObjects<GDoc,eCreateDoc>::SaveDesc;
-	using GObjects<GDoc,eCreateDoc>::FlushDesc;
-	using GObjects<GDoc,eCreateDoc>::LoadTree;
-	using GObjects<GDoc,eCreateDoc>::SaveTree;
-	using GObjects<GDoc,eCreateDoc>::FlushTree;
-	using GObjects<GDoc,eCreateDoc>::UpdateIndex;
-	using GObjects<GDoc,eCreateDoc>::LoadIndex;
-   using GObjects<GDoc,eCreateDoc>::BuildIndex;
+	using GObjects<GDoc,hDocs>::Clear;
+	using GObjects<GDoc,hDocs>::DoCreateIndex;
+	using GObjects<GDoc,hDocs>::DoCreateTree;
+	using GObjects<GDoc,hDocs>::LoadObjs;
+	using GObjects<GDoc,hDocs>::GetObj;
+	using GObjects<GDoc,hDocs>::GetObjs;
+	using GObjects<GDoc,hDocs>::GetNbObjs;
+	using GObjects<GDoc,hDocs>::InsertObj;
+	using GObjects<GDoc,hDocs>::DeleteObj;
+	using GObjects<GDoc,hDocs>::AssignId;
+	using GObjects<GDoc,hDocs>::GetMaxObjId;
+	using GObjects<GDoc,hDocs>::LoadDesc;
+	using GObjects<GDoc,hDocs>::SaveDesc;
+	using GObjects<GDoc,hDocs>::FlushDesc;
+	using GObjects<GDoc,hDocs>::LoadTree;
+	using GObjects<GDoc,hDocs>::SaveTree;
+	using GObjects<GDoc,hDocs>::FlushTree;
+	using GObjects<GDoc,hDocs>::UpdateIndex;
+	using GObjects<GDoc,hDocs>::LoadIndex;
+	using GObjects<GDoc,hDocs>::BuildIndex;
 
 	// Explicit use of methods from GObjects<GTopic,eCreateTopic>
-   using GObjects<GTopic,eCreateTopic>::Clear;
-	using GObjects<GTopic,eCreateTopic>::DoCreateIndex;
-	using GObjects<GTopic,eCreateTopic>::LoadObjs;
-	using GObjects<GTopic,eCreateTopic>::GetObj;
-	using GObjects<GTopic,eCreateTopic>::GetObjs;
-	using GObjects<GTopic,eCreateTopic>::GetNbObjs;
-	using GObjects<GTopic,eCreateTopic>::InsertObj;
-	using GObjects<GTopic,eCreateTopic>::DeleteObj;
-	using GObjects<GTopic,eCreateTopic>::AssignId;
-	using GObjects<GTopic,eCreateTopic>::GetMaxObjId;
-	using GObjects<GTopic,eCreateTopic>::LoadDesc;
-	using GObjects<GTopic,eCreateTopic>::SaveDesc;
-	using GObjects<GTopic,eCreateTopic>::FlushDesc;
-	using GObjects<GTopic,eCreateTopic>::UpdateIndex;
-   using GObjects<GTopic,eCreateTopic>::BuildIndex;
+	using GObjects<GTopic,hTopics>::Clear;
+	using GObjects<GTopic,hTopics>::DoCreateIndex;
+	using GObjects<GTopic,hTopics>::LoadObjs;
+	using GObjects<GTopic,hTopics>::GetObj;
+	using GObjects<GTopic,hTopics>::GetObjs;
+	using GObjects<GTopic,hTopics>::GetNbObjs;
+	using GObjects<GTopic,hTopics>::InsertObj;
+	using GObjects<GTopic,hTopics>::DeleteObj;
+	using GObjects<GTopic,hTopics>::AssignId;
+	using GObjects<GTopic,hTopics>::GetMaxObjId;
+	using GObjects<GTopic,hTopics>::LoadDesc;
+	using GObjects<GTopic,hTopics>::SaveDesc;
+	using GObjects<GTopic,hTopics>::FlushDesc;
+	using GObjects<GTopic,hTopics>::UpdateIndex;
+	using GObjects<GTopic,hTopics>::BuildIndex;
 
 	// Explicit use of methods from GObjects<GUser,eCreateUser>
-   using GObjects<GUser,eCreateUser>::Clear;
-	using GObjects<GUser,eCreateUser>::LoadObjs;
-	using GObjects<GUser,eCreateUser>::GetObj;
-	using GObjects<GUser,eCreateUser>::GetObjs;
-	using GObjects<GUser,eCreateUser>::GetNbObjs;
-	using GObjects<GUser,eCreateUser>::InsertObj;
-	using GObjects<GUser,eCreateUser>::DeleteObj;
-	using GObjects<GUser,eCreateUser>::AssignId;
-	using GObjects<GUser,eCreateUser>::GetMaxObjId;
+	using GObjects<GUser,hUsers>::Clear;
+	using GObjects<GUser,hUsers>::LoadObjs;
+	using GObjects<GUser,hUsers>::GetObj;
+	using GObjects<GUser,hUsers>::GetObjs;
+	using GObjects<GUser,hUsers>::GetNbObjs;
+	using GObjects<GUser,hUsers>::InsertObj;
+	using GObjects<GUser,hUsers>::DeleteObj;
+	using GObjects<GUser,hUsers>::AssignId;
+	using GObjects<GUser,hUsers>::GetMaxObjId;
 
 	// Explicit use of methods from GObjects<GProfile,eCreateProfile>
-   using GObjects<GProfile,eCreateProfile>::Clear;
-	using GObjects<GProfile,eCreateProfile>::DoCreateIndex;
-	using GObjects<GProfile,eCreateProfile>::LoadObjs;
-	using GObjects<GProfile,eCreateProfile>::GetObj;
-	using GObjects<GProfile,eCreateProfile>::GetObjs;
-	using GObjects<GProfile,eCreateProfile>::GetNbObjs;
-	using GObjects<GProfile,eCreateProfile>::InsertObj;
-	using GObjects<GProfile,eCreateProfile>::DeleteObj;
-	using GObjects<GProfile,eCreateProfile>::AssignId;
-	using GObjects<GProfile,eCreateProfile>::GetMaxObjId;
-	using GObjects<GProfile,eCreateProfile>::LoadDesc;
-	using GObjects<GProfile,eCreateProfile>::SaveDesc;
-	using GObjects<GProfile,eCreateProfile>::FlushDesc;
-	using GObjects<GProfile,eCreateProfile>::UpdateIndex;
-   using GObjects<GProfile,eCreateProfile>::BuildIndex;
+	using GObjects<GProfile,hProfiles>::Clear;
+	using GObjects<GProfile,hProfiles>::DoCreateIndex;
+	using GObjects<GProfile,hProfiles>::LoadObjs;
+	using GObjects<GProfile,hProfiles>::GetObj;
+	using GObjects<GProfile,hProfiles>::GetObjs;
+	using GObjects<GProfile,hProfiles>::GetNbObjs;
+	using GObjects<GProfile,hProfiles>::InsertObj;
+	using GObjects<GProfile,hProfiles>::DeleteObj;
+	using GObjects<GProfile,hProfiles>::AssignId;
+	using GObjects<GProfile,hProfiles>::GetMaxObjId;
+	using GObjects<GProfile,hProfiles>::LoadDesc;
+	using GObjects<GProfile,hProfiles>::SaveDesc;
+	using GObjects<GProfile,hProfiles>::FlushDesc;
+	using GObjects<GProfile,hProfiles>::UpdateIndex;
+	using GObjects<GProfile,hProfiles>::BuildIndex;
 
 	// Explicit use of methods from GObjects<GCommunity,eCreateCommunity>
-   using GObjects<GCommunity,eCreateCommunity>::Clear;
-	using GObjects<GCommunity,eCreateCommunity>::DoCreateIndex;
-	using GObjects<GCommunity,eCreateCommunity>::LoadObjs;
-	using GObjects<GCommunity,eCreateCommunity>::GetObj;
-	using GObjects<GCommunity,eCreateCommunity>::GetObjs;
-	using GObjects<GCommunity,eCreateCommunity>::GetNbObjs;
-	using GObjects<GCommunity,eCreateCommunity>::InsertObj;
-	using GObjects<GCommunity,eCreateCommunity>::DeleteObj;
-	using GObjects<GCommunity,eCreateCommunity>::AssignId;
-	using GObjects<GCommunity,eCreateCommunity>::GetMaxObjId;
-	using GObjects<GCommunity,eCreateCommunity>::LoadDesc;
-	using GObjects<GCommunity,eCreateCommunity>::SaveDesc;
-	using GObjects<GCommunity,eCreateCommunity>::FlushDesc;
-	using GObjects<GCommunity,eCreateCommunity>::UpdateIndex;
-   using GObjects<GCommunity,eCreateCommunity>::BuildIndex;
+	using GObjects<GCommunity,hCommunities>::Clear;
+	using GObjects<GCommunity,hCommunities>::DoCreateIndex;
+	using GObjects<GCommunity,hCommunities>::LoadObjs;
+	using GObjects<GCommunity,hCommunities>::GetObj;
+	using GObjects<GCommunity,hCommunities>::GetObjs;
+	using GObjects<GCommunity,hCommunities>::GetNbObjs;
+	using GObjects<GCommunity,hCommunities>::InsertObj;
+	using GObjects<GCommunity,hCommunities>::DeleteObj;
+	using GObjects<GCommunity,hCommunities>::AssignId;
+	using GObjects<GCommunity,hCommunities>::GetMaxObjId;
+	using GObjects<GCommunity,hCommunities>::LoadDesc;
+	using GObjects<GCommunity,hCommunities>::SaveDesc;
+	using GObjects<GCommunity,hCommunities>::FlushDesc;
+	using GObjects<GCommunity,hCommunities>::UpdateIndex;
+	using GObjects<GCommunity,hCommunities>::BuildIndex;
 
 	// Explicit use of methods from GClasses
-   using GClasses::Clear;
+	using GClasses::Clear;
 	using GClasses::DoCreateIndex;
 	using GClasses::LoadObjs;
 	using GClasses::GetObj;
@@ -235,6 +238,18 @@ public:
 	using GClasses::SaveDesc;
 	using GClasses::FlushDesc;
 	using GClasses::UpdateIndex;
+	using GClasses::GetUpOperationsCost;
+
+	// Explicit use of methods from GSubjects
+	using GSubjects::Clear;
+	using GSubjects::LoadObjs;
+	using GSubjects::GetObj;
+	using GSubjects::GetObjs;
+	using GSubjects::GetNbObjs;
+	using GSubjects::InsertObj;
+	using GSubjects::Init;
+	using GSubjects::GetMaxDepth;
+	using GSubjects::GetUpOperationsCost;
 
 private :
 
@@ -282,11 +297,6 @@ private :
 	 * Limit the clustering of the documents to the selected ones.
 	 */
 	bool ClusterSelectedDocs;
-
-	/**
-	 * Subjects.
-	 */
-	GSubjects Subjects;
 
 	/**
 	 * Analyze of the document.
@@ -390,11 +400,9 @@ public:
 	/**
 	* Analyze a document.
 	* @param doc             Pointer to the document to analyze.
-	* @param ram             Must the description of the document be maintain
-	*                        in RAM.
 	* @param rec             Receiver for the signals.
 	*/
-	void AnalyzeDoc(GDoc* doc,bool ram=true,GSlot* rec=0);
+	void AnalyzeDoc(GDoc* doc,GSlot* rec=0);
 
 	/**
 	 * @return the tree that was just computed (if asked).
@@ -404,11 +412,9 @@ public:
 	/**
 	* Analyze the documents. At the end, all the enabled post-documents methods
 	* are run.
-	* @param ram             Must the description of each document be maintain
-	*                        in RAM.
 	* @param rec             Receiver for the signals.
 	*/
-	void AnalyzeDocs(bool ram=false,GSlot* rec=0);
+	void AnalyzeDocs(GSlot* rec=0);
 
 	/**
 	* Groups the documents into topics. At the end, all the enabled post-topic
@@ -511,16 +517,6 @@ public:
 	void ForceReCompute(tObjType type);
 
 	/**
-	* Fill a given array with all the subjects. The array must be created and
-	* must be large enough to hold all the subjects.
-	* @see This method is used in GSimulator to create assessments for
-	*      profiles during a simulation of a real system.
-	* @param subjects        Pointer to the array.
-	* @returns Size of the data copied in the array.
-	*/
-	size_t FillSubjects(GSubject** subjects);
-
-	/**
 	* Get the number of elements of a given type.
 	* @param type            Type of the elements.
 	* @returns Number of elements.
@@ -561,95 +557,9 @@ public:
 	size_t GetObjs(tObjType type,GObject** &tab,bool alloc);
 
 	/**
-	 * Get the depth of the tree formed by all the subjects.
-	 */
-	size_t GetMaxDepth(void) const;
-
-	/**
-	* Compute the number of ideal groups of a given type (otProfile or otDoc)
-	* for a given topic (and its sub-topics).
-	* @param type            Type.
-	*/
-	size_t GetNbIdealGroups(tObjType type) const;
-
-	/**
-	* Get the number of subjects associated with a given document.
-	* @param doc            Pointer to the document.
-	*/
-	size_t GetNbSubjects(GDoc* doc) const;
-
-	/**
-	* Compute the number of topics (and its sub-topics) containing a document.
-	*/
-	size_t GetNbTopicsDocs(void) const;
-
-	/**
 	 * @return Simulator associated with the session.
 	 */
 	GSimulator* GetSimulator(void) const;
-
-	/**
-	* Get the subject of a given community.
-	* @param com             Pointer to the community.
-	*/
-	const GSubject* GetSubject(GCommunity* com) const;
-
-	/**
-	* Get the subject of a given document.
-	* @param doc             Pointer to the document.
-	*/
-	const GSubject* GetSubject(GDoc* doc) const;
-
-	/**
-	* Get a subject.
-	* @param id              Identifier of the subject.
-	* @return Pointer to GSubject.
-	*/
-	GSubject* GetSubject(size_t id) const;
-
-	/**
-	* Get a pointer to a given subject.
-	* @param name            Name of the subject.
-	* @return Return the pointer or 0 if the element is not in the tree.
-	*/
-	GSubject* GetSubject(const R::RString& name) const;
-
-	/**
-	* Get the subject of a given profile.
-	* @param prof            Pointer to the profile.
-	*/
-	const GSubject* GetSubject(GProfile* prof) const;
-
-	/**
-	* Get a cursor over all the nodes of the tree.
-	*/
-	R::RCursor<GSubject> GetSubjects(void) const;
-
-	/**
-	* Get a Cursor on the subjects of a given document.
-	* @param doc            Pointer to the document.
-	*/
-	R::RCursor<GSubject> GetSubjects(GDoc* doc) const;
-
-	/**
-	* Get a cursor over the child subjects of a given subject.
-	* @param subject            Parent subject. If null, the top subjects are returned.
-	*/
-	R::RNodeCursor<GSubjects,GSubject> GetSubjects(const GSubject* subject) const;
-
-	/**
-	 * Get the cost of the Up operations to move a token from a node to another
-	 * one.
-	 *
-	 * In their paper <em>TreeRank: A Similarity Measure for Nearest Neighbor
-	 * Searching in Phylogenetic Databases</em>, Wang, Shan, Shasha and Piel
-	 * define a similarity measure between two trees based on the different
-	 * costs of up operations of the nodes of each tree.
-	 * @param u              First node.
-	 * @param v              Second node.
-	 * @return Cost of the up operations.
-	 */
-	double GetUpOperationsCost(const GSubject* u,const GSubject* v) const;
 
 	/**
 	 * Initialize the session.
@@ -666,40 +576,6 @@ public:
 	*/
 	R::RString AnalyzeString(const R::RString& str);
 
-	/**
-	* Fill a given array with all the selected documents. The array must be
-	* created and must be large enough to hold all the documents.
-	* @see This method is used in GSimulator to create assessments for
-	*      profiles during a simulation of a real system.
-	* @param docs            Pointer to the array.
-	* @returns Size of the data copied in the array.
-	*/
-	size_t FillSelectedDocs(GDoc** docs);
-
-	/**
-	* Add a given document to a subject.
-	* @param doc            Pointer to the document.
-	* @param subjectid      Identifier of the real subject.
-	* @param selected       Is the document selected in the subject?
-	*
-	* An notification eUnselectDoc is generated for the document.
-	*/
-	void Insert(GDoc* doc,size_t subjectid,bool selected);
-
-	/**
-	* Add a given profile to a subject.
-	* @param profile        Pointer to the profile.
-	* @param subjectid      Identifier of the subject.
-	*/
-	void Insert(GProfile* profile,size_t subjectid);
-
-	/**
-	* Insert a subject and attached it to a parent. If the parent is null,
-	* the subject is considered as one of the top subject of the tree.
-	* @param to              Parent where the subject is to attached.
-	* @param subject         Subject to insert.
-	*/
-	void Insert(GSubject* to,GSubject* subject);
 
 	/**
 	* Add a new feedback of a given profile on a given document.
@@ -715,27 +591,6 @@ public:
 	bool InsertFdbk(size_t profid,size_t docid,tFdbkType fdbk,R::RDate done,bool load=false);
 
 	/**
-	* Look if a document is in the parent subject.
-	* @param doc            Pointer to the document.
-	* @param s              Subject.
-	* @return bool
-	*/
-	bool IsFromParentSubject(GDoc* doc,const GSubject* s) const;
-
-	/**
-	* Look if a document is from a given subject.
-	* @param doc            Pointer to the document.
-	* @param s              Pointer to the subject.
-	* @return bool
-	*/
-	bool IsFromSubject(GDoc* doc,const GSubject* s) const;
-
-	/**
-	 * Load the subjects.
-	 */
-	void LoadSubjects(void) const;
-
-	/**
 	* Send a query to the meta-engine selected. The documents are researched and
 	* ranked.
 	* @param query           String representing the query.
@@ -748,17 +603,6 @@ public:
 	void ReInit(void);
 
 	/**
-	 * Set the descriptions of the subjects.
-	 * @param type           TYpe of the subjects.
-	 */
-	void SetDescType(tSubjectDesc type);
-
-	/**
-	 * Test if the subjects are well-formed.
-	 */
-	void TestSubjects(void);
-
-	/**
 	* A profile was updated and the corresponding community must be updated.
 	* @param prof            Profile.
 	*/
@@ -769,6 +613,37 @@ public:
 	* @param profid          Identifier of the profile.
 	*/
 	void UpdateCommunity(size_t profid);
+
+	/**
+	 * Set the name of a user.
+	 * @param user           User.
+	 * @param name           Name of the user.
+	 * @param fullname       Full name of the user. If null string, the name is
+	 *                       used.
+	 */
+	void SetName(GUser* user,const R::RString& name,const R::RString& fullname=R::RString::Null);
+
+	/**
+	 * Set the name of a profile.
+	 * @param prof            Profile.
+    * @param name            Name.
+    */
+	void SetName(GProfile* profile,const R::RString& name);
+
+	/**
+	* Set if a profile is social.
+	* @param prof            Profile.
+	* @param social          Social value.
+	*/
+	void SetSocial(GProfile* profile,bool social);
+
+	/**
+	 * Set the confidence score and level of a profile.
+	 * @param prof            Profile.
+	 * @param score          Confidence level.
+	 * @param level          Confidence score.
+	 */
+	void SetConfidence(GProfile* profile,double score,char level);
 
 	/**
 	* A document was updated and the profiles that have made a feedback on it

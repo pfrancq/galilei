@@ -6,7 +6,7 @@
 
 	AGeneric Document Analysis - Implementation.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -641,7 +641,7 @@ void GDocAnalyze::Print(GTokenOccur* occur)
 
 
 //------------------------------------------------------------------------------
-void GDocAnalyze::Analyze(GDoc* doc,bool ram)
+void GDocAnalyze::Analyze(GDoc* doc)
 {
 	// Verify the the document must be computed
 	if(!doc->MustCompute()) return;
@@ -655,8 +655,6 @@ void GDocAnalyze::Analyze(GDoc* doc,bool ram)
 	CurSyntacticPos=0;
 	Doc=doc;
 	Lang=doc->GetLang();
-	bool Save=(Session->SaveResults&&(doc->GetId()!=cNoRef));
-	bool DelRefs(doc->IsDefined());
 	if((!Tokenizer)||(!Analyzers.GetNb()))
 		AssignPlugIns();
 	Description.Clear();
@@ -701,31 +699,32 @@ void GDocAnalyze::Analyze(GDoc* doc,bool ram)
 		if(Debug)
 			Tree.Print();
 	}
-	doc->Update(Lang,Description,ram||(!Save),DelRefs);
+	doc->Update(Lang,Description,Tree);
+	//doc->Update(Lang,Description,ram||(!Save),DelRefs);
 
 	// Save the information related to the object
-	if(Save)
-	{
-		if(doc->IsDefined())
-			doc->SaveDesc();
-		if(Session->DoCreateTree(pDoc))
-			Session->SaveTree(pDoc,Tree,doc->StructId,doc->Id);
-		Session->Storage->SaveObj(doc);
-		doc->SetState(osSaved);
-	}
-
-	// Must the document be saved in RAM ?
-	if(!ram)
-	{
-		// If not RAM -> release the description
-		doc->ReleaseVectors();
-	}
-	else
-	{
-		// If Yes -> Store the tree if necessary
-		if(!Save)
-			doc->SetTree(Tree);
-	}
+//	if(Save)
+//	{
+//		if(doc->IsDefined())
+//			doc->SaveDesc();
+//		if(Session->DoCreateTree(pDoc))
+//			Session->SaveTree(pDoc,Tree,doc->StructId,doc->Id);
+//		Session->Storage->SaveObj(doc);
+//		doc->SetState(osSaved);
+//	}
+//
+//	// Must the document be saved in RAM ?
+//	if(!ram)
+//	{
+//		// If not RAM -> release the description
+//		doc->ReleaseVectors();
+//	}
+//	else
+//	{
+//		// If Yes -> Store the tree if necessary
+//		if(!Save)
+//			doc->SetTree(Tree);
+//	}
 
 	// Send a notification
 	R::NotificationCenter.PostNotification<GDocAnalyze*>("DocAnalyzed",this);

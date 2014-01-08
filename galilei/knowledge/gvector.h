@@ -6,7 +6,7 @@
 
 	Concept Reference Vector - Header.
 
-	Copyright 2002-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2002-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2002-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -138,7 +138,13 @@ public:
 	* Get a cursor on the concept references.
 	* @return a cursor of GConceptRef.
 	*/
-	inline R::RCursor<GConceptRef> GetRefs(void) const {return(R::RCursor<GConceptRef>(*this));}
+	inline R::RConstCursor<GConceptRef> GetRefs(void) const {return(R::RConstCursor<GConceptRef>(*this));}
+
+	/**
+	* Get a cursor on the concept references.
+	* @return a cursor of GConceptRef.
+	*/
+	inline R::RCursor<GConceptRef> GetRefs(void) {return(R::RCursor<GConceptRef>(*this));}
 
 	/**
 	 * Get the meta-concept associated with the vector.
@@ -157,7 +163,23 @@ public:
 	 * @param ref            Concept reference.
 	 * @return a pointer to a GConceptRef.
 	 */
-	GConceptRef* GetRef(const GConceptRef* ref);
+	const GConceptRef* GetRef(GConceptRef* ref) const;
+
+	/**
+	 * Get a concept reference based on a given one. If it is not found, it is
+	 * created with a null weight.
+	 * @param ref            Concept reference.
+	 * @return a pointer to a GConceptRef.
+	 */
+	GConceptRef* GetRef(GConceptRef* ref);
+
+	/**
+	 * Get a pointer to a concept reference based on a given concept. If it is
+	 * not found, it is created with a null weight.
+	 * @param concept        Concept.
+	 * @return a pointer to a GConceptRef.
+	 */
+	const GConceptRef* GetRef(GConcept* concept) const;
 
 	/**
 	 * Get a pointer to a concept reference based on a given concept. If it is
@@ -305,19 +327,19 @@ public:
 	virtual ~GVector(void);
 
 	friend class GDescription;
-	friend class GDescriptionObject<GDoc,eCreateDoc,eNewDoc,eDelDoc>;
-	friend class GDescriptionObject<GClass,eCreateClass,eNewClass,eDelClass>;
-	friend class GDescriptionObject<GTopic,eCreateTopic,eNewTopic,eDelTopic>;
-	friend class GDescriptionObject<GUser,eCreateUser,eNewUser,eDelUser>;
-	friend class GDescriptionObject<GProfile,eCreateProfile,eNewProfile,eDelProfile>;
-	friend class GDescriptionObject<GCommunity,eCreateCommunity,eNewCommunity,eDelCommunity>;
+	friend class GDescriptionObject<GDoc>;
+	friend class GDescriptionObject<GClass>;
+	friend class GDescriptionObject<GTopic>;
+	friend class GDescriptionObject<GUser>;
+	friend class GDescriptionObject<GProfile>;
+	friend class GDescriptionObject<GCommunity>;
 	friend class GDoc;
-	friend class GObjects<GDoc,eCreateDoc>;
-	friend class GObjects<GClass,eCreateClass>;
-	friend class GObjects<GTopic,eCreateTopic>;
-	friend class GObjects<GUser,eCreateUser>;
-	friend class GObjects<GProfile,eCreateProfile>;
-	friend class GObjects<GCommunity,eCreateCommunity>;
+	friend class GObjects<GDoc,hDocs>;
+	friend class GObjects<GClass,hClasses>;
+	friend class GObjects<GTopic,hTopics>;
+	friend class GObjects<GUser,hUsers>;
+	friend class GObjects<GProfile,hProfiles>;
+	friend class GObjects<GCommunity,hCommunities>;
 	friend class GSession;
 };
 

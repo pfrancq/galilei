@@ -6,7 +6,7 @@
 
 	Community - Implementation.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -74,25 +74,15 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void GCommunity::PrivateInit(void)
-{
-	SetState(osNew);
-	SaveDesc();
-	AddRefs(Session,otCommunity);
-	SetId(cNoRef);
-}
-
-
-//------------------------------------------------------------------------------
 GCommunity::GCommunity(GSession* session,const RString& name)
-	: GGroup<GProfile,GCommunity,otCommunity,eCreateCommunity,eNewCommunity,eDelCommunity,eUpdateCommunity,eCommunityModified>(session,cNoRef,0,name,RDate::GetToday(),RDate::Null)
+	: GGroup<GProfile,GCommunity,otCommunity>(session,cNoRef,0,name,RDate::GetToday(),RDate::Null)
 {
 }
 
 
 //------------------------------------------------------------------------------
 GCommunity::GCommunity(GSession* session,size_t id,size_t blockid,const RString& name,const RDate& u,const RDate& c)
-	: GGroup<GProfile,GCommunity,otCommunity,eCreateCommunity,eNewCommunity,eDelCommunity,eUpdateCommunity,eCommunityModified>(session,id,blockid,name,u,c)
+	: GGroup<GProfile,GCommunity,otCommunity>(session,id,blockid,name,u,c)
 {
 }
 
@@ -123,6 +113,77 @@ void GCommunity::GetRelevantDocs(GCommunityDocs& docs)
 	RCursor<GDocRanking> Cur(RelevantDocs);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		docs.InsertPtr(Cur());
+}
+
+
+//------------------------------------------------------------------------------
+void GCommunity::Update(GDescription& desc)
+{
+	bool Save(Session->MustSaveResults());  // Must the results be saved on disk?
+	bool NullDesc;                          // The description must not stayed in memory?
+
+	// Look if the community is internal one : Modify the references and indexes
+	if(Id!=cNoRef)
+	{
+		// Emit an event that it is about to be updated
+		PostNotification(hCommunities[oeAboutToBeUpdated]);
+
+		// Modify the references
+		DelRefs(Session,otCommunity);
+
+		// Look if the index must be modified
+		if(Save&&Session->DoCreateIndex(pCommunity))
+			Session->UpdateIndex(pCommunity,desc,Id,false);
+	}
+
+	// The description must be saved only for external communities or when a description is already loaded
+	if((Id==cNoRef)||Vectors)
+	{
+		GDescription::operator=(desc);
+		NullDesc=false;
+	}
+	else
+	{
+		Vectors=desc.Vectors;
+		NullDesc=true;
+	}
+
+	// Set the computed date and the status
+	Computed.SetToday();
+	State=osLatest;
+
+	// Look if the community is internal one : Modify the references and indexes
+	if(Id!=cNoRef)
+	{
+		// Modify the references
+		AddRefs(Session,otCommunity);
+
+		// Look if the index must be modified and the description and tree saved
+		if(Save)
+		{
+			if(Session->DoCreateIndex(pCommunity))
+				Session->UpdateIndex(pCommunity,desc,Id,true);
+
+			if(desc.IsDefined())
+				Session->SaveDesc(pCommunity,*desc.Vectors,BlockId,Id);
+
+			Session->Storage->SaveObj(this);
+		}
+
+		// Emit an event that it was updated
+		PostNotification(hCommunities[oeUpdated]);
+
+		// Verify if description must stay in memory
+		if(NullDesc)
+			Vectors=0;
+	}
+
+	// Clear the description
+	desc.Clear();
+
+	// Data must be set to dirty
+	if(Data)
+		Data->Dirty();
 }
 
 

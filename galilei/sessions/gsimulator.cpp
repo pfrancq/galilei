@@ -6,7 +6,7 @@
 
 	Simulator - Implementation.
 
-	Copyright 2002-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2002-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2002-2004 by Julien Lamoral.
 	Copyright 2002-2004 by David Wartel.
 	Copyright 2002-2008 by the Université Libre de Bruxelles (ULB).
@@ -176,7 +176,7 @@ void GSimulator::StartSimulation(bool create)
 	else
 	{
 		// No subject is selected.
-		RCursor<GSubject> Subjects(Session->GetSubjects());
+		RCursor<GSubject> Subjects(Session->GetObjs(pSubject));
 		for(Subjects.Start();!Subjects.End();Subjects.Next())
 			Subjects()->Used=false;
 	}
@@ -194,9 +194,9 @@ void GSimulator::StartSimulation(bool create)
 			for(Profiles.Start();!Profiles.End();Profiles.Next())
 				Session->GetStorage()->SaveObj(Profiles());
 		}
-		RCursor<GSubject> Subjects(Session->GetSubjects());
+		RCursor<GSubject> Subjects(Session->GetObjs(pSubject));
 		for(Subjects.Start();!Subjects.End();Subjects.Next())
-			Session->GetStorage()->SaveSubject(Subjects());
+			Session->GetStorage()->SaveObj(Subjects());
 	}
 }
 
@@ -218,7 +218,7 @@ bool GSimulator::AddSubject(void)
 
 	// Randomly mix the subjects in tab
 	GSubject** tab(new GSubject*[Session->GetNbObjs(otSubject)]);
-	Session->FillSubjects(tab);
+	Session->GetObjs(tab);
 	Session->GetRandom().RandOrder<GSubject*>(tab,Session->GetNbObjs(otSubject));
 
 	// Find the first not used subject having at least NbMinDocsSubject documents and the correct depth.
@@ -244,7 +244,7 @@ bool GSimulator::AddSubject(void)
 	// Copy the selected documents in TmpDocs;
 	if(!TmpDocs)
 		TmpDocs=new GDoc*[Session->GetMaxObjId(pDoc)+1];
-	NbTmpDocs=Session->FillSelectedDocs(TmpDocs);
+	NbTmpDocs=Session->GetSelectedObjs(TmpDocs);
 
 	// Number of documents to judged by each profile
 	if(RelOK)
@@ -312,14 +312,14 @@ void GSimulator::ShareDocuments(void)
 				if(!doc) continue;
 
 				// Look if 'OK'
-				if(Session->IsFromSubject(Session->GetObj(pDoc,Cur()->GetDocId()),Session->GetSubject(Profile())))
+				if(Session->IsFromSubject(Session->GetObj(pDoc,Cur()->GetDocId()),Session->GetObj(pSubject,Profile())))
 				{
 					Session->InsertFdbk(Profile()->GetId(),Cur()->GetDocId(),GFdbk::ErrorFdbk(ftRelevant,PercErr,Session->GetRandom()),RDate::GetToday());
 				}
 				else
 				{
 					// Look If 'KO'
-					if(Session->IsFromParentSubject(Session->GetObj(pDoc,Cur()->GetDocId()),Session->GetSubject(Profile())))
+					if(Session->IsFromParentSubject(Session->GetObj(pDoc,Cur()->GetDocId()),Session->GetObj(pSubject,Profile())))
 					{
 						Session->InsertFdbk(Profile()->GetId(),Cur()->GetDocId(),GFdbk::ErrorFdbk(ftFuzzyRelevant,PercErr,Session->GetRandom()),RDate::GetToday());
 					}
@@ -330,7 +330,6 @@ void GSimulator::ShareDocuments(void)
 					}
 				}
 			}
-			Profile()->SetState(osModified);
 		}
 	}
 
@@ -355,10 +354,10 @@ void GSimulator::AddAssessments(void)
 	// Copy the selected documents in TmpDocs;
 	if(!TmpDocs)
 		TmpDocs=new GDoc*[Session->GetMaxObjId(pDoc)+1];
-	NbTmpDocs=Session->FillSelectedDocs(TmpDocs);
+	NbTmpDocs=Session->GetSelectedObjs(TmpDocs);
 
 	// Go through all the subjects which are used
-	R::RCursor<GSubject> Subs(Session->GetSubjects());
+	R::RCursor<GSubject> Subs(Session->GetObjs(pSubject));
 	for(Subs.Start();!Subs.End();Subs.Next())
 	{
 		if(!Subs()->IsUsed()) continue;
@@ -404,7 +403,7 @@ size_t GSimulator::AddProfiles(void)
 
 	// Randomly mix the subjects in tab
 	GSubject** tab(new GSubject*[Session->GetNbObjs(otSubject)]);
-	Session->FillSubjects(tab);
+	Session->GetObjs(tab);
 	Session->GetRandom().RandOrder<GSubject*>(tab,Session->GetNbObjs(otSubject));
 
 	// Find the first used subject
@@ -427,7 +426,7 @@ size_t GSimulator::AddProfiles(void)
 	// Copy the documents in TmpDocs;
 	if(!TmpDocs)
 		TmpDocs=new GDoc*[Session->GetMaxObjId(pDoc)+1];
-	NbTmpDocs=Session->FillSelectedDocs(TmpDocs);
+	NbTmpDocs=Session->GetSelectedObjs(TmpDocs);
 
 	// Number of documents to judged by each profile
 	if(RelOK)
@@ -496,7 +495,7 @@ void GSimulator::PerformDegradation(char what,int nb)
 
 			// Copy the ideal clustering as the current one
 			BuildIdealTopics();
-			NbTmpDocs=Session->FillSelectedDocs(TmpDocs);
+			NbTmpDocs=Session->GetSelectedObjs(TmpDocs);
 			SwitchRandom->RandOrder(TmpDocs,NbTmpDocs);
 			SwitchPos=0;
 			if(nb>0)
@@ -600,7 +599,7 @@ void GSimulator::SetManualUsed(GSubject* subject,bool used)
 {
 	subject->Used=used;
 	if(Session->MustSaveResults())
-		Session->GetStorage()->SaveSubject(subject);
+		Session->GetStorage()->SaveObj(subject);
 }
 
 
@@ -654,7 +653,7 @@ void GSimulator::InitSubject(GSubject* subject,bool selectdocs)
 		NewProfiles.InsertPtr(prof);
 		if(nbsocial)
 			nbsocial--;
-		Session->Insert(prof,subject->GetId());
+		Session->InsertObj(subject,prof);
 		nbprof--;
 	}
 
@@ -687,8 +686,9 @@ void GSimulator::InitSubject(GSubject* subject,bool selectdocs)
 	GDoc** ptr(TmpDocs);
 	for(size_t i=nbdocs+1;--i;ptr++)
 	{
-		if((!MultipleSubjects)&&Session->GetSubject(*ptr)) continue;
-		Session->Insert(*ptr,subject->GetId(),true);
+		if((!MultipleSubjects)&&Session->GetObj(pSubject,*ptr)) continue;
+		Session->InsertObj(subject,*ptr);
+		Session->SetSelected(*ptr,subject,true);
 	}
 }
 
@@ -705,7 +705,7 @@ void GSimulator::SelectSubjects(void)
 
 		// Randomly mix the subjects in tab
 		GSubject** tab(new GSubject*[Session->GetNbObjs(otSubject)]);
-		Session->FillSubjects(tab);
+		Session->GetObjs(tab);
 		Session->GetRandom().RandOrder<GSubject*>(tab,Session->GetNbObjs(otSubject));
 
 		// Compute the number of subjects to select
@@ -740,7 +740,7 @@ void GSimulator::SelectSubjects(void)
 	}
 
 	// For each selected subject -> Select the number of necessary profiles and documents (if necessary)
-	RCursor<GSubject> Cur(Session->GetSubjects());
+	RCursor<GSubject> Cur(Session->GetObjs(pSubject));
 	for(Cur.Start();!Cur.End();Cur.Next())
 		if(Cur()->IsUsed())
 			InitSubject(Cur(),true);
@@ -753,10 +753,10 @@ void GSimulator::CreateAssessments(void)
 	size_t maxDocsOK,maxDocsKO,maxDocsH;
 
 	// Copy the selected documents in TmpDocs;
-	NbTmpDocs=Session->FillSelectedDocs(TmpDocs);
+	NbTmpDocs=Session->GetSelectedObjs(TmpDocs);
 
 	// Assess documents
-	RCursor<GSubject> Subs(Session->GetSubjects());
+	RCursor<GSubject> Subs(Session->GetObjs(pSubject));
 	for(Subs.Start();!Subs.End();Subs.Next())
 	{
 		if(!Subs()->IsUsed())
@@ -856,7 +856,7 @@ template<class cGroup,class cObj,class cCalc>
 	Session->Reset(grouptype);
 
 	// Go through each subjects
-	R::RCursor<GSubject> Grps(Session->GetSubjects());
+	R::RCursor<GSubject> Grps(Session->GetObjs(pSubject));
 	for(Grps.Start();!Grps.End();Grps.Next())
 	{
 		// Clear the groups associated to the subject
@@ -882,7 +882,7 @@ template<class cGroup,class cObj,class cCalc>
 		if(calc)
 		{
 			calc->Compute(grp);
-			grp->Update(Session,calc->Description,false);
+			grp->Update(calc->Description);
 		}
 	}
 }
@@ -913,17 +913,6 @@ void GSimulator::BuildIdealCommunities(void)
 		mThrowGException("No current plug-in to compute the communities");
 
 	CopyIdealGroups<GCommunity,GProfile,GCommunityCalc>(otProfile,otCommunity,CalcDesc);
-	if(Session->MustSaveResults())
-	{
-		Session->GetStorage()->Clear(otCommunity);
-		RCursor<GCommunity> Groups(Session->GetObjs(pCommunity));
-		for(Groups.Start();!Groups.End();Groups.Next())
-		{
-			Groups()->SaveDesc();
-			Session->GetStorage()->SaveObj(Groups());
-			Groups()->SetState(osSaved);
-		}
-	}
 }
 
 
@@ -935,17 +924,6 @@ void GSimulator::BuildIdealTopics(void)
 		mThrowGException("No current plug-in to compute the topics");
 
 	CopyIdealGroups<GTopic,GDoc,GTopicCalc>(otDoc,otTopic,CalcDesc);
-	if(Session->MustSaveResults())
-	{
-		Session->GetStorage()->Clear(otTopic);
-		RCursor<GTopic> Topics(Session->GetObjs(pTopic));
-		for(Topics.Start();!Topics.End();Topics.Next())
-		{
-			Topics()->SaveDesc();
-			Session->GetStorage()->SaveObj(Topics());
-			Topics()->SetState(osSaved);
-		}
-	}
 }
 
 
@@ -958,7 +936,7 @@ void GSimulator::BuildIdealLeafTopics(void)
 	Session->Reset(otTopic);
 
 	// Go through each subjects
-	R::RCursor<GSubject> Grps(Session->GetSubjects());
+	R::RCursor<GSubject> Grps(Session->GetObjs(pSubject));
 	for(Grps.Start();!Grps.End();Grps.Next())
 	{
 		// Clear the groups associated to the subject
@@ -976,20 +954,7 @@ void GSimulator::BuildIdealLeafTopics(void)
 
 		// Update the topic.
 		Grps()->CreateDescription();
-		grp->Update(Session,*Grps(),false);
-
-		// Save the results if necessary
-		if(Session->MustSaveResults())
-		{
-			Session->GetStorage()->Clear(otTopic);
-			RCursor<GTopic> Topics(Session->GetObjs(pTopic));
-			for(Topics.Start();!Topics.End();Topics.Next())
-			{
-				Topics()->SaveDesc();
-				Session->GetStorage()->SaveObj(Topics());
-				Topics()->SetState(osSaved);
-			}
-		}
+		grp->Update(*Grps());
 	}
 }
 
@@ -1001,7 +966,7 @@ void GSimulator::BuildIdealClasses(void)
 
 	// Clear current classes
 	Session->ForceReCompute(otClass);
-	RNodeCursor<GSubjects,GSubject> Top(Session->GetSubjects(pSubject));
+	RNodeCursor<GSubjects,GSubject> Top(Session->GetObjs(pSubject,pSubject));
 	for(Top.Start();!Top.End();Top.Next())
 		BuildClass(Top(),0);
 }
@@ -1014,7 +979,7 @@ void GSimulator::BuildIdealDocsClasses(void)
 
 	// Clear current classes
 	Session->ForceReCompute(otClass);
-	RNodeCursor<GSubjects,GSubject> Top(Session->GetSubjects(pSubject));
+	RNodeCursor<GSubjects,GSubject> Top(Session->GetObjs(pSubject,pSubject));
 	for(Top.Start();!Top.End();Top.Next())
 		BuildClass(Top(),0);
 }

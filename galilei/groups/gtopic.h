@@ -6,7 +6,7 @@
 
 	Topic - Header.
 
-	Copyright 2008-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2008-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -49,13 +49,8 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Topic.
 */
-class GTopic : public GGroup<GDoc,GTopic,otTopic,eCreateTopic,eNewTopic,eDelTopic,eUpdateTopic,eTopicModified>
+class GTopic : public GGroup<GDoc,GTopic,otTopic>
 {
-	/**
-	 * Method used to correctly instantiate some template methods.
-	 */
-	void PrivateInit(void);
-
 public:
 
 	/**
@@ -89,11 +84,28 @@ public:
 	 	{return(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Document Similarities"));}
 
 	/**
+	* Update the representation of the topic once a computation was done. The
+	* computed date and the status are updated.
+	*
+	* If the topic is an internal one, the following steps are done:
+	* -# An 'hTopics[oeAboutToBeUpdated]' notification is send.
+	* -# The references are updated.
+	* -# Existing in memory description is replaced.
+	* -# If necessary, the topic and its description are saved.
+	* -# An 'hTopics[oeUpdated]' notification is send.
+	*
+	* If the topic is an external one, its description is replaced.
+	* @param desc            Description to assign.
+	* \warning The description is cleared by this method.
+	*/
+	void Update(GDescription& desc);
+
+	/**
 	* Destructor of a group.
 	*/
 	virtual ~GTopic(void);
 
-   friend class GObjects<GTopic,eCreateTopic>;
+   friend class GObjects<GTopic,hTopics>;
 };
 
 

@@ -6,7 +6,7 @@
 
 	Generic Document Analysis - Header.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -566,10 +566,8 @@ public:
 	/**
 	* Analyze a document.
 	* @param doc             Pointer to the document to analyze.
-	* @param ram             Must the description of the document be maintained
-	*                        in RAM?
 	*/
-	void Analyze(GDoc* doc,bool ram=true);
+	void Analyze(GDoc* doc);
 
 	/**
 	* Destruct the document analyzer.
@@ -577,7 +575,7 @@ public:
 	virtual ~GDocAnalyze(void);
 
 	friend class GSession;
-	friend class GObjects<GDoc,eCreateDoc>;
+	friend class GObjects<GDoc,hDocs>;
 };
 
 

@@ -6,7 +6,7 @@
 
 	Measure represented by a matrix of values - Header.
 
-	Copyright 2007-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2007-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2007-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -52,9 +52,9 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GMatrixMeasure class provides a representation for a measure, \f$ [M]=m_{i,j} \f$,
-* represented by a matrix of values, such as the similarity between two
-* elements. A cutoff frequency can be specified.
+* The GMatrixMeasure class provides a representation for a measure,
+* \f$ [M]=m_{i,j} \f$, represented by a matrix of values, such as the similarity
+* between two elements. A cutoff frequency can be specified.
 *
 * The class maintains the mean and the deviation of the values computed. A
 * minimum value is computed using:
@@ -103,7 +103,7 @@ public:
 	{
 		Full,              /** Full matrix.*/
 		Sparse,            /** Sparse matrix.*/
-		NearestNeighbors   /** Nearest neighbors matrix.*/
+		NearestNeighbours  /** Nearest neighbours matrix.*/
 	};
 
 private:
@@ -197,11 +197,6 @@ private:
 	 * Measures in a storage.
 	 */
 	bool InStorage;
-
-	/**
-	 * Name of measures.
-	 */
-	R::RString Name;
 
 	/**
 	 * Directory containing the binary files.

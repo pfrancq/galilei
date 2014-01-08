@@ -6,7 +6,7 @@
 
 	Widget to manipulate a list of objects - Implementation.
 
-	Copyright 2008-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2008-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -371,7 +371,7 @@ void QGObjectsList::Set(GSession* session,oType type)
 		case IdealTopics:
 		{
 			// Go through each subjects
-			R::RCursor<GSubject> Grps(session->GetSubjects());
+			R::RCursor<GSubject> Grps(session->GetObjs(pSubject));
 			for(Grps.Start();!Grps.End();Grps.Next())
 			{
 				if(!Grps()->GetNbObjs(otDoc))
@@ -430,7 +430,7 @@ void QGObjectsList::Set(GSession* session,oType type)
 		case IdealCommunities:
 		{
 			// Go through each subjects
-			R::RCursor<GSubject> Grps(session->GetSubjects());
+			R::RCursor<GSubject> Grps(session->GetObjs(pSubject));
 			for(Grps.Start();!Grps.End();Grps.Next())
 			{
 				if(!Grps()->GetNbObjs(otProfile))
@@ -444,7 +444,7 @@ void QGObjectsList::Set(GSession* session,oType type)
 		}
 		case Subjects:
 		{
-			RNodeCursor<GSubjects,GSubject> Cur(session->GetSubjects(pSubject));
+			RNodeCursor<GSubjects,GSubject> Cur(session->GetObjs(pSubject,pSubject));
 			for(Cur.Start();!Cur.End();Cur.Next())
 				addSubject(Cur(),List,0);
 			break;

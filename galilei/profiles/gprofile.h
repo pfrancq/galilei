@@ -6,7 +6,7 @@
 
 	Profile - Header.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -54,7 +54,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Profile.
 */
-class GProfile : public GDescriptionObject<GProfile,eCreateProfile,eNewProfile,eDelProfile>
+class GProfile : public GDescriptionObject<GProfile>
 {
 protected:
 
@@ -108,11 +108,6 @@ protected:
 	 * Confidence Level (to maximize).
 	 */
 	char Level;
-
-	/**
-	 * Method used to correctly instantiate some template methods.
-	 */
-	void PrivateInit(void);
 
 public:
 
@@ -208,12 +203,6 @@ public:
 	bool IsSocial(void) const {return(Social);}
 
 	/**
-	* Set if the profile is social.
-	* @param social          Social value.
-	*/
-	void SetSocial(bool social);
-
-	/**
 	* Get the date of the last update of the profile. It may be the date of the
 	* latest document feedback or an update of one of the documents on which some
 	* feedback exists.
@@ -264,13 +253,6 @@ public:
 	char GetConfidenceLevel(void) const {return(Level);}
 
 	/**
-	 * Set the confidence score and level of the profile.
-	 * @param score          Confidence level.
-	 * @param level          Confidence score.
-	 */
-	void SetConfidence(double score,char level);
-
-	/**
 	* Compute the agreement ratio between two profiles, i.e. the ratio between
 	* the number of documents assessed as relevant by both profiles, and the
 	* total number of documents assessed by both profiles.
@@ -316,15 +298,26 @@ public:
 	*/
 	void DeleteFdbk(size_t docid);
 
+private:
+
 	/**
-	* Assign a new description to the profile.
-	* @param session         Session.
-	* @param desc            Description.
-   * @param delref          Delete the references (must be set to true if the
-	*                        profile has already a description).
+	* Update the representation of the profile once a computation was done. The
+	* computed date and the status are updated.
+	*
+	* If the profile is an internal one, the following steps are done:
+	* -# An 'hProfiles[oeAboutToBeUpdated]' notification is send.
+	* -# The references are updated.
+	* -# Existing in memory description is replaced.
+	* -# If necessary, the profile and its description are saved.
+	* -# An 'hProfiles[oeUpdated]' notification is send.
+	*
+	* If the profile is an external one, its description is replaced.
+	* @param desc            Description to assign.
 	* \warning The description is cleared by this method.
 	*/
-	void Update(GSession* session,GDescription& desc,bool delref);
+	void Update(GDescription& desc);
+
+public:
 
 	/**
 	* Clear the assessment of the profile.
@@ -347,6 +340,8 @@ public:
 	* Destructor of the profile.
 	*/
 	~GProfile(void);
+
+	friend class GSession;
 };
 
 

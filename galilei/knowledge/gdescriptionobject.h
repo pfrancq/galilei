@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GDescription.h
+	GDescriptionObject.h
 
 	Object represented by a list of weighted information entities - Header.
 
-	Copyright 2009-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2009-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -47,17 +47,16 @@ namespace GALILEI{
 /**
  * The GDescriptionObject provides a generic class for a object of a given type
  * with a specific identifier that is represented by a description.
+ *
+ * Each object can be either selected (the default) or unselected. When
+ * unselected, the object is not taken into account for computation. For
+ * example, the document clustering treats only the selected documents.
  * @tparam C                 Class of the object.
- * @tparam hCreate           Notification to post when the object is created.
- * @tparam hNew              Notification to post when the object is created in
- *                           memory.
- * @tparam hDel              Notification to post when the object is deleted
- *                           from memory.
  * @author Pascal Francq
  * @short Generic Vector Object
  */
-template<class C,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel>
-	class GDescriptionObject : public GObject, public GDescription
+template<class C>
+	class GDescriptionObject : public GObject, private GDescription
 {
 protected:
 
@@ -83,9 +82,8 @@ public:
 	 * @param blockid        Identifier of the block.
 	 * @param objtype        ObjType.
 	 * @param name           Name of the object.
-	 * @param state          State of the object.
 	 */
-	GDescriptionObject(GSession* session,size_t id,size_t blockid,tObjType objtype,const R::RString& name,tObjState state);
+	GDescriptionObject(GSession* session,size_t id,size_t blockid,tObjType objtype,const R::RString& name);
 
 protected:
 
@@ -95,6 +93,22 @@ protected:
 	 */
 	virtual bool LoadVectors(void);
 
+	/**
+	* Add the references for the concepts for a given object type. This
+	* information is used for the inverse frequency factors.
+	* @param session         Session.
+	* @param ObjType         Object type.
+	*/
+	void AddRefs(GSession* session,tObjType ObjType) const;
+
+	/**
+	* Delete the references for the concepts for a given object type. This
+	* information is used for the inverse frequency factors.
+	* @param session         Session.
+	* @param ObjType         Object type.
+	*/
+	void DelRefs(GSession* session,tObjType ObjType) const;
+
 public:
 
 	/**
@@ -102,6 +116,47 @@ public:
 	 * @return true.
 	 */
 	static inline bool HasDesc(void) {return(true);}
+
+	 /**
+	  * Release the vectors from memory.
+	*/
+	 void ReleaseVectors(void);
+
+	/**
+	* @return a const pointer to the description.
+	*/
+	inline const GDescription& operator()(void) const
+	{
+		if(!Vectors)
+		{
+			if(!const_cast<GDescriptionObject<C>*>(this)->LoadVectors())
+				const_cast<GDescriptionObject<C>*>(this)->Vectors=new R::RContainer<GVector,true,true>(5,20);
+		}
+		return(*this);
+	}
+
+	/**
+	 * Get the vectors associated to the object. The whole description is loaded
+	 * if necessary.
+	 * @return a cursor of GVector.
+	 */
+	inline R::RConstCursor<GVector> GetVectors(void) const {return(GDescription::GetVectors());}
+
+	/**
+	 * Get the vector associated to a meta-concept. The whole description is
+	 * loaded if necessary.
+	 * @param metaconcept    Meta-concept.
+	 * @return a pointer to a GVector (may be null if the meta-concept isn't
+	 * found).
+	 */
+	inline const GVector* GetVector(GConcept* metaconcept) const {return(GDescription::GetVector(metaconcept));}
+
+	/**
+	 * Verify if a given concept is in one of the vectors.
+	 * @param concept        Concept.
+	 * @returns true if the concept is contained.
+	 */
+	inline bool IsIn(const GConcept* concept) const {return(GDescription::IsIn(concept));}
 
 	/**
     * Verify if the object has a description in memory or on the disk.
@@ -123,22 +178,9 @@ public:
 	inline tObjState GetState(void) const {return(State);}
 
 	/**
-	* Set the state of the object. If the object must be delete, its vector is
-	* loaded to delete the references.
-	* @param state           New state.
-	*/
-	void SetState(tObjState state);
-
-	/**
 	* Get the identifier of the document.
 	*/
 	inline size_t GetId(void) const {return(Id);}
-
-	/**
-	* Set the identifier of the document.
-	* @param id              Identifier.
-	*/
-	void SetId(size_t id);
 
 	/**
 	 * Get the identifier of the block containing the description. If null, it
@@ -152,7 +194,9 @@ public:
 	* @param concept         Concept
 	* @param list             List of concept references.
 	*/
-	void Copy(GConcept* concept,const R::RContainer<GConceptRef,false,true>& list);
+//	void Copy(GConcept* concept,const R::RContainer<GConceptRef,false,true>& list);
+
+private:
 
 	/**
 	 * Clear the vectors corresponding to the object. The corresponding file is
@@ -162,17 +206,25 @@ public:
 	 */
 	void Clear(bool disk=false);
 
-	/**
-	 * Save the description of the object.
-	 */
-	void SaveDesc(void);
+public:
 
 	/**
 	 * Destruct the object.
 	 */
 	virtual ~GDescriptionObject(void);
 
-	friend class GObjects<C,hCreate>;
+	friend class GDoc;
+	friend class GObjects<GDoc,hDocs>;
+	friend class GClass;
+	friend class GObjects<GClass,hClasses>;
+	friend class GGroup<GDoc,GTopic,otTopic>;
+	friend class GTopic;
+	friend class GObjects<GTopic,hTopics>;
+	friend class GProfile;
+	friend class GObjects<GProfile,hProfiles>;
+	friend class GGroup<GProfile,GCommunity,otCommunity>;
+	friend class GCommunity;
+	friend class GObjects<GCommunity,hCommunities>;
 	friend class GSession;
 	friend class GDocAnalyze;
 };

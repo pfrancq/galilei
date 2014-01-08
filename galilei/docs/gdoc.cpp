@@ -6,7 +6,7 @@
 
 	Document - Implementation.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -25,8 +25,6 @@
 	Boston, MA  02111-1307  USA
 
 */
-
-
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
@@ -52,18 +50,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void GDoc::PrivateInit(void)
-{
-	SetState(osNew);
-	SaveDesc();
-	AddRefs(Session,otDoc);
-	SetId(cNoRef);
-}
-
-
-//------------------------------------------------------------------------------
 GDoc::GDoc(GSession* session,const RURI& uri,const RString& name,GLang* lang,const RString& mime)
-	: GDescriptionObject<GDoc,eCreateDoc,eNewDoc,eDelDoc>(session,cNoRef,0,otDoc,name,osNew), URI(uri),
+	: GDescriptionObject<GDoc>(session,cNoRef,0,otDoc,name), URI(uri),
 	  Lang(lang),MIMEType(mime), Updated(RDate::GetToday()), Computed(RDate::Null),
 	  Fdbks(0), GroupId(0), Attached(RDate::Null),
 	  StructId(0), Tree(0)
@@ -80,7 +68,7 @@ GDoc::GDoc(GSession* session,const RURI& uri,const RString& name,GLang* lang,con
 
 //------------------------------------------------------------------------------
 GDoc::GDoc(GSession* session,const RURI& uri,const RString& name,size_t id,size_t blockid,size_t structid,GLang* lang,const RString& mime,size_t grpid,const RDate& c,const RDate& u,const RDate& a)
-	: GDescriptionObject<GDoc,eCreateDoc,eNewDoc,eDelDoc>(session,id,blockid,otDoc,name,osNew), URI(uri),
+	: GDescriptionObject<GDoc>(session,id,blockid,otDoc,name), URI(uri),
 	  Lang(lang),MIMEType(mime), Updated(u), Computed(c),
 	  Fdbks(0), GroupId(grpid), Attached(a),
 	  StructId(structid), Tree(0)
@@ -89,7 +77,7 @@ GDoc::GDoc(GSession* session,const RURI& uri,const RString& name,size_t id,size_
 	mAssert(GroupId!=cNoRef);
 	if(GroupId)
 	{
-		GTopic* grp=Session->GetObj(pTopic,GroupId,false,false);
+		GTopic* grp(Session->GetObj(pTopic,GroupId,false,false));
 		if(grp)
 			grp->InsertObj(this);
 	}
@@ -152,7 +140,7 @@ int GDoc::Compare(const GLang* lang) const
 void GDoc::ClearInfos(bool disk)
 {
 	// Clear the information
-	GDescriptionObject<GDoc,eCreateDoc,eNewDoc,eDelDoc>::Clear(disk);
+	GDescriptionObject<GDoc>::Clear(disk);
 
 	// Make sure that it will be re-computed
 	Computed=RDate::Null;
@@ -190,8 +178,6 @@ void GDoc::LoadTree(GConceptTree* &tree) const
 		Session->LoadTree(pDoc,tree,StructId,Id);
 	else
 		tree=new GConceptTree(Id,0,0);
-
-
 }
 
 
@@ -223,43 +209,9 @@ void GDoc::SetGroup(size_t groupid)
 
 
 //------------------------------------------------------------------------------
-RDate GDoc::GetAttached(void) const
-{
-	return(Attached);
-}
-
-
-//------------------------------------------------------------------------------
 void GDoc::SetURI(RURI uri)
 {
 	URI=uri;
-}
-
-
-//------------------------------------------------------------------------------
-RDate GDoc::GetUpdated(void) const
-{
-	return(Updated);
-}
-
-
-//------------------------------------------------------------------------------
-void GDoc::SetUpdated(RDate& date)
-{
-	Updated=date;
-}
-
-//------------------------------------------------------------------------------
-RDate GDoc::GetComputed(void) const
-{
-	return(Computed);
-}
-
-
-//------------------------------------------------------------------------------
-RString GDoc::GetMIMEType(void) const
-{
-	return(MIMEType);
 }
 
 
@@ -387,50 +339,105 @@ size_t GDoc::GetNbFdbks(void) const
 
 
 //------------------------------------------------------------------------------
-void GDoc::Update(GLang* lang,GDescription& desc,bool ram,bool delref)
+void GDoc::SetUpdated(RDate& date)
 {
-	if(Id!=cNoRef)
-		PostNotification(eUpdateDoc);
+	GStorage* Storage(Session->GetStorage());
+	Updated=date;
+	if((!Storage->IsAllInMemory())||(Session->MustSaveResults()))
+		Storage->SaveObj(this);
+}
 
-	// Look if the references must be modified
-	if(delref&&(!ram))
+
+//------------------------------------------------------------------------------
+void GDoc::Update(GLang* lang,GDescription& desc,GConceptTree& tree)
+{
+	bool Save(Session->MustSaveResults());  // Must the results be saved on disk?
+	bool NullDesc;                          // The description must not stayed in memory?
+	bool NullTree;                          // The tree must not stayed in memory?
+
+	// Look if the document is internal one : Modify the references and indexes
+	if(Id!=cNoRef)
 	{
+		// Emit an event that it is about to be updated
+		PostNotification(hDocs[oeAboutToBeUpdated]);
+
+		// Modify the references
 		DelRefs(Session,otDoc);
-		if(Session->DoCreateIndex(pDoc))
+
+		// Look if the index must be modified
+		if(Save&&Session->DoCreateIndex(pDoc))
 			Session->UpdateIndex(pDoc,desc,Id,false);
 	}
 
-	// Assign language and information
+	// Assign language
 	Lang=lang;
-	GDescription::operator=(desc);
 
-	if(Id!=cNoRef)
+	// The description must be saved only for external documents or when a description is already loaded
+	if((Id==cNoRef)||Vectors)
 	{
-		if(ram)
-			State=osUpdated;
-		else
-			State=osNeedLoad;
-		Computed.SetToday();
-
-		// Update the profiles that have assessed it.
-		Session->UpdateProfiles(Id);
+		GDescription::operator=(desc);
+		NullDesc=false;
 	}
 	else
-		State=osUpToDate;
-
-	// Look if the references must be modified
-	if(!ram)
 	{
-		AddRefs(Session,otDoc);
-		if(Session->DoCreateIndex(pDoc))
-			Session->UpdateIndex(pDoc,desc,Id,true);
+		Vectors=desc.Vectors;
+		NullDesc=true;
 	}
 
-	desc.Clear(); // Clear the description
+	// The tree must be saved only for external documents or when a description is already loaded
+	if((Id==cNoRef)||Tree)
+	{
+		ReleaseTree();
+		Tree=new GConceptTree(tree);
+		NullTree=false;
+	}
+	else
+	{
+		Tree=&tree;
+		NullTree=true;
+	}
 
-	// Emit an event that it was modified
+	// Set the computed date and the status
+	Computed.SetToday();
+	State=osLatest;
+
+	// Look if the document is internal one : Modify the references and indexes
 	if(Id!=cNoRef)
-		PostNotification(eDocModified);
+	{
+		// Update the profiles that have assessed it.
+		Session->UpdateProfiles(Id);
+
+		// Modify the references
+		AddRefs(Session,otDoc);
+
+		// Look if the index must be modified and the description and tree saved
+		if(Save)
+		{
+			if(Session->DoCreateIndex(pDoc))
+				Session->UpdateIndex(pDoc,desc,Id,true);
+
+			if(desc.IsDefined())
+				Session->SaveDesc(pDoc,*desc.Vectors,BlockId,Id);
+
+			if(Session->DoCreateTree(pDoc))
+				Session->SaveTree(pDoc,*Tree,StructId,Id);
+
+			Session->Storage->SaveObj(this);
+		}
+
+		// Emit an event that it was updated
+		PostNotification(hDocs[oeUpdated]);
+
+		// Verify if description and tree must stay in memory
+		if(NullDesc)
+			Vectors=0;
+		if(NullTree)
+			Tree=0;
+	}
+
+	// Clear the description
+	desc.Clear();
+	tree.Clear();
 }
 
 

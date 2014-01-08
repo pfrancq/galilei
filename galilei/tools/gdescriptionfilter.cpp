@@ -6,7 +6,7 @@
 
 	Description Set - Implementation.
 
-	Copyright 2006-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2006-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2006-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -60,7 +60,7 @@ GDescriptionFilter::GDescriptionFilter(void)
 void GDescriptionFilter::CopyFilter(const GDescription& src,GDescription& dest,size_t lmax,size_t lmin)
 {
 	// Go through the vector of the source description
-	RCursor<GVector> Vector(src.GetVectors());
+	RConstCursor<GVector> Vector(src.GetVectors());
 	for(Vector.Start();!Vector.End();Vector.Next())
 	{
 		if(!Vector()->GetNb())

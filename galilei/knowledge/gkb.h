@@ -6,7 +6,7 @@
 
 	Generic GALILEI Session - Header.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2004 by Julien Lamoral.
 	Copyright 2001-2004 by Valery Vandaele.
 	Copyright 2001-2004 by David Wartel.
@@ -64,6 +64,11 @@ class GKB
 protected:
 
 	/**
+	* State of the knowledge base.
+	*/
+	tObjState State;
+
+	/**
 	 * Storage manager.
 	 */
 	GStorage* Storage;
@@ -109,6 +114,17 @@ public:
 	* Constructor.
 	*/
 	GKB(void);
+
+	/**
+	 * The knowlegde base may be in two states only :
+	 * - osOnDemand if some information is loaded from the disk.
+	 * - osLatest if the latest information was loaded to the disk.
+	 *
+	 * When the knowledge base is in the osOnDemand state, it is not necessary to
+	 * save something to the disk since an information is currently be loaded.
+    * @return the state of the session.
+    */
+	inline tObjState GetState(void) const {return(State);}
 
 	/**
 	* @return Pointer to storage manager.

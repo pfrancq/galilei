@@ -6,7 +6,7 @@
 
 	GALILEI Header - Header.
 
-	Copyright 2001-2013 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -41,6 +41,7 @@
 #include <rstring.h>
 #include <rcontainer.h>
 #include <rcursor.h>
+#include <rconstcursor.h>
 #include <rnumcontainer.h>
 #include <rnumcursor.h>
 #include <rxmltag.h>
@@ -118,18 +119,12 @@ R::RString GetObjType(tObjType type,bool upper,bool plural);
 */
 enum tObjState
 {
-	osUnknow                 /** Unknown state.*/,
-	osCreated                /** Object created in the system.*/,
-	osNew                    /** Object was allocated in memory.*/,
-	osNeedLoad               /** Object must load information.*/,
-	osOnDemand               /** Object demands to load information. */,
-	osLoaded                 /** Object loaded information.*/,
-	osUpToDate               /** Object is up to date.*/,
-	osModified               /** Object was modified and computation must be update.*/,
-	osUpdated                /** Object is updated and needs to be save.*/,
-	osSaved                  /** Object was saved.*/,
-	osDelete                 /** Object is deleted from memory.*/,
-	osDestroyed              /** Object is destroyed from the system.*/
+	osOnDemand               /** Object demands information (from the disk). */,
+	osModified               /** Object was modified and some computations must
+									     update it.*/,
+	osLatest                 /** Object is in its latest possible state. This the
+									     case if no modification occurs since the last
+									     computation or allocation.*/
 };
 
 
@@ -143,92 +138,133 @@ R::RString GetState(tObjState state,bool upper);
 
 
 //------------------------------------------------------------------------------
-// Events
- /** A document was created in the system.*/
-extern const R::hNotification eCreateDoc;
-/** A document was created in memory.*/
-extern const R::hNotification eNewDoc;
-/** A document will be updated.*/
-extern const R::hNotification eUpdateDoc;
-/** A document was modified. */
-extern const R::hNotification eDocModified;
-/** A document will be deleted from memory.*/
-extern const R::hNotification eDelDoc;
-/** A document will be destroyed from the system.*/
-extern const R::hNotification eDestroyDoc;
-/** A document was selected.*/
-extern const R::hNotification eSelectDoc;
-/** A document as unselected.*/
-extern const R::hNotification eUnselectDoc;
-/** A topic was created in the system.*/
-extern const R::hNotification eCreateTopic;
-/** A topic was created in memory.*/
-extern const R::hNotification eNewTopic;
-/** A topic will be updated.*/
-extern const R::hNotification eUpdateTopic;
-/** A topic was modified.*/
-extern const R::hNotification eTopicModified;
-/** A topic will be deleted from memory.*/
-extern const R::hNotification eDelTopic;
-/** A topic will be destroyed from the system.*/
-extern const R::hNotification eDestroyTopic;
-/** An user was created in the system.*/
-extern const R::hNotification eCreateUser;
-/** An user was created in memory.*/
-extern const R::hNotification eNewUser;
-/** An user will be updated.*/
-extern const R::hNotification eUpdateUser;
-/** An user was modified.*/
-extern const R::hNotification eUserModified;
-/** An user will be deleted from memory.*/
-extern const R::hNotification eDelUser;
-/** An user will be destroyed from the system.*/
-extern const R::hNotification eDestroyUser;
-/** A profile was created in the system.*/
-extern const R::hNotification eCreateProfile;
-/** A profile was created in memory.*/
-extern const R::hNotification eNewProfile;
-/** A profile will be updated.*/
-extern const R::hNotification eUpdateProfile;
-/** A profile was modified.*/
-extern const R::hNotification eProfileModified;
-/** A profile will be deleted from memory.*/
-extern const R::hNotification eDelProfile;
-/** A profile will be destroyed from the system.*/
-extern const R::hNotification eDestroyProfile;
-/** A community was created in the system.*/
-extern const R::hNotification eCreateCommunity;
-/** A community was created in memory.*/
-extern const R::hNotification eNewCommunity;
-/** A community will be updated.*/
-extern const R::hNotification eUpdateCommunity;
-/** A community was modified.*/
-extern const R::hNotification eCommunityModified;
-/** A community will be deleted from memory.*/
-extern const R::hNotification eDelCommunity;
-/** A community will be destroyed from the system.*/
-extern const R::hNotification eDestroyCommunity;
-/** A class was created in the system.*/
-extern const R::hNotification eCreateClass;
-/** A class was created in memory.*/
-extern const R::hNotification eNewClass;
-/** A class will be updated.*/
-extern const R::hNotification eUpdateClass;
-/** A class was modified.*/
-extern const R::hNotification eClassModified;
-/** A class will be deleted from memory.*/
-extern const R::hNotification eDelClass;
-/** A class will be destroyed from the system.*/
-extern const R::hNotification eDestroyClass;
+/**
+ * Events that can be emitted concerning an object in GALILEI.
+ * @short Object Events
+ */
+enum tObjEvent
+{
+	oeAdded                  /** An object was added in the system. This can
+	                             be the case when an existing object is loaded or
+	                             when a identifier is assigned to a new object.
+									     This message is not sent when an object is
+									     allocated.*/,
+	oeModified               /** An object was modified and must be updated.*/,
+	oeAboutToBeUpdated       /** An object is about to be updated.*/,
+	oeUpdated                /** An object was updated.*/,
+	oeAboutToBeDeleted       /** An object is about to be deleted from the
+									     system (this message is not sent if an object
+									     is deallocated from the memory).*/,
+	oeSelected               /** An object was selected.*/,
+	oeDeselected             /** An object was deselected.*/,
+	oeNbEvents               /** Number of possible object events.*/
+};
 
 
 //------------------------------------------------------------------------------
 /**
-* Get a string representing a event.
-* @param event               Event.
-* @param upper               First letter in uppercase ?
+ * Get a string representing a event concerning an object.
+ * @param event               Event.
+ * @param upper               First letter in uppercase ?
+ */
+R::RString GetEvent(tObjEvent event,bool upper);
+
+
+//------------------------------------------------------------------------------
+/**
+* Array of different event handlers concerning a document:
+*	- DocAdded.
+*	- DocModified.
+*  - DocAboutToBeUpdated
+*	- DocUpdated.
+*	- DocAboutToBeDeleted.
+*	- DocSelected.
+*	- DocUnselected.
+*
+* The events defined by the tObjEvent enumeration can be used as index.
+* @short Document Events.
 */
-R::RString GetEvent(R::hNotification event,bool upper);
+extern const R::hNotification hDocs[oeNbEvents];
+
+
+//------------------------------------------------------------------------------
+/**
+* Array of different event handlers concerning a topic:
+*	- TopicAdded.
+*	- TopicModified.
+*  - TopicAboutToBeUpdated
+*	- TopicUpdated.
+*	- TopicAboutToBeDeleted.
+*	- TopicSelected.
+*	- TopicUnselected.
+*
+*  The events defined by the tObjEvent enumeration can be used as index.
+*/
+extern const R::hNotification hTopics[oeNbEvents];
+
+
+//------------------------------------------------------------------------------
+/**
+* Array of different event handlers concerning a class:
+*	- ClassAdded.
+*	- ClassModified.
+*  - ClassAboutToBeUpdated
+*	- ClassUpdated.
+*	- ClassAboutToBeDeleted.
+*	- ClassSelected.
+*	- ClassUnselected.
+*
+*  The events defined by the tObjEvent enumeration can be used as index.
+*/
+extern const R::hNotification hClasses[oeNbEvents];
+
+
+//------------------------------------------------------------------------------
+/**
+* Array of different event handlers concerning a user:
+*	- UserAdded.
+*	- UserModified.
+*  - UserAboutToBeUpdated
+*	- UserUpdated.
+*	- UserAboutToBeDeleted.
+*	- UserSelected.
+*	- UserUnselected.
+*
+*  The events defined by the tObjEvent enumeration can be used as index.
+*/
+extern const R::hNotification hUsers[oeNbEvents];
+
+
+//------------------------------------------------------------------------------
+/**
+* Array of different event handlers concerning a profile:
+*	- ProfileAdded.
+*	- ProfileModified.
+*  - ProfileAboutToBeUpdated
+*	- ProfileUpdated.
+*	- ProfileAboutToBeDeleted.
+*	- ProfileSelected.
+*	- ProfileUnselected.
+*
+*  The events defined by the tObjEvent enumeration can be used as index.
+*/
+extern const R::hNotification hProfiles[oeNbEvents];
+
+
+//------------------------------------------------------------------------------
+/**
+* Array of different event handlers concerning a community:
+*	- CommunityAdded.
+*	- CommunityModified.
+*  - CommunityAboutToBeUpdated
+*	- CommunityUpdated.
+*	- CommunityAboutToBeDeleted.
+*	- CommunitySelected.
+*	- CommunityUnselected.
+*
+*  The events defined by the tObjEvent enumeration can be used as index.
+*/
+extern const R::hNotification hCommunities[oeNbEvents];
 
 
 //------------------------------------------------------------------------------
@@ -425,7 +461,7 @@ class GConceptRef;
 class GVector;
 class GDescription;
 class GDescriptionSet;
-template<class C,const R::hNotification& hCreate,const R::hNotification& hNew,const R::hNotification& hDel> class GDescriptionObject;
+template<class C> class GDescriptionObject;
 class GClass;
 class GClasses;
 
@@ -467,6 +503,7 @@ class GLinkCalc;
 
 //------------------------------------------------------------------------------
 // forward class declaration - Groups Part
+template<class cObj,class cGroup,tObjType type>	class GGroup;
 class GCommunity;
 class GCommunityDocs;
 class GSubject;
@@ -481,7 +518,7 @@ class GCommunityCalc;
 //------------------------------------------------------------------------------
 // forward class declaration - Session Part
 class GObject;
-template<class C,const R::hNotification& hCreate> class GObjects;
+template<class C,const R::hNotification* hEvents> class GObjects;
 class GBasicSession;
 class GSession;
 class GSlot;

@@ -6,7 +6,7 @@
 
 	Description Widget - Implementation.
 
-	Copyright 2008-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2008-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -63,9 +63,9 @@ class Item : public QTreeWidgetItem
 {
 public:
 
-	GVector* Vector;
+	const GVector* Vector;
 
-	Item(QTreeWidget* parent,GVector* vector,const QStringList & strings) : QTreeWidgetItem(parent,strings), Vector(vector) {}
+	Item(QTreeWidget* parent,const GVector* vector,const QStringList & strings) : QTreeWidgetItem(parent,strings), Vector(vector) {}
 
 
 private:
@@ -108,7 +108,7 @@ void QGDescription::Set(GSession*,const GDescription* desc)
 		Item* Cur(0);
 
 		// Parser the vectors
-		RCursor<GVector> Vector(Desc->GetVectors());
+		RConstCursor<GVector> Vector(Desc->GetVectors());
 		for(Vector.Start();!Vector.End();Vector.Next())
 		{
 			// Create an item
@@ -161,7 +161,7 @@ void QGDescription::ChangeVector(QTreeWidgetItem* item,int)
 	Vector->clear();
 
 	// Fill the vector
-	R::RCursor< GConceptRef> Refs(Choice->Vector->GetRefs());
+	RConstCursor< GConceptRef> Refs(Choice->Vector->GetRefs());
 	for(Refs.Start();!Refs.End();Refs.Next())
 	{
 			// Create an item

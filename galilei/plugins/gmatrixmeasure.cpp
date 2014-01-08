@@ -6,7 +6,7 @@
 
 	Measure represented by a matrix of values - Implementation.
 
-	Copyright 2007-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2007-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2007-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -82,89 +82,55 @@ GMatrixMeasure::GMatrixMeasure(GSession* session,GPlugInFactory* fac,tObjType li
 {
 	if(Symmetric&&(Lines!=Cols))
 		mThrowGException("Symmetric measures are only allowed if the elements are of the same type");
-	Name=fac->GetName();
 
+	const R::hNotification* Handlers;
 	switch(Lines)
 	{
 		case otDoc:
-			InsertObserver(HANDLER(GMatrixMeasure::HandleLineNew),eNewDoc);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleLineModified),eDocModified);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleLineDel),eDelDoc);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleLineDestroy),eDestroyDoc);
+			Handlers=hDocs;
 			break;
-
 		case otTopic:
-			InsertObserver(HANDLER(GMatrixMeasure::HandleLineNew),eNewTopic);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleLineModified),eTopicModified);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleLineDel),eDelTopic);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleLineDestroy),eDestroyTopic);
+			Handlers=hTopics;
 			break;
-
-		case otProfile:
-			InsertObserver(HANDLER(GMatrixMeasure::HandleLineNew),eNewProfile);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleLineModified),eProfileModified);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleLineDel),eDelProfile);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleLineDestroy),eDestroyProfile);
-			break;
-
-		case otCommunity:
-			InsertObserver(HANDLER(GMatrixMeasure::HandleLineNew),eNewCommunity);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleLineModified),eCommunityModified);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleLineDel),eDelCommunity);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleLineDestroy),eDestroyCommunity);
-			break;
-
 		case otClass:
-			InsertObserver(HANDLER(GMatrixMeasure::HandleLineNew),eNewClass);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleLineModified),eClassModified);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleLineDel),eDelClass);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleLineDestroy),eDestroyClass);
+			Handlers=hClasses;
 			break;
-
+		case otProfile:
+			Handlers=hProfiles;
+			break;
+		case otCommunity:
+			Handlers=hCommunities;
+			break;
 		default:
-			mThrowGException(GetObjType(Lines,true,true)+"are not allowed");
+			mThrowGException(GetObjType(Lines,true,true)+" are not allowed");
 	}
+	InsertObserver(HANDLER(GMatrixMeasure::HandleLineNew),Handlers[oeAdded]);
+	InsertObserver(HANDLER(GMatrixMeasure::HandleLineModified),Handlers[oeUpdated]);
+	InsertObserver(HANDLER(GMatrixMeasure::HandleLineDel),Handlers[oeAboutToBeDeleted]);
 
 	switch(Cols)
 	{
 		case otDoc:
-			InsertObserver(HANDLER(GMatrixMeasure::HandleColNew),eNewDoc);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleColModified),eDocModified);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleColDel),eDelDoc);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleColDestroy),eDestroyDoc);
+			Handlers=hDocs;
 			break;
-
 		case otTopic:
-			InsertObserver(HANDLER(GMatrixMeasure::HandleColNew),eNewTopic);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleColModified),eTopicModified);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleColDel),eDelTopic);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleColDestroy),eDestroyTopic);
+			Handlers=hTopics;
 			break;
-
-		case otProfile:
-			InsertObserver(HANDLER(GMatrixMeasure::HandleColNew),eNewProfile);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleColModified),eProfileModified);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleColDel),eDelProfile);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleColDestroy),eDestroyProfile);
-			break;
-
-		case otCommunity:
-			InsertObserver(HANDLER(GMatrixMeasure::HandleColNew),eNewCommunity);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleColModified),eCommunityModified);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleColDel),eDelCommunity);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleColDestroy),eDestroyCommunity);
-			break;
-
 		case otClass:
-			InsertObserver(HANDLER(GMatrixMeasure::HandleColNew),eNewClass);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleColModified),eClassModified);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleColDel),eDelClass);
-			InsertObserver(HANDLER(GMatrixMeasure::HandleColDestroy),eDestroyClass);
+			Handlers=hClasses;
 			break;
-
+		case otProfile:
+			Handlers=hProfiles;
+			break;
+		case otCommunity:
+			Handlers=hCommunities;
+			break;
 		default:
-			mThrowGException(GetObjType(Cols,true,true)+"are not allowed");
+			mThrowGException(GetObjType(Lines,true,true)+" are not allowed");
 	}
+	InsertObserver(HANDLER(GMatrixMeasure::HandleColNew),Handlers[oeAdded]);
+	InsertObserver(HANDLER(GMatrixMeasure::HandleColModified),Handlers[oeUpdated]);
+	InsertObserver(HANDLER(GMatrixMeasure::HandleColDel),Handlers[oeAboutToBeDeleted]);
 
 #ifdef DEBUG
 	DebugFile.Open(RIO::Create);
@@ -210,7 +176,7 @@ RString GMatrixMeasure::GetFilesName(void) const
 			else
 				FileName+="_S";
 			break;
-		case NearestNeighbors:
+		case NearestNeighbours:
 			FileName+="_NN";
 			break;
 	}
@@ -237,7 +203,7 @@ void GMatrixMeasure::ApplyConfig(void)
 	// If matrix managed nearest neighbors and their number have changed -> matrix is dirty
 	size_t NewNbNearest(FindParam<RParamValue>("NbNearest")->GetUInt());
 	size_t NewNbSamples(FindParam<RParamValue>("NbSamples")->GetUInt());
-	if((Session)&&((Type==NearestNeighbors)&&((NewNbNearest!=NbNearest)||(NewNbSamples!=NbSamples))))
+	if((Session)&&((Type==NearestNeighbours)&&((NewNbNearest!=NbNearest)||(NewNbSamples!=NbSamples))))
 	{
 		ChangeSize=true;
 		DirtyMem=true;
@@ -257,8 +223,8 @@ void GMatrixMeasure::ApplyConfig(void)
 		case Sparse:
 			Type=Sparse;
 			break;
-		case NearestNeighbors:
-			Type=NearestNeighbors;
+		case NearestNeighbours:
+			Type=NearestNeighbours;
 			break;
 		default:
 			mThrowGException("Type '"+FindParam<RParamValue>("Type")->Get()+"' is not a valid type");
@@ -294,7 +260,7 @@ void GMatrixMeasure::Init(void)
 				else
 					matrixtype=RGenericMatrix::tSparse;
 				break;
-			case NearestNeighbors:
+			case NearestNeighbours:
 				matrixtype=RGenericMatrix::tMax;
 				break;
 		}
@@ -309,7 +275,7 @@ void GMatrixMeasure::Init(void)
 				MaxIdLine=LineStorageMatrix-1;  // There are some line -> maximum identifier is line-1 (id=1 -> line=0)
 			else
 				MaxIdLine=0;     // No elements
-			if(Type==NearestNeighbors)
+			if(Type==NearestNeighbours)
 				MaxIdCol=NbNearest;
 			else
 				MaxIdCol=Storage.GetNbCols()-1;
@@ -324,7 +290,7 @@ void GMatrixMeasure::Init(void)
 			// No -> New matrix
 			MaxIdLine=NbValues=0;
 			Mean=Deviation=0.0;
-			if(Type==NearestNeighbors)
+			if(Type==NearestNeighbours)
 				MaxIdCol=NbNearest;
 			else
 				MaxIdCol=0;
@@ -335,7 +301,7 @@ void GMatrixMeasure::Init(void)
 		// New matrix
 		MaxIdLine=NbValues=0;
 		Mean=Deviation=0.0;
-		if(Type==NearestNeighbors)
+		if(Type==NearestNeighbours)
 			MaxIdCol=NbNearest;
 		else
 			MaxIdCol=0;
@@ -376,9 +342,9 @@ void GMatrixMeasure::Measure(size_t measure,...)
 	double* res(va_arg(ap,double*));
 	va_end(ap);
 
-	if((Type==NearestNeighbors)||((!InMemory)&&(!InStorage)))
+	if((Type==NearestNeighbours)||((!InMemory)&&(!InStorage)))
 	{
-		// Recompute the element if not in memory of not in storage, or if it a nearest neighbors matrix
+		// Recompute the element if not in memory of not in storage, or if it a nearest neighbours matrix
 		GObject* obj1=Session->GetObj(Lines,id1);
 		GObject* obj2=Session->GetObj(Cols,id2);
 		(*res)=Compute(obj1,obj2);
@@ -458,8 +424,8 @@ void GMatrixMeasure::Info(size_t info,...)
 		const RMaxVector** Vec(va_arg(ap,const RMaxVector**));
 		va_end(ap);
 
-		if(Type!=NearestNeighbors)
-			mThrowGException("Cannot ask for nearest neighbors if the matrix is not configured to it");
+		if(Type!=NearestNeighbours)
+			mThrowGException("Cannot ask for nearest neighbours if the matrix is not configured to it");
 
 		if(InMemory)
 		{
@@ -473,7 +439,7 @@ void GMatrixMeasure::Info(size_t info,...)
 			(*Vec)=((*static_cast<const RMaxMatrix*>(Matrix))[id-1]);
 		}
 		else
-			mThrowGException("Nearest neighbors matrix must be stored in memory");
+			mThrowGException("Nearest neighbours matrix must be stored in memory");
 	}
 	else
 	{
@@ -609,7 +575,7 @@ void GMatrixMeasure::InitMatrix(void)
 			else
 				Matrix=new RSparseMatrix(InitLine,InitCol,true,20);
 			break;
-		case NearestNeighbors:
+		case NearestNeighbours:
 			Matrix=new RMaxMatrix(InitLine,InitCol,true,NbNearest);
 			break;
 	}
@@ -681,7 +647,7 @@ void GMatrixMeasure::AddIdentificator(size_t id,bool line)
 	}
 	else
 	{
-		if(Type==NearestNeighbors)
+		if(Type==NearestNeighbours)
 			return;       // Nothing to do
 
 		// Verify if a column must be added in memory or in files (only if not nearest neighbors)
@@ -730,7 +696,11 @@ void GMatrixMeasure::DirtyIdentificator(size_t id,bool line,bool file)
 		else if(file&&InStorage&&(id<=Storage.GetNbLines()))
 		{
 			// Number of columns to dirty in the file
-			size_t NbCols(Storage.GetNbCols(id-1));
+			size_t NbCols;
+			if((Storage.GetNbLines()>=Storage.GetNbCols())&&(id-1>=Storage.GetNbCols()))
+				NbCols=Storage.GetNbCols();
+			NbCols=id;
+
 			for(size_t j=0;j<NbCols;j++)
 			{
 				if(InMemory)
@@ -752,8 +722,8 @@ void GMatrixMeasure::DirtyIdentificator(size_t id,bool line,bool file)
 	}
 	else
 	{
-		// Nothing to do for nearest neighbors
-		if(Type==NearestNeighbors)
+		// Nothing to do for nearest neighbours
+		if(Type==NearestNeighbours)
 			return;
 
 		// Column id-1 must be made dirty
@@ -1295,7 +1265,7 @@ void GMatrixMeasure::UpdateNearestNeighborsFast(void)
 
 					// Replace it a given value
 					size_t ReplaceId(Id);
-					size_t Pos(Element()->Replace(Value,ReplaceId));
+					size_t Pos(Element()->Add(Value,ReplaceId));
 					if(Pos!=cNoRef)
 					{
 						Neighbors.Delete(ReplaceId);
@@ -1397,7 +1367,7 @@ void GMatrixMeasure::UpdateMem(void)
 		case Sparse:
 			UpdateSparse();
 			break;
-		case NearestNeighbors:
+		case NearestNeighbours:
 			if(FastNN)
 				UpdateNearestNeighborsFast();
 			else
@@ -1454,7 +1424,7 @@ void GMatrixMeasure::UpdateStorage(void)
 		case Sparse:
 			UpdateSparse();
 			break;
-		case NearestNeighbors:
+		case NearestNeighbours:
 			if(FastNN)
 				UpdateNearestNeighborsFast();
 			else
