@@ -6,7 +6,7 @@
 
 	Similarity Statistics - Implementation.
 
-	Copyright 2003-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -301,8 +301,8 @@ template<class cObj>
 
 	// Parse the vector to found those associated wit the same concept
 	double Den(0.0), Num(0.0);
-   RCursor<GVector> Vec1(obj1->GetVectors());
-   RCursor<GVector> Vec2(obj2->GetVectors());
+	RConstCursor<GVector> Vec1(obj1->GetVectors());
+	RConstCursor<GVector> Vec2(obj2->GetVectors());
 	for(Vec1.Start(),Vec2.Start();!Vec1.End();Vec1.Next())
 	{
 		// Parse all the elements of Vec2 with an identifier lower than the current element of Vec1
@@ -314,10 +314,10 @@ template<class cObj>
 		{
 			double LocalDen(0.0),LocalNum(0.0),Max(-numeric_limits<double>().max());
 			// Parse the concepts
-         RCursor<GConceptRef> Concept1(Vec1()->GetRefs());
-         RCursor<GConceptRef> Concept2(Vec2()->GetRefs());
-         for(Concept1.Start(),Concept2.Start();!Concept1.End();Concept1.Next())
-         {
+			RConstCursor<GConceptRef> Concept1(Vec1()->GetRefs());
+			RConstCursor<GConceptRef> Concept2(Vec2()->GetRefs());
+			for(Concept1.Start(),Concept2.Start();!Concept1.End();Concept1.Next())
+			{
 				// Maximum value and add denominator
 				if(fabs(Concept1()->GetWeight())>Max)
 					Max=fabs(Concept1()->GetWeight());
@@ -360,8 +360,8 @@ void GStatsSims::DoExportDocsIncs(void)
 	Export.Open(RIO::Create);
 
 	// Save the sims
-	R::RCursor<GDoc> Objs1(Session->GetObjs(pDoc));
-	R::RCursor<GDoc> Objs2(Session->GetObjs(pDoc));
+	RCursor<GDoc> Objs1(Session->GetObjs(pDoc));
+	RCursor<GDoc> Objs2(Session->GetObjs(pDoc));
 	for(Objs1.Start(),NewLine=false;!Objs1.End();Objs1.Next())
 	{
 		if(NewLine)

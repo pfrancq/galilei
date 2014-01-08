@@ -6,7 +6,7 @@
 
 	Template for computing similarities statistics.
 
-	Copyright 2003-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -228,7 +228,7 @@ template<class E1,class E2>
 	RContainer<E1,false,false> Centers(100);
 
 	// Go trough the subjects
-	R::RCursor<GSubject> Sub(Session->GetSubjects());
+	R::RCursor<GSubject> Sub(Session->GetObjs(pSubject));
 	size_t Line;
 	for(Sub.Start(),Line=0;!Sub.End();Sub.Next(),Line++)
 	{
@@ -264,7 +264,7 @@ template<class E1,class E2>
 			size_t NbInterElements(0);           // Number of elements outside the subject
 
 			// Compute Extra-sim
-			R::RCursor<GSubject> Subs2(Session->GetSubjects());
+			R::RCursor<GSubject> Subs2(Session->GetObjs(pSubject));
 			for(Subs2.Start();!Subs2.End();Subs2.Next())
 			{
 				// Look if Same topic
@@ -438,7 +438,7 @@ template<class E1,class E2>
 	double AvgOv(0.0);            // Average overlap (average number of elements having one nearest neighbor not from the same subject).
 
 	size_t Line;
-	R::RCursor<GSubject> Sub(Session->GetSubjects());
+	R::RCursor<GSubject> Sub(Session->GetObjs(pSubject));
 	for(Sub.Start(),Line=0;!Sub.End();Sub.Next(),Line++)
 	{
 		// Local statistics
@@ -469,7 +469,7 @@ template<class E1,class E2>
 
 				// Get the subject of Cur()
 				E2* Col(static_cast<E2*>(Session->GetObj(ObjType2,Cur()->Id)));
-				const GSubject* Subject2(Session->GetSubject(Col));
+				const GSubject* Subject2(Session->GetObj(pSubject,Col));
 
 				if(Sub()==Subject2)
 					In+=1.0;
