@@ -6,7 +6,7 @@
 
 	Topics Evaluation - Implementation.
 
-	Copyright 2003-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -59,18 +59,17 @@ public:
 TopicsEval::TopicsEval(GSession* session,GPlugInFactory* fac)
 	: ClusteringEval<GTopic,GDoc>(session,fac,otTopic,otDoc)
 {
-	InsertObserver(HANDLER(TopicsEval::Handle),eNewTopic);
-	InsertObserver(HANDLER(TopicsEval::Handle),eCreateTopic);
-	InsertObserver(HANDLER(TopicsEval::Handle),eTopicModified);
-	InsertObserver(HANDLER(TopicsEval::Handle),eDelTopic);
-	InsertObserver(HANDLER(TopicsEval::Handle),eDestroyTopic);
+	InsertObserver(HANDLER(TopicsEval::Handle),hTopics[oeAdded]);
+	InsertObserver(HANDLER(TopicsEval::Handle),hTopics[oeModified]);
+	InsertObserver(HANDLER(TopicsEval::Handle),hTopics[oeUpdated]);
+	InsertObserver(HANDLER(TopicsEval::Handle),hTopics[oeAboutToBeDeleted]);
 }
 
 
 //------------------------------------------------------------------------------
 bool TopicsEval::IsObjAloneInIdealGroup(GDoc* obj)
 {
-	RCursor<GSubject> ThGrp(Session->GetSubjects(obj));
+	RCursor<GSubject> ThGrp(Session->GetObjs(pSubject,obj));
 	for(ThGrp.Start();!ThGrp.End();ThGrp.Next())
 		if(ThGrp()->GetNbObjs(otDoc)==1)
 			return(true);
@@ -84,7 +83,7 @@ void TopicsEval::ComputeBestLocalRecallPrecision(RCursor<GDoc>& objs,ClusterScor
 	for(objs.Start();!objs.End();objs.Next())
 	{
 		double bestrecall(0.0),bestprecision(0.0),bestFMeasure(0.0);
-		RCursor<GSubject> ThGrp(Session->GetSubjects(objs()));
+		RCursor<GSubject> ThGrp(Session->GetObjs(pSubject,objs()));
 		for(ThGrp.Start();!ThGrp.End();ThGrp.Next())
 		{
 			double recall(0.0),precision(0.0);

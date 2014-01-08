@@ -6,7 +6,7 @@
 
 	Communities Evaluation - Implementation.
 
-	Copyright 2003-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -57,11 +57,10 @@ public:
 CommunitiesEval::CommunitiesEval(GSession* session,GPlugInFactory* fac)
 	: ClusteringEval<GCommunity,GProfile>(session,fac,otCommunity,otProfile)
 {
-	InsertObserver(HANDLER(CommunitiesEval::Handle),eNewCommunity);
-	InsertObserver(HANDLER(CommunitiesEval::Handle),eCreateCommunity);
-	InsertObserver(HANDLER(CommunitiesEval::Handle),eCommunityModified);
-	InsertObserver(HANDLER(CommunitiesEval::Handle),eDelCommunity);
-	InsertObserver(HANDLER(CommunitiesEval::Handle),eDestroyCommunity);
+	InsertObserver(HANDLER(CommunitiesEval::Handle),hCommunities[oeAdded]);
+	InsertObserver(HANDLER(CommunitiesEval::Handle),hCommunities[oeModified]);
+	InsertObserver(HANDLER(CommunitiesEval::Handle),hCommunities[oeUpdated]);
+	InsertObserver(HANDLER(CommunitiesEval::Handle),hCommunities[oeAboutToBeDeleted]);
 }
 
 

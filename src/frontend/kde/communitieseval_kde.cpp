@@ -6,7 +6,7 @@
 
 	Communities Evaluation (KDE Part) - Implementation.
 
-	Copyright 2003-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -53,7 +53,7 @@ void About(void)
 {
 	KAboutData aboutData("CommunitiesEval",0, ki18n("Communities Evaluation"),
 		"1.0", ki18n("Compute the recall, the precision and the adjusted Rand index for the communities computed"), KAboutData::License_GPL,
-		ki18n("(C) 2003-2012 by Pascal Francq\n(C) 2003-2008 by the Université Libre de Bruxelles (ULB)"),
+		ki18n("(C) 2003-2014 by Pascal Francq\n(C) 2003-2008 by the Université Libre de Bruxelles (ULB)"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	KAboutApplicationDialog dlg(&aboutData);

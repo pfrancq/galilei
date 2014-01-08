@@ -6,7 +6,7 @@
 
 	Classes Evaluation - Implementation.
 
-	Copyright 2008-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2008-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -116,11 +116,10 @@ public:
 ClassesEval::ClassesEval(GSession* session,GPlugInFactory* fac)
 	: GMeasure(session,fac), LeafNodes(3000)
 {
-	InsertObserver(HANDLER(ClassesEval::Handle),eNewClass);
-	InsertObserver(HANDLER(ClassesEval::Handle),eCreateClass);
-	InsertObserver(HANDLER(ClassesEval::Handle),eClassModified);
-	InsertObserver(HANDLER(ClassesEval::Handle),eDelClass);
-	InsertObserver(HANDLER(ClassesEval::Handle),eDestroyClass);
+	InsertObserver(HANDLER(ClassesEval::Handle),hClasses[oeAdded]);
+	InsertObserver(HANDLER(ClassesEval::Handle),hClasses[oeModified]);
+	InsertObserver(HANDLER(ClassesEval::Handle),hClasses[oeUpdated]);
+	InsertObserver(HANDLER(ClassesEval::Handle),hClasses[oeAboutToBeDeleted]);
 }
 
 
@@ -196,7 +195,7 @@ void ClassesEval::ComputeRankTree(void)
 			SubjectName=Name.Mid(Pos+1,Name.GetLen()-Pos-2);
 		else
 			SubjectName=Name;
-		GSubject* Subject(Session->GetSubject(SubjectName));
+		GSubject* Subject(Session->GetObj(pSubject,SubjectName));
 		if(!Subject)
 			mThrowGException("No correspondence between the class '"+SubjectName+"' and a subject");
 		LeafNodes.InsertPtr(new ClassSubject(Classes(),Subject));

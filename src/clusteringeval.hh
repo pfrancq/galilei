@@ -6,7 +6,7 @@
 
 	Clustering Evaluation - Template Implementation
 
-	Copyright 2007-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2007-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2007-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -140,7 +140,7 @@ template<class cGroup,class cObj>
 template<class cGroup,class cObj>
 	bool ClusteringEval<cGroup,cObj>::IsObjAloneInIdealGroup(cObj* obj)
 {
-	const GSubject* ThGrp(Session->GetSubject(obj));
+	const GSubject* ThGrp(Session->GetObj(pSubject,obj));
 	if(!ThGrp)
 		throw GException("ClusteringEval<cGroup,cObj>::IsObjAloneInIdealGroup(cObj*): ThGrp cannot be null");
 	return(ThGrp->GetNbObjs(ObjType)==1);
@@ -153,7 +153,7 @@ template<class cGroup,class cObj>
 {
 	for(objs.Start();!objs.End();objs.Next())
 	{
-		const GSubject* ThGrp(Session->GetSubject(objs()));
+		const GSubject* ThGrp(Session->GetObj(pSubject,objs()));
 		if(!ThGrp)
 			throw GException("ClusteringEval<cGroup,cObj>::ComputeBestLocalRecallPrecision(cObj*,ClusterScore<cGroup>*,size_t): ThGrp cannot be null");
 		size_t InThGrp(ThGrp->GetNbObjs(ObjType));
@@ -251,7 +251,7 @@ template<class cGroup,class cObj>
 
 	// Go through the languages to define the maximal sizes and allocate the matrix
 	MaxRows=MaxCols=0;
-	NbRows=Session->GetNbIdealGroups(ObjType);
+	NbRows=Session->GetNbObjs(pSubject,ObjType);
 	NbCols=Session->GetNbObjs(GroupType);
 	if((!NbRows)||(!NbCols))
 		return;
@@ -276,7 +276,7 @@ template<class cGroup,class cObj>
 	// For each group of ideal group and for each object in this group
 	// -> Compute the different terms of the total
 	size_t row(0),position;
-	RCursor<GSubject> GroupsIdeal(Session->GetSubjects());
+	RCursor<GSubject> GroupsIdeal(Session->GetObjs(pSubject));
 	for(GroupsIdeal.Start(),NbTot=0;!GroupsIdeal.End();GroupsIdeal.Next())
 	{
 		if(!GroupsIdeal()->GetNbObjs(ObjType))
