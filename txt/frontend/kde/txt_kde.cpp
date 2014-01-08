@@ -51,7 +51,7 @@ void About(void)
 {
 	KAboutData aboutData( "txt", 0, ki18n("TXT Filter"),
 		"1.0", ki18n("This is the text filter for GALILEI."), KAboutData::License_GPL,
-		ki18n("(C) 2001-2012 by Valery Vandaele\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
+		ki18n("(C) 2001-2014 by Valery Vandaele\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Valery Vandaele"),ki18n("Contributor"));
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");

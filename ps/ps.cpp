@@ -6,7 +6,7 @@
 
 	A PostScript filter - Implementation.
 
-	Copyright 2003-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 	Copyright 1995-1998 by Digital Equipment Corporation.
 	See the file pstotext.txt for a full description.

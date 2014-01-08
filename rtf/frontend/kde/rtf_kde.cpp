@@ -47,7 +47,7 @@ void About(void)
 {
 	KAboutData aboutData("rtf", 0, ki18n("RTF Filter"),
 		"1.0", ki18n("This is the RTF filter for GALILEI."), KAboutData::License_GPL,
-		ki18n("(C) 2001-2012 by Nicolas Kumps and Valery Vandaele\n(c) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
+		ki18n("(C) 2001-2014 by Nicolas Kumps and Valery Vandaele\n(c) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Nicolas Kumps"),ki18n("developer"));
 	aboutData.addAuthor(ki18n("Valery Vandaele"),ki18n("developer"));
