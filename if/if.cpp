@@ -6,7 +6,7 @@
 
 	Inverse Frequencies - Implementation.
 
-	Copyright 2003-2013 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -51,34 +51,14 @@ If::If(GSession* session,GPlugInFactory* fac)
 	: RObject(fac->GetName()), GMeasure(session,fac), Dirty(false),
 	  ConceptRef(Session->GetNbConcepts()+1,5), ConceptIf(Session->GetNbConcepts()+1,5),
 	  ConceptTypeRef(Session->GetNbConceptTypes()+1,5),
-	  Types(Session->GetNbConceptTypes()+1),Concepts(Session->GetNbConcepts()+1)
+	  tmpTypes(Session->GetNbConceptTypes()+1),tmpConcepts(Session->GetNbConcepts()+1)
 {
 	// Document notifications
-//	InsertObserver(HANDLER(If::HandleDelDoc),eUpdateDoc);
-//	InsertObserver(HANDLER(If::HandleAddDoc),eDocModified);
-//	InsertObserver(HANDLER(If::HandleDelDoc),eDestroyDoc);
-//	InsertObserver(HANDLER(If::HandleAddDoc),eSelectDoc);
-//	InsertObserver(HANDLER(If::HandleDelDoc),eUnselectDoc);
-
-	// Topic notifications
-	InsertObserver(HANDLER(If::Handle),eUpdateTopic);
-	InsertObserver(HANDLER(If::Handle),eTopicModified);
-	InsertObserver(HANDLER(If::Handle),eDestroyTopic);
-
-	// Profile notifications
-	InsertObserver(HANDLER(If::Handle),eUpdateProfile);
-	InsertObserver(HANDLER(If::Handle),eProfileModified);
-	InsertObserver(HANDLER(If::Handle),eDestroyProfile);
-
-	// Community notifications
-	InsertObserver(HANDLER(If::Handle),eUpdateCommunity);
-	InsertObserver(HANDLER(If::Handle),eCommunityModified);
-	InsertObserver(HANDLER(If::Handle),eDestroyCommunity);
-
-	// Class notifications
-	InsertObserver(HANDLER(If::Handle),eUpdateClass);
-	InsertObserver(HANDLER(If::Handle),eClassModified);
-	InsertObserver(HANDLER(If::Handle),eDestroyClass);
+	InsertObserver(HANDLER(If::HandleAddDoc),hDocs[oeSelected]);
+	InsertObserver(HANDLER(If::HandleAddDoc),hDocs[oeUpdated]);
+	InsertObserver(HANDLER(If::HandleDelDoc),hDocs[oeAboutToBeUpdated]);
+	InsertObserver(HANDLER(If::HandleDelDoc),hDocs[oeDeselected]);
+	InsertObserver(HANDLER(If::HandleDelDoc),hDocs[oeAboutToBeDeleted]);
 
 	// Init matrices
 	ConceptRef.Init(0.0);
@@ -94,6 +74,7 @@ void If::Init(void)
 	RDir::CreateDirIfNecessary(Dir,true);
 	ConceptsFile.Open(Dir+"conceptrefs",RGenericMatrix::tNormal);
 	ConceptTypesFile.Open(Dir+"concepttyperefs",RGenericMatrix::tNormal);
+
 	ConceptsFile.Load(ConceptRef);
 	ConceptTypesFile.Load(ConceptTypeRef);
 
@@ -109,24 +90,25 @@ void If::Init(void)
 //------------------------------------------------------------------------------
 void If::Done(void)
 {
+	ConceptsFile.Save(ConceptRef);
+	ConceptTypesFile.Save(ConceptTypeRef);
 	ConceptsFile.Close();
 	ConceptTypesFile.Close();
 }
 
 
 //------------------------------------------------------------------------------
-void If::Add(GDescription& desc,int idx)
+void If::Add(R::RConstCursor<GVector> vectors,eType idx)
 {
-	// Get the vector (if necessary)
-	RCursor<GVector> Vector(desc.GetVectors());
-	if(!Vector.GetNb()) return;
+	// Verify that there is something to do
+	if(!vectors.GetNb()) return;
 
 	// Verify the sizes
 	ConceptRef.VerifySize(Session->GetNbConcepts()+1,5,true,0.0);
 	ConceptIf.VerifySize(Session->GetNbConcepts()+1,5,true,NAN);
 	ConceptTypeRef.VerifySize(Session->GetNbConceptTypes()+1,5,true,0.0);
-	Types.Init(Session->GetNbConceptTypes()+1,true);
-	Concepts.Init(Session->GetNbConcepts()+1,true);
+	tmpTypes.Init(Session->GetNbConceptTypes()+1,true);
+	tmpConcepts.Init(Session->GetNbConcepts()+1,true);
 	if(Session->MustSaveResults())
 	{
 		ConceptsFile.VerifySize(Session->GetNbConcepts()+1,5,true,0.0);
@@ -134,58 +116,58 @@ void If::Add(GDescription& desc,int idx)
 	}
 
 	// Parse the vectors
-	for(Vector.Start();!Vector.End();Vector.Next())
+	for(vectors.Start();!vectors.End();vectors.Next())
 	{
-		RCursor<GConceptRef> ptr(Vector()->GetRefs());
+		RConstCursor<GConceptRef> ptr(vectors()->GetRefs());
 		if(!ptr.GetNb())
 			continue;
 
-		GConceptType* type(Vector()->GetMetaConcept()->GetType());
+		GConceptType* type(vectors()->GetMetaConcept()->GetType());
 		size_t TypeId(type->GetId());
-		if(Types[TypeId])
+		if(tmpTypes[TypeId])
 		{
 			// Yes -> A new object uses this concept type.
 			ConceptTypeRef(TypeId,idx)++;
 			if(Session->MustSaveResults())
 				ConceptTypesFile.Write(TypeId,idx,ConceptTypeRef(TypeId,idx));
-			Types[TypeId]=false;
+			tmpTypes[TypeId]=false;
 		}
 
 		// IncRef for the concept
-		size_t ConceptId(Vector()->GetMetaConcept()->GetId());
-		if(Concepts[ConceptId])
+		size_t ConceptId(vectors()->GetMetaConcept()->GetId());
+		if(tmpConcepts[ConceptId])
 		{
 			// Yes -> A new object uses this meta-concept.
 			ConceptRef(ConceptId,idx)++;
 			ConceptIf(ConceptId,idx)=NAN;
 			if(Session->MustSaveResults())
 				ConceptsFile.Write(ConceptId,idx,ConceptRef(ConceptId,idx));
-			Concepts[ConceptId]=false;
+			tmpConcepts[ConceptId]=false;
 		}
 
 		for(ptr.Start();!ptr.End();ptr.Next())
 		{
 			GConceptType* type(ptr()->GetConcept()->GetType());
 			size_t TypeId(type->GetId());
-			if(Types[TypeId])
+			if(tmpTypes[TypeId])
 			{
 				// Yes -> A new object uses this concept type.
 				ConceptTypeRef(TypeId,idx)++;
 				if(Session->MustSaveResults())
 					ConceptTypesFile.Write(TypeId,idx,ConceptTypeRef(TypeId,idx));
-				Types[TypeId]=false;
+				tmpTypes[TypeId]=false;
 			}
 
 			// IncRef for the concept
 			size_t ConceptId(ptr()->GetConcept()->GetId());
-			if(Concepts[ConceptId])
+			if(tmpConcepts[ConceptId])
 			{
 				// Yes -> A new object uses this concept.
 				ConceptRef(ConceptId,idx)++;
 				ConceptIf(ConceptId,idx)=NAN;
 				if(Session->MustSaveResults())
 					ConceptsFile.Write(ConceptId,idx,ConceptRef(ConceptId,idx));
-				Concepts[ConceptId]=false;
+				tmpConcepts[ConceptId]=false;
 			}
 		}
 	}
@@ -193,73 +175,72 @@ void If::Add(GDescription& desc,int idx)
 
 
 //------------------------------------------------------------------------------
-void If::Del(GDescription& desc,int idx)
+void If::Del(R::RConstCursor<GVector> vectors,eType idx)
 {
-	// Get the vector (if necessary)
-	RCursor<GVector> Vector(desc.GetVectors());
-	if(!Vector.GetNb()) return;
+	// Verify that there is something to do
+	if(!vectors.GetNb()) return;
 
 	// Verify the sizes
 	ConceptRef.VerifySize(Session->GetNbConcepts()+1,5,true,0.0);
 	ConceptIf.VerifySize(Session->GetNbConcepts()+1,5,true,0.0);
 	ConceptTypeRef.VerifySize(Session->GetNbConceptTypes()+1,5,true,0.0);
-	Types.Init(Session->GetNbConceptTypes()+1,true);
-	Concepts.Init(Session->GetNbConcepts()+1,true);
+	tmpTypes.Init(Session->GetNbConceptTypes()+1,true);
+	tmpConcepts.Init(Session->GetNbConcepts()+1,true);
 
 	// Parse the vectors
-	for(Vector.Start();!Vector.End();Vector.Next())
+	for(vectors.Start();!vectors.End();vectors.Next())
 	{
-		RCursor<GConceptRef> ptr(Vector()->GetRefs());
+		RConstCursor<GConceptRef> ptr(vectors()->GetRefs());
 		if(!ptr.GetNb())
 			continue;
 
 		// Reference of the concept associated with the vector
-		GConceptType* type(Vector()->GetMetaConcept()->GetType());
+		GConceptType* type(vectors()->GetMetaConcept()->GetType());
 		size_t TypeId(type->GetId());
-		if(Types[TypeId])
+		if(tmpTypes[TypeId])
 		{
 			// Yes -> An old object uses this concept type.
 			ConceptTypeRef(TypeId,idx)--;
 			if(Session->MustSaveResults())
 				ConceptTypesFile.Write(TypeId,idx,ConceptTypeRef(TypeId,idx));
-			Types[TypeId]=false;
+			tmpTypes[TypeId]=false;
 		}
 
 		// DecRef for the concept
-		size_t ConceptId(Vector()->GetMetaConcept()->GetId());
-		if(Concepts[ConceptId])
+		size_t ConceptId(vectors()->GetMetaConcept()->GetId());
+		if(tmpConcepts[ConceptId])
 		{
 			// Yes -> An old object uses this meta-concept.
 			ConceptRef(ConceptId,idx)--;
 			ConceptIf(ConceptId,idx)=NAN;
 			if(Session->MustSaveResults())
 				ConceptsFile.Write(ConceptId,idx,ConceptRef(ConceptId,idx));
-			Concepts[ConceptId]=false;
+			tmpConcepts[ConceptId]=false;
 		}
 
 		for(ptr.Start();!ptr.End();ptr.Next())
 		{
 			GConceptType* type(ptr()->GetConcept()->GetType());
 			size_t TypeId(type->GetId());
-			if(Types[TypeId])
+			if(tmpTypes[TypeId])
 			{
 				// Yes -> An old object uses this concept type.
 				ConceptTypeRef(TypeId,idx)--;
 				if(Session->MustSaveResults())
 					ConceptTypesFile.Write(TypeId,idx,ConceptTypeRef(TypeId,idx));
-				Types[TypeId]=false;
+				tmpTypes[TypeId]=false;
 			}
 
 			// DecRef for the concept
 			size_t ConceptId(ptr()->GetConcept()->GetId());
-			if(Concepts[ConceptId])
+			if(tmpConcepts[ConceptId])
 			{
 				// Yes -> An old object uses this concept.
 				ConceptRef(ConceptId,idx)--;
 				ConceptIf(ConceptId,idx)=NAN;
 				if(Session->MustSaveResults())
 					ConceptsFile.Write(ConceptId,idx,ConceptRef(ConceptId,idx));
-				Concepts[ConceptId]=false;
+				tmpConcepts[ConceptId]=false;
 			}
 		}
 	}
@@ -275,24 +256,24 @@ void If::Measure(size_t measure,...)
 	tObjType type(static_cast<tObjType>(va_arg(ap,int)));
 	double* res(va_arg(ap,double*));
 	va_end(ap);
-	int idx;
+	eType idx;
 
 	switch(type)
 	{
 		case otDoc:
-			idx=0;
+			idx=tDoc;
 			break;
 		case otTopic:
-			idx=1;
+			idx=tTopic;
 			break;
 		case otClass:
-			idx=2;
+			idx=tClass;
 			break;
 		case otProfile:
-			idx=3;
+			idx=tProfile;
 			break;
 		case otCommunity:
-			idx=4;
+			idx=tCommunity;
 			break;
 		default:
 			mThrowGException(GetObjType(type,true,false)+" is not allowed for the tf/idf.");
@@ -336,10 +317,7 @@ void If::Info(size_t info,...)
 		switch(info)
 		{
 			case 0:
-				(*res)="idf";
-				break;
-			case 1:
-				(*res)="TfIdfs";
+				(*res)="if";
 				break;
 			default:
 				mThrowGException(RString::Number(2)+" is not allowed as features weight.");
@@ -350,54 +328,28 @@ void If::Info(size_t info,...)
 
 
 //------------------------------------------------------------------------------
-void If::Handle(const RNotification& notification)
-{
-	const GObject* Object(dynamic_cast<const GObject*>(notification.GetSender()));
-	if(!Object)
-	{
-		cout<<"Big problem ";
-		if(notification.GetSender())
-			cout<<notification.GetSender()->GetName();
-		cout<<endl;
-		return;
-	}
-
-	cout<<GetObjType(Object->GetObjType(),true,true)<<" "<<Object->GetId()<<" ";
-
-	hNotification Handle(notification.GetHandle());
-
-	if((Handle==eUpdateDoc)||(Handle==eUpdateProfile)||(Handle==eUpdateTopic)||(Handle==eUpdateCommunity)||(Handle==eUpdateClass))
-		cout<<"Updated"<<endl;
-	else if((Handle==eDocModified)||(Handle==eProfileModified)||(Handle==eTopicModified)||(Handle==eCommunityModified)||(Handle==eClassModified))
-			cout<<"Modified"<<endl;
-	else if((Handle==eDestroyDoc)||(Handle==eDestroyProfile)||(Handle==eDestroyTopic)||(Handle==eDestroyCommunity)||(Handle==eDestroyClass))
-			cout<<"Destroy"<<endl;
-	else if(Handle==eSelectDoc)
-			cout<<"Selected"<<endl;
-	else if(Handle==eUnselectDoc)
-			cout<<"Unselected"<<endl;
-
-	const GDescription* Desc(dynamic_cast<const GDescription*>(Object));
-	if(!Desc)
-		cout<<"\tHas no description"<<endl;
-}
-
-
-//------------------------------------------------------------------------------
 void If::HandleAddDoc(const RNotification& notification)
 {
+	// Verify that the sender is a document and that it is selected
 	GDoc* Doc(dynamic_cast<GDoc*>(notification.GetSender()));
-	if(Doc)
-		Add(*Doc,0);
+	if(Doc&&Session->IsSelected(Doc))
+	{
+		cout<<"Add document "<<Doc->GetId()<<endl;
+		Add(Doc->GetVectors(),tDoc);
+	}
 }
 
 
 //------------------------------------------------------------------------------
 void If::HandleDelDoc(const RNotification& notification)
 {
+	// Verify that the sender is a document and that it is selected
 	GDoc* Doc(dynamic_cast<GDoc*>(notification.GetSender()));
-	if(Doc)
-		Del(*Doc,0);
+	if(Doc&&Session->IsSelected(Doc))
+	{
+		cout<<"Delete document "<<Doc->GetId()<<endl;
+		Del(Doc->GetVectors(),tDoc);
+	}
 }
 
 

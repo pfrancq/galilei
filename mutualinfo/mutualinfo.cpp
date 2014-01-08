@@ -6,7 +6,7 @@
 
 	Mutual Information - Implementation.
 
-	Copyright 2003-2013 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -50,11 +50,9 @@
 MutualInfo::MutualInfo(GSession* session,GPlugInFactory* fac)
 	: RObject(fac->GetName()), GMeasure(session,fac), Dirty(false), MutualInfos(20000), CurWeights(0)
 {
-	InsertObserver(HANDLER(MutualInfo::Handle),eNewDoc);
-	InsertObserver(HANDLER(MutualInfo::Handle),eCreateDoc);
-	InsertObserver(HANDLER(MutualInfo::Handle),eDocModified);
-	InsertObserver(HANDLER(MutualInfo::Handle),eDelDoc);
-	InsertObserver(HANDLER(MutualInfo::Handle),eDestroyDoc);
+	InsertObserver(HANDLER(MutualInfo::Handle),hDocs[oeAdded]);
+	InsertObserver(HANDLER(MutualInfo::Handle),hDocs[oeUpdated]);
+	InsertObserver(HANDLER(MutualInfo::Handle),hDocs[oeAboutToBeDeleted]);
 }
 
 
@@ -136,10 +134,10 @@ void MutualInfo::BuildMutualInformation(void)
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		// Go through each concepts
-		RCursor<GVector> Vector(Docs()->GetVectors());
+		RConstCursor<GVector> Vector(Docs()->GetVectors());
 		for(Vector.Start();!Vector.End();Vector.Next())
 		{
-			RCursor<GConceptRef> Words(Vector()->GetRefs());
+			RConstCursor<GConceptRef> Words(Vector()->GetRefs());
 			for(Words.Start();!Words.End();Words.Next())
 			{
 	//			SumWij+=Words()->GetWeight();
@@ -152,10 +150,10 @@ void MutualInfo::BuildMutualInformation(void)
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		// Go through each concepts
-		RCursor<GVector> Vector(Docs()->GetVectors());
+		RConstCursor<GVector> Vector(Docs()->GetVectors());
 		for(Vector.Start();!Vector.End();Vector.Next())
 		{
-			RCursor<GConceptRef> Words(Vector()->GetRefs());
+			RConstCursor<GConceptRef> Words(Vector()->GetRefs());
 			for(Words.Start();!Words.End();Words.Next())
 			{
 				MutualInfos[Words()->GetConcept()->GetId()]+=log10(InvPdj*Words()->GetWeight()/(SumjWij[Words()->GetConcept()->GetId()]));

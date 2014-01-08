@@ -6,7 +6,7 @@
 
 	Inverse Frequencies - Header.
 
-	Copyright 2003-2013 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -85,14 +85,26 @@ class If : public RObject, public GMeasure
 	RMatrixStorage ConceptTypesFile;
 
 	/**
-	 * Remember which types was already encounter.
+	 * Temporary vector (mostly used to remember the types already encountered).
 	 */
-	RVectorBool Types;
+	RVectorBool tmpTypes;
 
 	/**
-	 * Remember which concepts was already encounter.
+	 * Temporary vector (mostly used to remember the concepts already encountered).
 	 */
-	RVectorBool Concepts;
+	RVectorBool tmpConcepts;
+
+	/**
+	 * Type of objects for which the IF is computed.
+	 */
+	enum eType
+	{
+		tDoc=0,               /** Documents. */
+		tTopic=1,             /** Topics.*/
+		tClass=2,             /** Classes.*/
+		tProfile=3,           /** Profiles.*/
+		tCommunity=4          /** Communities.*/
+	};
 
 public:
 
@@ -117,17 +129,17 @@ public:
 
 	/**
 	 * Add the reference of a given description.
-    * @param desc            Description.
-    * @param idx             Index (0=doc,1=topic,2=class,3=profile,4=community).
+    * @param vectors         Vectors.
+    * @param idx             Type of the vector.
     */
-	void Add(GDescription& desc,int idx);
+	void Add(R::RConstCursor<GVector> vectors,eType idx);
 
 	/**
 	 * Delete the reference of a given description.
-    * @param desc            Description.
-    * @param idx             Index (0=doc,1=topic,2=class,3=profile,4=community).
+    * @param vectors         Vectors.
+    * @param idx             Type of the vector.
     */
-	void Del(GDescription& desc,int idx);
+	void Del(R::RConstCursor<GVector> vectors,eType idx);
 
 	/**
 	 * Virtual method inherits from R::RObject and that must be re-implemented
@@ -158,13 +170,6 @@ public:
 	virtual void Info(size_t info,...);
 
 	/**
-	 * This method handles the modification of the status of a given
-	 * object.
-	 * @param notification   Notification received.
-	 */
-	void Handle(const R::RNotification& notification);
-
-	/**
 	 * This method handles the notifications that imply that the tf/idf factors
 	 * must be updated by adding the references of the sender.
 	 * @param notification   Notification received.
@@ -177,6 +182,62 @@ public:
 	 * @param notification   Notification received.
 	 */
 	void HandleDelDoc(const R::RNotification& notification);
+
+	/**
+	 * This method handles the notifications that imply that the tf/idf factors
+	 * must be updated by adding the references of the sender.
+	 * @param notification   Notification received.
+	 */
+//	void HandleAddTopic(const R::RNotification& notification);
+//
+//	/**
+//	 * This method handles the notifications that imply that the tf/idf factors
+//	 * must be updated by removing the references of the sender.
+//	 * @param notification   Notification received.
+//	 */
+//	void HandleDelTopic(const R::RNotification& notification);
+//
+//	/**
+//	 * This method handles the notifications that imply that the tf/idf factors
+//	 * must be updated by adding the references of the sender.
+//	 * @param notification   Notification received.
+//	 */
+//	void HandleAddClass(const R::RNotification& notification);
+//
+//	/**
+//	 * This method handles the notifications that imply that the tf/idf factors
+//	 * must be updated by removing the references of the sender.
+//	 * @param notification   Notification received.
+//	 */
+//	void HandleDelClass(const R::RNotification& notification);
+//
+//	/**
+//	 * This method handles the notifications that imply that the tf/idf factors
+//	 * must be updated by adding the references of the sender.
+//	 * @param notification   Notification received.
+//	 */
+//	void HandleAddProfile(const R::RNotification& notification);
+//
+//	/**
+//	 * This method handles the notifications that imply that the tf/idf factors
+//	 * must be updated by removing the references of the sender.
+//	 * @param notification   Notification received.
+//	 */
+//	void HandleDelProfile(const R::RNotification& notification);
+//
+//	/**
+//	 * This method handles the notifications that imply that the tf/idf factors
+//	 * must be updated by adding the references of the sender.
+//	 * @param notification   Notification received.
+//	 */
+//	void HandleAddCommunity(const R::RNotification& notification);
+//
+//	/**
+//	 * This method handles the notifications that imply that the tf/idf factors
+//	 * must be updated by removing the references of the sender.
+//	 * @param notification   Notification received.
+//	 */
+//	void HandleDelCommunity(const R::RNotification& notification);
 
 	/**
 	* Configurations were applied from the factory.

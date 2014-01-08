@@ -6,7 +6,7 @@
 
 	tf/idf Factors (KDE Part) - Implementation.
 
-	Copyright 2003-2013 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -45,7 +45,7 @@ void About(void)
 {
 	KAboutData aboutData( "Tf/Idf", 0, ki18n("Tf/Idf Factors"),
 		"1.0", ki18n("Maintain the Tf/Idf factors for each selected object"), KAboutData::License_GPL,
-		ki18n("(C) 2003-2013 by Pascal Francq"),
+		ki18n("(C) 2003-2014 by Pascal Francq"),
 		KLocalizedString(), "http://www.otlet-institute.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	KAboutApplicationDialog dlg(&aboutData);
