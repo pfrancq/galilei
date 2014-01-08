@@ -6,7 +6,7 @@
 
 	SGGA Plug-in for Documents (KDE Part) - Implementation.
 
-	Copyright 2008-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2008-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -55,7 +55,7 @@ void About(void)
 {
 	KAboutData aboutData("sgga_docs", 0, ki18n("SGGA Plug-in for Documents"),
 		"1.0", ki18n("This is a genetic algorithm to cluster documents."),KAboutData::License_GPL,
-		ki18n("(C) 2008-2012 by Pascal Francq"),
+		ki18n("(C) 2008-2014 by Pascal Francq"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	KAboutApplicationDialog dlg(&aboutData);
