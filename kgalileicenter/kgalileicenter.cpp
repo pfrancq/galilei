@@ -6,7 +6,7 @@
 
 	Main Window - Implementation of the Slots Part.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -497,10 +497,13 @@ void KGALILEICenter::showDicts(void)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenter::docsClear()
+void KGALILEICenter::docsClear(void)
 {
 	if(Doc)
+	{
 		Doc->ForceReCompute(otDoc);
+		updateWins<KViewDoc>();
+	}
 }
 
 
@@ -621,10 +624,14 @@ void KGALILEICenter::docAnalyze(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenter::docsAnalyze(void)
 {
-	QSessionProgressDlg Dlg(this,"Analyze Documents");
-	QAnalyzeDocs* Task(new QAnalyzeDocs(this));
-	connect(Task,SIGNAL(finish()),this,SLOT(emitDocsChanged()));
-	Dlg.Run(Task);
+	if(Doc)
+	{
+		QSessionProgressDlg Dlg(this,"Analyze Documents");
+		QAnalyzeDocs* Task(new QAnalyzeDocs(this));
+		connect(Task,SIGNAL(finish()),this,SLOT(emitDocsChanged()));
+		Dlg.Run(Task);
+		updateWins<KViewDoc>();
+	}
 }
 
 
@@ -689,7 +696,10 @@ void KGALILEICenter::queryMetaEngine(void)
 void KGALILEICenter::topicsClear(void)
 {
 	if(Doc)
+	{
 		Doc->ForceReCompute(otTopic);
+		updateWins<KViewTopics>();
+	}
 }
 
 
@@ -700,6 +710,7 @@ void KGALILEICenter::topicsCalc(void)
 	QGroupDocs* Task(new QGroupDocs(this));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
 	Dlg.Run(Task);
+	updateWins<KViewTopic>();
 }
 
 
@@ -727,7 +738,10 @@ void KGALILEICenter::showTopic(GTopic* topic)
 void KGALILEICenter::profilesClear()
 {
 	if(Doc)
+	{
 		Doc->ForceReCompute(otProfile);
+		updateWins<KViewProfile>();
+	}
 }
 
 
@@ -758,6 +772,7 @@ void KGALILEICenter::profilesCalc(void)
 	QComputeProfiles* Task(new QComputeProfiles(this));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitProfilesChanged()));
 	Dlg.Run(Task);
+	updateWins<KViewProfile>();
 }
 
 
@@ -774,7 +789,10 @@ void KGALILEICenter::profileCalc(void)
 void KGALILEICenter::communitiesClear()
 {
 	if(Doc)
+	{
 		Doc->ForceReCompute(otCommunity);
+		updateWins<KViewCommunities>();
+	}
 }
 
 
@@ -805,6 +823,7 @@ void KGALILEICenter::communitiesCalc(void)
 	QGroupProfiles* Task(new QGroupProfiles(this));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitCommunitiesChanged()));
 	Dlg.Run(Task);
+	updateWins<KViewCommunity>();
 }
 
 
@@ -828,6 +847,7 @@ void KGALILEICenter::topicsCreate(void)
 	QCreateIdealTopics* Task(new QCreateIdealTopics(this));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
 	Dlg.Run(Task);
+	updateWins<KViewTopics>();
 }
 
 
@@ -838,6 +858,7 @@ void KGALILEICenter::topicsClassesCreate(void)
 	QCreateIdealTopicsFromClasses* Task(new QCreateIdealTopicsFromClasses(this));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
 	Dlg.Run(Task);
+	updateWins<KViewTopics>();
 }
 
 
@@ -848,6 +869,7 @@ void KGALILEICenter::classesCreate(void)
 	QCreateIdealClasses* Task(new QCreateIdealClasses(this));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
 	Dlg.Run(Task);
+	updateWins<KViewClasses>();
 }
 
 
@@ -858,6 +880,7 @@ void KGALILEICenter::classesDocsCreate(void)
 	QCreateIdealDocsClasses* Task(new QCreateIdealDocsClasses(this));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
 	Dlg.Run(Task);
+	updateWins<KViewClasses>();
 }
 
 
@@ -868,6 +891,7 @@ void KGALILEICenter::communitiesCreate(void)
 	QCreateIdealCommunities* Task(new QCreateIdealCommunities(this));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitCommunitiesChanged()));
 	Dlg.Run(Task);
+	updateWins<KViewCommunities>();
 }
 
 
@@ -887,6 +911,7 @@ void KGALILEICenter::doFdbks(void)
 	QMakeFdbks* Task(new QMakeFdbks(this));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitProfilesChanged()));
 	Dlg.Run(Task);
+	updateWins<KViewProfile>();
 }
 
 
@@ -897,6 +922,7 @@ void KGALILEICenter::doAssessments(void)
 	QMakeAssessments* Task(new QMakeAssessments(this));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitProfilesChanged()));
 	Dlg.Run(Task);
+	updateWins<KViewProfile>();
 }
 
 

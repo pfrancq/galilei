@@ -6,7 +6,7 @@
 
 	Window for manipulating the users - Header.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -60,12 +60,14 @@ public:
 	*/
 	KViewUsers(void);
 
-protected slots:
+public slots:
 
 	/**
 	 * Update the list.
 	 */
 	void update(void);
+
+protected slots:
 
 	/**
 	* Slot that adds a new user.

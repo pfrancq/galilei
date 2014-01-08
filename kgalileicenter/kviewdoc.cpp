@@ -6,7 +6,7 @@
 
 	Window for manipulating a specific document - Implementation.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -148,7 +148,7 @@ void KViewDoc::setUp(void)
 	Vars->Set(Document);
 	try
 	{
-		Desc->Set(App->getSession(),Document);
+		Desc->Set(App->getSession(),&(*Document)());
 	}
 	catch(GException& e)
 	{
@@ -184,7 +184,7 @@ void KViewDoc::newFdbk(void)
 void KViewDoc::update(void)
 {
 	Vars->Set(Document);
-	Desc->Set(App->getSession(),Document);
+	Desc->Set(App->getSession(),&(*Document)());
 	Struct->Set(Document);
 }
 

@@ -6,7 +6,7 @@
 
 	Dialog Box to show the progress of the something done on a session  - Implementation.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -159,32 +159,32 @@ void QCreateSession::DoIt(void)
 	if(App->getSession()->MustBreak())
 		return;
 	Parent->setLabelText("Load Classes ...");
-	App->getSession()->LoadObjs(static_cast<GClass*>(0));
+	App->getSession()->LoadObjs(pClass);
 	Parent->setLabelText("Load Topics ...");
-	App->getSession()->LoadObjs(static_cast<GTopic*>(0));
+	App->getSession()->LoadObjs(pTopic);
 	if(App->getSession()->MustBreak())
 		return;
 	Parent->setLabelText("Loading Documents ...");
-	App->getSession()->LoadObjs(static_cast<GDoc*>(0));
+	App->getSession()->LoadObjs(pDoc);
 	if(App->getSession()->MustBreak())
 		return;
 	Parent->setLabelText("Load Communities ...");
-	App->getSession()->LoadObjs(static_cast<GCommunity*>(0));
+	App->getSession()->LoadObjs(pCommunity);
 	if(App->getSession()->MustBreak())
 		return;
 	Parent->setLabelText("Load Users/Profiles/Feedbacks ...");
-	App->getSession()->LoadObjs(static_cast<GUser*>(0));
+	App->getSession()->LoadObjs(pUser);
 	if(App->getSession()->MustBreak())
 		return;
 	Parent->setLabelText("Load Subjects ...");
-	App->getSession()->LoadSubjects();
+	App->getSession()->LoadObjs(pSubject);
 }
 
 
 //-----------------------------------------------------------------------------
 void QAnalyzeDoc::DoIt(void)
 {
-	App->getSession()->AnalyzeDoc(Doc,true,Parent);
+	App->getSession()->AnalyzeDoc(Doc,Parent);
 }
 
 
@@ -192,7 +192,7 @@ void QAnalyzeDoc::DoIt(void)
 void QAnalyzeDocs::DoIt(void)
 {
 	Parent->setLabelText("Analyze Documents ...");
-	App->getSession()->AnalyzeDocs(false,Parent);
+	App->getSession()->AnalyzeDocs(Parent);
 }
 
 

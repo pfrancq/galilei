@@ -6,7 +6,7 @@
 
 	Window to manipulate a given profile - Implementation.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2004 by David Wartel.
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
@@ -64,7 +64,7 @@ KViewProfile::KViewProfile(KGALILEICenter* app, GProfile* profile)
 	setAttribute(Qt::WA_DeleteOnClose);
 	setWindowTitle(ToQString(profile->GetName())+" ("+ToQString(profile->GetUser()->GetFullName())+")");
 	Vars->Set(Profile);
-	Desc->Set(App->getSession(),Profile);
+	Desc->Set(App->getSession(),&(*Profile)());
 	Assessments->Set(QGObjectsList::Assessments,Profile);
 	Links->Set(QGObjectsList::Links,Profile);
 	GCommunity* Group(App->getSession()->GetObj(static_cast<GCommunity*>(0),Profile->GetGroupId(),true,true));
@@ -80,7 +80,7 @@ KViewProfile::KViewProfile(KGALILEICenter* app, GProfile* profile)
 void KViewProfile::updateProfile(void)
 {
 	Vars->Set(Profile);
-	Desc->Set(App->getSession(),Profile);
+	Desc->Set(App->getSession(),&(*Profile)());
 }
 
 

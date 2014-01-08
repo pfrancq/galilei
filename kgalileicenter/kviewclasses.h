@@ -6,7 +6,7 @@
 
 	Window for manipulating the classes - Header.
 
-	Copyright 2009-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2009-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -56,7 +56,7 @@ class KViewClasses : public QMdiSubWindow, public Ui_KViewClasses
 	Q_OBJECT
 
 	/**
-	 * All the descriptor must ne shown.
+	 * All the descriptor must be shown.
 	 */
 	bool AllDescriptors;
 
@@ -83,12 +83,14 @@ protected:
 	 */
 	void buildClass(GClass* c,Item* parent);
 
-protected slots:
+public slots:
 
 	/**
 	 * Update the list.
 	 */
 	void update(void);
+
+protected slots:
 
 	/**
 	 * Change the details level.

@@ -6,7 +6,7 @@
 
 	Configure Dialog Box - Implementation.
 
-	Copyright 2008-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2008-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -366,7 +366,7 @@ void Configure::initSimulation(void)
 	Subjects->header()->setResizeMode(0,QHeaderView::ResizeToContents);
 	Subjects->header()->setResizeMode(1,QHeaderView::Stretch);
 	connect(Subjects,SIGNAL(itemClicked(QTreeWidgetItem*,int)),this,SLOT(subjectClicked(QTreeWidgetItem*,int)));
-	RNodeCursor<GSubjects,GSubject> Cur(App->getSession()->GetSubjects(pSubject));
+	RNodeCursor<GSubjects,GSubject> Cur(App->getSession()->GetObjs(pSubject,pSubject));
 	for(Cur.Start();!Cur.End();Cur.Next())
 		addSubject(Cur(),0);
 }

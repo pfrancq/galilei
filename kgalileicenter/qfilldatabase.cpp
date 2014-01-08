@@ -6,7 +6,7 @@
 
 	Fill the database with a list of document - Implementation.
 
-	Copyright 2008-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2008-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -111,13 +111,11 @@ QImportDocs::QImportDocs(KGALILEICenter* app,QFillDatabase* info)
 //-----------------------------------------------------------------------------
 void QImportDocs::DoIt(void)
 {
+	// Specify the session that it must save everything
+	bool Save(Session->MustSaveResults());
+	Session->SetSaveResults(true);
 	ParseDir(Info->Dir,Info->Parent,0);
-	if(Info->Categorized)
-	{
-		RCursor<GSubject> Cur(Session->GetSubjects());
-		for(Cur.Start();!Cur.End();Cur.Next())
-			App->getSession()->GetStorage()->SaveSubject(Cur());
-	}
+	Session->SetSaveResults(Save);
 }
 
 
@@ -145,11 +143,11 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent,int depth)
 			{
 				if(!parent.IsEmpty())
 				{
-					Subject=Session->GetSubject(parent);
+					Subject=Session->GetObj(pSubject,parent);
 					cat=parent+"/"+cat;
 				}
 				if(depth<=Info->Depth->value())
-					Session->Insert(Subject,new GSubject(Session,Session->GetNbObjs(otSubject)+1,cat,true));
+					Session->InsertObj(Subject,new GSubject(Session,Session->GetNbObjs(pSubject,otSubject)+1,cat,true));
 				else
 					cat=parent;
 			}
@@ -164,14 +162,15 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent,int depth)
 				InDir=true;
 				Parent->setLabelText(ToQString(uri.GetPath()));
 			}
+
 			// Must be a normal document
 			GDoc* doc(new GDoc(Session,Files()->GetURI(),Files()->GetURI()(),Info->Lang,Info->DefaultMIME));
 			App->getSession()->InsertObj(doc);
 			if(Info->Categorized)
 			{
-				GSubject* Subject(Session->GetSubject(parent));
+				GSubject* Subject(Session->GetObj(pSubject,parent));
 				if(Subject)
-					App->getSession()->Insert(doc,Subject->GetId(),Subject->GetId());
+					App->getSession()->InsertObj(Subject,doc);
 			}
 		}
 	}

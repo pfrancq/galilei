@@ -6,7 +6,7 @@
 
 	Window to manipulate a specific topic - Implementation.
 
-	Copyright 2008-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2008-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -69,7 +69,7 @@ template<class cGroup>
 	void KViewGroup<cGroup>::update(QGObjectsList::oType type)
 {
 	Vars->Set(Obj);
-	Desc->Set(KGALILEICenter::App->getSession(),Obj);
+	Desc->Set(KGALILEICenter::App->getSession(),&(*Obj)());
 	Objects->Set(type,Obj);
 }
 

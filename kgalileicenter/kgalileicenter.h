@@ -6,7 +6,7 @@
 
 	Main Window - Header.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -179,6 +179,21 @@ private:
 	 * Save the options of a configuration file.
 	 */
 	void saveOptions(void);
+
+	/**
+	 * Method that perform an update to every child window of a given class.
+    */
+	template<class cWin> void updateWins(void)
+	{
+		QList<QMdiSubWindow*> List(Desktop->subWindowList());
+		QListIterator<QMdiSubWindow*> i(List);
+		while(i.hasNext())
+		{
+			cWin* win(dynamic_cast<cWin*>(i.next()));
+			if(win)
+				 win->update();
+		}
+	}
 
 
 private slots:

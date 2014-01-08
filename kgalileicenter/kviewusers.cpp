@@ -6,7 +6,7 @@
 
 	Window for manipulating the users - Implementation.
 
-	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -112,8 +112,7 @@ void KViewUsers::slotModifyUser(void)
 	QString Name(QInputDialog::getText(this,"Modify User", "Enter the new name:",QLineEdit::Normal,ToQString(usr->GetName()),&Ok));
 	if(Ok&&!Name.isEmpty())
 	{
-		usr->SetName(FromQString(Name));
-		KGALILEICenter::App->getSession()->GetStorage()->SaveObj(usr);
+		KGALILEICenter::App->getSession()->SetName(usr,FromQString(Name));
 		List->currentItem()->setText(0,Name);
 	}
 }
@@ -129,7 +128,6 @@ void KViewUsers::slotAddProfile(void)
 	if(Ok&&!Name.isEmpty())
 	{
 		KGALILEICenter::App->getSession()->InsertObj(new GProfile(KGALILEICenter::App->getSession(),usr,ptInterest,FromQString(Name),true));
-		KGALILEICenter::App->getSession()->GetStorage()->SaveObj(usr);
 		update();
 	}
 }
@@ -144,8 +142,7 @@ void KViewUsers::slotModifyProfile(void)
 	QString Name(QInputDialog::getText(this,"Modify Profile", "Enter the new name:",QLineEdit::Normal,ToQString(prof->GetName()),&Ok));
 	if(Ok&&!Name.isEmpty())
 	{
-		prof->SetName(FromQString(Name));
-		KGALILEICenter::App->getSession()->GetStorage()->SaveObj(prof);
+		KGALILEICenter::App->getSession()->SetName(prof,FromQString(Name));
 		List->currentItem()->setText(0,Name);
 	}
 }
