@@ -6,7 +6,7 @@
 
 	Hierarchical Genetic Algorithms for GALILEI - Header.
 
-	Copyright 1998-2012 by Pascal Francq (pfrancq@ulb.ac.be).
+	Copyright 1998-2014 by Pascal Francq (pfrancq@ulb.ac.be).
 	Copyright 1998-2008 by the Université Libre de Bruxelles.
 
 	This library is free software; you can redistribute it and/or

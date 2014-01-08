@@ -6,7 +6,7 @@
 
 	Thesaurus Creation - Implementation
 
-	Copyright 2008-2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2008-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -166,9 +166,9 @@ void Thesaurus::Run(GSlot*)
 			// Order the vector by weight:
 			// 1. Multiply by the tf-idf factors of the topic
 			// 2. Order it.
-			const GDescription& Desc(*Topic);
+			const GDescription& Desc((*Topic)());
 			size_t Total(0); // Total number of concepts
-			RCursor<GVector> Vector(Desc.GetVectors());
+			RConstCursor<GVector> Vector(Desc.GetVectors());
 			for(Vector.Start();!Vector.End();Vector.Next())
 			{
 				Total+=Vector()->GetNb();
@@ -177,7 +177,7 @@ void Thesaurus::Run(GSlot*)
 					for(size_t nb=Total-Tmp.GetNb()+100;--nb;)
 						Tmp.InsertPtr(new Attribute());
 				}
-				RCursor<GConceptRef> Refs(Vector()->GetRefs());
+				RConstCursor<GConceptRef> Refs(Vector()->GetRefs());
 				RCursor<Attribute> Cur(Tmp);
 				for(Refs.Start(),Cur.Start();!Refs.End();Refs.Next(),Cur.Next())
 				{
