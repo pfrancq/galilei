@@ -70,7 +70,7 @@ void GSubjects::Init(const GSubject*,size_t nbsubjects,size_t nbdocs,size_t nbpr
 	Subjects.VerifyTab(nbsubjects);
 	SelectedDocs.VerifyTab(nbdocs);
 	DocsSubjects.VerifyTab(nbdocs);
-	DocsStatus.Init(nbdocs,false);
+	DocsStatus.Verify(nbdocs);
 	ProfilesSubject.VerifyTab(nbprofiles);
 }
 
@@ -303,7 +303,7 @@ void GSubjects::InsertObj(GSubject* subject,GDoc* doc)
 		subject->CategorizedDocs.InsertPtrAt(doc,Pos,false);
 
 	// Suppose the document is deselected.
-	DocsStatus[doc->GetId()]=false;
+	DocsStatus.Set(false,doc->GetId());
 
 	// If the subjects are not currently loaded -> save the subject
 	if(State!=osOnDemand)
@@ -329,7 +329,7 @@ void GSubjects::SetSelected(GDoc* doc,GSubject* subject,bool select)
 	if(select)
 	{
 		// The document is selected
-		DocsStatus[doc->GetId()]=true;
+		DocsStatus.Set(true,doc->GetId());
 		size_t Pos(SelectedDocs.GetIndex(doc,Find));
 		if(!Find)
 			SelectedDocs.InsertPtr(doc);
@@ -367,7 +367,7 @@ void GSubjects::SetSelected(GDoc* doc,GSubject* subject,bool select)
 		if(subjects->GetNb()==0)
 		{
 			SelectedDocs.DeletePtr(*doc);
-			DocsStatus[doc->GetId()]=false;
+			DocsStatus.Set(false,doc->GetId());
 			if(State!=osOnDemand)
 				doc->PostNotification(hDocs[oeDeselected]);
 		}
