@@ -50,8 +50,25 @@
 
 //------------------------------------------------------------------------------
 Thesaurus::Thesaurus(GSession* session,GPlugInFactory* fac)
-		: GTool(session,fac), Objs(100), Attributes(20000), AttributesByIds(20000), Tmp(200)
+		: RObject(fac->GetMng()->GetName()+"|"+fac->GetList()+"|"+fac->GetName()),
+	     GTool(session,fac), Objs(100), Attributes(20000), AttributesByIds(20000), Tmp(200)
 {
+}
+
+
+//------------------------------------------------------------------------------
+void Thesaurus::Init(void)
+{
+	GTool::Init();
+	Weighting=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Features Evaluation",0);
+	InsertObserver(HANDLER(Thesaurus::HandleCurrentPlugIn),hCurrentPlugIn,GALILEIApp->GetManager("Measures")->GetPlugInList("Features Evaluation"));
+}
+
+
+//------------------------------------------------------------------------------
+void Thesaurus::HandleCurrentPlugIn(const R::RNotification& notification)
+{
+	Weighting=dynamic_cast<GMeasure*>(GetData<GPlugIn*>(notification));
 }
 
 
@@ -104,7 +121,7 @@ void Thesaurus::BuildNode(GNodeInfos* node,GClass* parent)
 		GVector* Vector(Desc.GetInsertVector(AttributesByIds[List()]->Vector));
 		Vector->InsertRef(new GConceptRef(AttributesByIds[List()]->Concept,1.0));
 	}
-	Session->Assign(Class,Desc);
+	Class->Update(Desc);
 
 	// Create sub-classes
 	RNodeCursor<GChromoH,GNodeInfos> Cur(node);
@@ -117,7 +134,7 @@ void Thesaurus::BuildNode(GNodeInfos* node,GClass* parent)
 void Thesaurus::ConstructResults(GChromoH* sol)
 {
 	// Clear the classes.
-	Session->Reset(otClass);
+	Session->ReInit(pClass);
 	RNodeCursor<GChromoH,GNodeInfos> Cur(*sol);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		BuildNode(Cur(),0);
@@ -139,6 +156,9 @@ void Thesaurus::PrintObj(RObjH* obj)
 //------------------------------------------------------------------------------
 void Thesaurus::Run(GSlot*)
 {
+	if(!Weighting)
+		mThrowGException("No plug-in selected for \"Features Evaluation\"");
+	
 	try
 	{
 		// If no element to group -> skip it
@@ -183,7 +203,9 @@ void Thesaurus::Run(GSlot*)
 				{
 					Cur()->Concept=Refs()->GetConcept();
 					Cur()->Vector=Vector()->GetMetaConcept();
-					Cur()->Weight=Refs()->GetWeight()*Refs()->GetConcept()->GetIF(otTopic);
+					double iffactor;
+					Weighting->Measure(0,Refs()->GetConcept(),otTopic,&iffactor);
+					Cur()->Weight=Refs()->GetWeight()*iffactor;
 				}
 			}
 			Tmp.ReOrder(Attribute::SortOrder,0,Total);

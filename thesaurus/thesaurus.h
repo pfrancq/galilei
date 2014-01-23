@@ -138,6 +138,11 @@ class Thesaurus : public RObject, public GTool
 	 * Temporary array of concepts used.
 	 */
 	RContainer<Attribute,true,false> Tmp;
+	
+	/**
+	 * Weighting method used.
+    */
+	GMeasure* Weighting;
 
 public:
 
@@ -147,6 +152,19 @@ public:
 	* @param fac             Factory.
 	*/
 	Thesaurus(GSession* session,GPlugInFactory* fac);
+
+	/**
+	 * Initialize the plug-in. In practice, it set the Weighting variable and set
+	 * it as observer for GALILEI::hCurrentPlugIn notification.
+    */
+	virtual void Init(void);
+
+	/**
+	 * Handle the GALILEI;;hCurrentPlugIn notification. In practice, it set the
+	 * Weighting variable.
+    * @param notification
+    */
+	void HandleCurrentPlugIn(const R::RNotification& notification);
 
 	/**
 	* Configurations were applied from the factory.
