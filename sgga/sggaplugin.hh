@@ -125,14 +125,12 @@ template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup>
 	RString Label(GetObjType(GroupType,true,false)+" ");
 
 
-	session->Reset(GroupType);
+	session->ReInit(static_cast<cGroup*>(0));
 	for(Sol.Start(),i=1;!Sol.End();Sol.Next(),i++)
 	{
 		cGroup* g(new cGroup(session,Label+RString::Number(i)));
 		session->AssignId(g);
-		RCursor<cObj> Cur(Sol()->GetObjs());
-		for(Cur.Start();!Cur.End();Cur.Next())
-			g->InsertObj(Cur());
+		g->InsertObjs(Sol()->GetObjs());
 		session->InsertObj(g);
 	}
 }
