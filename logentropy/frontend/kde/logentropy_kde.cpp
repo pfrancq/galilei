@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	MutualInfo_KDE.cpp
+	LogEntropy_KDE.cpp
 
-	Mutual Information (KDE Part) - Implementation.
+	Log Entropy Feature Weighting Method (KDE Part) - Implementation.
 
-	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
+	Copyright 2013-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -51,7 +51,7 @@ class Config : public KDialog, public Ui_Config
 public:
 	Config(void)
 	{
-		setCaption("Configure Mutual Information Plug-In");
+		setCaption("Configure Log Entropy Plug-In");
 		QWidget* widget=new QWidget(this);
 		setupUi(widget);
 		setMainWidget(widget);
@@ -72,41 +72,13 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "mutualinfo", 0, ki18n("Mutual Information"),
-		"1.0", ki18n("Compute different measures evaluating the importance of the features"), KAboutData::License_GPL,
-		ki18n("(C) 2003-2014 by Pascal Francq"),
+	KAboutData aboutData( "logentropy", 0, ki18n("Log Entropy"),
+		"1.0", ki18n("Log/Entropy Weighting Methods for the Features"), KAboutData::License_GPL,
+		ki18n("(C) 2013-2014 by Pascal Francq"),
 		KLocalizedString(), "http://www.otlet-institute.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
-}
-
-
-//------------------------------------------------------------------------------
-bool Configure(GPlugIn* fac)
-{
-	GMeasure* mes(dynamic_cast<GMeasure*>(fac));
-	if(!mes)
-		return(false);
-
-	Config dlg;
-
-	// Fill CurWeights
-	size_t MaxWeights(mes->FindParam<RParamValue>("MaxWeights")->GetUInt());
-	for(size_t i=0;i<MaxWeights;i++)
-	{
-		RString Name;
-		mes->Info(i,&Name);
-		dlg.CurWeights->insertItem(i,ToQString(Name));
-	}
- 	dlg.CurWeights->setCurrentIndex(mes->FindParam<RParamValue>("CurWeights")->GetUInt());
-
-	if(dlg.exec())
-	{
-		mes->FindParam<RParamValue>("CurWeights")->SetUInt(dlg.CurWeights->currentIndex());
-		return(true);
-	}
-	return(false);
 }
 
 

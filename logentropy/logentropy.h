@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	If.cpp
+	LogEntropy.cpp
 
-	Tf/Idf Feature Weighting Method - Header.
+	Log Entropy Feature Weighting Method - Header.
 
-	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
+	Copyright 2013-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -29,8 +29,8 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef IfH
-#define IfH
+#ifndef LogEntropyH
+#define LogEntropyH
 
 
 //-----------------------------------------------------------------------------
@@ -52,7 +52,7 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 // forward declaration
-class If;
+class LogEntropy;
 
 
 //------------------------------------------------------------------------------
@@ -61,14 +61,19 @@ class If;
  * it computes for each concept the number of descriptions of the set that
  * contain it and its IF factor.
  */
-class IfData : public GDescriptionSetData
+class LogEntropyData : public GDescriptionSetData
 {
 public:
 
    /**
-    * The inverse frequency factors.
+    * The entropy (and, temporally, the sum of the products).
     */
-   R::RVector IF;
+   R::RVector Entropy;
+
+   /**
+    * The sum of occurrences.
+    */
+   R::RVector Sum;
 
    /**
     * The number of references of the different type.
@@ -83,14 +88,14 @@ public:
 	/**
 	 * Computing method;
 	 */
-	If* Calc;
+	LogEntropy* Calc;
 
 	/**
 	 * Initialize the class.
     * @param session        Session.
 	 * @param calc           Computing method.
     */
-	IfData(GSession* session,If* calc);
+	LogEntropyData(GSession* session,LogEntropy* calc);
 
 	/**
 	 * Compute the if factors for a description set.
@@ -102,44 +107,63 @@ public:
 
 //------------------------------------------------------------------------------
 /**
- * This plug-in implements the Tf/Idf weighting method for all the concepts.
- * The formula to compute the weight, w_ij of a concept c_i for an object o_j is
- * given by:
+ * This plug-in implements the log/entropy weighting methods for all the
+ * concepts. It allows to compute the weight, w_ij of a concept c_i for an
+ * object o_j.
  *
- * w_ij= (o_i,j/max_j(o_i,j)) * log(|O_i|/|O_i,i|)
+ * First, let us define s_i as the sum of the occurrences of a given concept in
+ * the: s_i=sum_j (o_ij) documents
  *
- * where o_i,j is the occurrences of the concept in the object description,
+ * The weight is then given by
+ *
+ * w_ij= log(1+o_i,j) * [1 + ( sum_j( (o_ij/s_i))*log(o_ij/s_i)) ) / (log(|O_i|+1)) )]
+ *
+ * It should be notice that :
+ *
+ * sum_j ( (o_ij/s_i) * log(o_ij/s_i) )=1/s_i*sum_j (o_ij*(log(o_ij)-log(s_i)))
+ *                                     =1/s_i*sum_j(o_ij*log(o_ij))-log(s_i)
+ *
+ * where o_i,j is the occurrences of the concept in the object description, and
  * |O_i| the number of objects that contains at least one concept of the same
- * type as c_i in their descriptions, and |O_i,i| the number of those having
- * c_i in their description.
+ * type as c_i in their descriptions.
  *
  * This means that:
  * -# The weights are computed independently for the different object types
  *    (documents, profiles, etc.).
- * -# The weights are computed related to the concept types. The numerator of
- *    the expression of the logarithm refers to the number of objects having a
+ * -# The weights are computed related to the concept types. The expression of
+ *    the logarithm at the denominator refers to the number of objects having a
  *    given concept type in their description (rather than the total number of
- *    objects in theclassical formula).
- * @short Tf/Idf Weighting Method
+ *    objects in the classical formula).
+ * @short Log/Entropy Weighting Method
  */
-class If : public RObject, public GMeasure
+class LogEntropy : public RObject, public GMeasure
 {
 public:
 
 	/**
-	 * Concept References.
+	 * Sum for a concept of the product of its occurrences and their logarithm.
 	 */
-	RMatrix ConceptRef;
+	RMatrix ConceptProd;
 
 	/**
-	 * Concept Inverse Factors.
+	 * Sum of the occurrences of a concept in all the objects.
 	 */
-	RMatrix ConceptIf;
+	RMatrix ConceptSum;
 
 	/**
-	 * Store the concept references.
+	 * Concept Entropy.
 	 */
-	RMatrixStorage ConceptsFile;
+	RMatrix ConceptEntropy;
+
+	/**
+	 * Store the concept sums of product.
+	 */
+	RMatrixStorage ConceptsProdFile;
+
+	/**
+	 * Store the concept sum of occurrences.
+	 */
+	RMatrixStorage ConceptsSumFile;
 
 	/**
 	 * Concept Type References.
@@ -155,11 +179,6 @@ public:
 	 * Temporary vector (mostly used to remember the types already encountered).
 	 */
 	RBoolVector tmpTypes;
-
-	/**
-	 * Temporary vector (mostly used to remember the concepts already encountered).
-	 */
-	RBoolVector tmpConcepts;
 
 	/**
 	 * Type of objects for which the weighting is computed.
@@ -179,7 +198,14 @@ public:
 	 * @param session        Session.
 	 * @param fac            Factory.
 	 */
-	If(GSession* session,GPlugInFactory* fac);
+	LogEntropy(GSession* session,GPlugInFactory* fac);
+
+	/**
+	 * Virtual method inherits from R::RObject and that must be re-implemented
+	 * in all child classes.
+	 * @return Name of the class.
+	 */
+	virtual R::RCString GetClassName(void) const {return("LogEntropy");}
 
 	/**
 	 * Initialize the measure. In practice, the files storing the matrices are
@@ -194,15 +220,17 @@ public:
 	virtual void Done(void);
 
 	/**
-	 * Alter the IF factor for a given concept.
-    * @param concept        Concept.
+	 * Alter the frequencies for a given concept reference.
+    * @param freq           Concept reference.
     * @param add            Concept is added or deleted.
 	 * @param idx            Type of the vector.
-	 * @param ref            Vector of concept references.
-	 * @param typeref        Vector of concept type references.
-	 * @param factors        Vector of IF factors.
+	 * @param prod           Sum of the Product of the concept occurrences and
+	 *                       their logarithm.
+	 * @param sum            Concept Sum of their occurrences.
+	 * @param typeref        Concept Type references.
+	 * @param entropy        Concept entropies.
     */
-	inline void Alter(const GConcept* concept,bool add,eType idx,RVector* ref,RVector* typeref,RVector* factors);
+	inline void Alter(const GConceptRef* ref,bool add,eType idx,RVector* prod,RVector* sum,RVector* typeref,RVector* entropy);
 
 	/**
 	 * Add the reference of a given description.
@@ -219,34 +247,27 @@ public:
 	void Del(R::RConstCursor<GVector> vectors,eType idx);
 
 	/**
-	 * Virtual method inherits from R::RObject and that must be re-implemented
-	 * in all child classes.
-	 * @return Name of the class.
-	 */
-	virtual R::RCString GetClassName(void) const {return("TfIdf");}
-
-	/**
-	 * Get the IF factor for a given concept. If necessary, it is recomputed.
+	 * Get the entropy for a given concept. If necessary, it is recomputed.
     * @param concept        Concept.
     * @param idx            Object type.
-    * @return the IF factor.
+    * @return the entropy.
     */
-	inline double GetIf(const GConcept* concept,eType idx);
+	inline double GetEntropy(const GConcept* concept,eType idx);
 
 	/**
-	 * Weight a description by the global tf*if factors.
+	 * Weight a description by the global entropies.
     * @param desc           Description.
     * @param idx            Object type.
     */
-	inline void ComputeTfIdf(GDescription* desc,eType idx);
+	inline void ComputeEntropy(GDescription* desc,eType idx);
 
 	/**
-	 * Weight a description by the local tf*if factors.
+	 * Weight a description by the local entropies.
     * @param desc           Description.
 	 * @param set            Description set.
     * @param idx            Object type.
     */
-	inline void ComputeTfIdf(GDescription* desc,GDescriptionSet* set,eType idx);
+	inline void ComputeEntropy(GDescription* desc,GDescriptionSet* set,eType idx);
 
 	/**
 	* Access to several information related to the evaluation of a given
@@ -362,7 +383,7 @@ public:
 	 * @param obj            Pseudo-paramter.
 	 * @param type           Type.
     */
-	template<class cObj> void ComputeIF(const cObj* obj,eType type);
+	template<class cObj> void ComputeEntropy(const cObj* obj,eType type);
 
 	/**
 	 * Reset the IF factors.

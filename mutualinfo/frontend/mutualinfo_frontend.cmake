@@ -1,5 +1,0 @@
-IF(KDE4_FOUND)
-    SET(mutualinfo_AVAILABLE_FRONTENDS kde)
-    SET(mutualinfo_kde_DEPENDENCY rcorekde galileikde galileikde ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
-    ADD_FRONTEND_SOURCE_FILE(mutualinfo_frontend mutualinfo kde mutualinfo_INCLUDES)
-ENDIF(KDE4_FOUND)

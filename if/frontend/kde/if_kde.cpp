@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	TfIdf_KDE.cpp
+	If_KDE.cpp
 
-	tf/idf Factors (KDE Part) - Implementation.
+	Tf/Idf Feature Weighting Method (KDE Part) - Implementation.
 
 	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 
@@ -44,7 +44,7 @@ extern "C" {
 void About(void)
 {
 	KAboutData aboutData( "Tf/Idf", 0, ki18n("Tf/Idf Factors"),
-		"1.0", ki18n("Maintain the Tf/Idf factors for each selected object"), KAboutData::License_GPL,
+		"1.0", ki18n("Tf/Idf Feature Weighting Method"), KAboutData::License_GPL,
 		ki18n("(C) 2003-2014 by Pascal Francq"),
 		KLocalizedString(), "http://www.otlet-institute.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");

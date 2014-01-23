@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	If.cpp
+	LogEntropy.cpp
 
-	Tf/Idf Feature Weighting Method - Implementation.
+	Log Entropy Feature Weighting Method - Implementation.
 
-	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
+	Copyright 2013-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -40,20 +40,21 @@
 #include <gprofile.h>
 #include <gcommunity.h>
 #include <gsession.h>
-#include <if.h>
+#include <logentropy.h>
 
 
 
 //------------------------------------------------------------------------------
 //
-//  IfData
+//  SetData
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-IfData::IfData(GSession* session,If* calc)
+LogEntropyData::LogEntropyData(GSession* session,LogEntropy* calc)
 	: GDescriptionSetData(session),
-	  IF(session->GetMaxObjId(pConcept)+1),
+	  Entropy(session->GetMaxObjId(pConcept)+1),
+	  Sum(session->GetMaxObjId(pConcept)+1),
 	  Refs(session->GetMaxObjId(pConceptType)+1),
 	  Session(session),
 	  Calc(calc)
@@ -62,10 +63,11 @@ IfData::IfData(GSession* session,If* calc)
 
 
 //------------------------------------------------------------------------------
-void IfData::Compute(GDescriptionSet* set)
+void LogEntropyData::Compute(GDescriptionSet* set)
 {
 	// Reinitialize the vector
-	IF.ReSize(Session->GetMaxObjId(pConcept)+1,0.0);
+	Entropy.ReSize(Session->GetMaxObjId(pConcept)+1,0.0);
+	Sum.ReSize(Session->GetMaxObjId(pConcept)+1,0.0);
 	Refs.ReSize(Session->GetMaxObjId(pConceptType)+1,0.0);
 
 	// Go through the descriptions
@@ -76,7 +78,6 @@ void IfData::Compute(GDescriptionSet* set)
 		if(!vectors.GetNb()) continue;
 
 		// Init
-		Calc->tmpConcepts.Init(Session->GetMaxObjId(pConcept)+1,true);
 		Calc->tmpTypes.Init(Session->GetMaxObjId(pConceptType)+1,true);
 
 		// Parse the vectors
@@ -85,18 +86,23 @@ void IfData::Compute(GDescriptionSet* set)
 			RConstCursor<GConceptRef> Vector(vectors()->GetRefs());
 			if(!Vector.GetNb())
 				continue;
-			Calc->Alter(vectors()->GetMetaConcept(),true,If::tUnknown,&IF,&Refs,0);
+			GConceptRef Ref(vectors()->GetMetaConcept(),1.0);
+			Calc->Alter(&Ref,true,LogEntropy::tUnknown,&Entropy,&Sum,&Refs,0);
 			for(Vector.Start();!Vector.End();Vector.Next())
-				Calc->Alter(Vector()->GetConcept(),true,If::tUnknown,&IF,&Refs,0);
+				Calc->Alter(Vector(),true,LogEntropy::tUnknown,&Entropy,&Sum,&Refs,0);
 		}
 	}
 
 	// Compute the If
-	RNumCursor<double> Cur(IF.GetCols());
+	RNumCursor<double> Cur(Entropy.GetCols());
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		if(Cur()!=0.0)
-			Cur()=log10(Refs[Session->GetObj(pConcept,Cur.GetPos())->GetType()->GetId()]/Cur());
+		if(Cur()==0.0)
+			continue;
+
+		double TypeRef(Refs[Session->GetObj(pConcept,Cur.GetPos())->GetType()->GetId()]);
+		double S(Sum[Cur.GetPos()]);
+		Cur()=1+(((Cur()/S)-log10(S))/(log10(TypeRef+1)));;
 	}
 
 	Dirty=false;
@@ -106,92 +112,100 @@ void IfData::Compute(GDescriptionSet* set)
 
 //------------------------------------------------------------------------------
 //
-//  If
+//  LogEntropy
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-If::If(GSession* session,GPlugInFactory* fac)
+LogEntropy::LogEntropy(GSession* session,GPlugInFactory* fac)
 	: RObject(fac->GetMng()->GetName()+"|"+fac->GetList()+"|"+fac->GetName()),
 	  GMeasure(session,fac),
-	  ConceptRef(5,0),
-	  ConceptIf(5,0),
+	  ConceptProd(5,0),
+	  ConceptSum(5,0),
+	  ConceptEntropy(5,0),
 	  ConceptTypeRef(5,0),
-	  tmpTypes(0),
-	  tmpConcepts(0)
+	  tmpTypes(0)
 {
 	// Document notifications
-	InsertObserver(HANDLER(If::HandleAddDoc),hDocs[oeSelected]);
-	InsertObserver(HANDLER(If::HandleAddDoc),hDocs[oeUpdated]);
-	InsertObserver(HANDLER(If::HandleDelDoc),hDocs[oeAboutToBeUpdated]);
-	InsertObserver(HANDLER(If::HandleDelDoc),hDocs[oeDeselected]);
-	InsertObserver(HANDLER(If::HandleDelDoc),hDocs[oeAboutToBeDeleted]);
+	InsertObserver(HANDLER(LogEntropy::HandleAddDoc),hDocs[oeSelected]);
+	InsertObserver(HANDLER(LogEntropy::HandleAddDoc),hDocs[oeUpdated]);
+	InsertObserver(HANDLER(LogEntropy::HandleDelDoc),hDocs[oeAboutToBeUpdated]);
+	InsertObserver(HANDLER(LogEntropy::HandleDelDoc),hDocs[oeDeselected]);
+	InsertObserver(HANDLER(LogEntropy::HandleDelDoc),hDocs[oeAboutToBeDeleted]);
 
 	// Topic notifications
-	InsertObserver(HANDLER(If::HandleAddTopic),hTopics[oeUpdated]);
-	InsertObserver(HANDLER(If::HandleDelTopic),hTopics[oeAboutToBeUpdated]);
-	InsertObserver(HANDLER(If::HandleDelTopic),hTopics[oeAboutToBeDeleted]);
+	InsertObserver(HANDLER(LogEntropy::HandleAddTopic),hTopics[oeUpdated]);
+	InsertObserver(HANDLER(LogEntropy::HandleDelTopic),hTopics[oeAboutToBeUpdated]);
+	InsertObserver(HANDLER(LogEntropy::HandleDelTopic),hTopics[oeAboutToBeDeleted]);
 
 	// Class notifications
-	InsertObserver(HANDLER(If::HandleAddClass),hClasses[oeUpdated]);
-	InsertObserver(HANDLER(If::HandleDelClass),hClasses[oeAboutToBeUpdated]);
-	InsertObserver(HANDLER(If::HandleDelClass),hClasses[oeAboutToBeDeleted]);
+	InsertObserver(HANDLER(LogEntropy::HandleAddClass),hClasses[oeUpdated]);
+	InsertObserver(HANDLER(LogEntropy::HandleDelClass),hClasses[oeAboutToBeUpdated]);
+	InsertObserver(HANDLER(LogEntropy::HandleDelClass),hClasses[oeAboutToBeDeleted]);
 
 	// Profile notifications
-	InsertObserver(HANDLER(If::HandleAddProfile),hProfiles[oeSelected]);
-	InsertObserver(HANDLER(If::HandleAddProfile),hProfiles[oeUpdated]);
-	InsertObserver(HANDLER(If::HandleDelProfile),hProfiles[oeAboutToBeUpdated]);
-	InsertObserver(HANDLER(If::HandleDelProfile),hProfiles[oeDeselected]);
-	InsertObserver(HANDLER(If::HandleDelProfile),hProfiles[oeAboutToBeDeleted]);
+	InsertObserver(HANDLER(LogEntropy::HandleAddProfile),hProfiles[oeSelected]);
+	InsertObserver(HANDLER(LogEntropy::HandleAddProfile),hProfiles[oeUpdated]);
+	InsertObserver(HANDLER(LogEntropy::HandleDelProfile),hProfiles[oeAboutToBeUpdated]);
+	InsertObserver(HANDLER(LogEntropy::HandleDelProfile),hProfiles[oeDeselected]);
+	InsertObserver(HANDLER(LogEntropy::HandleDelProfile),hProfiles[oeAboutToBeDeleted]);
 
 	// Community notifications
-	InsertObserver(HANDLER(If::HandleAddCommunity),hCommunities[oeUpdated]);
-	InsertObserver(HANDLER(If::HandleDelCommunity),hCommunities[oeAboutToBeUpdated]);
-	InsertObserver(HANDLER(If::HandleDelCommunity),hCommunities[oeAboutToBeDeleted]);
+	InsertObserver(HANDLER(LogEntropy::HandleAddCommunity),hCommunities[oeUpdated]);
+	InsertObserver(HANDLER(LogEntropy::HandleDelCommunity),hCommunities[oeAboutToBeUpdated]);
+	InsertObserver(HANDLER(LogEntropy::HandleDelCommunity),hCommunities[oeAboutToBeDeleted]);
 
 	// Session notifications
-	InsertObserver(HANDLER(If::HandleReInit),hReInit,session);
+	InsertObserver(HANDLER(LogEntropy::HandleReInit),hReInit,session);
 
 	// Init matrices
-	ConceptRef.Init(0.0);
-	ConceptIf.Init(NAN);
+	ConceptProd.Init(0.0);
+	ConceptSum.Init(0.0);
+	ConceptEntropy.Init(NAN);
 	ConceptTypeRef.Init(0.0);
 }
 
 
 //------------------------------------------------------------------------------
-void If::Init(void)
+void LogEntropy::Init(void)
 {
 	RString Dir(GALILEIApp->GetIndexDir()+RFile::GetDirSeparator()+Session->GetName()+RFile::GetDirSeparator()+GMeasure::GetName()+RFile::GetDirSeparator());
 	RDir::CreateDirIfNecessary(Dir,true);
-	ConceptsFile.Open(Dir+"conceptrefs",RGenericMatrix::tNormal);
+	ConceptsProdFile.Open(Dir+"conceptprods",RGenericMatrix::tNormal);
+	ConceptsSumFile.Open(Dir+"conceptsums",RGenericMatrix::tNormal);
 	ConceptTypesFile.Open(Dir+"concepttyperefs",RGenericMatrix::tNormal);
 
-	ConceptsFile.Load(ConceptRef);
+	ConceptsProdFile.Load(ConceptProd);
+	ConceptsSumFile.Load(ConceptSum);
 	ConceptTypesFile.Load(ConceptTypeRef);
-	ConceptIf.VerifySize(ConceptRef.GetNbLines(),ConceptRef.GetNbCols(),true,NAN);
+	ConceptEntropy.VerifySize(ConceptProd.GetNbLines(),ConceptProd.GetNbCols(),true,NAN);
 }
 
 
 //------------------------------------------------------------------------------
-void If::Done(void)
+void LogEntropy::Done(void)
 {
 	if(Session->MustSaveResults())
 	{
-		ConceptsFile.Save(ConceptRef);
+		ConceptsProdFile.Save(ConceptProd);
+		ConceptsSumFile.Save(ConceptSum);
 		ConceptTypesFile.Save(ConceptTypeRef);
 	}
-	ConceptsFile.Close();
+	ConceptsProdFile.Close();
+	ConceptsSumFile.Close();
 	ConceptTypesFile.Close();
 }
 
 
 //------------------------------------------------------------------------------
-void If::Alter(const GConcept* concept,bool add,eType idx,RVector* ref,RVector* typeref,RVector* factors)
+void LogEntropy::Alter(const GConceptRef* ref,bool add,eType idx,RVector* prod,RVector* sum,RVector* typeref,RVector* entropy)
 {
+	if(ref->GetWeight()==0.0)
+		return;
+
 	// Verify if the reference of the concept type must be altered
    // This must be done only once per description added or removed
-	GConceptType* type(concept->GetType());
+	GConceptType* type(ref->GetConcept()->GetType());
 	size_t TypeId(type->GetId());
 	if(tmpTypes[TypeId])
 	{
@@ -205,38 +219,42 @@ void If::Alter(const GConcept* concept,bool add,eType idx,RVector* ref,RVector* 
 		tmpTypes[TypeId]=false;
 	}
 
-	// Verify if the reference of the concept must be altered
-   // This must be done only once per description added or removed
-	size_t ConceptId(concept->GetId());
-	if(tmpConcepts[ConceptId])
+	// Add the product of the frequence and its logarithm
+	size_t ConceptId(ref->GetConcept()->GetId());
+	if(add)
 	{
-		// Yes -> It is the first time current description uses this concept.
-		if(add)
-			(*ref)[ConceptId]++;
-		else
-			(*ref)[ConceptId]--;
-		if(factors)
-			(*factors)[ConceptId]=NAN;
-		if(Session->MustSaveResults()&&(idx!=tUnknown))
-			ConceptsFile.Write(idx,ConceptId,ConceptRef(idx,ConceptId));
-		tmpConcepts[ConceptId]=false;
+		(*prod)[ConceptId]+=ref->GetWeight()*log10(ref->GetWeight());
+		(*sum)[ConceptId]+=ref->GetWeight();
+	}
+	else
+	{
+		(*prod)[ConceptId]-=ref->GetWeight()*log10(ref->GetWeight());
+		(*sum)[ConceptId]-=ref->GetWeight();
+	}
+	if(entropy)
+		(*entropy)[ConceptId]=NAN;
+	if(Session->MustSaveResults()&&(idx!=tUnknown))
+	{
+		ConceptsProdFile.Write(idx,ConceptId,ConceptProd(idx,ConceptId));
+		ConceptsSumFile.Write(idx,ConceptId,ConceptSum(idx,ConceptId));
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void If::Add(R::RConstCursor<GVector> vectors,eType idx)
+void LogEntropy::Add(R::RConstCursor<GVector> vectors,eType idx)
 {
 	// Verify that there is something to do
 	if(!vectors.GetNb()) return;
 
 	// Verify the sizes
-	ConceptRef.VerifySize(5,Session->GetMaxObjId(pConcept)+1,true,0.0);
-	ConceptIf.VerifySize(5,Session->GetMaxObjId(pConcept)+1,true,NAN);
+	ConceptProd.VerifySize(5,Session->GetMaxObjId(pConcept)+1,true,0.0);
+	ConceptSum.VerifySize(5,Session->GetMaxObjId(pConcept)+1,true,0.0);
+	ConceptEntropy.VerifySize(5,Session->GetMaxObjId(pConcept)+1,true,NAN);
 	ConceptTypeRef.VerifySize(5,Session->GetMaxObjId(pConceptType)+1,true,0.0);
 	tmpTypes.Init(Session->GetMaxObjId(pConceptType)+1,true);
-	tmpConcepts.Init(Session->GetMaxObjId(pConcept)+1,true);
-	ConceptsFile.VerifySize(5,Session->GetMaxObjId(pConcept)+1,true,0.0);
+	ConceptsProdFile.VerifySize(5,Session->GetMaxObjId(pConcept)+1,true,0.0);
+	ConceptsSumFile.VerifySize(5,Session->GetMaxObjId(pConcept)+1,true,0.0);
 	ConceptTypesFile.VerifySize(5,Session->GetMaxObjId(pConceptType)+1,true,0.0);
 
 	// Parse the vectors
@@ -245,26 +263,28 @@ void If::Add(R::RConstCursor<GVector> vectors,eType idx)
 		RConstCursor<GConceptRef> Vector(vectors()->GetRefs());
 		if(!Vector.GetNb())
 			continue;
-		Alter(vectors()->GetMetaConcept(),true,idx,ConceptRef[idx],ConceptTypeRef[idx],ConceptIf[idx]);
+		GConceptRef Ref(vectors()->GetMetaConcept(),1.0);
+		Alter(&Ref,true,idx,ConceptProd[idx],ConceptSum[idx],ConceptTypeRef[idx],ConceptEntropy[idx]);
 		for(Vector.Start();!Vector.End();Vector.Next())
-			Alter(Vector()->GetConcept(),true,idx,ConceptRef[idx],ConceptTypeRef[idx],ConceptIf[idx]);
+			Alter(Vector(),true,idx,ConceptProd[idx],ConceptSum[idx],ConceptTypeRef[idx],ConceptEntropy[idx]);
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void If::Del(R::RConstCursor<GVector> vectors,eType idx)
+void LogEntropy::Del(R::RConstCursor<GVector> vectors,eType idx)
 {
 	// Verify that there is something to do
 	if(!vectors.GetNb()) return;
 
 	// Verify the sizes
-	ConceptRef.VerifySize(5,Session->GetMaxObjId(pConcept)+1,true,0.0);
-	ConceptIf.VerifySize(5,Session->GetMaxObjId(pConcept)+1,true,NAN);
+	ConceptProd.VerifySize(5,Session->GetMaxObjId(pConcept)+1,true,0.0);
+	ConceptSum.VerifySize(5,Session->GetMaxObjId(pConcept)+1,true,0.0);
+	ConceptEntropy.VerifySize(5,Session->GetMaxObjId(pConcept)+1,true,NAN);
 	ConceptTypeRef.VerifySize(5,Session->GetMaxObjId(pConceptType)+1,true,0.0);
 	tmpTypes.Init(Session->GetMaxObjId(pConceptType)+1,true);
-	tmpConcepts.Init(Session->GetMaxObjId(pConcept)+1,true);
-	ConceptsFile.VerifySize(5,Session->GetMaxObjId(pConcept)+1,true,0.0);
+	ConceptsProdFile.VerifySize(5,Session->GetMaxObjId(pConcept)+1,true,0.0);
+	ConceptsSumFile.VerifySize(5,Session->GetMaxObjId(pConcept)+1,true,0.0);
 	ConceptTypesFile.VerifySize(5,Session->GetMaxObjId(pConceptType)+1,true,0.0);
 
 	// Parse the vectors
@@ -273,80 +293,70 @@ void If::Del(R::RConstCursor<GVector> vectors,eType idx)
 		RConstCursor<GConceptRef> Vector(vectors()->GetRefs());
 		if(!Vector.GetNb())
 			continue;
-		Alter(vectors()->GetMetaConcept(),false,idx,ConceptRef[idx],ConceptTypeRef[idx],ConceptIf[idx]);
+		GConceptRef Ref(vectors()->GetMetaConcept(),1.0);
+		Alter(&Ref,false,idx,ConceptProd[idx],ConceptSum[idx],ConceptTypeRef[idx],ConceptEntropy[idx]);
 		for(Vector.Start();!Vector.End();Vector.Next())
-			Alter(Vector()->GetConcept(),false,idx,ConceptRef[idx],ConceptTypeRef[idx],ConceptIf[idx]);
+			Alter(Vector(),false,idx,ConceptProd[idx],ConceptSum[idx],ConceptTypeRef[idx],ConceptEntropy[idx]);
 	}
 }
 
 
 //------------------------------------------------------------------------------
-double If::GetIf(const GConcept* concept,eType idx)
+double LogEntropy::GetEntropy(const GConcept* concept,eType idx)
 {
-	if(concept->GetId()>=ConceptIf.GetNbCols())
+	if(concept->GetId()>=ConceptEntropy.GetNbCols())
 		return(0.0);
-	double& Val(ConceptIf(idx,concept->GetId()));
+
+	double& Val(ConceptEntropy(idx,concept->GetId()));
 	if(Val!=Val)
 	{
 		double TypeRef(ConceptTypeRef(idx,concept->GetType()->GetId()));
-		double Ref(ConceptRef(idx,concept->GetId()));
-		if(TypeRef&&Ref)
-			Val=log10(TypeRef/Ref);
+		double Prod(ConceptProd(idx,concept->GetId()));
+		double Sum(ConceptSum(idx,concept->GetId()));
+		if(TypeRef&&Sum)
+			Val=1+(((Prod/Sum)-log10(Sum))/(log10(TypeRef+1)));
 		else
 			Val=0.0;
 	}
 	return(Val);
 }
 
-
 //------------------------------------------------------------------------------
-void If::ComputeTfIdf(GDescription* desc,eType idx)
+void LogEntropy::ComputeEntropy(GDescription* desc,eType idx)
 {
 	RCursor<GVector> Vector(desc->GetVectors());
 	for(Vector.Start();!Vector.End();Vector.Next())
 	{
-		double Max(std::numeric_limits<double>::min());
 		RCursor<GConceptRef> ptr(Vector()->GetRefs());
 		for(ptr.Start();!ptr.End();ptr.Next())
-		{
-			if(ptr()->GetWeight()>Max)
-				Max=ptr()->GetWeight();
-			(*ptr())*=GetIf(ptr()->GetConcept(),idx);
-		}
-		(*Vector())/=Max;
+			ptr()->SetWeight(log10(ptr()->GetWeight()+1)*GetEntropy(ptr()->GetConcept(),idx));
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void If::ComputeTfIdf(GDescription* desc,GDescriptionSet* set,eType)
+void LogEntropy::ComputeEntropy(GDescription* desc,GDescriptionSet* set,eType)
 {
 	// If the description set is dirty -> recompute
 	if(!set->GetData())
-		set->SetData(new IfData(Session,this));
-	IfData* Data(dynamic_cast<IfData*>(set->GetData()));
+		set->SetData(new LogEntropyData(Session,this));
+	LogEntropyData* Data(dynamic_cast<LogEntropyData*>(set->GetData()));
 	if(Data->IsDirty())
 		Data->Compute(set);
 
-	// Compute the Tf/Idf
+	// Compute the Log/Entropy
 	RCursor<GVector> Vector(desc->GetVectors());
 	for(Vector.Start();!Vector.End();Vector.Next())
 	{
-		double Max(std::numeric_limits<double>::min());
 		RCursor<GConceptRef> ptr(Vector()->GetRefs());
 		for(ptr.Start();!ptr.End();ptr.Next())
-		{
-			if(ptr()->GetWeight()>Max)
-				Max=ptr()->GetWeight();
-			(*ptr())*=Data->IF[ptr()->GetConcept()->GetId()];
-		}
-		(*Vector())/=Max;
+			ptr()->SetWeight(log10(ptr()->GetWeight()+1)*Data->Entropy[ptr()->GetConcept()->GetId()]);
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void If::Measure(size_t measure,...)
+void LogEntropy::Measure(size_t measure,...)
 {
 	// Get the parameters
 	va_list ap;
@@ -414,36 +424,36 @@ void If::Measure(size_t measure,...)
 	switch(measure)
 	{
 		case 0:
-			(*res)=GetIf(Concept,idx);
+			(*res)=GetEntropy(Concept,idx);
 			break;
 		case 1:
-			ComputeTfIdf(Desc,idx);
+			ComputeEntropy(Desc,idx);
 			break;
 		case 2:
-			ComputeTfIdf(Desc,Set,idx);
+			ComputeEntropy(Desc,Set,idx);
 			break;
 		case 3:
-			(*res)=ConceptRef(idx,Concept->GetId());
+			(*res)=ConceptSum(idx,Concept->GetId());
 			break;
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void If::Info(size_t info,...)
+void LogEntropy::Info(size_t info,...)
 {
 	va_list ap;
 	va_start(ap,info);
 	RString* res(va_arg(ap,RString*));
 	va_end(ap);
 	if(info!=0)
-		mThrowGException(RString::Number(info)+" is not allowed as information.");
-	(*res)="tf/idf";
+		mThrowGException(RString::Number(info)+" is not allowed as information");
+	(*res)="Log/entropy";
 }
 
 
 //------------------------------------------------------------------------------
-void If::HandleAddDoc(const RNotification& notification)
+void LogEntropy::HandleAddDoc(const RNotification& notification)
 {
 	// Verify that the sender is a document and that it is selected
 	GDoc* Doc(dynamic_cast<GDoc*>(notification.GetSender()));
@@ -453,7 +463,7 @@ void If::HandleAddDoc(const RNotification& notification)
 
 
 //------------------------------------------------------------------------------
-void If::HandleDelDoc(const RNotification& notification)
+void LogEntropy::HandleDelDoc(const RNotification& notification)
 {
 	// Verify that the sender is a document and that it is selected
 	GDoc* Doc(dynamic_cast<GDoc*>(notification.GetSender()));
@@ -463,7 +473,7 @@ void If::HandleDelDoc(const RNotification& notification)
 
 
 //------------------------------------------------------------------------------
-void If::HandleAddTopic(const RNotification& notification)
+void LogEntropy::HandleAddTopic(const RNotification& notification)
 {
 	// Verify that the sender is a topic
 	GTopic* Topic(dynamic_cast<GTopic*>(notification.GetSender()));
@@ -473,7 +483,7 @@ void If::HandleAddTopic(const RNotification& notification)
 
 
 //------------------------------------------------------------------------------
-void If::HandleDelTopic(const RNotification& notification)
+void LogEntropy::HandleDelTopic(const RNotification& notification)
 {
 	// Verify that the sender is a topic
 	GTopic* Topic(dynamic_cast<GTopic*>(notification.GetSender()));
@@ -483,7 +493,7 @@ void If::HandleDelTopic(const RNotification& notification)
 
 
 //------------------------------------------------------------------------------
-void If::HandleAddClass(const RNotification& notification)
+void LogEntropy::HandleAddClass(const RNotification& notification)
 {
 	// Verify that the sender is a class
 	GClass* Class(dynamic_cast<GClass*>(notification.GetSender()));
@@ -493,7 +503,7 @@ void If::HandleAddClass(const RNotification& notification)
 
 
 //------------------------------------------------------------------------------
-void If::HandleDelClass(const RNotification& notification)
+void LogEntropy::HandleDelClass(const RNotification& notification)
 {
 	// Verify that the sender is a class
 	GClass* Class(dynamic_cast<GClass*>(notification.GetSender()));
@@ -503,7 +513,7 @@ void If::HandleDelClass(const RNotification& notification)
 
 
 //------------------------------------------------------------------------------
-void If::HandleAddProfile(const RNotification& notification)
+void LogEntropy::HandleAddProfile(const RNotification& notification)
 {
 	// Verify that the sender is a profile
 	GProfile* Profile(dynamic_cast<GProfile*>(notification.GetSender()));
@@ -513,7 +523,7 @@ void If::HandleAddProfile(const RNotification& notification)
 
 
 //------------------------------------------------------------------------------
-void If::HandleDelProfile(const RNotification& notification)
+void LogEntropy::HandleDelProfile(const RNotification& notification)
 {
 	// Verify that the sender is a profile
 	GProfile* Profile(dynamic_cast<GProfile*>(notification.GetSender()));
@@ -523,7 +533,7 @@ void If::HandleDelProfile(const RNotification& notification)
 
 
 //------------------------------------------------------------------------------
-void If::HandleAddCommunity(const RNotification& notification)
+void LogEntropy::HandleAddCommunity(const RNotification& notification)
 {
 	// Verify that the sender is a community
 	GCommunity* Community(dynamic_cast<GCommunity*>(notification.GetSender()));
@@ -533,7 +543,7 @@ void If::HandleAddCommunity(const RNotification& notification)
 
 
 //------------------------------------------------------------------------------
-void If::HandleDelCommunity(const RNotification& notification)
+void LogEntropy::HandleDelCommunity(const RNotification& notification)
 {
 	// Verify that the sender is a community
 	GCommunity* Community(dynamic_cast<GCommunity*>(notification.GetSender()));
@@ -543,7 +553,7 @@ void If::HandleDelCommunity(const RNotification& notification)
 
 
 //------------------------------------------------------------------------------
-void If::HandleReInit(const R::RNotification& notification)
+void LogEntropy::HandleReInit(const R::RNotification& notification)
 {
 	// Manage only documents
 	GSessionMsg& Msg(GetData<GSessionMsg&>(notification));
@@ -571,24 +581,27 @@ void If::HandleReInit(const R::RNotification& notification)
 
 
 //------------------------------------------------------------------------------
-void If::ReInit(If::eType type)
+void LogEntropy::ReInit(LogEntropy::eType type)
 {
-	if(ConceptRef.GetNbLines()>type)
+	if(ConceptProd.GetNbLines()>type)
 	{
-		ConceptRef[type]->Init(0.0);
-		ConceptIf[type]->Init(NAN);
+		ConceptProd[type]->Init(0.0);
+		ConceptSum[type]->Init(0.0);
+		ConceptEntropy[type]->Init(NAN);
 		ConceptTypeRef[type]->Init(0.0);
 	}
-	if(Session->MustSaveResults()&&(ConceptsFile.GetNbLines()>type))
+	if(Session->MustSaveResults()&&(ConceptsProdFile.GetNbLines()>type))
 	{
-		ConceptsFile.InitLine(type,0.0);
+		ConceptsProdFile.InitLine(type,0.0);
+		ConceptsSumFile.InitLine(type,0.0);
 		ConceptTypesFile.InitLine(type,0.0);
 	}
 }
 
+
 //------------------------------------------------------------------------------
 template<class cObj>
-	void If::ComputeIF(const cObj* obj,If::eType type)
+	void LogEntropy::ComputeEntropy(const cObj* obj,LogEntropy::eType type)
 {
 	RCursor<cObj> Obj(Session->GetObjs(obj));
 	for(Obj.Start();!Obj.End();Obj.Next())
@@ -597,23 +610,25 @@ template<class cObj>
 
 
 //------------------------------------------------------------------------------
-void If::Reset(void)
+void LogEntropy::Reset(void)
 {
-	ConceptRef.Init(0.0);
-	ConceptIf.Init(NAN);
+	ConceptProd.Init(0.0);
+	ConceptSum.Init(0.0);
+	ConceptEntropy.Init(NAN);
 	ConceptTypeRef.Init(0.0);
 	if(Session->MustSaveResults())
 	{
-		ConceptsFile.Init(0.0);
+		ConceptsProdFile.Init(0.0);
+		ConceptsSumFile.Init(0.0);
 		ConceptTypesFile.Init(0.0);
 	}
-	ComputeIF(pDoc,tDoc);
-	ComputeIF(pTopic,tTopic);
-	ComputeIF(pClass,tClass);
-	ComputeIF(pProfile,tProfile);
-	ComputeIF(pCommunity,tCommunity);
+	ComputeEntropy(pDoc,tDoc);
+	ComputeEntropy(pTopic,tTopic);
+	ComputeEntropy(pClass,tClass);
+	ComputeEntropy(pProfile,tProfile);
+	ComputeEntropy(pCommunity,tCommunity);
 }
 
 
 //------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("Features Evaluation","tfidf","tf/idf",If)
+CREATE_MEASURE_FACTORY("Features Evaluation","LogEntropy","LogEntropy",LogEntropy)
