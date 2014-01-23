@@ -86,7 +86,7 @@ int XMLTag::Compare(const RString& tag) const
 GConcept* XMLTag::GetConcept(void)
 {
 	if(!Concept)
-		Concept=Schema->Type->GetInsertConcept(Tag);
+		Concept=Schema->Type->GetSession()->InsertObj(pConcept,Schema->Type,Tag);
 	return(Concept);
 }
 
@@ -216,8 +216,8 @@ XMLSchema* GXML::GetSchema(const RString& uri)
 	XMLSchema* Schema(Schemas.GetInsertPtr(uri));
 	if(!Schema->Type)
 	{
-		Schema->Type=Session->GetInsertConceptType(ccSemantic,uri,RString::Null);
-		Schema->MetaConcept=Schema->Type->GetInsertConcept(uri);
+		Schema->Type=Session->GetObj(pConceptType,ccSemantic,uri,RString::Null);
+		Schema->MetaConcept=Schema->Type->GetSession()->InsertObj(pConcept,Schema->Type,uri);
 	}
 	return(Schema);
 }
@@ -282,7 +282,7 @@ XMLTag* GXML::GetXMLTag(const RString& namespaceURI,const RString& lName)
 
 		// Create a concept for that tag
 		if(ExtractSemantic)
-			Tag->Concept=Schema->Type->GetInsertConcept(Tag->Tag);
+			Tag->Concept=Schema->Type->GetSession()->InsertObj(pConcept,Schema->Type,Tag->Tag);
 	}
 	return(Tag);
 }
