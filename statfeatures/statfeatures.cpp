@@ -70,9 +70,11 @@ ConceptData::ConceptData(GConcept* concept)
 
 
 //------------------------------------------------------------------------------
-void ConceptData::Treat(const GConceptRef* ref)
+void ConceptData::Treat(GMeasure* weighting,const GConceptRef* ref)
 {
-	double weight(ref->GetWeight()*Concept->GetIF(otDoc));
+	double weight;
+	weighting->Measure(0,Concept,otDoc,&weight);
+	weight*=ref->GetWeight();
 	if(weight>MaxWeight)
 		MaxWeight=weight;
 	AvgWeight+=weight;
@@ -83,24 +85,21 @@ void ConceptData::Treat(const GConceptRef* ref)
 
 
 //------------------------------------------------------------------------------
-void ConceptData::Add(RWorksheet& stats,GMeasure* measure)
+void ConceptData::Add(GMeasure* weighting,RWorksheet& stats)
 {
-	double NbDocs(Concept->GetRef(otDoc));
+	double NbDocs;
+	weighting->Measure(3,Concept,otDoc,&NbDocs,&NbDocs);
+	double weight;
+	weighting->Measure(0,Concept,otDoc,&weight);
 
 	// Add a line for the word
 	stats.AddLine(Concept->GetId(),Concept->GetName());
 	stats.AddValue(0,Concept->GetId(),Concept->GetId());
-	stats.AddValue(1,Concept->GetId(),Concept->GetIF(otDoc));
+	stats.AddValue(1,Concept->GetId(),weight);
 	stats.AddValue(2,Concept->GetId(),AvgWeight/NbDocs);
 	stats.AddValue(3,Concept->GetId(),MaxWeight);
 	stats.AddValue(4,Concept->GetId(),AvgOccurs/NbDocs);
 	stats.AddValue(5,Concept->GetId(),MaxOccurs);
-	if(measure)
-	{
-		double tmp;
-		measure->Measure(0,Concept->GetId(),&tmp);
-		stats.AddValue(6,Concept->GetId(),tmp);
-	}
 }
 
 
@@ -113,8 +112,25 @@ void ConceptData::Add(RWorksheet& stats,GMeasure* measure)
 
 //------------------------------------------------------------------------------
 StatFeatures::StatFeatures(GSession* session,GPlugInFactory* fac)
-	: GTool(session,fac), Data(100000)
+	: RObject(fac->GetMng()->GetName()+"|"+fac->GetList()+"|"+fac->GetName()),
+	  GTool(session,fac), Data(100000), Weighting(0)
 {
+}
+
+
+//------------------------------------------------------------------------------
+void StatFeatures::Init(void)
+{
+	GTool::Init();
+	Weighting=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Features Evaluation",0);
+	InsertObserver(HANDLER(StatFeatures::HandleCurrentPlugIn),hCurrentPlugIn,GALILEIApp->GetManager("Measures")->GetPlugInList("Features Evaluation"));
+}
+
+
+//------------------------------------------------------------------------------
+void StatFeatures::HandleCurrentPlugIn(const R::RNotification& notification)
+{
+	Weighting=dynamic_cast<GMeasure*>(GetData<GPlugIn*>(notification));
 }
 
 
@@ -129,6 +145,9 @@ void StatFeatures::ApplyConfig(void)
 //------------------------------------------------------------------------------
 void StatFeatures::Run(GSlot*)
 {
+	if(!Weighting)
+		mThrowGException("No plug-in selected for \"Features Evaluation\"");
+	
 	// Clear the Data
 	Data.Clear();
 
@@ -145,27 +164,22 @@ void StatFeatures::Run(GSlot*)
 			for(Words.Start();!Words.End();Words.Next())
 			{
 				ConceptData* Concept(Data.GetInsertPtrAt(Words()->GetConcept(),Words()->GetId()));
-				Concept->Treat(Words());
+				Concept->Treat(Weighting,Words());
 			}
 		}
 	}
 
-	// Get the measure over the features evaluation
-	GMeasure* Measure(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Features Evaluation",0));
-
 	// Go through the concepts to build the statistics
 	RWorksheet Stats("Global","Concept");
 	Stats.AddCol(0,"Id");
-	Stats.AddCol(1,"idf");
+	Stats.AddCol(1,"Global");
 	Stats.AddCol(2,"Avg Weight");
 	Stats.AddCol(3,"Max Weight");
 	Stats.AddCol(4,"Avg Occurs");
 	Stats.AddCol(5,"Max Occurs");
-	if(Measure)
-		Stats.AddCol(6,"MutualInfo");
 	RCursor<ConceptData> Concepts(Data);
 	for(Concepts.Start();!Concepts.End();Concepts.Next())
-		Concepts()->Add(Stats,Measure);
+		Concepts()->Add(Weighting,Stats);
 
 	// Save the statistics
 	File.Open(Results,RIO::Create,"utf8");

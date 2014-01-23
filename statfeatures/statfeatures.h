@@ -102,15 +102,17 @@ public:
 
 	/**
 	 * Treat an concept reference.
+	 * @param weighting      Weighting method.
 	 * @param ref            Concept to treat.
 	 */
-	void Treat(const GConceptRef* ref);
+	void Treat(GMeasure* weighting,const GConceptRef* ref);
 
 	/**
 	 * Add the statistics related to the concept to a statistics matrix.
+	 * @param weighting      Weighting method.
 	 * @param stats          Matrix.
 	 */
-	void Add(RWorksheet& stats,GMeasure* measure);
+	void Add(GMeasure* weighting,RWorksheet& stats);
 };
 
 
@@ -119,17 +121,12 @@ public:
 * The StatData class provides a method to compute different statistics.
 * @author Pascal Francq
 */
-class StatFeatures : public GTool
+class StatFeatures : public R::RObject, public GTool
 {
 	/**
 	* Name of the file.
 	*/
 	RURI Results;
-
-	/**
-	 * Current measure used.
-	 */
-	GMeasure* Measure;
 
 	/**
 	 * File containing the results.
@@ -141,6 +138,11 @@ class StatFeatures : public GTool
 	 */
 	RContainer<ConceptData,true,true> Data;
 
+	/**
+	 * Weighting method.
+    */
+	GMeasure* Weighting;
+
 public:
 
 	/**
@@ -149,6 +151,19 @@ public:
 	* @param fac             Factory.
 	*/
 	StatFeatures(GSession* session,GPlugInFactory* fac);
+
+	/**
+	 * Initialize the plug-in. In practice, it set the Weighting variable and set
+	 * it as observer for GALILEI::hCurrentPlugIn notification.
+    */
+	virtual void Init(void);
+
+	/**
+	 * Handle the GALILEI;;hCurrentPlugIn notification. In practice, it set the
+	 * Weighting variable.
+    * @param notification
+    */
+	void HandleCurrentPlugIn(const R::RNotification& notification);
 
 	/**
 	* Configurations were applied from the factory.
