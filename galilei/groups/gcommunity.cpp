@@ -128,9 +128,6 @@ void GCommunity::Update(GDescription& desc)
 		// Emit an event that it is about to be updated
 		PostNotification(hCommunities[oeAboutToBeUpdated]);
 
-		// Modify the references
-		DelRefs(Session,otCommunity);
-
 		// Look if the index must be modified
 		if(Save&&Session->DoCreateIndex(pCommunity))
 			Session->UpdateIndex(pCommunity,desc,Id,false);
@@ -155,9 +152,6 @@ void GCommunity::Update(GDescription& desc)
 	// Look if the community is internal one : Modify the references and indexes
 	if(Id!=cNoRef)
 	{
-		// Modify the references
-		AddRefs(Session,otCommunity);
-
 		// Look if the index must be modified and the description and tree saved
 		if(Save)
 		{
@@ -167,7 +161,7 @@ void GCommunity::Update(GDescription& desc)
 			if(desc.IsDefined())
 				Session->SaveDesc(pCommunity,*desc.Vectors,BlockId,Id);
 
-			Session->Storage->SaveObj(this);
+			Session->GetStorage()->SaveObj(this);
 		}
 
 		// Emit an event that it was updated

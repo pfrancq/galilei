@@ -75,9 +75,6 @@ void GTopic::Update(GDescription& desc)
 		// Emit an event that it is about to be updated
 		PostNotification(hTopics[oeAboutToBeUpdated]);
 
-		// Modify the references
-		DelRefs(Session,otTopic);
-
 		// Look if the index must be modified
 		if(Save&&Session->DoCreateIndex(pTopic))
 			Session->UpdateIndex(pTopic,desc,Id,false);
@@ -102,9 +99,6 @@ void GTopic::Update(GDescription& desc)
 	// Look if the topic is internal one : Modify the references and indexes
 	if(Id!=cNoRef)
 	{
-		// Modify the references
-		AddRefs(Session,otTopic);
-
 		// Look if the index must be modified and the description and tree saved
 		if(Save)
 		{
@@ -114,7 +108,7 @@ void GTopic::Update(GDescription& desc)
 			if(desc.IsDefined())
 				Session->SaveDesc(pTopic,*desc.Vectors,BlockId,Id);
 
-			Session->Storage->SaveObj(this);
+			Session->GetStorage()->SaveObj(this);
 		}
 
 		// Emit an event that it was updated

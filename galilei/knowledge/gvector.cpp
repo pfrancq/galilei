@@ -271,6 +271,28 @@ double GVector::GetMaxAbsWeight(void) const
 
 
 //------------------------------------------------------------------------------
+double GVector::GetSumWeights(void) const
+{
+	double Sum(0.0);
+	RCursor<GConceptRef> Infos(*this);
+	for(Infos.Start();!Infos.End();Infos.Next())
+		Sum+=Infos()->GetWeight();
+	return(Sum);
+}
+
+
+//------------------------------------------------------------------------------
+double GVector::GetSumAbsWeights(void) const
+{
+	double Sum(0.0);
+	RCursor<GConceptRef> Infos(*this);
+	for(Infos.Start();!Infos.End();Infos.Next())
+		Sum+=fabs(Infos()->GetWeight());
+	return(Sum);
+}
+
+
+//------------------------------------------------------------------------------
 void GVector::Extract(GVector& vector,const GConceptType* type)
 {
 	// Empty destination
@@ -282,29 +304,6 @@ void GVector::Extract(GVector& vector,const GConceptType* type)
 		if(Entities()->GetType()==type)
 			vector.InsertPtr(new GConceptRef(*Entities()));
 	}
-}
-
-
-//------------------------------------------------------------------------------
-void GVector::ComputeTfIdf(tObjType ObjType)
-{
-	RCursor<GConceptRef> Infos(*this);
-	for(Infos.Start();!Infos.End();Infos.Next())
-	{
-		double iff(Infos()->GetType()->GetRef(ObjType)/static_cast<double>(Infos()->GetConcept()->GetRef(ObjType)));
-		Infos()->SetWeight((Infos()->GetWeight()/GetMaxAbsWeight())*log(iff));
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GVector::Print(R::RString msg)
-{
-	cout<<msg<<endl<<"\t(Type,Id)"<<endl;
-	RCursor<GConceptRef> Cur(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		cout<<"\t("<<(int)Cur()->GetType()->GetId()<<","<<Cur()->GetId()<<")"<<endl;
-	cout<<"OK : "<<msg<<endl;
 }
 
 

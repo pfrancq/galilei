@@ -48,6 +48,8 @@ namespace GALILEI{
 /**
 * The GComputeTrust class provides a representation for a generic method for
 * trust computing.
+*
+* See the documentation related to GPlugIn for more general information.
 * @author Pascal Francq
 * @short Generic Trust Computing Method.
 */

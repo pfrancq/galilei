@@ -174,15 +174,6 @@ public:
 	GConceptRef& operator/=(double w);
 
 	/**
-	* Compute the transformed weight of a given concept reference using a
-	* inverse frequency factor of the object type (idf,isf or ivf).
-	* @param ObjType        Type of the object.
-	* @param max            Maximal weight of the corresponding vector.
-	* @return a query weight computed for the concept reference.
-	*/
-	double GetQueryWeight(tObjType ObjType,double max) const;
-
-	/**
 	* Destructor of a concept reference.
 	*/
 	virtual ~GConceptRef(void);

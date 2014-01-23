@@ -83,7 +83,6 @@ GSimulator::GSimulator(GSession* session)
 	  NewDocs(100), SwitchRandom(0), NewProfiles(0)
 {
 	ApplyParams();
-	Session->Simulator=this;
 }
 
 
@@ -156,7 +155,7 @@ void GSimulator::ApplyParams(void)
 void GSimulator::StartSimulation(bool create)
 {
 	// Initialize the session and the subjects
-	Session->ReInit();
+	Session->ReInit(pSubject,false);
 	if(!TmpDocs)
 		TmpDocs=new GDoc*[Session->GetMaxObjId(pDoc)+1];
 
@@ -178,7 +177,7 @@ void GSimulator::StartSimulation(bool create)
 		// No subject is selected.
 		RCursor<GSubject> Subjects(Session->GetObjs(pSubject));
 		for(Subjects.Start();!Subjects.End();Subjects.Next())
-			Subjects()->Used=false;
+			Session->SetUsed(Subjects(),false);
 	}
 
 	// Save the new situation if necessary
@@ -217,16 +216,16 @@ bool GSimulator::AddSubject(void)
 	ApplyParams();
 
 	// Randomly mix the subjects in tab
-	GSubject** tab(new GSubject*[Session->GetNbObjs(otSubject)]);
+	GSubject** tab(new GSubject*[Session->GetNbObjs(pSubject)]);
 	Session->GetObjs(tab);
-	Session->GetRandom().RandOrder<GSubject*>(tab,Session->GetNbObjs(otSubject));
+	Session->GetRandom().RandOrder<GSubject*>(tab,Session->GetNbObjs(pSubject));
 
 	// Find the first not used subject having at least NbMinDocsSubject documents and the correct depth.
-	for(ptr=tab,i=Session->GetNbObjs(otSubject)+1,newSubject=0;--i;ptr++)
+	for(ptr=tab,i=Session->GetNbObjs(pSubject)+1,newSubject=0;--i;ptr++)
 	{
-		if((*ptr)->GetMaxDocs(MaxDepth)<NbMinDocsSubject) continue;
+		if((*ptr)->GetNbObjs(pDoc,MaxDepth)<NbMinDocsSubject) continue;
 		if((*ptr)->IsUsed()) continue;
-		if(MaxDepth&&((*ptr)->Depth>MaxDepth)) continue;
+		if(MaxDepth&&((*ptr)->GetDepth()>MaxDepth)) continue;
 		newSubject=(*ptr);
 		break;
 	}
@@ -238,21 +237,21 @@ bool GSimulator::AddSubject(void)
 	if(!newSubject) return(false);
 
 	// Select the subject
-	newSubject->Used=true;
+	Session->SetUsed(newSubject,true);
 	InitSubject(newSubject,true);
 
 	// Copy the selected documents in TmpDocs;
 	if(!TmpDocs)
 		TmpDocs=new GDoc*[Session->GetMaxObjId(pDoc)+1];
-	NbTmpDocs=Session->GetSelectedObjs(TmpDocs);
+	NbTmpDocs=Session->GetUsedObjs(TmpDocs);
 
 	// Number of documents to judged by each profile
 	if(RelOK)
-		maxDocsOK=static_cast<size_t>(static_cast<double>(newSubject->GetNbObjs(otDoc))*NbOK/100);
+		maxDocsOK=static_cast<size_t>(static_cast<double>(newSubject->GetNbUsedObjs(otDoc))*NbOK/100);
 	else
 		maxDocsOK=static_cast<size_t>(NbOK);
 	if(RelKO)
-		maxDocsKO=static_cast<size_t>(static_cast<double>(newSubject->GetNbObjs(otDoc))*NbKO/100);
+		maxDocsKO=static_cast<size_t>(static_cast<double>(newSubject->GetNbUsedObjs(otDoc))*NbKO/100);
 	else
 		maxDocsKO=static_cast<size_t>(NbKO);
 	if(RelH)
@@ -354,7 +353,7 @@ void GSimulator::AddAssessments(void)
 	// Copy the selected documents in TmpDocs;
 	if(!TmpDocs)
 		TmpDocs=new GDoc*[Session->GetMaxObjId(pDoc)+1];
-	NbTmpDocs=Session->GetSelectedObjs(TmpDocs);
+	NbTmpDocs=Session->GetUsedObjs(TmpDocs);
 
 	// Go through all the subjects which are used
 	R::RCursor<GSubject> Subs(Session->GetObjs(pSubject));
@@ -402,12 +401,12 @@ size_t GSimulator::AddProfiles(void)
 	ApplyParams();
 
 	// Randomly mix the subjects in tab
-	GSubject** tab(new GSubject*[Session->GetNbObjs(otSubject)]);
+	GSubject** tab(new GSubject*[Session->GetNbObjs(pSubject)]);
 	Session->GetObjs(tab);
-	Session->GetRandom().RandOrder<GSubject*>(tab,Session->GetNbObjs(otSubject));
+	Session->GetRandom().RandOrder<GSubject*>(tab,Session->GetNbObjs(pSubject));
 
 	// Find the first used subject
-	for(ptr=tab,i=Session->GetNbObjs(otSubject)+1,usedSubject=0;--i;ptr++)
+	for(ptr=tab,i=Session->GetNbObjs(pSubject)+1,usedSubject=0;--i;ptr++)
 	{
 		if(!(*ptr)->IsUsed()) continue;
 		usedSubject=(*ptr);
@@ -426,15 +425,15 @@ size_t GSimulator::AddProfiles(void)
 	// Copy the documents in TmpDocs;
 	if(!TmpDocs)
 		TmpDocs=new GDoc*[Session->GetMaxObjId(pDoc)+1];
-	NbTmpDocs=Session->GetSelectedObjs(TmpDocs);
+	NbTmpDocs=Session->GetUsedObjs(TmpDocs);
 
 	// Number of documents to judged by each profile
 	if(RelOK)
-		maxDocsOK=static_cast<size_t>(static_cast<double>(usedSubject->GetNbObjs(otDoc))*NbOK/100);
+		maxDocsOK=static_cast<size_t>(static_cast<double>(usedSubject->GetNbUsedObjs(otDoc))*NbOK/100);
 	else
 		maxDocsOK=static_cast<size_t>(NbOK);
 	if(RelKO)
-		maxDocsKO=static_cast<size_t>(static_cast<double>(usedSubject->GetNbObjs(otDoc))*NbKO/100);
+		maxDocsKO=static_cast<size_t>(static_cast<double>(usedSubject->GetNbUsedObjs(otDoc))*NbKO/100);
 	else
 		maxDocsKO=static_cast<size_t>(NbKO);
 	if(RelH)
@@ -485,25 +484,25 @@ void GSimulator::PerformDegradation(char what,int nb)
 			if(!TmpDocs)
 				TmpDocs=new GDoc*[Session->GetMaxObjId(pDoc)+1];
 			if(!TmpTopics)
-				TmpTopics=new GTopic*[Session->GetNbObjs(otSubject)+1];
+				TmpTopics=new GTopic*[Session->GetNbObjs(pSubject)+1];
 			return;
 			break;
 
 		case 1:
 			// Re-init the session
-			Session->ReInit();
+			Session->ReInit(pSubject,false);
 
 			// Copy the ideal clustering as the current one
 			BuildIdealTopics();
-			NbTmpDocs=Session->GetSelectedObjs(TmpDocs);
+			NbTmpDocs=Session->GetUsedObjs(TmpDocs);
 			SwitchRandom->RandOrder(TmpDocs,NbTmpDocs);
 			SwitchPos=0;
 			if(nb>0)
 			{
 				// nb splits
 				size_t Nb(nb);
-				if(Nb>Session->GetNbObjs(otTopic))
-					Nb=Session->GetNbObjs(otTopic);
+				if(Nb>Session->GetNbObjs(pTopic))
+					Nb=Session->GetNbObjs(pTopic);
 				Session->GetObjs(TmpTopics,false);
 				SwitchRandom->RandOrder(TmpTopics,Nb);
 				GTopic** ptr(TmpTopics);
@@ -595,15 +594,6 @@ void GSimulator::PerformDegradation(char what,int nb)
 
 
 //------------------------------------------------------------------------------
-void GSimulator::SetManualUsed(GSubject* subject,bool used)
-{
-	subject->Used=used;
-	if(Session->MustSaveResults())
-		Session->GetStorage()->SaveObj(subject);
-}
-
-
-//------------------------------------------------------------------------------
 void GSimulator::InitSubject(GSubject* subject,bool selectdocs)
 {
 	// Number of (social) profiles to create
@@ -621,20 +611,20 @@ void GSimulator::InitSubject(GSubject* subject,bool selectdocs)
 	// Verify that they are enough users -> If not, create new ones
 	if(CreateProfiles)
 	{
-		if(Session->GetNbObjs(pUser)<nbprof+subject->GetNbObjs(otProfile))
+		if(Session->GetNbObjs(pUser)<nbprof+subject->GetNbUsedObjs(otProfile))
 		{
 			size_t maxusers=sizeof(UserNames)/sizeof(char*);
-			size_t newusers=nbprof+subject->GetNbObjs(otProfile)-Session->GetNbObjs(pUser)+1;
+			size_t newusers=nbprof+subject->GetNbUsedObjs(otProfile)-Session->GetNbObjs(pUser)+1;
 			for(size_t i=Session->GetNbObjs(pUser);(--newusers)&&(i<maxusers);i++)
 			{
-				GUser* user(new GUser(Session,cNoRef,UserNames[i],UserNames[i],Session->GetNbObjs(otSubject)));
+				GUser* user(new GUser(Session,cNoRef,UserNames[i],UserNames[i],Session->GetNbObjs(pSubject)));
 				Session->AssignId(user);
 				Session->InsertObj(user);
 			}
 			for(newusers++;--newusers;)
 			{
 				RString Usr("User"+RString::Number(Session->GetNbObjs(pUser)+1));
-				GUser* user=new GUser(Session,cNoRef,Usr,Usr,Session->GetNbObjs(otSubject));
+				GUser* user=new GUser(Session,cNoRef,Usr,Usr,Session->GetNbObjs(pSubject));
 				Session->AssignId(user);
 				Session->InsertObj(user);
 			}
@@ -645,9 +635,9 @@ void GSimulator::InitSubject(GSubject* subject,bool selectdocs)
 	RCursor<GUser> Cur(Session->GetObjs(pUser));
 	for(Cur.Start();(nbprof)&&(!Cur.End());Cur.Next())
 	{
-		if(Cur()->GetPtr(subject->Name,false))
+		if(Cur()->GetPtr(subject->GetName(),false))
 			continue;
-		GProfile* prof(new GProfile(Session,Cur(),ptInterest,subject->Name,nbsocial));
+		GProfile* prof(new GProfile(Session,Cur(),ptInterest,subject->GetName(),nbsocial));
 		Session->AssignId(prof);
 		Session->InsertObj(prof);
 		NewProfiles.InsertPtr(prof);
@@ -662,7 +652,7 @@ void GSimulator::InitSubject(GSubject* subject,bool selectdocs)
 
 	// Compute the number of documents to select for this subject
 	size_t nbdocs(0);
-	size_t subjectdocs(subject->GetMaxDocs(MaxDepth));
+	size_t subjectdocs(subject->GetNbObjs(pDoc,MaxDepth));
 	if(PercNbDocsPerSubject)
 		nbdocs=static_cast<size_t>(NbDocsPerSubject*subjectdocs);
 	else
@@ -676,7 +666,7 @@ void GSimulator::InitSubject(GSubject* subject,bool selectdocs)
 
 	// Select the documents of the subjects in TmpDocs
 	NbTmpDocs=0;
-	subject->FillDocs(TmpDocs,NbTmpDocs,MaxDepth);
+	subject->GetObjs(TmpDocs,NbTmpDocs,MaxDepth);
 	if(nbdocs>NbTmpDocs)
 		nbdocs=NbTmpDocs;
 	else
@@ -688,7 +678,7 @@ void GSimulator::InitSubject(GSubject* subject,bool selectdocs)
 	{
 		if((!MultipleSubjects)&&Session->GetObj(pSubject,*ptr)) continue;
 		Session->InsertObj(subject,*ptr);
-		Session->SetSelected(*ptr,subject,true);
+		Session->SetUsed(*ptr,subject,true);
 	}
 }
 
@@ -704,36 +694,33 @@ void GSimulator::SelectSubjects(void)
 		size_t i;
 
 		// Randomly mix the subjects in tab
-		GSubject** tab(new GSubject*[Session->GetNbObjs(otSubject)]);
+		GSubject** tab(new GSubject*[Session->GetNbObjs(pSubject)]);
 		Session->GetObjs(tab);
-		Session->GetRandom().RandOrder<GSubject*>(tab,Session->GetNbObjs(otSubject));
+		Session->GetRandom().RandOrder<GSubject*>(tab,Session->GetNbObjs(pSubject));
 
 		// Compute the number of subjects to select
 		if(RelSubjects)
-			ToSelect=static_cast<size_t>((static_cast<double>(Session->GetNbObjs(otSubject))*NbSubjects)/100)+1;
+			ToSelect=static_cast<size_t>((static_cast<double>(Session->GetNbObjs(pSubject))*NbSubjects)/100)+1;
 		else
 			ToSelect=static_cast<size_t>(NbSubjects);
-		if(ToSelect>Session->GetNbObjs(otSubject))
-			ToSelect=Session->GetNbObjs(otSubject);
+		if(ToSelect>Session->GetNbObjs(pSubject))
+			ToSelect=Session->GetNbObjs(pSubject);
 
 		// Parse all subjects and select the correct number
-		for(ptr=tab,i=Session->GetNbObjs(otSubject)+1;(--i)&&ToSelect;ptr++)
+		for(ptr=tab,i=Session->GetNbObjs(pSubject)+1;(--i)&&ToSelect;ptr++)
 		{
-			// Suppose the subject is not selected
-			(*ptr)->Used=false;
-
 			// Verify that there is enough documents to select the subject, and the the subject has the right depth
-			if((*ptr)->GetMaxDocs(MaxDepth)<NbMinDocsSubject) continue;
-			if(MaxDepth&&((*ptr)->Depth>MaxDepth)) continue;
+			if((*ptr)->GetNbObjs(pDoc,MaxDepth)<NbMinDocsSubject) continue;
+			if(MaxDepth&&((*ptr)->GetDepth()>MaxDepth)) continue;
 
 			// OK, the subject can be used
-			(*ptr)->Used=true;
+			Session->SetUsed(*ptr,true);
 			ToSelect--;
 		}
 
 		// The rest of the subjects are un-used
 		for(;i--;ptr++)
-			(*ptr)->Used=false;
+			Session->SetUsed(*ptr,false);
 
 		// delete tab;
 		delete[] tab;
@@ -753,7 +740,7 @@ void GSimulator::CreateAssessments(void)
 	size_t maxDocsOK,maxDocsKO,maxDocsH;
 
 	// Copy the selected documents in TmpDocs;
-	NbTmpDocs=Session->GetSelectedObjs(TmpDocs);
+	NbTmpDocs=Session->GetUsedObjs(TmpDocs);
 
 	// Assess documents
 	RCursor<GSubject> Subs(Session->GetObjs(pSubject));
@@ -764,11 +751,11 @@ void GSimulator::CreateAssessments(void)
 
 		// Number of documents to assessed by each profile of the current subject
 		if(RelOK)
-			maxDocsOK=static_cast<size_t>(static_cast<double>(Subs()->GetNbObjs(otDoc))*NbOK/100);
+			maxDocsOK=static_cast<size_t>(static_cast<double>(Subs()->GetNbUsedObjs(otDoc))*NbOK/100);
 		else
 			maxDocsOK=static_cast<size_t>(NbOK);
 		if(RelKO)
-			maxDocsKO=static_cast<size_t>(static_cast<double>(Subs()->GetNbObjs(otDoc))*NbKO/100);
+			maxDocsKO=static_cast<size_t>(static_cast<double>(Subs()->GetNbUsedObjs(otDoc))*NbKO/100);
 		else
 			maxDocsKO=static_cast<size_t>(NbKO);
 		if(RelH)
@@ -853,7 +840,7 @@ template<class cGroup,class cObj,class cCalc>
 	cGroup* grp;
 
 	// Clear current clustering
-	Session->Reset(grouptype);
+	Session->ReInit(static_cast<cGroup*>(0));
 
 	// Go through each subjects
 	R::RCursor<GSubject> Grps(Session->GetObjs(pSubject));
@@ -863,7 +850,7 @@ template<class cGroup,class cObj,class cCalc>
 		Grps()->ClearIdealGroup(grouptype);
 
 		// If the subject has no objects or is not selected -> next one.
-		if((!Grps()->IsUsed())||(!Grps()->GetNbObjs(objtype)))
+		if((!Grps()->IsUsed())||(!Grps()->GetNbUsedObjs(objtype)))
 			continue;
 
 		// Create a new group in groups and associated with the current groups
@@ -873,7 +860,7 @@ template<class cGroup,class cObj,class cCalc>
 		Grps()->AssignIdeal(grp);
 
 		// Go through each object (verify that each object can be assigned only once)
-		RCursor<cObj> Objs=Grps()->GetObjs(static_cast<cObj*>(0));
+		RCursor<cObj> Objs=Grps()->GetUsedObjs(static_cast<cObj*>(0));
 		for(Objs.Start();!Objs.End();Objs.Next())
 			if(!Objs()->GetGroupId())
 				grp->InsertObj(Objs());
@@ -896,7 +883,7 @@ void GSimulator::BuildClass(GSubject* subject,GClass* parent)
 	Session->InsertObj(parent,Class);
 
 	// Build the vector representing its concepts
-	Session->Assign(Class,*subject);
+	Class->Update(*subject);
 
 	// Create sub-classes
 	RNodeCursor<GSubjects,GSubject> Cur(subject);
@@ -933,7 +920,7 @@ void GSimulator::BuildIdealLeafTopics(void)
 	Session->SetDescType(sdNames);
 
 	// Clear current topics clustering
-	Session->Reset(otTopic);
+	Session->ReInit(pTopic);
 
 	// Go through each subjects
 	R::RCursor<GSubject> Grps(Session->GetObjs(pSubject));
@@ -965,7 +952,7 @@ void GSimulator::BuildIdealClasses(void)
 	Session->SetDescType(sdNames);
 
 	// Clear current classes
-	Session->ForceReCompute(otClass);
+	Session->ReInit(pClass);
 	RNodeCursor<GSubjects,GSubject> Top(Session->GetObjs(pSubject,pSubject));
 	for(Top.Start();!Top.End();Top.Next())
 		BuildClass(Top(),0);
@@ -978,7 +965,7 @@ void GSimulator::BuildIdealDocsClasses(void)
 	Session->SetDescType(sdDocs);
 
 	// Clear current classes
-	Session->ForceReCompute(otClass);
+	Session->ReInit(pClass);
 	RNodeCursor<GSubjects,GSubject> Top(Session->GetObjs(pSubject,pSubject));
 	for(Top.Start();!Top.End();Top.Next())
 		BuildClass(Top(),0);

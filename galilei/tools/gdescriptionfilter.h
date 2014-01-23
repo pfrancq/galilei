@@ -36,7 +36,7 @@
 //-----------------------------------------------------------------------------
 // include files for the R Project
 #include <rnumcontainer.h>
-#include <rvectorbool.h>
+#include <rboolvector.h>
 
 
 //-----------------------------------------------------------------------------

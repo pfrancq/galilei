@@ -1,15 +1,14 @@
 SET(galilei_groups_INST_INCLUDES
-	gcommunitycalc.h
 	gsubject.h
 	gsubjects.h
 	ggroup.h
 	ggroup.hh
 	gcommunity.h
 	gtopic.h
-    ggroupdocs.h
+   ggroupdocs.h
 	ggroupprofiles.h
-	gtopiccalc.h    
-    gcommunitycalc.h	
+	gtopiccalc.h
+   gcommunitycalc.h
 )
 
 
@@ -21,5 +20,5 @@ SET(galilei_groups_TARGET_SOURCES
 	ggroupdocs.cpp
 	ggroupprofiles.cpp
 	gtopiccalc.cpp
-	gcommunitycalc.cpp	
+	gcommunitycalc.cpp
 )

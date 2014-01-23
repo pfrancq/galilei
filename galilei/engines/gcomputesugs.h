@@ -47,6 +47,8 @@ namespace GALILEI{
 /**
 * The GComputeSugs class provides a representation for a generic method to
 * compute suggestions.
+*
+* See the documentation related to GPlugIn for more general information.
 * @author Pascal Francq
 * @short Generic Suggestions Computing Method.
 */

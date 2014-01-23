@@ -56,11 +56,6 @@ class GUser : public GObject, public R::RContainer<GProfile,false,true>
 	*/
 	R::RString FullName;
 
-	/**
-	* State of the object.
-	*/
-	tObjState State;
-
 public:
 
 	/**
@@ -77,6 +72,12 @@ public:
     * @return the class name.
     */
 	virtual R::RCString GetClassName(void) const {return("GUser");}
+
+	/**
+	 * Give the type of the object.
+    * @return otUser
+    */
+	static inline tObjType GetType(void) {return(otUser);}
 
 	/**
 	* Compare two users by comparing their identifier.
@@ -111,18 +112,6 @@ public:
 	int Compare(const R::RString& name) const;
 
 	/**
-	* @return the state of the object.
-	*/
-	inline tObjState GetState(void) const {return(State);}
-
-	/**
-	* Set the state of the object. If the object must be delete, its vector is
-	* loaded to delete the references.
-	* @param state           New state.
-	*/
-	void SetState(tObjState state);
-
-	/**
 	* Set the identifier.
 	* @param id             Identifier.
 	*/
@@ -152,7 +141,7 @@ public:
 	R::RString GetFullName(void) const;
 
 	/**
-	* Destruct a user.
+	* Destruct a user. Its profiles are also deleted.
 	*/
 	virtual ~GUser(void);
 

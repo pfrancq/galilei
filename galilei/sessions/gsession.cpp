@@ -135,9 +135,9 @@ catch(...)                                                                     \
 
 
 //------------------------------------------------------------------------------
-const size_t SizeRecDesc=sizeof(size_t)+sizeof(double);
+/*const size_t SizeRecDesc=sizeof(size_t)+sizeof(double);
 const size_t SizeRecStruct=sizeof(size_t)+sizeof(char)+sizeof(size_t)+sizeof(char)+sizeof(size_t);
-const size_t SizeT2=2*sizeof(size_t);
+const size_t SizeT2=2*sizeof(size_t);*/
 
 
 
@@ -149,15 +149,15 @@ const size_t SizeT2=2*sizeof(size_t);
 
 //------------------------------------------------------------------------------
 GSessionMsg::GSessionMsg(GSession* session,tObjType type)
-	: Session(session), Type(type), Meta(otSession)
+	: Session(session), Type(type), DeleteObjs(false)
 {
 
 }
 
 
 //------------------------------------------------------------------------------
-GSessionMsg::GSessionMsg(GSession* session,tObjType type,tObjType meta)
-	: Session(session), Type(type), Meta(meta)
+GSessionMsg::GSessionMsg(GSession* session,tObjType type,bool del)
+	: Session(session), Type(type), DeleteObjs(del)
 {
 
 }
@@ -202,6 +202,27 @@ void GSession::HandlerNotFound(const R::RNotification& /*notification*/)
 
 
 //------------------------------------------------------------------------------
+int GSession::Compare(const GSession& session) const
+{
+	return(CompareIds(Id,session.Id));
+}
+
+
+//------------------------------------------------------------------------------
+int GSession::Compare(size_t id) const
+{
+	return(CompareIds(Id,id));
+}
+
+
+//------------------------------------------------------------------------------
+int GSession::Compare(const R::RString& name) const
+{
+	return(Name.Compare(name));
+}
+
+
+//------------------------------------------------------------------------------
 bool GSession::MustBreak(void)
 {
 	return(ExternBreak);
@@ -228,6 +249,182 @@ void GSession::SetCurrentRandom(int rand)
 {
 	CurrentRandom=rand;
 	Random.Reset(CurrentRandom);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::Init(void)
+{
+	// Create the configuration parameters
+	GSimulator::CreateConfig(this);
+	GObjects<GDoc,hDocs>::Init(this);
+	GObjects<GTopic,hTopics>::Init(this);
+	GObjects<GUser,hUsers>::Init(this);
+	GObjects<GProfile,hProfiles>::Init(this);
+	GObjects<GCommunity,hCommunities>::Init(this);
+	GClasses::Init(this);
+
+	// Create the configuration parameters for the plug-ins
+	R::RCursor<GPlugInManager> Managers(GALILEIApp->GetManagers());
+	for(Managers.Start();!Managers.End();Managers.Next())
+		Managers()->CreateConfig(this);
+
+	// Load the configuration now
+	Load(false,true);
+	for(Managers.Start();!Managers.End();Managers.Next())
+		Managers()->ReadConfig(this);
+	ApplyConfig();
+
+	// This is a valid configuration file
+	ValidConfigFile=true;
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::EmitReInit(tObjType type,bool del)
+{
+	GSessionMsg Msg(this,type,del);
+	PostNotification<GSessionMsg&>(hReInit,Msg);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::ReInit(const GSubject*,bool cleardocs)
+{
+
+	// Clear the users
+	Clear(pUser,true);
+
+	//Clear the topics and classes
+	Clear(pTopic,true);
+	EmitReInit(otTopic,true);
+	Clear(pClass,true);
+	EmitReInit(otClass,true);
+
+	//	 Verify if the document descriptions must be recomputed
+	if(cleardocs)
+	{
+		Clear(pDoc,false);
+		EmitReInit(otDoc,false);
+	}
+
+	// Re-initialize the subjects
+	GSubjects::ReInit();
+	EmitReInit(otSubject,false);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::ReInit(const GDoc*,bool del)
+{
+	// Treat the feedbacks
+	if(del)
+	{
+		// Delete the feedbacks from the profiles
+		RCursor<GProfile> Profiles(GetObjs(pProfile));
+		for(Profiles.Start();!Profiles.End();Profiles.Next())
+			Profiles()->ClearFdbks();
+		if(SaveResults)
+			Storage->Clear(otFdbk);
+		EmitReInit(otFdbk,true);
+	}
+
+	// Clear the other dependencies
+	Clear(pTopic,true);
+	EmitReInit(otTopic,true);
+	Clear(pClass,true);
+	EmitReInit(otClass,true);
+
+	// Clear the documents
+	Clear(pDoc,del);
+	EmitReInit(otDoc,del);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::ReInit(const GUser*)
+{
+	// Delete the feedbacks from the documents
+	RCursor<GDoc> Docs(GetObjs(pDoc));
+	for(Docs.Start();!Docs.End();Docs.Next())
+		Docs()->ClearFdbks();
+	if(SaveResults)
+		Storage->Clear(otFdbk);
+	EmitReInit(otFdbk,true);
+
+	// Clear the other dependencies
+	Clear(pCommunity,true);
+	EmitReInit(otCommunity,true);
+	Clear(pProfile,true);
+	EmitReInit(otProfile,true);
+
+	// Clear the users
+	Clear(pUser,true);
+	EmitReInit(otUser,true);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::ReInit(const GProfile*,bool del)
+{
+	// Treat the feedbacks
+	if(del)
+	{
+		// Delete the feedbacks from the documents
+		RCursor<GDoc> Docs(GetObjs(pDoc));
+		for(Docs.Start();!Docs.End();Docs.Next())
+			Docs()->ClearFdbks();
+		if(SaveResults)
+			Storage->Clear(otFdbk);
+		EmitReInit(otFdbk,true);
+	}
+
+	// Clear the other dependencies
+	Clear(pCommunity,true);
+	EmitReInit(otCommunity,true);
+
+	// Clear the profiles
+	Clear(pProfile,del);
+	EmitReInit(otProfile,del);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::ReInit(const GFdbk*)
+{
+	RCursor<GDoc> Docs(GetObjs(pDoc));
+	for(Docs.Start();!Docs.End();Docs.Next())
+		Docs()->ClearFdbks();
+	RCursor<GProfile> Profiles(GetObjs(pProfile));
+	for(Profiles.Start();!Profiles.End();Profiles.Next())
+		Profiles()->ClearFdbks();
+	if(SaveResults)
+		Storage->Clear(otFdbk);
+	EmitReInit(otFdbk,true);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::ReInit(const GTopic*)
+{
+	Clear(pTopic,true);
+	EmitReInit(otTopic,true);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::ReInit(const GClass*)
+{
+	Clear(pClass,true);
+	EmitReInit(otClass,true);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::ReInit(const GCommunity*)
+{
+	Clear(pCommunity,true);
+	EmitReInit(otCommunity,true);
 }
 
 
@@ -420,301 +617,6 @@ void GSession::ComputeTrust(GSlot* rec)
 
 
 //------------------------------------------------------------------------------
-int GSession::Compare(const GSession& session) const
-{
-	return(CompareIds(Id,session.Id));
-}
-
-
-//------------------------------------------------------------------------------
-int GSession::Compare(const GSession* session) const
-{
-	return(CompareIds(Id,session->Id));
-}
-
-
-//------------------------------------------------------------------------------
-int GSession::Compare(size_t id) const
-{
-	return(CompareIds(Id,id));
-}
-
-
-//------------------------------------------------------------------------------
-int GSession::Compare(const R::RString& name) const
-{
-	return(Name.Compare(name));
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::Reset(tObjType type)
-{
-	switch(type)
-	{
-		case otDoc:
-			ClearRefs(this,otDoc);
-			ClearIndex(this,otDoc);
-			GObjects<GDoc,hDocs>::Clear(pDoc);
-			if(SaveResults)
-				Storage->Clear(otDoc);
-			break;
-		case otFdbk:
-		{
-			RCursor<GDoc> Docs(GetObjs(pDoc));
-			for(Docs.Start();!Docs.End();Docs.Next())
-				Docs()->ClearFdbks();
-			RCursor<GProfile> Profiles(GetObjs(pProfile));
-			for(Profiles.Start();!Profiles.End();Profiles.Next())
-				Profiles()->ClearFdbks();
-			if(SaveResults)
-				Storage->Clear(otFdbk);
-			break;
-		}
-		case otUser:
-		{
-			GObjects<GUser,hUsers>::Clear(pUser);
-			if(SaveResults)
-				Storage->Clear(otUser);
-			break;
-		}
-		case otProfile:
-		{
-			ClearRefs(this,otProfile);
-			ClearIndex(this,otProfile);
-			GObjects<GProfile,hProfiles>::Clear(pProfile);
-			if(SaveResults)
-			{
-				Storage->Clear(otProfile);
-				ResetFile(otProfile,otDescFile);
-				ResetFile(otProfile,otIndexFile);
-			}
-			break;
-		}
-		case otCommunity:
-			ClearRefs(this,otCommunity);
-			ClearIndex(this,otCommunity);
-			GObjects<GCommunity,hCommunities>::Clear(pCommunity);
-			if(SaveResults)
-			{
-				Storage->Clear(otCommunity);
-				ResetFile(otCommunity,otDescFile);
-				ResetFile(otCommunity,otIndexFile);
-			}
-			break;
-		case otTopic:
-			ClearRefs(this,otTopic);
-			ClearIndex(this,otTopic);
-			GObjects<GTopic,hTopics>::Clear(pTopic);
-			if(SaveResults)
-			{
-				Storage->Clear(otTopic);
-				ResetFile(otTopic,otDescFile);
-				ResetFile(otTopic,otIndexFile);
-			}
-			break;
-		case otClass:
-			ClearRefs(this,otClass);
-			ClearIndex(this,otClass);
-			GClasses::Clear();
-			if(SaveResults)
-			{
-				Storage->Clear(otClass);
-				ResetFile(otClass,otDescFile);
-				ResetFile(otClass,otIndexFile);
-			}
-			break;
-		case otSubject:
-			GSubjects::Clear();
-			break;
-		default:
-			mThrowGException(GetObjType(type,true,true)+" are not managed");
-	}
-
-	// Send a notification
-	GSessionMsg Msg(this,type);
-	PostNotification<GSessionMsg&>("Reset",Msg);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::ResetFile(tObjType type,tObjType meta)
-{
-	switch(type)
-	{
-		case otDoc:
-			switch(meta)
-			{
-				case otDescFile:
-					if(GObjects<GDoc,hDocs>::Desc)
-						GObjects<GDoc,hDocs>::Desc->Clear();
-					break;
-				case otTreeFile:
-					if(GObjects<GDoc,hDocs>::Tree)
-						GObjects<GDoc,hDocs>::Tree->Clear();
-					break;
-				case otIndexFile:
-					if(GObjects<GDoc,hDocs>::Index)
-						GObjects<GDoc,hDocs>::Index->Clear();
-					break;
-				default:
-					mThrowGException(GetObjType(meta,true,true)+" is not a valid file type for documents");
-			}
-			break;
-
-		case otProfile:
-			switch(meta)
-			{
-				case otDescFile:
-					if(GObjects<GProfile,hProfiles>::Desc)
-						GObjects<GProfile,hProfiles>::Desc->Clear();
-					break;
-				case otIndexFile:
-					if(GObjects<GProfile,hProfiles>::Index)
-						GObjects<GProfile,hProfiles>::Index->Clear();
-					break;
-				default:
-					mThrowGException(GetObjType(meta,true,true)+" is not a valid file type for profiles");
-			}
-			break;
-
-		case otCommunity:
-			switch(meta)
-			{
-				case otDescFile:
-					if(GObjects<GCommunity,hCommunities>::Desc)
-						GObjects<GCommunity,hCommunities>::Desc->Clear();
-					break;
-				case otIndexFile:
-					if(GObjects<GCommunity,hCommunities>::Index)
-						GObjects<GCommunity,hCommunities>::Index->Clear();
-					break;
-				default:
-					mThrowGException(GetObjType(meta,true,true)+" is not a valid file type for communities");
-			}
-			break;
-
-		case otTopic:
-			switch(meta)
-			{
-				case otDescFile:
-					if(GObjects<GTopic,hTopics>::Desc)
-						GObjects<GTopic,hTopics>::Desc->Clear();
-					break;
-				case otIndexFile:
-					if(GObjects<GTopic,hTopics>::Index)
-						GObjects<GTopic,hTopics>::Index->Clear();
-					break;
-				default:
-					mThrowGException(GetObjType(meta,true,true)+" is not a valid file type for topics");
-			}
-			break;
-
-		case otClass:
-			switch(meta)
-			{
-				case otDescFile:
-					if(GObjects<GClass,hClasses>::Desc)
-						GObjects<GClass,hClasses>::Desc->Clear();
-					break;
-				case otIndexFile:
-					if(GObjects<GClass,hClasses>::Index)
-						GObjects<GClass,hClasses>::Index->Clear();
-					break;
-				default:
-					mThrowGException(GetObjType(meta,true,true)+" is not a valid file type for classes");
-			}
-			break;
-
-		default:
-			mThrowGException(GetObjType(type,true,true)+" have no files associated");
-	}
-
-		// Send a notification
-	GSessionMsg Msg(this,type,meta);
-	PostNotification<GSessionMsg&>("ResetFile",Msg);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::ForceReCompute(tObjType type)
-{
-	switch(type)
-	{
-		case otDoc:
-		{
-			// Clear the description of the documents -> Also profiles and topics
-			RCursor<GDoc> Doc(GetObjs(pDoc));
-			for(Doc.Start();!Doc.End();Doc.Next())
-			{
-				Doc()->ClearInfos(SaveResults);
-				Doc()->ClearTree(SaveResults);
-				if(SaveResults)
-					Storage->SaveObj(Doc());
-			}
-			if(SaveResults)
-			{
-				ResetFile(otDoc,otDescFile);
-				ResetFile(otDoc,otIndexFile);
-				ResetFile(otDoc,otTreeFile);
-			}
-			ClearRefs(this,otDoc);
-			ClearIndex(this,otDoc);
-			ForceReCompute(otTopic);
-			ForceReCompute(otProfile);
-			ForceReCompute(otClass);
-			break;
-		}
-		case otTopic:
-		{
-			// Delete the topics
-			Reset(otTopic);
-			break;
-		}
-		case otProfile:
-		{
-			// Clear the description of the documents -> Also communities
-			RCursor<GProfile> Profile(GetObjs(pProfile));
-			for(Profile.Start();!Profile.End();Profile.Next())
-			{
-				Profile()->ClearInfos(SaveResults);
-				if(SaveResults)
-					Storage->SaveObj(Profile());
-			}
-			if(SaveResults)
-			{
-				ResetFile(otProfile,otDescFile);
-				ResetFile(otProfile,otIndexFile);
-			}
-			ClearRefs(this,otProfile);
-			ClearIndex(this,otProfile);
-			ForceReCompute(otCommunity);
-			break;
-		}
-		case otCommunity:
-		{
-			// Delete the communities
-			Reset(otCommunity);
-			break;
-		}
-		case otClass:
-		{
-			// Delete the classes
-			Reset(otClass);
-			break;
-		}
-		default:
-			mThrowGException(GetObjType(type,true,true)+" are not allowed");
-	}
-
-	// Send a notification
-	GSessionMsg Msg(this,type);
-	PostNotification<GSessionMsg&>("ForceReCompute",Msg);
-}
-
-
-
-//------------------------------------------------------------------------------
 size_t GSession::GetNbObjs(tObjType type) const
 {
 	switch(type)
@@ -734,7 +636,7 @@ size_t GSession::GetNbObjs(tObjType type) const
 		case otTopic:
 			return(GObjects<GTopic,hTopics>::Objects.GetNb());
 		case otClass:
-			return(GClasses::Objects.GetNb());
+			return(GetNbObjs(pClass));
 		case otSubject:
 			return(GetNbObjs(pSubject));
 		default:
@@ -769,9 +671,12 @@ size_t GSession::GetMaxObjId(tObjType type) const
 				return(0);
 			return(GObjects<GTopic,hTopics>::Objects[GObjects<GTopic,hTopics>::Objects.GetMaxPos()]->GetId());
 		case otClass:
-			if(!GClasses::Objects.GetNb())
-				return(0);
-			return(GClasses::Objects[GClasses::Objects.GetMaxPos()]->GetId());
+			 return(GetMaxObjId(pClass));
+		case otSubject:
+			 const_cast<GSession*>(this)->LoadObjs(pSubject);
+			 if(!Subjects.GetNb())
+				  return(0);
+			 return(Subjects[Subjects.GetMaxPos()]->GetId());
 		default:
 			mThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
@@ -786,9 +691,17 @@ size_t GSession::GetMaxObjPos(tObjType type) const
 		case otConcept:
 			return(Concepts.GetMaxPos());
 		case otDoc:
-			return(GObjects<GDoc,hDocs>::Objects.GetMaxPos());
+			return(GetMaxObjPos(pDoc));
 		case otTopic:
-			return(GObjects<GTopic,hTopics>::Objects.GetMaxPos());
+			return(GetMaxObjPos(pTopic));
+		case otClass:
+			return(GetMaxObjPos(pClass));
+		case otProfile:
+			return(GetMaxObjPos(pProfile));
+		case otUser:
+			return(GetMaxObjPos(pUser));
+		case otCommunity:
+			return(GetMaxObjPos(pCommunity));
 		default:
 			mThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
@@ -803,7 +716,7 @@ GObject* GSession::GetObj(tObjType type,size_t id,bool null)
 		case otConcept:
 			return(Concepts[id]);
 		case otConceptType:
-			return(GetConceptType(id,null));
+			return(GetObj(pConceptType,id,null));
 		case otDoc:
 			return(GetObj(pDoc,id,null));
 		case otUser:
@@ -814,6 +727,8 @@ GObject* GSession::GetObj(tObjType type,size_t id,bool null)
 			return(GetObj(pCommunity,id,null));
 		case otTopic:
 			return(GetObj(pTopic,id,null));
+		case otClass:
+			return(GetObj(pClass,id,null));
 		default:
 			mThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
@@ -853,6 +768,7 @@ GSimulator* GSession::GetSimulator(void) const
 	if(!Simulator)
 	{
 		const_cast<GSession*>(this)->Simulator=new GSimulator(const_cast<GSession*>(this));
+		const_cast<GSession*>(this)->Simulator->Session=const_cast<GSession*>(this);
 		Simulator->ApplyParams();
 	}
 	return(Simulator);
@@ -910,34 +826,6 @@ void GSession::GroupProfiles(GSlot* rec)
 
 
 //------------------------------------------------------------------------------
-void GSession::Init(void)
-{
-	// Create the configuration parameters
-	GSimulator::CreateConfig(this);
-	GObjects<GDoc,hDocs>::Init(this);
-	GObjects<GTopic,hTopics>::Init(this);
-	GObjects<GUser,hUsers>::Init(this);
-	GObjects<GProfile,hProfiles>::Init(this);
-	GObjects<GCommunity,hCommunities>::Init(this);
-	GClasses::Init(this);
-
-	// Create the configuration parameters for the plug-ins
-	R::RCursor<GPlugInManager> Managers(GALILEIApp->GetManagers());
-	for(Managers.Start();!Managers.End();Managers.Next())
-		Managers()->CreateConfig(this);
-
-	// Load the configuration now
-	Load(false,true);
-	for(Managers.Start();!Managers.End();Managers.Next())
-		Managers()->ReadConfig(this);
-	ApplyConfig();
-
-	// This is valid configuration file
-	ValidConfigFile=true;
-}
-
-
-//------------------------------------------------------------------------------
 bool GSession::InsertFdbk(size_t profid,size_t docid,tFdbkType fdbk,R::RDate done,bool load)
 {
 	if(fdbk==ftUnknown)
@@ -963,19 +851,6 @@ void GSession::RequestMetaEngine(const R::RString query)
 {
 	GMetaEngine* MetaEngine(GALILEIApp->GetCurrentPlugIn<GMetaEngine>("MetaEngine"));
 	MetaEngine->Request(query);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::ReInit(void)
-{
-	// Clear feedbacks
-	Reset(otFdbk);
-
-	Reset(otCommunity);
-	Reset(otProfile);
-	Reset(otUser);
-	GSubjects::ReInit();
 }
 
 
@@ -1113,18 +988,6 @@ bool GSession::IsDefined(const RContainer<GVector,true,true>& vectors)
 		if(Vector()->IsDefined())
 			return(true);
 	return(false);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::Assign(GClass* theclass,GDescription& desc)
-{
-	theclass->Update(desc);
-//	if(SaveResults)
-//	{
-//		theclass->SaveDesc();
-//		Storage->SaveObj(theclass);
-//	}
 }
 
 

@@ -36,7 +36,7 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rnumcontainer.h>
-#include <rvectorbool.h>
+#include <rboolvector.h>
 
 
 //-----------------------------------------------------------------------------
@@ -48,6 +48,44 @@
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
+//-----------------------------------------------------------------------------
+/**
+ * The GDescriptionSetData provides a representation for a piece of data
+ * associated to a GDescriptionSet. In practice, methods that compute some
+ * data based on a description set create their own class. This inherited class
+ * is responsible to set the member variable Dirty to false once a computation
+ * is done.
+ * @short Description Set Data
+ */
+class GDescriptionSetData
+{
+protected:
+
+   /**
+    * Must the data be recomputed.
+    */
+   bool Dirty;
+
+public:
+	/**
+	 * Construct the data.
+    * @param session        Session.
+    */
+	GDescriptionSetData(GSession* session);
+
+	 /**
+	  * Define if the data is dirty or not.
+	  */
+	 bool IsDirty(void) const {return(Dirty);}
+
+	/**
+	 * Destructor.
+    */
+	virtual ~GDescriptionSetData(void);
+
+	friend class GDescriptionSet;
+};
+
 
 //-----------------------------------------------------------------------------
 /**
@@ -58,6 +96,7 @@ namespace GALILEI{
  */
 class GDescriptionSet
 {
+private:
    /**
     * The session.
     */
@@ -68,30 +107,10 @@ class GDescriptionSet
     */
    R::RContainer<const GDescription,false,false> Set;
 
-   /**
-    * The inverse frequency factors.
-    */
-   R::RNumContainer<double,false> IF;
-
-   /**
-    * The number of references of the different type.
-    */
-   R::RNumContainer<size_t,false> Refs;
-
-   /**
-    * Must the factors be recomputed.
-    */
-   bool Dirty;
-
-   /**
-    * Temporary vector.
-    */
-   R::RVectorBool tmpTypes;
-
-   /**
-    * Temporary vector.
-    */
-   R::RVectorBool tmpConcepts;
+	/**
+	 * Data associated to a description set.
+	 */
+	GDescriptionSetData* Data;
 
 public:
 
@@ -117,14 +136,30 @@ public:
      */
     void InsertDescription(const GDescription* desc);
 
-    /**
-     * Compute the inverse frequency factors for the set of description. In
-     * practice, it is only recomputed when the set changed.
-     * @param conceptid     Identifier of the concept.
-     * @return the inverse frequency factor for a given concept.
+	 /**
+	  * Get the data associated with the set.
+     * @return a pointer to the data (or null if no data is assigned).
      */
-    double GetIF(size_t conceptid);
+	 GDescriptionSetData* GetData(void) const {return(Data);}
+
+	 /**
+	  * Assign a data with the set. The description set is responsible for the
+	  * deallocation of the last data assigned.
+     * @param data          Data to assign.
+     */
+	 void SetData(GDescriptionSetData* data);
+
+	 /**
+	  * Get a cursor over the descriptions.
+	  */
+	 R::RCursor<const GDescription> GetDescriptions(void) const;
+
+	 /**
+	  * Destructor. If a data is associated to the set, it is deleted.
+     */
+	 ~GDescriptionSet(void);
 };
+
 
 }  //-------- End of namespace GALILEI ----------------------------------------
 

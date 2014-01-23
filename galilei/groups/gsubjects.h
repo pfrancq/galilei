@@ -55,7 +55,14 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
- * The GSubjects provides just a tree of GSubject.
+ * The GSubjects provides a representation for a hierarchy of subjects
+ * (GSubject).
+ *
+ * This class is used for validation purposes. It allows to associate documents
+ * and profiles to ideal groups and to compare them to computed groups (topics
+ * for documents and communities for profiles).
+ *
+ * It is possible to use some documents and subjects only.
  * @author Pascal Francq.
  * @short Subjects
  */
@@ -63,20 +70,27 @@ class GSubjects : virtual GKB, public R::RTree<GSubjects,GSubject,true>
 {
     using R::RTree<GSubjects,GSubject,true>::Clear;
 
+protected:
+
 	/**
 	 * Container of subjects ordered by identifier.
 	 */
 	R::RContainer<GSubject,false,true> Subjects;
 
 	/**
-	 * Container of selected documents.
+	 * Container of selected subjects ordered by identifier.
 	 */
-	R::RContainer<GDoc,false,true> SelectedDocs;
+	R::RContainer<GSubject,false,true> UsedSubjects;
+
+	/**
+	 * Container of used documents.
+	 */
+	R::RContainer<GDoc,false,true> UsedDocs;
 
 	/**
 	 * Document status (selected or not).
 	 */
-	R::RVectorBool DocsStatus;
+	R::RBoolVector DocsStatus;
 
 	/**
 	 * Subjects for the documents (the identifier of the document provides the
@@ -100,6 +114,8 @@ class GSubjects : virtual GKB, public R::RTree<GSubjects,GSubject,true>
 	 */
 	tSubjectDesc DescType;
 
+protected:
+
 	/**
 	* Construct a tree of subjects.
 	*/
@@ -112,10 +128,8 @@ public:
 	 * be called when the subjects are loaded from a storage.
     * @param obj            Pseudo-parameter.
 	 * @param nbsubjects     Number of subjects.
-    * @param nbdocs         Number of documents.
-    * @param nbprofiles     Number of profiles.
     */
-	void Init(const GSubject* obj,size_t nbsubjects,size_t nbdocs,size_t nbprofiles);
+	void Init(const GSubject* obj,size_t nbsubjects);
 
 protected:
 
@@ -143,7 +157,7 @@ public:
 	size_t GetMaxDepth(void) const;
 
 	/**
-	 * Get the total number of objects.
+	 * Get the total number of subjects.
 	  @param obj             Pseudo-parameter.
     */
 	size_t GetNbObjs(const GSubject* obj) const;
@@ -197,11 +211,11 @@ public:
 	void InsertObj(GSubject* to,GSubject* subject);
 
 	/**
-	* Compute the number of subjects of a given type (otProfile or otDoc).
+	* Compute the number of used object of a given type (otProfile or otDoc).
 	* @param obj             Pseudo-parameter.
 	* @param type            Type.
 	*/
-	size_t GetNbObjs(const GSubject* obj,tObjType type) const;
+	size_t GetNbUsedObjs(tObjType type) const;
 
 	/**
 	* Get the number of subjects associated with a given document.
@@ -228,11 +242,21 @@ public:
 	const GSubject* GetObj(const GSubject* obj,const GDoc* doc,bool one=true) const;
 
 	/**
+	 * Select or deselect a subject.
+	 * @param subject        Subject.
+    * @param selected       Must the document be selected.
+	 *
+	 * If a subject is deselected, all the documents attached are automatically
+	 * deselected. The inverse is not true.
+    */
+	void SetUsed(GSubject* subject,bool select);
+
+	/**
 	 * Look if a document is selected or not.
     * @param doc            Document.
     * @return true if the document is selected.
     */
-	inline bool IsSelected(const GDoc* doc) const {return(DocsStatus[doc->GetId()]);}
+	bool IsUsed(const GDoc* doc) const;
 
 	/**
 	* Fill a given array with all the selected documents. The array must be
@@ -242,13 +266,13 @@ public:
 	* @param docs            Pointer to the array.
 	* @returns Size of the data copied in the array.
 	*/
-	size_t GetSelectedObjs(GDoc** docs);
+	size_t GetUsedObjs(GDoc** docs);
 
 	/**
 	 * Get a cursor over the selected documents.
     * @param obj             Pseudo-parameter.
     */
-	R::RCursor<GDoc> GetSelectedObjs(const GDoc* obj) const;
+	R::RCursor<GDoc> GetUsedObjs(const GDoc* obj) const;
 
 	/**
 	* Look if a document is in the parent subject.
@@ -285,7 +309,7 @@ public:
 	 * loaded). A notification oeDeselected is generated for the document if it
 	 * isn't selected anymore.
     */
-	void SetSelected(GDoc* doc,GSubject* subject,bool select);
+	void SetUsed(GDoc* doc,GSubject* subject,bool select);
 
 	/**
 	* Get the subject of a given profile.
@@ -316,15 +340,17 @@ public:
 	void SetDescType(tSubjectDesc type);
 
 	/**
-	 * Test if the subjects are well-formed.
+	 * Repair the subjects. It practice, it performs the following modifications:
+	 * - All leaf subjects without document associated are removed.
+	 * - If a subject has associated documents and child subjects, a new child
+	 *   subject is created and the documents are transfered to it.
 	 */
-	void TestSubjects(void);
+	void Repair(void);
 
 	friend class R::RTree<GSubjects,GSubject,true>;
 	friend class R::RNode<GSubjects,GSubject,true>;
 	friend class R::RNodeCursor<GSubjects,GSubject>;
 	friend class GSubject;
-	friend class GSession;
 };
 
 

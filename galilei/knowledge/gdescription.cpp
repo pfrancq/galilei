@@ -226,19 +226,6 @@ void GDescription::Normalize(void)
 
 
 //------------------------------------------------------------------------------
-void GDescription::MultiplyIF(GDescriptionSet& set)
-{
-	RCursor<GVector> Vector(GetVectors());
-	for(Vector.Start();!Vector.End();Vector.Next())
-	{
-		RCursor<GConceptRef> ptr(Vector()->GetRefs());
-		for(ptr.Start();!ptr.End();ptr.Next())
-			(*ptr())*=set.GetIF(ptr()->GetConcept()->GetId());
-	}
-}
-
-
-//------------------------------------------------------------------------------
 GDescription& GDescription::operator=(const GDescription& desc)
 {
 	if(Vectors)

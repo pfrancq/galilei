@@ -77,7 +77,8 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GMatrixMeasure::GMatrixMeasure(GSession* session,GPlugInFactory* fac,tObjType lines,tObjType cols,bool sym)
-	: RObject(fac->GetName()), GMeasure(session,fac), Type(Full), Symmetric(sym), Matrix(0), Storage(),
+	: RObject(fac->GetMng()->GetName()+"|"+fac->GetList()+"|"+fac->GetName()),
+	  GMeasure(session,fac), Type(Full), Symmetric(sym), Matrix(0), Storage(),
 	  Lines(lines), Cols(cols)
 {
 	if(Symmetric&&(Lines!=Cols))
@@ -306,6 +307,7 @@ void GMatrixMeasure::Init(void)
 		else
 			MaxIdCol=0;
 	}
+
 	ChangeSize=false;   // Suppose matrix has the correct size.
 	DirtyFile=false;    // Suppose the matrix is OK in the storage.
 	DirtyMem=false;     // Suppose the matrix is OK in memory.
@@ -313,7 +315,7 @@ void GMatrixMeasure::Init(void)
 
 
 //------------------------------------------------------------------------------
-void GMatrixMeasure::ReInit(void)
+void GMatrixMeasure::Reset(void)
 {
 	if(InMemory)
 	{
@@ -555,6 +557,8 @@ void GMatrixMeasure::InitMatrix(void)
 	else
 	{
 		LoadStorage=false;
+		MaxIdLine=Session->GetMaxObjId(Lines);
+		MaxIdCol=Session->GetMaxObjId(Cols);
 		InitLine=MaxIdLine;
 		InitCol=MaxIdCol;
 	}

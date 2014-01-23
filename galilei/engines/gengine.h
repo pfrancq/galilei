@@ -58,6 +58,7 @@ namespace GALILEI{
 * -# Make a direct search in the actual corpus of the session.
 * -# Call an external engine (for example Google Search) and process the
 *    results.
+*
 * Each time a engine wants to add a results, it must call the AddResult methods
 * of GMetaEngine calling the engine. One of the method adds an document already
 * known by the current session, the other one an unknown document.
@@ -65,7 +66,9 @@ namespace GALILEI{
 * respect the constraint: \f$0\leq ranking \leq 1\f$. Otherwise, an exception
 * is generated. This constraint ensures that each engine normalizes its
 * rankings. Without this normalization, rankings from different engines cannot
-*  be compared.
+* be compared.
+*
+* See the documentation related to GPlugIn for more general information.
 * @short Generic Search Engine
 */
 class GEngine : public GPlugIn

@@ -111,7 +111,7 @@ GToken* GDocAnalyze::CreateToken(const R::RString& token,tTokenType type)
 GConcept* GDocAnalyze::GetDefaultText(void)
 {
 	if(!DefaultText)
-		DefaultText=Session->InsertConcept(Session->GetInsertConceptType(ccText,"text block","A block of text"),"*");
+		DefaultText=Session->InsertObj(pConcept,Session->GetObj(pConceptType,ccText,"text block","A block of text"),"*");
 	return(DefaultText);
 }
 
@@ -123,22 +123,22 @@ GConceptType* GDocAnalyze::GetDCMI(void)
 	if(!DCMI)
 	{
 		// Verify that all concepts are OK.
-		DCMI=Session->GetInsertConceptType(ccMetadata,"http://purl.org/dc/elements/1.1","Dublin Core Metadata Initiative (DMCI)");
-		Session->InsertConcept(DCMI,"contributor");
-		Session->InsertConcept(DCMI,"coverage");
-		Session->InsertConcept(DCMI,"creator");
-		Session->InsertConcept(DCMI,"date");
-		Session->InsertConcept(DCMI,"description");
-		Session->InsertConcept(DCMI,"format");
-		Session->InsertConcept(DCMI,"identifier");
-		Session->InsertConcept(DCMI,"language");
-		Session->InsertConcept(DCMI,"publisher");
-		Session->InsertConcept(DCMI,"relation");
-		Session->InsertConcept(DCMI,"rights");
-		Session->InsertConcept(DCMI,"source");
-		Session->InsertConcept(DCMI,"subject");
-		Session->InsertConcept(DCMI,"title");
-		Session->InsertConcept(DCMI,"type");
+		DCMI=Session->GetObj(pConceptType,ccMetadata,"http://purl.org/dc/elements/1.1","Dublin Core Metadata Initiative (DMCI)");
+		Session->InsertObj(pConcept,DCMI,"contributor");
+		Session->InsertObj(pConcept,DCMI,"coverage");
+		Session->InsertObj(pConcept,DCMI,"creator");
+		Session->InsertObj(pConcept,DCMI,"date");
+		Session->InsertObj(pConcept,DCMI,"description");
+		Session->InsertObj(pConcept,DCMI,"format");
+		Session->InsertObj(pConcept,DCMI,"identifier");
+		Session->InsertObj(pConcept,DCMI,"language");
+		Session->InsertObj(pConcept,DCMI,"publisher");
+		Session->InsertObj(pConcept,DCMI,"relation");
+		Session->InsertObj(pConcept,DCMI,"rights");
+		Session->InsertObj(pConcept,DCMI,"source");
+		Session->InsertObj(pConcept,DCMI,"subject");
+		Session->InsertObj(pConcept,DCMI,"title");
+		Session->InsertObj(pConcept,DCMI,"type");
 	}
 	return(DCMI);
 }
@@ -148,7 +148,7 @@ GConceptType* GDocAnalyze::GetDCMI(void)
 GConcept* GDocAnalyze::GetDefaultURI(void)
 {
 	if(!DefaultURI)
-		DefaultURI=Session->InsertConcept(Session->GetInsertConceptType(ccLink,"URI","Uniform Resource Identifier"),"*");
+		DefaultURI=Session->InsertObj(pConcept,Session->GetObj(pConceptType,ccLink,"URI","Uniform Resource Identifier"),"*");
 	return(DefaultURI);
 }
 
@@ -335,7 +335,7 @@ void GDocAnalyze::ExtractText(const R::RString& text,tTokenType type,double weig
 void GDocAnalyze::ExtractDCMI(const R::RString& element,const R::RString& value,size_t pos,size_t depth,size_t spos)
 {
 	// Find the vector corresponding to the concept
-	GConcept* Metadata(GetDCMI()->GetConcept(element));
+	GConcept* Metadata(GetDCMI()->GetObj(pConcept,element,true));
 	if(!Metadata)
 		mThrowGException("'"+element+"' is not a valid DCMI element");
 	ExtractText(value,Metadata,pos,depth,spos);
@@ -700,34 +700,6 @@ void GDocAnalyze::Analyze(GDoc* doc)
 			Tree.Print();
 	}
 	doc->Update(Lang,Description,Tree);
-	//doc->Update(Lang,Description,ram||(!Save),DelRefs);
-
-	// Save the information related to the object
-//	if(Save)
-//	{
-//		if(doc->IsDefined())
-//			doc->SaveDesc();
-//		if(Session->DoCreateTree(pDoc))
-//			Session->SaveTree(pDoc,Tree,doc->StructId,doc->Id);
-//		Session->Storage->SaveObj(doc);
-//		doc->SetState(osSaved);
-//	}
-//
-//	// Must the document be saved in RAM ?
-//	if(!ram)
-//	{
-//		// If not RAM -> release the description
-//		doc->ReleaseVectors();
-//	}
-//	else
-//	{
-//		// If Yes -> Store the tree if necessary
-//		if(!Save)
-//			doc->SetTree(Tree);
-//	}
-
-	// Send a notification
-	R::NotificationCenter.PostNotification<GDocAnalyze*>("DocAnalyzed",this);
 }
 
 

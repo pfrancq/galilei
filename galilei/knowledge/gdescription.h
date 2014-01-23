@@ -184,10 +184,30 @@ public:
 	void Normalize(void);
 
 	/**
-	* Multiply each weight by its inverse frequency factor based on a given set.
-	* @param set            Document Set.
-	*/
-	void MultiplyIF(GDescriptionSet& set);
+	 * Print the content of the description.
+	 * @tparam S             Stream class that implements the << operator.
+	 * @param stream         Stream.
+	 * @param name           Name of the vector.
+	 * @param format         Format used to print the number. By default, it is "%E".
+	 * @param colsize        Size of a column. By default, it is 12.
+	 */
+	template<class S> void Print(S& stream,const R::RString& name,const char* format="%E",size_t colsize=12) const
+	{
+		R::RString Spaces;
+		for(size_t i=0;i<name.GetLen()+1;i++)
+			Spaces+=" ";
+		size_t NamePos(Vectors->GetNb()/2);
+		size_t i;
+		R::RConstCursor<GVector> Vector(GetVectors());
+		for(Vector.Start(),i=0;!Vector.End();Vector.Next(),i++)
+		{
+			if(NamePos==i)
+				stream<<name<<"=";
+			else
+				stream<<Spaces;
+			Vector()->Print(stream,"",format,colsize);
+		}
+	}
 
 	/**
 	 * Assignment operator for the descriptions.

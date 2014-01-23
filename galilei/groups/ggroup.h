@@ -54,14 +54,6 @@ namespace GALILEI{
 * @tparam cObj                Object contained.
 * @tparam cGroup              Group.
 * @tparam type                Type of the object.
-* @tparam hCreate             Notification to post when the object is created.
-* @tparam hNew                Notification to post when the object is created in
-*                             memory.
-* @tparam hDel                Notification to post when the object is deleted
-*                             from memory.
-* @tparam hUpdate             Notification to post when the object will be
-*                             updated.
-* @tparam hModified           Notification to post when the object was modified.
 * @author Pascal Francq
 * @short Generic Group.
 */
@@ -69,10 +61,9 @@ template<class cObj,class cGroup,tObjType type>
 	class GGroup : protected R::RContainer<cObj,false,true>, public GDescriptionObject<cGroup>
 {
 public:
+	using GDescriptionObject<cGroup>::Clear;
 	using GDescriptionObject<cGroup>::Id;
 	using GDescriptionObject<cGroup>::Copy;
-	using GDescriptionObject<cGroup>::AddRefs;
-	using GDescriptionObject<cGroup>::DelRefs;
 	using GDescriptionObject<cGroup>::State;
 	using GDescriptionObject<cGroup>::Session;
 
@@ -183,6 +174,14 @@ public:
 	void InsertObj(cObj* obj);
 
 	/**
+	* Insert a set of  objects in the group. If the group is a Group, the
+	* method modifies the assignment of the object (the 'Group' pointer).
+	* of the object is set to null).
+	* @param objs           Objects to insert.
+	*/
+	void InsertObjs(R::RCursor<cObj> objs);
+
+	/**
 	* Insert a object in the group. This signature is needed by a generic
 	* k-Means.
 	* @param obj            Object to insert.
@@ -239,8 +238,10 @@ public:
 
 	/**
 	* Clear the vector representing the group.
+	* @param disk            Clear the reference to the corresponding block on
+	*                        disk.
 	*/
-	void Clear(void);
+	void Clear(bool disk);
 
 	/**
 	* Compute the number of objects of a given group that are also in a

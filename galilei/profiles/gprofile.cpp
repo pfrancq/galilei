@@ -119,7 +119,7 @@ int GProfile::Compare(const size_t id) const
 
 
 //------------------------------------------------------------------------------
-void GProfile::ClearInfos(bool disk)
+void GProfile::Clear(bool disk)
 {
 	// Clear the information
 	GDescriptionObject<GProfile>::Clear(disk);
@@ -271,9 +271,6 @@ void GProfile::Update(GDescription& desc)
 		// Emit an event that it is about to be updated
 		PostNotification(hProfiles[oeAboutToBeUpdated]);
 
-		// Modify the references
-		DelRefs(Session,otProfile);
-
 		// Look if the index must be modified
 		if(Save&&Session->DoCreateIndex(pProfile))
 			Session->UpdateIndex(pProfile,desc,Id,false);
@@ -301,9 +298,6 @@ void GProfile::Update(GDescription& desc)
 		// Update the group were it belongs
 		Session->UpdateCommunity(this);
 
-		// Modify the references
-		AddRefs(Session,otProfile);
-
 		// Look if the index must be modified and the description and tree saved
 		if(Save)
 		{
@@ -313,7 +307,7 @@ void GProfile::Update(GDescription& desc)
 			if(desc.IsDefined())
 				Session->SaveDesc(pProfile,*desc.Vectors,BlockId,Id);
 
-			Session->Storage->SaveObj(this);
+			Session->GetStorage()->SaveObj(this);
 		}
 
 		// Emit an event that it was updated
@@ -362,4 +356,6 @@ GProfile::~GProfile(void)
 		if(grp)
 			grp->DeleteObj(this);
 	}
+	if(User)
+		User->DeletePtr(*this);
 }

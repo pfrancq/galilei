@@ -79,9 +79,9 @@ class GSessionMsg
 	tObjType Type;
 
 	/**
-	 * A meta type associated to the messaged.
+	 * Were the object deleted or just their description cleared.
 	 */
-	tObjType Meta;
+	bool DeleteObjs;
 
 public:
 
@@ -97,9 +97,9 @@ public:
 	 * Construct a session message.
     * @param session        Session.
     * @param type           Type of the objects.
-    * @param meta           Meta type.
+    * @param del            Specify if the object were delete.
     */
-	GSessionMsg(GSession* session,tObjType type,tObjType meta);
+	GSessionMsg(GSession* session,tObjType type,bool del);
 
 	/**
     * @return the session associated to the message.
@@ -112,9 +112,9 @@ public:
 	tObjType GetType(void) const {return(Type);}
 
 	/**
-    * @return the meta type associated to the message.
+    * Specify if the objects were deleted.
     */
-	tObjType GetMeta(void) const {return(Meta);}
+	bool GetDeleteObjs(void) const {return(DeleteObjs);}
 };
 
 
@@ -139,6 +139,14 @@ class GSession : public R::RObject,                    // Session receives and s
 {
 public:
 
+	// Explicit use of methods from GKB
+	using GKB::InsertObj;
+	using GKB::DeleteObj;
+	using GKB::GetObj;
+	using GKB::GetObjs;
+	using GKB::GetNbObjs;
+	using GKB::GetMaxObjId;
+
 	// Explicit use of methods from GObjects<GDoc,eCreateDoc>
 	using GObjects<GDoc,hDocs>::Clear;
 	using GObjects<GDoc,hDocs>::DoCreateIndex;
@@ -151,6 +159,7 @@ public:
 	using GObjects<GDoc,hDocs>::DeleteObj;
 	using GObjects<GDoc,hDocs>::AssignId;
 	using GObjects<GDoc,hDocs>::GetMaxObjId;
+	using GObjects<GDoc,hDocs>::GetMaxObjPos;
 	using GObjects<GDoc,hDocs>::LoadDesc;
 	using GObjects<GDoc,hDocs>::SaveDesc;
 	using GObjects<GDoc,hDocs>::FlushDesc;
@@ -172,6 +181,7 @@ public:
 	using GObjects<GTopic,hTopics>::DeleteObj;
 	using GObjects<GTopic,hTopics>::AssignId;
 	using GObjects<GTopic,hTopics>::GetMaxObjId;
+	using GObjects<GTopic,hTopics>::GetMaxObjPos;
 	using GObjects<GTopic,hTopics>::LoadDesc;
 	using GObjects<GTopic,hTopics>::SaveDesc;
 	using GObjects<GTopic,hTopics>::FlushDesc;
@@ -188,6 +198,7 @@ public:
 	using GObjects<GUser,hUsers>::DeleteObj;
 	using GObjects<GUser,hUsers>::AssignId;
 	using GObjects<GUser,hUsers>::GetMaxObjId;
+	using GObjects<GUser,hUsers>::GetMaxObjPos;
 
 	// Explicit use of methods from GObjects<GProfile,eCreateProfile>
 	using GObjects<GProfile,hProfiles>::Clear;
@@ -200,6 +211,7 @@ public:
 	using GObjects<GProfile,hProfiles>::DeleteObj;
 	using GObjects<GProfile,hProfiles>::AssignId;
 	using GObjects<GProfile,hProfiles>::GetMaxObjId;
+	using GObjects<GProfile,hProfiles>::GetMaxObjPos;
 	using GObjects<GProfile,hProfiles>::LoadDesc;
 	using GObjects<GProfile,hProfiles>::SaveDesc;
 	using GObjects<GProfile,hProfiles>::FlushDesc;
@@ -217,6 +229,7 @@ public:
 	using GObjects<GCommunity,hCommunities>::DeleteObj;
 	using GObjects<GCommunity,hCommunities>::AssignId;
 	using GObjects<GCommunity,hCommunities>::GetMaxObjId;
+	using GObjects<GCommunity,hCommunities>::GetMaxObjPos;
 	using GObjects<GCommunity,hCommunities>::LoadDesc;
 	using GObjects<GCommunity,hCommunities>::SaveDesc;
 	using GObjects<GCommunity,hCommunities>::FlushDesc;
@@ -234,6 +247,7 @@ public:
 	using GClasses::DeleteObj;
 	using GClasses::AssignId;
 	using GClasses::GetMaxObjId;
+	using GClasses::GetMaxObjPos;
 	using GClasses::LoadDesc;
 	using GClasses::SaveDesc;
 	using GClasses::FlushDesc;
@@ -319,6 +333,10 @@ public:
 	*/
 	virtual void HandlerNotFound(const R::RNotification& notification);
 
+	/** @name Session General Methods
+	 *  General methods related to the session.
+	 */
+	//@{
 	/**
 	 * @return the identifier of the session.
 	 */
@@ -328,6 +346,27 @@ public:
 	 * @return the name of the session.
 	 */
 	inline R::RString GetName(void) const {return(Name);}
+
+	/**
+	 * Compare two session regarding their identifiers.
+	 * @param session        Session to compare with.
+	 * @return a value compatible with R::RContainer.
+	 */
+	int Compare(const GSession& session) const;
+
+	/**
+	 * Compare the identifier of the session with a given one.
+	 * @param id             Identifier to compare with.
+	 * @return a value compatible with R::RContainer.
+	 */
+	int Compare(size_t id) const;
+
+	/**
+	 * Compare the name of the session with a given one.
+	 * @param name           Name to compare with.
+	 * @return a value compatible with R::RContainer.
+	 */
+	int Compare(const R::RString& name) const;
 
 	/**
     * @return the log file current used.
@@ -393,6 +432,17 @@ public:
 	*/
 	void SetSaveResults(bool save=true) {SaveResults=save;}
 
+	/**
+	* Analyze a given string to search for variables of the type '%%var%%'. These
+	* variables are then replaced with the corresponding value. Actually, the
+	* known variables are:
+	* - %%world% : Name of the session.
+	*
+	* @param str             String to analyze.
+	*/
+	R::RString AnalyzeString(const R::RString& str);
+	//@}
+
 	/** @name Computing Methods
 	 *  Methods used to launch different computations on the session.
 	 */
@@ -403,11 +453,6 @@ public:
 	* @param rec             Receiver for the signals.
 	*/
 	void AnalyzeDoc(GDoc* doc,GSlot* rec=0);
-
-	/**
-	 * @return the tree that was just computed (if asked).
-    */
-	const GConceptTree& GetTree(void) const {return(DocAnalyze.GetTree());}
 
 	/**
 	* Analyze the documents. At the end, all the enabled post-documents methods
@@ -466,56 +511,19 @@ public:
 	 *                       generates an exception.
 	 */
 	void RunTool(const R::RString& name,const R::RString& list,GSlot* slot=0,bool need=true);
+
+	/**
+	* Send a query to the meta-engine selected. The documents are researched and
+	* ranked.
+	* @param query           String representing the query.
+	*/
+	void RequestMetaEngine(const R::RString query);
 	//@}
 
-	/**
-	 * Compare two session regarding their identifiers.
-	 * @param session        Session to compare with.
-	 * @return a value compatible with R::RContainer.
+	/** @name Informational Methods
+	 *  Methods that provides some information on the session.
 	 */
-	int Compare(const GSession& session) const;
-
-	/**
-	 * Compare two session regarding their identifiers.
-	 * @param session        Session to compare with.
-	 * @return a value compatible with R::RContainer.
-	 */
-	int Compare(const GSession* session) const;
-
-	/**
-	 * Compare the identifier of the session with a given one.
-	 * @param id             Identifier to compare with.
-	 * @return a value compatible with R::RContainer.
-	 */
-	int Compare(size_t id) const;
-
-	/**
-	 * Compare the name of the session with a given one.
-	 * @param name           Name to compare with.
-	 * @return a value compatible with R::RContainer.
-	 */
-	int Compare(const R::RString& name) const;
-
-	/**
-	 * Reset a type of objects. In practice, the objects are destroyed, their
-	 * references removed and delete the corresponding files.
-	 * @param type           Type of the objects.
-	 */
-	void Reset(tObjType type);
-
-   /**
-	 * Reset a file associated with a type of objects.
-	 * @param type           Type of the objects.
-	 * @param meta           Meta-type (may be index or references).
-	 */
-	void ResetFile(tObjType type,tObjType meta);
-
-	/**
-	* Force some objects to be re-computed even if they are updated.
-	* @param type            Type of the objects.
-	*/
-	void ForceReCompute(tObjType type);
-
+	//@{
 	/**
 	* Get the number of elements of a given type.
 	* @param type            Type of the elements.
@@ -560,22 +568,88 @@ public:
 	 * @return Simulator associated with the session.
 	 */
 	GSimulator* GetSimulator(void) const;
+	//@}
 
-	/**
-	 * Initialize the session.
+	/** @name Update Methods
+	 *  Methods used to update the session.
 	 */
-	void Init(void);
+	/**
+	* Re-initialize the subjects for a new validation process. In practice, the
+	* methods deselects all the documents, and delete the users, the feedbacks,
+	* the profiles, the communities, the topics and the classes. Eventually, the
+	* document descriptions are cleared too.
+	*
+	* The method sends several hReInit notifications.
+   * @param obj            Pseudo-parameter.
+   * @param cleardocs      Should the documents descriptions be cleared.
+	*/
+	void ReInit(const GSubject* obj,bool cleardocs);
 
 	/**
-	* Analyze a given string to search for variables of the type '%%var%%'. These
-	* variables are then replaced with the corresponding value. Actually, the
-	* known variables are:
-	* - %%world% : Name of the session.
-	*
-	* @param str             String to analyze.
-	*/
-	R::RString AnalyzeString(const R::RString& str);
+	 * Re-initialize the documents. In practice, the method deletes the topics
+	 * and the classes since they depend directly from the documents
+	 * descriptions. If the documents must be deleted, the method also deletes
+	 * the feedbacks.
+	 *
+	 * The method sends several hReInit notifications.
+    * @param obj            Pseudo-parameter.
+    * @param del            Should the documents be deleted or just their
+	 *                       descriptions cleared.
+    */
+	void ReInit(const GDoc* obj,bool del);
 
+	/**
+	 * Re-initialize the users. In practice, the method deletes the users, the
+	 * profiles, the communities and the feedbacks.
+	 *
+	 * The method sends several hReInit notifications.
+    * @param obj            Pseudo-parameter.
+    */
+	void ReInit(const GUser* obj);
+
+	/**
+	 * Re-initialize the profiles. In practice, the method deletes the
+	 * communities since they depend directly from the profiles descriptions. If
+	 * the profiles must be deleted, the method also deletes the feedbacks.
+	 *
+	 * The method sends several hReInit notifications.
+    * @param obj            Pseudo-parameter.
+    * @param del            Should the profiles be deleted or just their
+	 *                       descriptions cleared.
+    */
+	void ReInit(const GProfile* obj,bool del);
+
+	/**
+	 * Delete the feedbacks.
+	 *
+	 * The method sends a hReInit notification.
+    * @param obj            Pseudo-parameter.
+    */
+	void ReInit(const GFdbk* obj);
+
+	/**
+	 * Delete the topics.
+	 *
+	 * The method sends a hReInit notification.
+    * @param obj            Pseudo-parameter.
+    */
+	void ReInit(const GTopic* obj);
+
+	/**
+	 * Delete the classes.
+	 *
+	 * The method sends a hReInit notification.
+    * @param obj            Pseudo-parameter.
+    */
+	void ReInit(const GClass* obj);
+
+	/**
+	 * Delete the communities.
+	 *
+	 * The method sends a hReInit notification.
+    * @param obj            Pseudo-parameter.
+    */
+	void ReInit(const GCommunity* obj);
 
 	/**
 	* Add a new feedback of a given profile on a given document.
@@ -589,18 +663,6 @@ public:
 	* @return true if it is a new feedback.
 	*/
 	bool InsertFdbk(size_t profid,size_t docid,tFdbkType fdbk,R::RDate done,bool load=false);
-
-	/**
-	* Send a query to the meta-engine selected. The documents are researched and
-	* ranked.
-	* @param query           String representing the query.
-	*/
-	void RequestMetaEngine(const R::RString query);
-
-	/**
-	* Re-initialize the session (clear all containers).
-	*/
-	void ReInit(void);
 
 	/**
 	* A profile was updated and the corresponding community must be updated.
@@ -664,7 +726,21 @@ public:
 	*/
 	void UpdateTopic(size_t docid);
 
+	//@}
+
 private:
+
+	/**
+	 * Initialize the session.
+	 */
+	void Init(void);
+
+	/**
+	 * Emit a hReInit notification for a given object type.
+	 * @param type           Type of the objects.
+	 * @param del            Were the objects deleted ?
+    */
+	inline void EmitReInit(tObjType type,bool del);
 
 	/**
 	 * Verify if at least one vector is defined in the container.
@@ -676,27 +752,11 @@ private:
 public:
 
 	/**
-	 * Assign a specific description to a given class. If necessary, the
-	 * description is saved.
-	 * @param theclass       The class.
-	 * @param desc           Description.
-	 */
-	void Assign(GClass* theclass,GDescription& desc);
-
-	/**
 	* Destruct the session.
 	*/
 	virtual ~GSession(void);
 
-	friend class GDebugObject;
-	friend class GSimulator;
-	friend class GPlugIn;
-	friend class GPlugInList;
-	friend class GPlugInManager;
-	friend class GConceptType;
 	friend class GGALILEIApp;
-	friend class GSubject;
-	friend class GDocAnalyze;
 };
 
 

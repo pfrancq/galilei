@@ -50,8 +50,11 @@ const GClass* GALILEI::pClass(0);
 const GTopic* GALILEI::pTopic(0);
 const GUser* GALILEI::pUser(0);
 const GProfile* GALILEI::pProfile(0);
+const GFdbk* GALILEI::pFdbk(0);
 const GCommunity* GALILEI::pCommunity(0);
 const GSubject* GALILEI::pSubject(0);
+const GPredicate* GALILEI::pPredicate(0);
+const GStatement* GALILEI::pStatement(0);
 
 
 
@@ -132,6 +135,10 @@ const hNotification GALILEI::hCommunities[oeNbEvents]={
 	NotificationCenter.GetNotificationHandle("CommunityUnselected")
 };
 
+
+//------------------------------------------------------------------------------
+const hNotification GALILEI::hReInit(NotificationCenter.GetNotificationHandle("SessionReInit"));
+const hNotification GALILEI::hCurrentPlugIn(NotificationCenter.GetNotificationHandle("CurrentPlugIn"));
 
 
 //------------------------------------------------------------------------------

@@ -57,10 +57,9 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSubject::GSubject(GSession* session,size_t id,const RString& name,bool used)
-	 : RNode<GSubjects,GSubject,true>(), Session(session), Id(id), Name(name), Used(used),
-	   CategorizedDocs(1000), Docs(1000), WhereDocs(1000), Profiles(10,5),
-	   Community(0), Topic(0)
+GSubject::GSubject(GSession* session,size_t id,const RString& name)
+	 : RNode<GSubjects,GSubject,true>(), Session(session), Id(id), Name(name), Used(false),
+	   Docs(1000), UsedDocs(1000), Profiles(10,5), Community(0), Topic(0)
 {
 }
 
@@ -70,8 +69,7 @@ void GSubject::ReInit(void)
 {
 	// Emit a selection signal
 	Profiles.Clear();
-	Docs.Clear();
-	WhereDocs.Clear();
+	UsedDocs.Clear();
 	Community=0;
 	Topic=0;
 }
@@ -111,11 +109,11 @@ void GSubject::CreateDescription(void)
 		case sdNames:
 		{
 			// Get a pointer to the corresponding dictionary.
-			GConceptType* Type(Session->GetConceptType("Tokens",true));
+			GConceptType* Type(Session->GetObj(pConceptType,"Tokens",true));
 
 			// Create one content vector
-			GConcept Struct(Session,"Content",Session->GetConceptType("Structure",true));
-			GVector* Vector(Vectors->GetInsertPtr(Session->InsertConcept(&Struct)));
+			GConcept Struct(Session,"Content",Session->GetObj(pConceptType,"Structure",true));
+			GVector* Vector(Vectors->GetInsertPtr(Session->InsertObj(Struct)));
 
 			// Build the description
 			for(const GSubject* cur(this);cur;cur=cur->GetParent())
@@ -132,7 +130,7 @@ void GSubject::CreateDescription(void)
 				else
 					Name=cur->GetName();
 				GConcept concept(Session,Name,Type);
-				GConcept* ptr(Session->InsertConcept(&concept));
+				GConcept* ptr(Session->InsertObj(concept));
 				GConceptRef* ins(Vector->GetRef(ptr));
 				(*ins)+=1.0;
 			}
@@ -169,11 +167,11 @@ void GSubject::CreateDescription(void)
 			else
 			{
 				// No, it has no documents
-				if(!Docs.GetNb())
+				if(!UsedDocs.GetNb())
 					mThrowGException("Leaf subject '"+Name+"' has no documents attached");
 
 				// Compute the center of gravitation of all documents
-				RCursor<GDoc> Cur(Docs);
+				RCursor<GDoc> Cur(UsedDocs);
 				for(Cur.Start();!Cur.End();Cur.Next())
 				{
 					RConstCursor<GVector> Vector(Cur()->GetVectors());
@@ -185,12 +183,19 @@ void GSubject::CreateDescription(void)
 				}
 				RCursor<GVector> Vector(*Vectors);
 				for(Vector.Start();!Vector.End();Vector.End())
-					(*Vector())/=Docs.GetNb();
+					(*Vector())/=UsedDocs.GetNb();
 			}
 
 			break;
 		}
 	}
+}
+
+
+//------------------------------------------------------------------------------
+bool GSubject::IsUsed(GDoc* doc) const
+{
+	return(UsedDocs.IsIn(*doc));
 }
 
 
@@ -202,34 +207,27 @@ bool GSubject::IsIn(GDoc* doc) const
 
 
 //------------------------------------------------------------------------------
-bool GSubject::IsCategorized(GDoc* doc) const
+void GSubject::GetObjs(GDoc** docs,size_t& nb,size_t maxdepth)
 {
-	return(CategorizedDocs.IsIn(*doc));
-}
-
-
-//------------------------------------------------------------------------------
-void GSubject::FillDocs(GDoc** docs,size_t& nb,size_t maxdepth)
-{
-	nb+=CategorizedDocs.GetTab(&docs[nb]);
+	nb+=Docs.GetTab(&docs[nb]);
 	if(maxdepth&&(Depth>=maxdepth))
 	{
 		RNodeCursor<GSubjects,GSubject> Cur(this);
 		for(Cur.Start();!Cur.End();Cur.Next())
-			Cur()->FillDocs(docs,nb,maxdepth);
+			Cur()->GetObjs(docs,nb,maxdepth);
 	}
 }
 
 
 //------------------------------------------------------------------------------
-size_t GSubject::GetMaxDocs(size_t maxdepth)
+size_t GSubject::GetNbObjs(const GDoc*,size_t maxdepth)
 {
-	size_t nb(CategorizedDocs.GetNb());
+	size_t nb(Docs.GetNb());
 	if(maxdepth&&(Depth>=maxdepth))
 	{
 		RNodeCursor<GSubjects,GSubject> Cur(this);
 		for(Cur.Start();!Cur.End();Cur.Next())
-			nb+=Cur()->GetMaxDocs(maxdepth);
+			nb+=Cur()->GetNbObjs(pDoc,maxdepth);
 	}
 	return(nb);
 }
@@ -237,6 +235,13 @@ size_t GSubject::GetMaxDocs(size_t maxdepth)
 
 //------------------------------------------------------------------------------
 bool GSubject::IsIn(GProfile* prof) const
+{
+	return(Profiles.IsIn(*prof));
+}
+
+
+//------------------------------------------------------------------------------
+bool GSubject::IsUsed(GProfile* prof) const
 {
 	return(Profiles.IsIn(*prof));
 }
@@ -306,7 +311,32 @@ size_t GSubject::GetNbObjs(const GSubject*,tObjType type) const
 
 
 //------------------------------------------------------------------------------
-size_t GSubject::GetNbObjs(const GCommunity* com) const
+size_t GSubject::GetNbUsedObjs(const GSubject*,tObjType type) const
+{
+	size_t nb(0);
+
+	switch(type)
+	{
+		case otProfile:
+			if(Profiles.GetNb())
+				nb++;
+			break;
+		case otDoc:
+			if(UsedDocs.GetNb())
+				nb++;
+			break;
+		default:
+			mThrowGException(GetObjType(type,true,true)+" are not assigned to subjects");
+	}
+	RNodeCursor<GSubjects,GSubject> Cur(this);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		nb+=Cur()->GetNbUsedObjs(pSubject,type);
+	return(nb);
+}
+
+
+//------------------------------------------------------------------------------
+size_t GSubject::GetNbUsedObjs(const GCommunity* com) const
 {
 	size_t tot(0);
 	RCursor<GProfile> Prof(Profiles);
@@ -318,10 +348,10 @@ size_t GSubject::GetNbObjs(const GCommunity* com) const
 
 
 //------------------------------------------------------------------------------
-size_t GSubject::GetNbObjs(const GTopic* top) const
+size_t GSubject::GetNbUsedObjs(const GTopic* top) const
 {
 	size_t tot(0);
-	RCursor<GDoc> Doc(Docs);
+	RCursor<GDoc> Doc(UsedDocs);
 	for(Doc.Start();!Doc.End();Doc.Next())
 		if(top->IsIn(Doc()))
 			tot++;
@@ -330,10 +360,10 @@ size_t GSubject::GetNbObjs(const GTopic* top) const
 
 
 //------------------------------------------------------------------------------
-size_t GSubject::GetNbDocs(const RContainer<GDoc,false,false>* docs) const
+size_t GSubject::GetNbUsedObjs(const RContainer<GDoc,false,false>* docs) const
 {
 	size_t tot;
-	RCursor<GDoc> sub(Docs);
+	RCursor<GDoc> sub(UsedDocs);
 
 	for(sub.Start(),tot=0;!sub.End();sub.Next())
 	{
@@ -352,25 +382,47 @@ R::RCursor<GProfile> GALILEI::GSubject::GetObjs(const GProfile*) const
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GDoc> GALILEI::GSubject::GetObjs(const GDoc*) const
+R::RCursor<GProfile> GALILEI::GSubject::GetUsedObjs(const GProfile*) const
 {
-	return(R::RCursor<GDoc>(Docs));
+	return(R::RCursor<GProfile>(Profiles));
 }
 
 
 //------------------------------------------------------------------------------
-size_t GALILEI::GSubject::GetNbObjs(tObjType type) const
+R::RCursor<GDoc> GALILEI::GSubject::GetUsedObjs(const GDoc*) const
+{
+	return(R::RCursor<GDoc>(UsedDocs));
+}
+
+
+//------------------------------------------------------------------------------
+size_t GALILEI::GSubject::GetNbUsedObjs(tObjType type) const
 {
 	switch(type)
 	{
 		case otDoc:
-			return(Docs.GetNb());
+			return(UsedDocs.GetNb());
 		case otProfile:
 			return(Profiles.GetNb());
 		default:
 			return(0);
 	}
 }
+
+
+//------------------------------------------------------------------------------
+R::RCursor<GDoc> GALILEI::GSubject::GetObjs(const GDoc*) const
+{
+  return(R::RCursor<GDoc>(Docs));
+}
+
+
+//------------------------------------------------------------------------------
+size_t GALILEI::GSubject::GetNbObjs(const GDoc*) const
+{
+  return(Docs.GetNb());
+}
+
 
 
 //------------------------------------------------------------------------------
@@ -424,7 +476,7 @@ GLang* GSubject::GuessLang(bool lookparent) const
 {
 	RContainer<LangCount,true,true> Langs(20);
 
-	RCursor<GDoc> Doc(CategorizedDocs);
+	RCursor<GDoc> Doc(Docs);
 	for(Doc.Start();!Doc.End();Doc.Next())
 	{
 		LangCount* ptr(Langs.GetInsertPtr(Doc()->GetLang()));

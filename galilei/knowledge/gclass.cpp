@@ -61,26 +61,24 @@ GClass::GClass(GSession* session,size_t id,size_t blockid,const RString& name,co
 
 
 //------------------------------------------------------------------------------
-void GClass::Clear(void)
+void GClass::Clear(bool disk)
 {
 	RNode<GClasses,GClass,false>::Clear();
-	GDescriptionObject<GClass>::Clear();
+	GDescriptionObject<GClass>::Clear(disk);
 }
 
 
 //------------------------------------------------------------------------------
-int GClass::Compare(const GClass& grp) const
+int GClass::Compare(const GClass& theclass) const
 {
-	return(R::CompareIds(Id,grp.Id));
+	return(R::CompareIds(Id,theclass.Id));
 }
 
 
 //------------------------------------------------------------------------------
-int GClass::Compare(const GClass* grp) const
+int GClass::Compare(const GClass* theclass) const
 {
-	if(!grp)
-		return(1);
-	return(R::CompareIds(Id,grp->Id));
+	return(R::CompareIds(Id,theclass->Id));
 }
 
 
@@ -88,6 +86,13 @@ int GClass::Compare(const GClass* grp) const
 int GClass::Compare(const size_t id) const
 {
 	return(R::CompareIds(Id,id));
+}
+
+
+//------------------------------------------------------------------------------
+int GClass::Compare(const RString& name) const
+{
+	return(Name.Compare(name));
 }
 
 
@@ -102,9 +107,6 @@ void GClass::Update(GDescription& desc)
 	{
 		// Emit an event that it is about to updated
 		PostNotification(hClasses[oeAboutToBeUpdated]);
-
-		// Modify the references
-		DelRefs(Session,otClass);
 
 		// Look if the index must be modified
 		if(Save&&Session->DoCreateIndex(pClass))
@@ -130,9 +132,6 @@ void GClass::Update(GDescription& desc)
 	// Look if the class is internal one : Modify the references and indexes
 	if(Id!=cNoRef)
 	{
-		// Modify the references
-		AddRefs(Session,otClass);
-
 		// Look if the index must be modified and the description and tree saved
 		if(Save)
 		{
@@ -142,7 +141,7 @@ void GClass::Update(GDescription& desc)
 			if(desc.IsDefined())
 				Session->SaveDesc(pClass,*desc.Vectors,BlockId,Id);
 
-			Session->Storage->SaveObj(this);
+			Session->GetStorage()->SaveObj(this);
 		}
 
 		// Emit an event that it was updated

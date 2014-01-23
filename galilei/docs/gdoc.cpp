@@ -137,26 +137,22 @@ int GDoc::Compare(const GLang* lang) const
 
 
 //------------------------------------------------------------------------------
-void GDoc::ClearInfos(bool disk)
+void GDoc::Clear(bool disk)
 {
 	// Clear the information
 	GDescriptionObject<GDoc>::Clear(disk);
 
-	// Make sure that it will be re-computed
-	Computed=RDate::Null;
-}
-
-
-//------------------------------------------------------------------------------
-void GDoc::ClearTree(bool disk)
-{
 	if(disk)
 		StructId=0;
+
 	if(Tree)
 	{
 		delete Tree;
 		Tree=0;
 	}
+
+	// Make sure that it will be re-computed
+	Computed=RDate::Null;
 }
 
 
@@ -361,9 +357,6 @@ void GDoc::Update(GLang* lang,GDescription& desc,GConceptTree& tree)
 		// Emit an event that it is about to be updated
 		PostNotification(hDocs[oeAboutToBeUpdated]);
 
-		// Modify the references
-		DelRefs(Session,otDoc);
-
 		// Look if the index must be modified
 		if(Save&&Session->DoCreateIndex(pDoc))
 			Session->UpdateIndex(pDoc,desc,Id,false);
@@ -407,9 +400,6 @@ void GDoc::Update(GLang* lang,GDescription& desc,GConceptTree& tree)
 		// Update the profiles that have assessed it.
 		Session->UpdateProfiles(Id);
 
-		// Modify the references
-		AddRefs(Session,otDoc);
-
 		// Look if the index must be modified and the description and tree saved
 		if(Save)
 		{
@@ -422,7 +412,7 @@ void GDoc::Update(GLang* lang,GDescription& desc,GConceptTree& tree)
 			if(Session->DoCreateTree(pDoc))
 				Session->SaveTree(pDoc,*Tree,StructId,Id);
 
-			Session->Storage->SaveObj(this);
+			Session->GetStorage()->SaveObj(this);
 		}
 
 		// Emit an event that it was updated

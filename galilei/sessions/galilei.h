@@ -144,11 +144,9 @@ R::RString GetState(tObjState state,bool upper);
  */
 enum tObjEvent
 {
-	oeAdded                  /** An object was added in the system. This can
-	                             be the case when an existing object is loaded or
-	                             when a identifier is assigned to a new object.
-									     This message is not sent when an object is
-									     allocated.*/,
+	oeAdded                  /** A new object was added in the system. This
+									     message is not sent when an existing object is
+									     loaded and allocated in memory.*/,
 	oeModified               /** An object was modified and must be updated.*/,
 	oeAboutToBeUpdated       /** An object is about to be updated.*/,
 	oeUpdated                /** An object was updated.*/,
@@ -265,6 +263,23 @@ extern const R::hNotification hProfiles[oeNbEvents];
 *  The events defined by the tObjEvent enumeration can be used as index.
 */
 extern const R::hNotification hCommunities[oeNbEvents];
+
+
+//------------------------------------------------------------------------------
+/**
+ * Notification emitted by the session when it reinitialize some objects (the
+ * event is "SessionReInit"). When send, the notification has a parameter of the
+ * type GSessionMsg.
+ */
+extern const R::hNotification hReInit;
+
+
+//------------------------------------------------------------------------------
+/**
+ * Notification emitted by the session when each time a plug-in is chosen as the
+ * current one for a lists (the event is "CurrentPlugIn").
+ */
+extern const R::hNotification hCurrentPlugIn;
 
 
 //------------------------------------------------------------------------------
@@ -555,10 +570,16 @@ extern const GClass* pClass;
 extern const GUser* pUser;
 /** Null pointer for GProfile.*/
 extern const GProfile* pProfile;
+/** Null pointer for GFdbk.*/
+extern const GFdbk* pFdbk;
 /** Null pointer for GCommunity.*/
 extern const GCommunity* pCommunity;
 /** Null pointer for GSubject.*/
 extern const GSubject* pSubject;
+/** Null pointer for GPredicate.*/
+extern const GPredicate* pPredicate;
+/** Null pointer for GStatement.*/
+extern const GStatement* pStatement;
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

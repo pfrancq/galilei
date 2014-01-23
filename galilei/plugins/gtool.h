@@ -47,6 +47,8 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 /**
 * The GTool class provides a generic tool that could be called.
+*
+* See the documentation related to GPlugIn for more general information.
 * @author Pascal Francq
 * @short Generic Tool.
 */

@@ -35,8 +35,6 @@
 
 //------------------------------------------------------------------------------
 // include file for R
-#include <rxmltag.h>
-#include <rxmlstruct.h>
 #include <rconfig.h>
 
 
@@ -325,10 +323,46 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
-* The GPlugIn class provides a template for a generic plug-in.
-* @author Pascal Francq
-* @short Generic Plug-in.
-*/
+ * The GPlugIn class provides a template for a generic plug-in. Plug-ins are
+ * managed by GGALILEIApp, but they are used in relation to a particular
+ * session.
+ *
+ * Each plug-in goes through an identical process when a session is created :
+ * - The session variable is set.
+ * - The method GPlugIn::CreateConfig is called. The plug-in creates its
+ *   parameters. This parameters are then automatically read from a
+ *   configuration file of the particular session.
+ * - The method GPlugIn::ApplyConfig is called. The plug-in can use the
+ *   configuration read.
+ * - The method GPlugIn::Init is called. The plug-in makes some initialization
+ *   of its internal structures. Since all plug-ins are allocated, it is the
+ *   right place to make a plug-in an observer of another's plug-in
+ *   notifications.
+ *
+ * When a session is closed, the method GPlugIn::Done is called for each
+ * plug-in.
+ *
+ * The method GPlugin::Reset can be used to force a plug-in to reset itself. In
+ * particular, if plug-ins managed important permanent information, it can be in
+ * an unknown state (for example after a crash or when a plug-in becomes enabled
+ * with an existing session). A user can call this method to force the plug-in
+ *  to do the necessary work to be again in a coherent state.
+ *
+ * It should be understand that a plug-in is create once by GGALILEIApp, but
+ * that the methods GPlugIn::Init and GPlugIn::Done are called each time a
+ * session is created or deleted. Therefore, if a plug-in manages some internal
+ * structures, the developer has two choices :
+ * -# The structures are created and deleted each time (by GPlugIn::Init and
+ *    GPlugIn::Done).
+ * -# The structures are created and deleted once (by the constructor and the
+ *    destructor). The methods GPlugIn::Init and GPlugIn::Done are then just
+ *    responsible to put the structures updated with the current session.
+ *
+ * Generally, the best approach is to create internal structures as late as
+ * possible.
+ * @author Pascal Francq
+ * @short Generic Plug-in.
+ */
 class GPlugIn
 {
 protected:
@@ -428,6 +462,17 @@ public:
 	virtual void CreateConfig(void);
 
 	/**
+	* The plug-in should be reseted. This method is "manually" called (typically
+	* by an user through an application) to ensure that the plug-in state is
+	* coherent with a session. This can be useful if after a crash during some
+	* tasks done by the plug-in.
+	*
+	* For example, if the plug-in holds the results of some computations, they
+	* should be redone.
+	*/
+	virtual void Reset(void);
+
+	/**
 	* Get the factory of the plug-in.
 	*/
 	GPlugInFactory* GetFactory(void) const {return(Factory);}
@@ -471,6 +516,7 @@ public:
 
 	friend class GPlugInFactory;
 	friend class GPlugInList;
+	friend class GPlugInManager;
 };
 
 
@@ -478,36 +524,36 @@ public:
 #define CREATE_FACTORY(base,plugin,type,list,name,desc)                                            \
 class TheFactory : public GALILEI::GPlugInFactory                                                  \
 {                                                                                                  \
-	static GALILEI::GPlugInFactory* Inst;                                                          \
-	TheFactory(GALILEI::GPlugInManager* mng,const char* t) : GPlugInFactory(mng,name,desc,t,list)  \
-	{                                                                                              \
-	}                                                                                              \
-	virtual ~TheFactory(void) {}                                                                   \
+	static GALILEI::GPlugInFactory* Inst;                                                           \
+	TheFactory(GALILEI::GPlugInManager* mng,const char* t) : GPlugInFactory(mng,name,desc,t,list)   \
+	{                                                                                               \
+	}                                                                                               \
+	virtual ~TheFactory(void) {}                                                                    \
 public:                                                                                            \
-	static GALILEI::GPlugInFactory* CreateInst(GALILEI::GPlugInManager* mng,const char* t)         \
-	{                                                                                              \
-		if(!Inst)                                                                                  \
-			Inst = new TheFactory(mng,t);                                                          \
-		return(Inst);                                                                              \
-	}                                                                                              \
-	virtual const char* GetAPIVersion(void) const                                                  \
-		{return(API_PLUG_IN_VERSION);}                                                             \
-		                                                                                           \
-	virtual GALILEI::GPlugIn* NewPlugIn(GSession* session)                                         \
-	{                                                                                              \
-		base* ptr(new plugin(session,this));                                                       \
-		return(ptr);                                                                               \
-	}                                                                                              \
+	static GALILEI::GPlugInFactory* CreateInst(GALILEI::GPlugInManager* mng,const char* t)          \
+	{                                                                                               \
+		if(!Inst)                                                                                    \
+			Inst = new TheFactory(mng,t);                                                             \
+		return(Inst);                                                                                \
+	}                                                                                               \
+	virtual const char* GetAPIVersion(void) const                                                   \
+		{return(API_PLUG_IN_VERSION);}                                                               \
+		                                                                                             \
+	virtual GALILEI::GPlugIn* NewPlugIn(GSession* session)                                          \
+	{                                                                                               \
+		base* ptr(new plugin(session,this));                                                         \
+		return(ptr);                                                                                 \
+	}                                                                                               \
 };                                                                                                 \
 GALILEI::GPlugInFactory* TheFactory::Inst = 0;                                                     \
                                                                                                    \
 extern "C" GALILEI::GPlugInFactory* FactoryCreate(GALILEI::GPlugInManager* mng,const char* t)      \
 {                                                                                                  \
-	return(TheFactory::CreateInst(mng,t));                                                         \
+	return(TheFactory::CreateInst(mng,t));                                                          \
 }                                                                                                  \
 extern "C" const char* LibType(void)                                                               \
 {                                                                                                  \
-	return(type);                                                                                  \
+	return(type);                                                                                   \
 }
 
 

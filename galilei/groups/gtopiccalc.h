@@ -48,6 +48,8 @@ namespace GALILEI{
 /**
 * The GTopicCalc class provides a representation for a generic method to compute
 * the description of a specific topic.
+*
+* See the documentation related to GPlugIn for more general information.
 * @author Pascal Francq
 * @short Generic Topic Computing Method.
 */

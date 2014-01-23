@@ -87,6 +87,8 @@ namespace GALILEI{
 * other cases, the whole matrix is re-computed (also if only one element
 * changed).
 *
+* See the documentation related to GPlugIn for more general information.
+*
 * @remarks The class supposes that the identifiers of the elements are continuous and
 * that the first identifier is one.
 * @author Pascal Francq.
@@ -103,7 +105,7 @@ public:
 	{
 		Full,              /** Full matrix.*/
 		Sparse,            /** Sparse matrix.*/
-		NearestNeighbours  /** Nearest neighbours matrix.*/
+		NearestNeighbours  /** Nearest neighbors matrix.*/
 	};
 
 private:
@@ -320,7 +322,7 @@ public:
 	* as dirty. If the matrix is allocated, it is cleared. If the measures are
 	* only managed through the storage, the storage is also cleared.
 	*/
-	virtual void ReInit(void);
+	virtual void Reset(void);
 
 	/**
 	* Get a measure between two elements. If the values are in memory, the

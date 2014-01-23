@@ -68,14 +68,9 @@ void GGroupDocs::Grouping(GSlot*,bool debug)
 
 	if(debug)
 	{
-		RCursor<GSubject> Cur(Session->GetObjs(pSubject));
-		for(Cur.Start();!Cur.End();Cur.Next())
-		{
-			if(!Cur()->IsUsed()) continue;
-			RCursor<GDoc> ToGroup(Cur()->GetObjs(static_cast<GDoc*>(0)));
-			for(ToGroup.Start();!ToGroup.End();ToGroup.Next())
-				Docs.InsertPtr(ToGroup());
-		}
+		RCursor<GDoc> ToGroup(Session->GetUsedObjs(pDoc));
+		for(ToGroup.Start();!ToGroup.End();ToGroup.Next())
+			Docs.InsertPtr(ToGroup());
 	}
 	else
 	{

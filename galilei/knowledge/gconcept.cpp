@@ -53,11 +53,11 @@ using namespace std;
 //-----------------------------------------------------------------------------
 GConcept::GConcept(const GConcept* concept)
 	: GObject(concept), Type(concept->Type),
-	  NbRefDocs(concept->NbRefDocs), IfDocs(concept->IfDocs), IndexDocs(concept->IndexDocs),
-	  NbRefProfiles(concept->NbRefProfiles), IfProfiles(concept->IfProfiles), IndexProfiles(concept->IndexProfiles),
-	  NbRefCommunities(concept->NbRefCommunities), IfCommunities(concept->IfCommunities), IndexCommunities(concept->IndexCommunities),
-	  NbRefTopics(concept->NbRefTopics), IfTopics(concept->IfTopics), IndexTopics(concept->IndexTopics),
-	  NbRefClasses(concept->NbRefClasses), IfClasses(concept->IfClasses), IndexClasses(concept->IndexClasses)
+	  IndexDocs(concept->IndexDocs),
+	  IndexProfiles(concept->IndexProfiles),
+	  IndexCommunities(concept->IndexCommunities),
+	  IndexTopics(concept->IndexTopics),
+	  IndexClasses(concept->IndexClasses)
 {
 }
 
@@ -65,11 +65,11 @@ GConcept::GConcept(const GConcept* concept)
 //-----------------------------------------------------------------------------
 GConcept::GConcept(GSession* session,const RString& name,GConceptType* type)
 	: GObject(session,cNoRef,name,otConcept), Type(type),
-	  NbRefDocs(0), IfDocs(NAN), IndexDocs(0),
-	  NbRefProfiles(0), IfProfiles(NAN), IndexProfiles(0),
-	  NbRefCommunities(0), IfCommunities(NAN), IndexCommunities(0),
-	  NbRefTopics(0), IfTopics(NAN), IndexTopics(0),
-	  NbRefClasses(0), IfClasses(NAN), IndexClasses(0)
+	  IndexDocs(0),
+	  IndexProfiles(0),
+	  IndexCommunities(0),
+	  IndexTopics(0),
+	  IndexClasses(0)
 {
 	if(!type)
 		mThrowGException("Cannot create a concept no type");
@@ -78,17 +78,17 @@ GConcept::GConcept(GSession* session,const RString& name,GConceptType* type)
 
 //-----------------------------------------------------------------------------
 GConcept::GConcept(GSession* session,size_t id, const R::RString& name, GConceptType* type,
-		size_t refdocs, size_t idxdocs,
-		size_t refprofiles, size_t idxprofiles,
-		size_t refcommunities, size_t idxcommunities,
-		size_t reftopics, size_t idxtopics,
-		size_t refclasses, size_t idxclasses)
+		size_t idxdocs,
+		size_t idxprofiles,
+		size_t idxcommunities,
+		size_t idxtopics,
+		size_t idxclasses)
 	: GObject(session,id,name,otConcept), Type(type),
-	  NbRefDocs(refdocs), IfDocs(NAN), IndexDocs(idxdocs),
-	  NbRefProfiles(refprofiles), IfProfiles(NAN), IndexProfiles(idxprofiles),
-	  NbRefCommunities(refcommunities), IfCommunities(NAN), IndexCommunities(idxcommunities),
-	  NbRefTopics(reftopics), IfTopics(NAN), IndexTopics(idxtopics),
-	  NbRefClasses(refclasses), IfClasses(NAN), IndexClasses(idxclasses)
+	  IndexDocs(idxdocs),
+	  IndexProfiles(idxprofiles),
+	  IndexCommunities(idxcommunities),
+	  IndexTopics(idxtopics),
+	  IndexClasses(idxclasses)
 {
 }
 
@@ -197,231 +197,14 @@ void GConcept::ClearIndex(tObjType ObjType)
 
 
 //-----------------------------------------------------------------------------
-size_t GConcept::IncRef(tObjType ObjType)
-{
-	switch(ObjType)
-	{
-		case otDoc:
-			NbRefDocs++;
-			IfDocs=NAN;
-			return(NbRefDocs);
-			break;
-		case otProfile:
-			NbRefProfiles++;
-			IfProfiles=NAN;
-			return(NbRefProfiles);
-			break;
-		case otCommunity:
-			NbRefCommunities++;
-			IfCommunities=NAN;
-			return(NbRefCommunities);
-			break;
-		case otTopic:
-			NbRefTopics++;
-			IfTopics=NAN;
-			return(NbRefTopics);
-			break;
-		case otClass:
-			NbRefClasses++;
-			IfClasses=NAN;
-			return(NbRefClasses);
-			break;
-		default:
-			mThrowGException("Unknown type for concept "+RString::Number(Id));
-			break;
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-size_t GConcept::DecRef(tObjType ObjType)
-{
-	switch(ObjType)
-	{
-		case otDoc:
-			if(!NbRefDocs)
-				mThrowGException("Cannot decrease null number of references for documents for concept "+RString::Number(Id));
-			NbRefDocs--;
-			IfDocs=NAN;
-			return(NbRefDocs);
-			break;
-		case otProfile:
-			if(!NbRefProfiles)
-				mThrowGException("Cannot decrease null number of references for profiles for concept "+RString::Number(Id));
-			NbRefProfiles--;
-			IfProfiles=NAN;
-			return(NbRefProfiles);
-			break;
-		case otCommunity:
-			if(!NbRefCommunities)
-				mThrowGException("Cannot decrease null number of references for groups for concept "+RString::Number(Id));
-			NbRefCommunities--;
-			IfCommunities=NAN;
-			return(NbRefCommunities);
-			break;
-		case otTopic:
-			if(!NbRefTopics)
-				mThrowGException("Cannot decrease null number of references for topics for concept "+RString::Number(Id));
-			NbRefTopics--;
-			IfTopics=NAN;
-			return(NbRefTopics);
-			break;
-		case otClass:
-			if(!NbRefClasses)
-				mThrowGException("Cannot decrease null number of references for classes for concept "+RString::Number(Id));
-			NbRefClasses--;
-			IfClasses=NAN;
-			return(NbRefClasses);
-			break;
-		default:
-			mThrowGException("Unknown type for concept "+RString::Number(Id));
-			break;
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void GConcept::ClearRefs(tObjType ObjType)
-{
-	switch(ObjType)
-	{
-		case otDoc:
-			NbRefDocs=0;
-			IfDocs=NAN;
-			IndexDocs=0;
-			break;
-		case otProfile:
-			NbRefProfiles=0;
-			IfProfiles=NAN;
-			break;
-		case otCommunity:
-			NbRefCommunities=0;
-			IfCommunities=NAN;
-			break;
-		case otTopic:
-			NbRefTopics=0;
-			IfTopics=NAN;
-			break;
-		case otClass:
-			NbRefClasses=0;
-			IfClasses=NAN;
-			break;
-		default:
-			mThrowGException(GALILEI::GetObjType(ObjType,true,true)+" have no references");
-			break;
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-size_t GConcept::GetRef(tObjType ObjType) const
-{
-	switch(ObjType)
-	{
-		case otDoc:
-			return(NbRefDocs);
-			break;
-		case otProfile:
-			return(NbRefProfiles);
-			break;
-		case otCommunity:
-			return(NbRefCommunities);
-			break;
-		case otTopic:
-			return(NbRefTopics);
-			break;
-		case otClass:
-			return(NbRefClasses);
-			break;
-		default:
-			mThrowGException("Unknown type for concept "+RString::Number(Id));
-			break;
-	}
-	return(0);
-}
-
-
-//-----------------------------------------------------------------------------
-double GConcept::GetIF(tObjType ObjType) const
-{
-	switch(ObjType)
-	{
-		case otDoc:
-			if(IfDocs!=IfDocs)
-			{
-				if(Type->NbRefDocs&&NbRefDocs)
-					const_cast<GConcept*>(this)->IfDocs=log10(static_cast<double>(Type->NbRefDocs)/static_cast<double>(NbRefDocs));
-				else
-					const_cast<GConcept*>(this)->IfDocs=0.0;
-			}
-			return(IfDocs);
-			break;
-		case otProfile:
-			if(IfProfiles!=IfProfiles)
-			{
-				if(Type->NbRefProfiles&&NbRefProfiles)
-					const_cast<GConcept*>(this)->IfProfiles=log10(static_cast<double>(Type->NbRefProfiles)/static_cast<double>(NbRefProfiles));
-				else
-					const_cast<GConcept*>(this)->IfProfiles=0.0;
-			}
-			return(IfProfiles);
-			break;
-		case otCommunity:
-			if(IfCommunities!=IfCommunities)
-			{
-				if(Type->NbRefCommunities&&NbRefCommunities)
-					const_cast<GConcept*>(this)->IfCommunities=log10(static_cast<double>(Type->NbRefCommunities)/static_cast<double>(NbRefCommunities));
-				else
-					const_cast<GConcept*>(this)->IfCommunities=0.0;
-			}
-			return(IfCommunities);
-			break;
-		case otTopic:
-			if(IfTopics!=IfTopics)
-			{
-				if(Type->NbRefTopics&&NbRefTopics)
-					const_cast<GConcept*>(this)->IfTopics=log10(static_cast<double>(Type->NbRefTopics)/static_cast<double>(NbRefTopics));
-				else
-					const_cast<GConcept*>(this)->IfTopics=0.0;
-			}
-			return(IfTopics);
-			break;
-		case otClass:
-			if(IfClasses!=IfClasses)
-			{
-				if(Type->NbRefClasses&&NbRefClasses)
-					const_cast<GConcept*>(this)->IfClasses=log10(static_cast<double>(Type->NbRefClasses)/static_cast<double>(NbRefClasses));
-				else
-					const_cast<GConcept*>(this)->IfClasses=0.0;
-			}
-			return(IfClasses);
-			break;
-		default:
-			mThrowGException("Unknown type for concept "+RString::Number(Id));
-			break;
-	}
-}
-
-
-//-----------------------------------------------------------------------------
 void GConcept::Clear(void)
 {
 	Id=cNoRef;
 	Name=RString::Null;
-	NbRefDocs=0;
-	IfDocs=NAN;
 	IndexDocs=0;
-	NbRefProfiles=0;
-	IfProfiles=NAN;
 	IndexProfiles=0;
-	NbRefCommunities=0;
-	IfCommunities=NAN;
 	IndexCommunities=0;
-	NbRefTopics=0;
-	IfTopics=NAN;
 	IndexTopics=0;
-	NbRefClasses=0;
-	IfClasses=NAN;
 	IndexClasses=0;
 	Type=0;
 }

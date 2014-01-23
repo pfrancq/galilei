@@ -1020,18 +1020,21 @@ public:
 			throw RPrgException(prg,"Method needs one parameter");
 
 		RString objects=args[0]->GetValue(prg);
-		tObjType type;
 		if(objects=="User")
-			type=otUser;
+			Owner->Session->ReInit(pUser);
+		else if(objects=="Profile")
+			Owner->Session->ReInit(pProfile,false);
 		else if(objects=="Doc")
-			type=otDoc;
+			Owner->Session->ReInit(pDoc,false);
 		else if(objects=="Community")
-			type=otCommunity;
+			Owner->Session->ReInit(pCommunity);
 		else if(objects=="Topic")
-			type=otTopic;
+			Owner->Session->ReInit(pTopic);
+		else if(objects=="Class")
+			Owner->Session->ReInit(pClass);
 		else
 			throw RPrgException(prg,"ForceReCompute with unsupported type");
-		Owner->Session->ForceReCompute(type);
+
 	}
 };
 
@@ -1139,10 +1142,10 @@ public:
 
 
 //------------------------------------------------------------------------------
-class ResetMeasure : public RPrgFunc
+class ResetPlugIn : public RPrgFunc
 {
 public:
-	ResetMeasure(void) : RPrgFunc("ResetMeasure","Reset the measure (2th argument) for a given type (1st argument).") {}
+	ResetPlugIn(void) : RPrgFunc("ResetPlugIn","Reset a plug-in (the name of the plug-in in the second argument if the plug-ins have types such as measures).") {}
 	virtual void Run(R::RInterpreter* prg,R::RPrgOutput* o,RPrgVarInst*,R::RContainer<R::RPrgVar,true,false>& args)
 	{
 		ShowInst(this,prg,args);
@@ -1150,7 +1153,7 @@ public:
 			throw RPrgException(prg,"Method needs two parameters.");
 		GMeasure* Mes(GALILEIApp->GetPlugIn<GMeasure>("Measures",args[0]->GetValue(prg),args[1]->GetValue(prg)));
 		o->WriteStr("Current Measure for '"+args[0]->GetValue(prg)+"': "+args[1]->GetValue(prg));
-		Mes->ReInit();
+		Mes->Reset();
 	}
 };
 
@@ -1256,7 +1259,7 @@ GSessionClass::GSessionClass(GInstGALILEIApp* app)
 	Methods.InsertPtr(new SetRand());
 	Methods.InsertPtr(new ForceReCompute());
 	Methods.InsertPtr(new SetSaveResults());
-	Methods.InsertPtr(new ResetMeasure());
+	Methods.InsertPtr(new ResetPlugIn());
 	Methods.InsertPtr(new ComputeSugs());
 	Methods.InsertPtr(new ComputeTrust());
 	Methods.InsertPtr(new RunTool());

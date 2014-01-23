@@ -45,23 +45,46 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 //
+// GDescriptionSetData
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+GDescriptionSetData::GDescriptionSetData(GSession*)
+	: Dirty(true)
+{
+
+}
+
+
+//-----------------------------------------------------------------------------
+GDescriptionSetData::~GDescriptionSetData(void)
+{
+
+}
+
+
+
+//-----------------------------------------------------------------------------
+//
 // GDescriptionSet
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 GDescriptionSet::GDescriptionSet(GSession* session)
-	: Session(session), Set(200), IF(session->GetNbConcepts()+1),
-	  Refs(session->GetNbConceptTypes()+1), Dirty(true),
-	  tmpTypes(session->GetNbConceptTypes()+1), tmpConcepts(session->GetNbConcepts()+1)
+	: Session(session), Set(200),
+	  Data(0)
 {
 }
+
 
 //-----------------------------------------------------------------------------
 void GDescriptionSet::Clear(void)
 {
 	Set.Clear();
-	Dirty=true;
+	if(Data)
+		Data->Dirty=true;
 }
 
 
@@ -69,91 +92,31 @@ void GDescriptionSet::Clear(void)
 void GDescriptionSet::InsertDescription(const GDescription* desc)
 {
 	Set.InsertPtr(desc);
-	Dirty=true;
+	if(Data)
+		Data->Dirty=true;
 }
 
 
 //-----------------------------------------------------------------------------
-double GDescriptionSet::GetIF(size_t conceptid)
+void GDescriptionSet::SetData(GDescriptionSetData* data)
 {
-	// Look if it must be recomputed
-	if(Dirty)
+	Data=data;
+}
+
+
+//-----------------------------------------------------------------------------
+RCursor<const GDescription> GDescriptionSet::GetDescriptions(void) const
+{
+	return(RCursor<const GDescription>(Set));
+}
+
+
+//-----------------------------------------------------------------------------
+GDescriptionSet::~GDescriptionSet(void)
+{
+	if(Data)
 	{
-		// Reinitialize the vector
-		IF.Init(Session->GetNbConcepts()+1,0.0);
-		Refs.Init(Session->GetNbConceptTypes()+1,0.0);
-
-
-		// Go through the descriptions
-		RCursor<const GDescription> Desc(Set);
-		for(Desc.Start();!Desc.End();Desc.Next())
-		{
-			RConstCursor<GVector> Vector(Desc()->GetVectors());
-			if(!Vector.GetNb()) continue;
-
-			// Init
-			tmpConcepts.Init(Session->GetNbConcepts()+1,true);
-			tmpTypes.Init(Session->GetNbConceptTypes()+1,true);
-
-			// Parse the vectors
-			for(Vector.Start();!Vector.End();Vector.Next())
-			{
-				RConstCursor<GConceptRef> ptr(Vector()->GetRefs());
-				if(!ptr.GetNb())
-					continue;
-
-				GConceptType* type(Vector()->GetMetaConcept()->GetType());
-				size_t TypeId(type->GetId());
-				if(tmpTypes[TypeId])
-				{
-					// Yes -> A new object uses this concept type.
-					Refs[TypeId]++;
-					tmpTypes[TypeId]=false;
-				}
-
-				// IncRef for the concept
-				size_t ConceptId(Vector()->GetMetaConcept()->GetId());
-				if(tmpConcepts[ConceptId])
-				{
-					// Yes -> A new object uses this concept.
-					IF[ConceptId]++;
-					tmpConcepts[ConceptId]=false;
-				}
-
-				for(ptr.Start();!ptr.End();ptr.Next())
-				{
-					GConceptType* type(ptr()->GetConcept()->GetType());
-					size_t TypeId(type->GetId());
-					if(tmpTypes[TypeId])
-					{
-						// Yes -> A new object uses this concept type.
-						Refs[TypeId]++;
-						tmpTypes[TypeId]=false;
-					}
-
-					// IncRef for the concept
-					size_t ConceptId(ptr()->GetConcept()->GetId());
-					if(tmpConcepts[ConceptId])
-					{
-						// Yes -> A new object uses this concept.
-						IF[ConceptId]++;
-						tmpConcepts[ConceptId]=false;
-					}
-				}
-			}
-		}
-
-		// Recompute the If
-		RNumCursor<double> Cur(IF);
-		for(Cur.Start();!Cur.End();Cur.Next())
-		{
-			if(Cur()==0.0)
-				Cur()=0;
-			else
-				Cur()=log10(Refs[Session->GetConcept(Cur.GetPos())->GetType()->GetId()]/Cur());
-		}
+		delete Data;
+		Data=0;
 	}
-	if(conceptid>=IF.GetNb())
-		throw std::range_error("GDescriptionSetGetIF(size_t) : idx "+RString::Number(conceptid)+" outside range [0,"+RString::Number(IF.GetNb()-1)+"]");
-	return(IF[conceptid]);
 }

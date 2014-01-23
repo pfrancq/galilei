@@ -374,10 +374,10 @@ void QGObjectsList::Set(GSession* session,oType type)
 			R::RCursor<GSubject> Grps(session->GetObjs(pSubject));
 			for(Grps.Start();!Grps.End();Grps.Next())
 			{
-				if(!Grps()->GetNbObjs(otDoc))
+				if(!Grps()->GetNbUsedObjs(otDoc))
 					continue;
-				QGObject* item(new QGObject(List,Grps(),Grps()->GetNbObjs(otDoc)));
-				RCursor<GDoc> Objs(Grps()->GetObjs(static_cast<GDoc*>(0)));
+				QGObject* item(new QGObject(List,Grps(),Grps()->GetNbUsedObjs(otDoc)));
+				RCursor<GDoc> Objs(Grps()->GetUsedObjs(pDoc));
 				for(Objs.Start();!Objs.End();Objs.Next())
 					new QGObject(item,Objs());
 			}
@@ -433,10 +433,10 @@ void QGObjectsList::Set(GSession* session,oType type)
 			R::RCursor<GSubject> Grps(session->GetObjs(pSubject));
 			for(Grps.Start();!Grps.End();Grps.Next())
 			{
-				if(!Grps()->GetNbObjs(otProfile))
+				if(!Grps()->GetNbUsedObjs(otProfile))
 					continue;
-				QGObject* item(new QGObject(List,Grps(),Grps()->GetNbObjs(otProfile)));
-				RCursor<GProfile> Objs(Grps()->GetObjs(static_cast<GProfile*>(0)));
+				QGObject* item(new QGObject(List,Grps(),Grps()->GetNbUsedObjs(otProfile)));
+				RCursor<GProfile> Objs(Grps()->GetObjs(pProfile));
 				for(Objs.Start();!Objs.End();Objs.Next())
 					new QGObject(item,Objs());
 			}
@@ -733,7 +733,7 @@ void QGObjectsList::FindNext(const QString& what,bool desc)
 				else if((desc)&&(item->HasDescription()))
 				{
 					GDoc* Doc(item->Obj.Doc);
-					GConcept* find(Doc->GetLang()->GetDict()->GetConcept(Doc->GetLang()->GetStemming(FromQString(what))));
+					GConcept* find(Doc->GetLang()->GetDict()->GetObj(pConcept,Doc->GetLang()->GetStemming(FromQString(what)),true));
 					if(find&&(Doc->IsIn(find)))
 					{
 						Cont=false;

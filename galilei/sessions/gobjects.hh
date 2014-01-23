@@ -47,7 +47,7 @@ const size_t SizeT3=3*sizeof(size_t);
 template<class C,const R::hNotification* hEvents>
 	GObjects<C,hEvents>::GObjects(size_t size,const R::RString& name,tObjType type)
 		: R::RObjectContainer<C,true>(1,size), ObjName(name), Type(type), MaxObjs(0),
-		  Desc(0), Index(0), Tree(0), Loaded(false), Selected(size), tmpRefs(size/2)
+		  Desc(0), Index(0), Tree(0), Loaded(false), tmpRefs(size/2)
 {
 }
 
@@ -79,6 +79,51 @@ template<class C,const R::hNotification* hEvents>
 		config->InsertParam(new R::RParamValue("Tolerance",40),"Indexer",ObjName,"Tree");
 		config->InsertParam(new R::RParamValue("CacheSize",20),"Indexer",ObjName,"Tree");
 		config->InsertParam(new R::RParamValue("Type",R::RBlockFile::WriteBack),"Indexer",ObjName,"Tree");
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+template<class C,const R::hNotification* hEvents>
+	void GObjects<C,hEvents>::Clear(const C* obj,bool del)
+{
+	// Clear the references and the index
+	if(C::HasDesc())
+		ClearIndex(C::GetType());
+
+	// If the results must be saved -> clear the objects files
+	if(SaveResults)
+	{
+		if(C::HasDesc())
+		{
+			if(Desc)
+				Desc->Clear();
+			if(Index)
+				Index->Clear();
+		}
+		if(C::HasTree()&&Tree)
+			Tree->Clear();
+	}
+
+
+	// Treat the objects
+	if(del)
+	{
+		// Delete the objects from the container and the storage
+		R::RObjectContainer<C,true>::Clear();
+		if(SaveResults)
+			Storage->Clear(C::GetType());
+	}
+	else
+	{
+		// Clear each object individually from its description(s)
+		R::RCursor<C> Obj(GetObjs(obj));
+		for(Obj.Start();!Obj.End();Obj.Next())
+		{
+			Obj()->Clear(SaveResults);
+			if(SaveResults)
+				Storage->SaveObj(Obj());
+		}
 	}
 }
 
@@ -167,14 +212,6 @@ template<class C,const R::hNotification* hEvents>
 
 //-----------------------------------------------------------------------------
 template<class C,const R::hNotification* hEvents>
-	void GObjects<C,hEvents>::Clear(const C*)
-{
-	R::RObjectContainer<C,true>::Clear();
-}
-
-
-//-----------------------------------------------------------------------------
-template<class C,const R::hNotification* hEvents>
 	size_t GObjects<C,hEvents>::GetNbObjs(const C*) const
 {
 	return(R::RObjectContainer<C,true>::GetNbObjs());
@@ -186,6 +223,14 @@ template<class C,const R::hNotification* hEvents>
 	size_t GObjects<C,hEvents>::GetMaxObjId(const C*) const
 {
 	return(R::RObjectContainer<C,true>::GetMaxObjId());
+}
+
+
+//-----------------------------------------------------------------------------
+template<class C,const R::hNotification* hEvents>
+	size_t GObjects<C,hEvents>::GetMaxObjPos(const C*) const
+{
+	return(R::RObjectContainer<C,true>::GetMaxObjPos());
 }
 
 
@@ -322,7 +367,7 @@ template<class C,const R::hNotification* hEvents>
 			Desc->Read((char*)&size,sizeof(size_t));
 
 			// Create the corresponding vector and read it
-			GVector* Vector(new GVector(GetConcept(concept),size));
+			GVector* Vector(new GVector(GetObj(pConcept,concept),size));
 			vectors->InsertPtrAt(Vector,i,false);
 
 			// Load the vector
@@ -330,7 +375,7 @@ template<class C,const R::hNotification* hEvents>
 			{
 				Desc->Read((char*)&concept,sizeof(size_t));
 				Desc->Read((char*)&weight,sizeof(double));
-				Vector->InsertPtrAt(new GConceptRef(GetConcept(concept),weight),j,false);
+				Vector->InsertPtrAt(new GConceptRef(GetObj(pConcept,concept),weight),j,false);
 			}
 		}
 	}
@@ -421,7 +466,7 @@ template<class C,const R::hNotification* hEvents>
 		refs.Clear();
 		return;
 	}
-	Index->Read(Refs,concept->Id,refs);
+	Index->Read(Refs,concept->GetId(),refs);
 }
 
 
@@ -475,7 +520,7 @@ template<class C,const R::hNotification* hEvents>
 
 	// Clear the file and put all block identifier of concepts to 0.
 	Index->Clear();
-	R::RCursor<GConcept> Concepts(GetConcepts());
+	R::RCursor<GConcept> Concepts(GetObjs(pConcept));
 	for(Concepts.Start();!Concepts.End();Concepts.Next())
 	{
 		Concepts()->SetIndex(Type,0);
@@ -509,7 +554,7 @@ template<class C,const R::hNotification* hEvents>
 				Desc->Read((char*)&weight,sizeof(double));
 
 				// Read the vector representing the current index
-				GConcept* Concept(GetConcept(concept));
+				GConcept* Concept(GetObj(pConcept,concept));
 				if(Concept->GetIndex(Type))
 					Index->Read(Concept->GetIndex(Type),Concept->GetId(),tmpRefs);
 				else
@@ -538,7 +583,7 @@ template<class C,const R::hNotification* hEvents>
 	if(Index->GetCacheType()==R::RBlockFile::WriteBack)
 	{
 		Index->Flush();
-		R::RCursor<GConcept> Concepts(GetConcepts());
+		R::RCursor<GConcept> Concepts(GetObjs(pConcept));
 		for(Concepts.Start();!Concepts.End();Concepts.Next())
 			Storage->SaveIndex(Concepts(),Type,Concepts()->GetIndex(Type));
 	}
@@ -673,11 +718,8 @@ template<class C,const R::hNotification* hEvents>
 template<class C,const R::hNotification* hEvents>
 	void GObjects<C,hEvents>::FlushTree(const C*)
 {
-	if(!CreateTree)
+	if((!CreateTree)||(!Tree))
 		return;
-
-	if(!Tree)
-		mThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
 	Tree->Flush();
 }
 
@@ -703,7 +745,6 @@ template<class C,const R::hNotification* hEvents>
 {
 	obj->PostNotification(hEvents[oeAboutToBeDeleted]);
 	R::RObjectContainer<C,true>::DeleteObj(obj);
-	Selected.DeletePtr(obj);
 }
 
 

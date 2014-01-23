@@ -51,6 +51,8 @@ namespace GALILEI{
 *
 * Most methods are private because they are automatically called by the
 * managing classes (GSession, GObjects, etc.).
+*
+* See the documentation related to GPlugIn for more general information.
 * @author GALILEI Team
 * @short Generic Storage Manager.
 */
@@ -215,14 +217,6 @@ private:
 	virtual void SaveConcept(GConcept* concept)=0;
 
 	/**
-	* Save the references of a given object type for a given concept.
-	* @param concept         Concept.
-	* @param what            Type of the object.
-	* @param refs            Number of references.
-	*/
-	virtual void SaveRefs(const GConcept* concept,tObjType what,size_t refs)=0;
-
-	/**
 	 * Save the index information of a given object type for a given concept.
 	 * @param concept         Concept.
 	 * @param what            Type of the object.
@@ -278,6 +272,13 @@ private:
 	* @param classid         Identifier of the class.
 	*/
 	virtual void LoadObj(GClass* &classp,size_t classid)=0;
+
+   /**
+	* Method that load a class that is stored.
+	* @param classp          Pointer to the class that will be created.
+	* @param name            Name of the class.
+	*/
+	virtual void LoadObj(GClass* &classp,const R::RString& name)=0;
 
 	/**
 	* Method that load the classes from where they are stored. This method is

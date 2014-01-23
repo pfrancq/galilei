@@ -54,6 +54,8 @@ namespace GALILEI{
 *
 * It is the role of inheriting classes to ensure that the query submitted to the
 * engines respects their constraints.
+*
+* See the documentation related to GPlugIn for more general information.
 * @short Meta-search Engine
 */
 class GMetaEngine : public GPlugIn, R::RDownload

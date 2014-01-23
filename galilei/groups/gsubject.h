@@ -90,8 +90,8 @@ public:
 
 //------------------------------------------------------------------------------
 /**
-* This Class implement a representation for a subject, i.e. an ideal group of
-* documents and profiles.
+* The GSubject class provides a representation for a subject, i.e. an ideal
+* group of documents and profiles.
 *
 * This class is used for validation purposes.
 * @author Pascal Francq, Julien Lamoral and David Wartel.
@@ -117,25 +117,19 @@ class GSubject : protected R::RNode<GSubjects,GSubject,true>, public GDescriptio
 	R::RString Name;
 
 	/**
-	 * Determine if the subject is used.
+	 * Is the subject used.
 	 */
 	bool Used;
 
 	/**
 	 * Documents categorized to this subject.
 	 */
-	R::RContainer<GDoc,false,true> CategorizedDocs;
+	R::RContainer<GDoc,false,true> Docs;
 
 	/**
 	 * Selected documents attached to this subject.
 	 */
-	R::RContainer<GDoc,false,true> Docs;
-
-	/**
-	 * Store where the documents are attached. The index of a document in
-	 * CategorizedDocs corresponds to the index in this container.
-	 */
-	R::RContainer<GSubject,false,false> WhereDocs;
+	R::RContainer<GDoc,false,true> UsedDocs;
 
 	/**
 	 * Profiles attached to this subject.
@@ -159,32 +153,8 @@ public:
 	* @param session         Session.
 	* @param id              Identifier of the subject.
 	* @param name            Name of the subject.
-	* @param used            Used?
 	*/
-	GSubject(GSession* session,size_t id,const R::RString& name,bool used);
-
-	/**
-	* @return number of child subjects.
-	*/
-	inline size_t GetNbSubjects(void) const {return(GetNbNodes());}
-
-	/**
-	* Initialize the subject (reset all profiles assigned).
-	*
-	* An notification eUnselectDoc is generated for each document.
-	*/
-	void ReInit(void);
-
-	/**
-	 * Get the depth of the subject.
-	 */
-	size_t GetDepth(void) const {return(R::RNode<GSubjects,GSubject,true>::GetDepth());}
-
-	/**
-	 * Get the parent of the subject.
-	 * @return pointer to the parent or null if it is a top subject.
-	 */
-	GSubject* GetParent(void) const {return(Parent);}
+	GSubject(GSession* session,size_t id,const R::RString& name);
 
 	/**
 	* Compare two subjects by comparing their identifier.
@@ -209,171 +179,6 @@ public:
 	* @return int
 	*/
 	int Compare(const R::RString& name) const;
-
-private:
-
-	/**
-	 * Create a description. In practice, it is computed as name of
-	 * the subject and its parents, or as the gravitation center of the
-	 * documents (for a leaf node) or of the children (for a non-leaf node).
-	 */
-	void CreateDescription(void);
-
-public:
-
-	/**
-	* Verify if a profile is part of the subject.
-	* @param prof            Pointer to the profile.
-	*/
-	bool IsIn(GProfile* prof) const;
-
-	/**
-	* Verify if a document is selected in the subject.
-	* @param doc             Pointer to the document.
-	*/
-	bool IsIn(GDoc* doc) const;
-
-	/**
-	* Verify if a document is categorized in the subject.
-	* @param doc             Pointer to the document.
-	*/
-	bool IsCategorized(GDoc* doc) const;
-
-	/**
-	* Fill a given array with all the documents. If the subject has the maximal
-	* depth, all the documents of its sub-subjects are also inserted.
-	*
-	* The array must be created and must be large enough to hold all the
-	* documents.
-	* @see This method is used in GSimulator to create assessments for
-	*      profiles during a simulation of a real system.
-	* @param docs            Pointer to the array.
-	* @param maxdepth        Maximal depth.
-	* @param nb              Number of elements in the array.
-	*/
-	void FillDocs(GDoc** docs,size_t& nb,size_t maxdepth);
-
-	/**
-	 * Compute the maximal number of documents available for the subject (and
-	 * its sub-subject).
-	 * @param maxdepth       Maximal depth.
-	 * @return the number of documents related to this subject that can be
-	 * inserted.
-	 */
-	size_t GetMaxDocs(size_t maxdepth);
-
-   /**
-    * Clear the subject.
-    */
-   virtual void Clear(void);
-
-	/**
-	 * Clear the ideal group of a given type.
-	 * @param type           Type of the group.
-	 */
-	void ClearIdealGroup(tObjType type);
-
-private:
-
-	/**
-	* Assign an ideal community to the subject. This method can only be used
-	* when the current clustering becomes the ideal
-	* one.
-	* @param com             Community.
-	*/
-	void AssignIdeal(GCommunity* com);
-
-	/**
-	* Assign an ideal topic to the subject. This method can only be used
-	* when the current clustering becomes the ideal
-	* one.
-	* @param top             Community.
-	*/
-	void AssignIdeal(GTopic* top);
-
-public:
-
-	/**
-	 * Get the ideal community associated with the subject.
-	 */
-	GCommunity* GetIdealCommunity(void) const {return(Community);}
-
-	/**
-	 * Get the ideal topic associated with the subject.
-	 */
-	GTopic* GetIdealTopic(void) const {return(Topic);}
-
-	/**
-	* Get the number of subjects of a given type (otProfile or otDoc) associated
-	* to a the subject (and eventually its sub-subjects).
-	* @param obj             Pseudo-parameter.
-	* @param type            Type.
-	*/
-	size_t GetNbObjs(const GSubject* obj,tObjType type) const;
-
-	/**
-	* Compute the number of profiles of a given community that are also in the
-	* current one.
-	* @param com             Community.
-	*/
-	size_t GetNbObjs(const GCommunity* com) const;
-
-	/**
-	* Compute the number of documents of a given topic that are also in the
-	* current one.
-	* @param top             Topic.
-	*/
-	size_t GetNbObjs(const GTopic* top) const;
-
-	/**
-	* Compute the number of documents of a given container that are also in the
-	* current one.
-	* @param docs            Container of documents.
-	*/
-	size_t GetNbDocs(const R::RContainer<GDoc,false,false>* docs) const;
-
-	/**
-	* Get the number of objects of a given type (otProfile or otDoc) associated
-	* to a the subject.
-	* @param type            Type.
-	*/
-	size_t GetNbObjs(tObjType type) const;
-
-	/**
-	* Get a cursor over the profiles contained in the subject.
-	*
-	* The pointer passed as parameter is needed by the C++ compiler to identify
-	* the method, but is not used. In practice, it can be called:
-	* @code
-	* GSubject* sub;
-	* ...
-	* R::RCursor<GProfile> Profiles(sub->GetObjs(pProfile);
-	* @endcode
-	*/
-	R::RCursor<GProfile> GetObjs(const GProfile*) const;
-
-	/**
-	* Get a cursor over the documents contained in the subject.
-	*
-	* The pointer passed as parameter is needed by the C++ compiler to identify
-	* the method, but is not used. In practice, it can be called:
-	* @code
-	* GSubject* sub;
-	* ...
-	* R::RCursor<GDoc> Docs(sub->GetObjs(pDoc);
-	* @endcode
-	*/
-	R::RCursor<GDoc> GetObjs(const GDoc*) const;
-
-	/**
-	* Get a cursor over the all the documents contained in the subject.
-	*/
-	R::RCursor<GDoc> GetTotalDocs(void) const {return(R::RCursor<GDoc>(CategorizedDocs));}
-
-	/**
-	 * @return The total number of documents assigned to this subject.
-	 */
-	size_t GetNbTotalDocs(void) const {return(CategorizedDocs.GetNb());}
 
 	/**
 	* Return the name of the Subject.
@@ -400,6 +205,187 @@ public:
 	bool IsUsed(void) const {return(Used);}
 
 	/**
+	* @return number of child subjects.
+	*/
+	inline size_t GetNbSubjects(void) const {return(GetNbNodes());}
+
+	/**
+	 * Get the depth of the subject.
+	 */
+	size_t GetDepth(void) const {return(R::RNode<GSubjects,GSubject,true>::GetDepth());}
+
+	/**
+	 * Get the parent of the subject.
+	 * @return pointer to the parent or null if it is a top subject.
+	 */
+	GSubject* GetParent(void) const {return(Parent);}
+
+	/**
+	 * Create a description. In practice, it is computed as name of
+	 * the subject and its parents, or as the gravitation center of the
+	 * documents (for a leaf node) or of the children (for a non-leaf node).
+	 */
+	void CreateDescription(void);
+
+	/**
+	* Verify if a document is used by the subject.
+	* @param doc             Pointer to the document.
+	*/
+	bool IsUsed(GDoc* doc) const;
+
+	/**
+	* Verify if a document is assign to the subject. This doesn't means that
+	* the document is used by that subject (use GSubject::IsUsed for that
+	* purpose).
+	* @param doc             Pointer to the document.
+	*/
+	bool IsIn(GDoc* doc) const;
+
+	/**
+	* Fill a given array with all the documents. If the subject has the maximal
+	* depth, all the documents of its sub-subjects are also inserted.
+	*
+	* The array must be created and must be large enough to hold all the
+	* documents.
+	* @see This method is used in GSimulator to create assessments for
+	*      profiles during a simulation of a real system.
+	* @param docs            Pointer to the array.
+	* @param maxdepth        Maximal depth.
+	* @param nb              Number of elements in the array.
+	*/
+	void GetObjs(GDoc** docs,size_t& nb,size_t maxdepth);
+
+	/**
+	 * Compute the maximal number of documents available for the subject (and
+	 * its sub-subject).
+	 * @param obj            Pseudo-parameter.
+	 * @param maxdepth       Maximal depth.
+	 * @return the number of documents related to this subject that can be
+	 * inserted.
+	 */
+	size_t GetNbObjs(const GDoc* obj,size_t maxdepth);
+
+	/**
+	* Verify if a profile is assign to the subject.
+	* @param prof            Pointer to the profile.
+	*/
+	bool IsIn(GProfile* prof) const;
+
+	/**
+	* Verify if a profile is used by the subject. In practice, all profiles
+	* assigned to a subject are used.
+	* @param prof            Pointer to the profile.
+	*/
+	bool IsUsed(GProfile* prof) const;
+
+	/**
+	 * Clear the ideal group of a given type.
+	 * @param type           Type of the group.
+	 */
+	void ClearIdealGroup(tObjType type);
+
+	/**
+	* Assign an ideal community to the subject. This method should only be used
+	* when the current clustering becomes the ideal
+	* one.
+	* @param com             Community.
+	*/
+	void AssignIdeal(GCommunity* com);
+
+	/**
+	* Assign an ideal topic to the subject. This method should only be used
+	* when the current clustering becomes the ideal
+	* one.
+	* @param top             Community.
+	*/
+	void AssignIdeal(GTopic* top);
+
+	/**
+	 * Get the ideal community associated with the subject.
+	 */
+	GCommunity* GetIdealCommunity(void) const {return(Community);}
+
+	/**
+	 * Get the ideal topic associated with the subject.
+	 */
+	GTopic* GetIdealTopic(void) const {return(Topic);}
+
+	/**
+	* Get the number of objects of a given type (otProfile or otDoc) associated
+	* to the subject (and eventually its sub-subjects).
+	* @param obj             Pseudo-parameter.
+	* @param type            Type.
+	*/
+	size_t GetNbObjs(const GSubject* obj,tObjType type) const;
+
+	/**
+	* Get the number of used objects of a given type (otProfile or otDoc)
+	* associated to the subject (and eventually its sub-subjects).
+	* @param obj             Pseudo-parameter.
+	* @param type            Type.
+	*/
+	size_t GetNbUsedObjs(const GSubject* obj,tObjType type) const;
+
+	/**
+	* Compute the number of profiles of a given community that are also in the
+	* current one.
+	* @param com             Community.
+	*/
+	size_t GetNbUsedObjs(const GCommunity* com) const;
+
+	/**
+	* Compute the number of used documents of a given topic that are also in the
+	* current one.
+	* @param top             Topic.
+	*/
+	size_t GetNbUsedObjs(const GTopic* top) const;
+
+	/**
+	* Compute the number of used documents of a given container that are also in
+	* the current one.
+	* @param docs            Container of documents.
+	*/
+	size_t GetNbUsedObjs(const R::RContainer<GDoc,false,false>* docs) const;
+
+	/**
+	* Get the number of objects of a given type (otProfile or otDoc) associated
+	* to a the subject.
+	* @param type            Type.
+	*/
+	size_t GetNbUsedObjs(tObjType type) const;
+
+	/**
+	* Get a cursor over the profiles contained in the subject.
+	* @param obj             Pseudo-parameter.
+	*/
+	R::RCursor<GProfile> GetObjs(const GProfile* obj) const;
+
+	/**
+	* Get a cursor over the used profiles contained in the subject. In practice,
+	* all the profiles assigned to a subject are used.
+	* @param obj             Pseudo-parameter.
+	*/
+	R::RCursor<GProfile> GetUsedObjs(const GProfile* obj) const;
+
+	/**
+	* Get a cursor over the documents contained in the subject.
+	* @param obj             Pseudo-parameter.
+	*/
+	R::RCursor<GDoc> GetUsedObjs(const GDoc* obj) const;
+
+	/**
+	* Get a cursor over the all the documents contained in the subject.
+	* @param obj             Pseudo-parameter.
+	*/
+	R::RCursor<GDoc> GetObjs(const GDoc* obj) const;
+
+	/**
+	 * The the number of documents assigned to this subject.
+	 * @param obj             Pseudo-parameter.
+	 */
+	size_t GetNbObjs(const GDoc* obj) const;
+
+	/**
 	 * Guess the language of a subject. It is the language of the most
 	 * documents attached to this subject. If not found, it is supposed that
 	 * the language is the one of the parent.
@@ -423,17 +409,31 @@ public:
 	 */
 	virtual double GetUpOperationCost(void) const;
 
+private:
+
+   /**
+    * Clear the subject.
+    */
+   virtual void Clear(void);
+
+	/**
+	* Initialize the subject (reset all profiles assigned).
+	*
+	* An notification eUnselectDoc is generated for each document.
+	*/
+	void ReInit(void);
+
+public:
+
 	/**
 	* Destruct the subject.
 	*/
 	virtual ~GSubject(void);
 
 	friend class GSubjects;
-	friend class GSession;
 	friend class R::RTree<GSubjects,GSubject,true>;
 	friend class R::RNode<GSubjects,GSubject,true>;
 	friend class R::RNodeCursor<GSubjects,GSubject>;
-	friend class GSimulator;
 };
 
 

@@ -58,20 +58,21 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GSubjects::GSubjects(void)
-	: RTree<GSubjects,GSubject,true>(), Subjects(0), SelectedDocs(0), DocsStatus(0), DocsSubjects(0),
+	: RTree<GSubjects,GSubject,true>(), Subjects(0), UsedSubjects(0), UsedDocs(0), DocsStatus(0), DocsSubjects(0),
 	  ProfilesSubject(0), MustLoad(true), DescType(sdNames)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GSubjects::Init(const GSubject*,size_t nbsubjects,size_t nbdocs,size_t nbprofiles)
+void GSubjects::Init(const GSubject*,size_t nbsubjects)
 {
 	Subjects.VerifyTab(nbsubjects);
-	SelectedDocs.VerifyTab(nbdocs);
-	DocsSubjects.VerifyTab(nbdocs);
-	DocsStatus.Verify(nbdocs);
-	ProfilesSubject.VerifyTab(nbprofiles);
+	UsedSubjects.VerifyTab(nbsubjects);
+	UsedDocs.VerifyTab(dynamic_cast<GSession*>(this)->GetMaxObjId(pDoc)+1);
+	DocsSubjects.VerifyTab(dynamic_cast<GSession*>(this)->GetMaxObjId(pDoc)+1);
+	DocsStatus.ReSize(dynamic_cast<GSession*>(this)->GetMaxObjId(pDoc)+1);
+	ProfilesSubject.VerifyTab(dynamic_cast<GSession*>(this)->GetMaxObjId(pProfile)+1);
 }
 
 
@@ -79,7 +80,7 @@ void GSubjects::Init(const GSubject*,size_t nbsubjects,size_t nbdocs,size_t nbpr
 void GSubjects::ReInit(void)
 {
 	// Deselect the documents
-	RCursor<GDoc> Doc(SelectedDocs);
+	RCursor<GDoc> Doc(UsedDocs);
 	for(Doc.Start();!Doc.End();Doc.Next())
 		Doc()->PostNotification(hDocs[oeDeselected]);
 
@@ -91,7 +92,7 @@ void GSubjects::ReInit(void)
 	// Clear the documents and profiles assignment
 	ProfilesSubject.Clear();
 	DocsSubjects.Clear();
-	SelectedDocs.Clear();
+	UsedDocs.Clear();
 	//Storage->Clear(otSubject);
 }
 
@@ -100,14 +101,14 @@ void GSubjects::ReInit(void)
 void GSubjects::Clear(void)
 {
 	// Deselect the documents
-	RCursor<GDoc> Doc(SelectedDocs);
+	RCursor<GDoc> Doc(UsedDocs);
 	for(Doc.Start();!Doc.End();Doc.Next())
 		Doc()->PostNotification(hDocs[oeDeselected]);
 
 	// Clear the documents and profiles assignment
 	ProfilesSubject.Clear();
 	DocsSubjects.Clear();
-	SelectedDocs.Clear();
+	UsedDocs.Clear();
 
 	// Clear the subjects
 	RTree<GSubjects,GSubject,true>::Clear();
@@ -142,7 +143,7 @@ size_t GSubjects::GetMaxDepth(void) const
 size_t GSubjects::GetNbObjs(const GSubject*) const
 {
 	const_cast<GSubjects*>(this)->LoadObjs(pSubject);
-	return(GetNbNodes());
+	return(Subjects.GetNb());
 }
 
 //------------------------------------------------------------------------------
@@ -193,17 +194,23 @@ void GSubjects::InsertObj(GSubject* to,GSubject* subject)
 	LoadObjs(pSubject);
 	InsertNode(to,subject);
 	Subjects.InsertPtr(subject);
+
+	// If the subjects are not currently loaded -> save the subject if necessary
+	if(SaveResults&&(State!=osOnDemand))
+		Storage->SaveObj(subject);
 }
 
 
 //-----------------------------------------------------------------------------
-size_t GSubjects::GetNbObjs(const GSubject*,tObjType type) const
+size_t GSubjects::GetNbUsedObjs(tObjType type) const
 {
 	const_cast<GSubjects*>(this)->LoadObjs(pSubject);
+	if(type==otDoc)
+		return(UsedDocs.GetNb());
 	size_t nb(0);
 	RNodeCursor<GSubjects,GSubject> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
-		nb+=Cur()->GetNbObjs(pSubject,type);
+		nb+=Cur()->GetNbUsedObjs(pSubject,type);
 	return(nb);
 }
 
@@ -212,10 +219,10 @@ size_t GSubjects::GetNbObjs(const GSubject*,tObjType type) const
 size_t GSubjects::GetNbObjs(const GSubject*,GDoc* doc) const
 {
 	const_cast<GSubjects*>(this)->LoadObjs(pSubject);
-	const R::RContainer<GSubject,false,false>* line(DocsSubjects.GetPtrAt(doc->GetId()));
-	if(!line)
+	const R::RContainer<GSubject,false,false>* Attached(DocsSubjects.GetPtrAt(doc->GetId()));
+	if(!Attached)
 		return(0);
-	return(line->GetNb());
+	return(Attached->GetNb());
 }
 
 
@@ -223,9 +230,9 @@ size_t GSubjects::GetNbObjs(const GSubject*,GDoc* doc) const
 R::RCursor<GSubject> GSubjects::GetObjs(const GSubject*,const GDoc* doc) const
 {
 	const_cast<GSubjects*>(this)->LoadObjs(pSubject);
-	const R::RContainer<GSubject,false,false>* line(DocsSubjects.GetPtrAt(doc->GetId()));
-	if(line)
-		return(R::RCursor<GSubject>(*line));
+	const R::RContainer<GSubject,false,false>* Attached(DocsSubjects.GetPtrAt(doc->GetId()));
+	if(Attached)
+		return(R::RCursor<GSubject>(*Attached));
 	return(R::RCursor<GSubject>());
 }
 
@@ -234,28 +241,52 @@ R::RCursor<GSubject> GSubjects::GetObjs(const GSubject*,const GDoc* doc) const
 const GSubject* GSubjects::GetObj(const GSubject*,const GDoc* doc,bool one) const
 {
 	const_cast<GSubjects*>(this)->LoadObjs(pSubject);
-	const R::RContainer<GSubject,false,false>* line(DocsSubjects.GetPtrAt(doc->GetId()));
-	if(!line)
+	const R::RContainer<GSubject,false,false>* Attached(DocsSubjects.GetPtrAt(doc->GetId()));
+	if(!Attached)
 		return(0);
-	if(one&&(line->GetNb()>1))
+	if(one&&(Attached->GetNb()>1))
 		mThrowGException("Document has multiple subjects");
-	return((*line)[0]);
+	return((*Attached)[0]);
 }
 
 
 //-----------------------------------------------------------------------------
-size_t GSubjects::GetSelectedObjs(GDoc** docs)
+void GSubjects::SetUsed(GSubject* subject,bool select)
+{
+	if(subject->Used==select)
+		return;
+
+	subject->Used=select;
+	if(select)
+		UsedSubjects.InsertPtr(subject);
+	else
+	{
+		 RContainer<GDoc,false,true> Tmp(subject->UsedDocs);
+		 RCursor<GDoc> Doc(Tmp);
+		 for(Doc.Start();!Doc.End();Doc.Next())
+			  SetUsed(Doc(),subject,false);
+		 UsedSubjects.DeletePtr(*subject);
+	}
+
+	// If the subjects are not currently loaded -> save the subject if necessary
+	if(SaveResults&&(State!=osOnDemand))
+		Storage->SaveObj(subject);
+}
+
+
+//-----------------------------------------------------------------------------
+size_t GSubjects::GetUsedObjs(GDoc** docs)
 {
 	const_cast<GSubjects*>(this)->LoadObjs(pSubject);
-	return(SelectedDocs.GetTab(docs,1,SelectedDocs.GetMaxPos()));
+	return(UsedDocs.GetTab(docs,1,UsedDocs.GetMaxPos()));
 }
 
 
 //------------------------------------------------------------------------------
-RCursor<GDoc> GSubjects::GetSelectedObjs(const GDoc*) const
+RCursor<GDoc> GSubjects::GetUsedObjs(const GDoc*) const
 {
 	const_cast<GSubjects*>(this)->LoadObjs(pSubject);
-	return(RCursor<GDoc>(SelectedDocs));
+	return(RCursor<GDoc>(UsedDocs));
 }
 
 
@@ -279,10 +310,10 @@ bool GSubjects::IsFromParentSubject(const GDoc* doc,const GSubject* subject) con
 bool GSubjects::IsFromSubject(const GDoc* doc,const GSubject* subject) const
 {
 	const_cast<GSubjects*>(this)->LoadObjs(pSubject);
-	const R::RContainer<GSubject,false,false>* line(DocsSubjects.GetPtrAt(doc->GetId()));
-	if(!line)
+	const R::RContainer<GSubject,false,false>* Attached(DocsSubjects.GetPtrAt(doc->GetId()));
+	if(!Attached)
 		return(false);
-	return(line->IsIn(*subject));
+	return(Attached->IsIn(*subject));
 }
 
 
@@ -295,24 +326,27 @@ void GSubjects::InsertObj(GSubject* subject,GDoc* doc)
 	if(!doc)
 		mThrowGException("No document specified");
 	LoadObjs(pSubject);
+	UsedDocs.VerifyTab(dynamic_cast<GSession*>(this)->GetMaxObjId(pDoc)+1);
+	DocsSubjects.VerifyTab(dynamic_cast<GSession*>(this)->GetMaxObjId(pDoc)+1);
+	DocsStatus.ReSize(dynamic_cast<GSession*>(this)->GetMaxObjId(pDoc)+1);
 
 	// Look if the document must be insert in CategorizedDocs
 	bool Find;
-	size_t Pos(subject->CategorizedDocs.GetIndex(doc,Find));
+	size_t Pos(subject->Docs.GetIndex(doc,Find));
 	if(!Find)
-		subject->CategorizedDocs.InsertPtrAt(doc,Pos,false);
+		subject->Docs.InsertPtrAt(doc,Pos,false);
 
 	// Suppose the document is deselected.
 	DocsStatus.Set(false,doc->GetId());
 
-	// If the subjects are not currently loaded -> save the subject
-	if(State!=osOnDemand)
+	// If the subjects are not currently loaded -> save the subject if necessary
+	if(SaveResults&&(State!=osOnDemand))
 		Storage->SaveObj(subject);
 }
 
 
 //------------------------------------------------------------------------------
-void GSubjects::SetSelected(GDoc* doc,GSubject* subject,bool select)
+void GSubjects::SetUsed(GDoc* doc,GSubject* subject,bool select)
 {
 	bool Find;
 
@@ -324,58 +358,70 @@ void GSubjects::SetSelected(GDoc* doc,GSubject* subject,bool select)
 	LoadObjs(pSubject);
 
 	// Get the subjects associated with the document
-	R::RContainer<GSubject,false,false>* subjects(DocsSubjects.GetPtrAt(doc->GetId()));
+	R::RContainer<GSubject,false,false>* Attached(DocsSubjects.GetPtrAt(doc->GetId()));
 
 	if(select)
 	{
 		// The document is selected
 		DocsStatus.Set(true,doc->GetId());
-		size_t Pos(SelectedDocs.GetIndex(doc,Find));
+		size_t Pos(UsedDocs.GetIndex(doc,Find));
 		if(!Find)
-			SelectedDocs.InsertPtr(doc);
+			UsedDocs.InsertPtr(doc);
 
 		// Add an association between the document and the subject
-		if(!subjects)
-			DocsSubjects.InsertPtrAt(subjects=new R::RContainer<GSubject,false,false>(10,5),doc->GetId(),true);
-		Pos=subjects->GetIndex(*subject,Find);
+		if(!Attached)
+			DocsSubjects.InsertPtrAt(Attached=new R::RContainer<GSubject,false,false>(10,5),doc->GetId(),true);
+		Pos=Attached->GetIndex(*subject,Find);
 		if(!Find)
-			subjects->InsertPtrAt(subject,Pos,false);
+			Attached->InsertPtrAt(subject,Pos,false);
 
 		// Add the document in the subject
-		Pos=subject->Docs.GetIndex(doc,Find);
+		Pos=subject->UsedDocs.GetIndex(doc,Find);
 		if(!Find)
 		{
-			subject->Docs.InsertPtrAt(doc,Pos,false);
+			subject->UsedDocs.InsertPtrAt(doc,Pos,false);
 
 			// Emit a selection signal if this is the first time the document is selected
-			if((subjects->GetNb()==1)&&(State!=osOnDemand))
+			if((Attached->GetNb()==1)&&(State!=osOnDemand))
 				doc->PostNotification(hDocs[oeSelected]);
 		}
-
 	}
 	else
 	{
 		// Remove the association between a document and a subject
-		if(!subjects)
+		if(!Attached)
 			return;
-		subjects->DeletePtr(*subject);
+		Attached->DeletePtr(*subject);
 
 		// Remove the document from the subject
-		subject->Docs.DeletePtr(doc);
+		subject->UsedDocs.DeletePtr(doc);
 
 		// Emit a deselection signal if the document has no subject associated anymore
-		if(subjects->GetNb()==0)
+		if(Attached->GetNb()==0)
 		{
-			SelectedDocs.DeletePtr(*doc);
+			UsedDocs.DeletePtr(*doc);
 			DocsStatus.Set(false,doc->GetId());
 			if(State!=osOnDemand)
 				doc->PostNotification(hDocs[oeDeselected]);
 		}
 	}
 
-	// If the subjects are not currently loaded -> save the subject
-	if(State!=osOnDemand)
+	// If the subjects are not currently loaded -> save the subject if necessary
+	if(SaveResults&&(State!=osOnDemand))
 		Storage->SaveObj(subject);
+}
+
+
+//------------------------------------------------------------------------------
+bool GSubjects::IsUsed(const GDoc* doc) const
+{
+	const_cast<GSubjects*>(this)->LoadObjs(pSubject);
+
+	// If no subjects -> considered that all documents are used
+	if(doc->GetId()>Subjects.GetMaxPos())
+		return(true);
+
+	return(DocsStatus[doc->GetId()]);
 }
 
 
@@ -400,8 +446,8 @@ void GSubjects::InsertObj(GSubject* subject,GProfile* profile)
 	ProfilesSubject.InsertPtrAt(subject,profile->GetId(),true);
 	subject->Profiles.InsertPtr(profile);
 
-	// If the subjects are not currently loaded -> save the subject
-	if(State!=osOnDemand)
+	// If the subjects are not currently loaded -> save the subject if necessary
+	if(SaveResults&&(State!=osOnDemand))
 		Storage->SaveObj(subject);
 }
 
@@ -453,7 +499,7 @@ struct NewGenericSubject
 
 
 //------------------------------------------------------------------------------
-void GSubjects::TestSubjects(void)
+void GSubjects::Repair(void)
 {
 	LoadObjs(pSubject);
 
@@ -463,63 +509,74 @@ void GSubjects::TestSubjects(void)
 	if(!Session)
 		mThrowGException("The GSubject object is not a GSession one");
 
-	size_t NbNoLeaf(0);
-	size_t NbLeaf(0);
-	RCursor<GSubject> Cur(Subjects);
-	for(Cur.Start();!Cur.End();Cur.Next())
+	size_t NbNoLeaf(0);                   // Number of no-leaf subjects with documents
+	size_t NbLeaf(0);                     // Number of leaf subjects without documents
+	RCursor<GSubject> Subject(Subjects);
+	for(Subject.Start();!Subject.End();Subject.Next())
 	{
-		GSubject* Subject(Cur());
-		if(Subject->GetNbSubjects()&&Subject->Docs.GetNb())
+		if(Subject()->GetNbSubjects()&&Subject()->Docs.GetNb())
 		{
-			// If no child subjects have documents or children -> it is OK.
+			// If all child subjects are leaf node without -> it is OK.
 			bool OK(true);
-			RNodeCursor<GSubjects,GSubject> Cur2(Subject);
-			for(Cur2.Start();(!Cur2.End())&&OK;Cur2.Next())
-				if(Cur2()->GetNbSubjects()||Cur2()->CategorizedDocs.GetNb())
+			RNodeCursor<GSubjects,GSubject> Child(Subject());
+			for(Child.Start();(!Child.End())&&OK;Child.Next())
+				if(Child()->GetNbSubjects()||Child()->Docs.GetNb())
 					OK=false;
 			if(!OK)
 			{
 				NbNoLeaf++;
 
 				// Create a new subject
-				GSubject* NewSubject(new GSubject(Session,GetNbNodes()+NbNoLeaf,Subject->Name+" general",true));
-				ToIns.InsertPtr(new NewGenericSubject(NewSubject,Cur()));
+				GSubject* NewSubject(new GSubject(Session,GetNbNodes()+NbNoLeaf,Subject()->Name+" general"));
+				ToIns.InsertPtr(new NewGenericSubject(NewSubject,Subject()));
 
 				// Transfer all the document from Cur() to subject
-				RCursor<GDoc> Docs(Subject->CategorizedDocs);
+				RCursor<GDoc> Docs(Subject()->Docs);
 				for(Docs.Start();!Docs.End();Docs.Next())
-					NewSubject->CategorizedDocs.InsertPtr(Docs());
-				Docs.Set(Subject->Docs);
-				for(Docs.Start();!Docs.End();Docs.Next())
+				{
 					NewSubject->Docs.InsertPtr(Docs());
-				Subject->CategorizedDocs.Clear();
-				Subject->Docs.Clear();
+					RContainer<GSubject,false,false>* Attached(DocsSubjects.GetPtrAt(Docs()->GetId()));
+					Attached->DeletePtr(*Subject());
+					Attached->InsertPtr(NewSubject);
+				}
+				Docs.Set(Subject()->UsedDocs);
+				for(Docs.Start();!Docs.End();Docs.Next())
+					NewSubject->UsedDocs.InsertPtr(Docs());
+				Subject()->Docs.Clear();
+				Subject()->UsedDocs.Clear();
 			}
 		}
-		else if(!Subject->GetNbSubjects()&&!Subject->CategorizedDocs.GetNb())
+		else if(!Subject()->GetNbSubjects()&&!Subject()->Docs.GetNb())
 		{
-			ToDel.InsertPtr(Subject);
+			ToDel.InsertPtr(Subject());
 			NbLeaf++;
 		}
 	}
 
 	// Delete the nodes
-	Cur.Set(ToDel);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		DeleteNode(Cur(),true);
+	Subject.Set(ToDel);
+	for(Subject.Start();!Subject.End();Subject.Next())
+	{
+		SetUsed(Subject(),true);
+		DeleteNode(Subject(),true);
+	}
 
 	// Insert the nodes
 	RCursor<NewGenericSubject> New(ToIns);
 	for(New.Start();!New.End();New.Next())
+	{
 		InsertObj(New()->Parent,New()->Subject);
+		if(New()->Parent->Used)
+			 SetUsed(New()->Subject,true);
+	}
 
 	// Save if necessary
 	if(SaveResults)
 	{
 		Storage->Clear(otSubject);
-		Cur=GetObjs(pSubject);
-		for(Cur.Start();!Cur.End();Cur.Next())
-			Storage->SaveObj(Cur());
+		Subject=GetObjs(pSubject);
+		for(Subject.Start();!Subject.End();Subject.Next())
+			Storage->SaveObj(Subject());
 	}
 
 	cout<<"There are "<<GetNbObjs(pSubject)<<" subjects:"<<endl;

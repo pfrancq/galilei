@@ -32,6 +32,7 @@
 // include files for GALILEI
 #include <guser.h>
 #include <gprofile.h>
+#include <gfdbk.h>
 #include <gsession.h>
 using namespace GALILEI;
 using namespace R;
@@ -47,7 +48,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 GUser::GUser(GSession* session,size_t id,const R::RString& name,const R::RString& fullname,size_t nb)
  : GObject(session,id,name,otUser), RContainer<GProfile,false,true>(nb),
-	FullName(fullname), State(osLatest)
+	FullName(fullname)
 {
 }
 
@@ -77,13 +78,6 @@ int GUser::Compare(const size_t id) const
 int GUser::Compare(const R::RString& name) const
 {
 	return(GetName().Compare(name));
-}
-
-
-//------------------------------------------------------------------------------
-void GUser::SetState(tObjState state)
-{
-	State=state;
 }
 
 
@@ -127,4 +121,8 @@ RString GUser::GetFullName(void) const
 //------------------------------------------------------------------------------
 GUser::~GUser(void)
 {
+	RContainer<GProfile,false,true> Tmp(*this);
+	RCursor<GProfile> Profile(Tmp);
+	for(Profile.Start();!Profile.End();Profile.Next())
+		Session->DeleteObj(Profile());
 }

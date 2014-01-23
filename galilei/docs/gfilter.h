@@ -53,6 +53,8 @@ namespace GALILEI{
  *
  * Each filter is associated with a given set of MIME types. This association
  * is used to determine which filter should extracts the text from a document.
+ *
+ * See the documentation related to GPlugIn for more general information.
  * @author Pascal Francq
  * @short Generic Filter.
  */

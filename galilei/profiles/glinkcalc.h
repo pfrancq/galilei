@@ -47,6 +47,8 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 /**
 * The GLinkCalc provides a representation for a generic method to compute links.
+*
+* See the documentation related to GPlugIn for more general information.
 * @author Vandaele Valery
 * @short Generic Link Method.
 */

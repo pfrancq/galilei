@@ -52,6 +52,8 @@ namespace GALILEI{
  *
  * It is used in the analyze of a document to determine how to extract the
  * basic elements (words, abbreviation, e-mails, etc.).
+ *
+ * See the documentation related to GPlugIn for more general information.
  * @short Text Tokenizer
  */
 class GTokenizer : public GPlugIn

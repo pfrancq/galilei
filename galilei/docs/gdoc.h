@@ -63,8 +63,6 @@ namespace GALILEI{
 */
 class GDoc : public GDescriptionObject<GDoc>
 {
-protected:
-
 	/**
 	* URI of the document.
 	*/
@@ -156,6 +154,12 @@ public:
 	static inline bool HasTree(void){return(true);}
 
 	/**
+	 * Give the type of the object.
+    * @return otDoc
+    */
+	static inline tObjType GetType(void) {return(otDoc);}
+
+	/**
 	 * Get a string that represents the object when a search has to be
 	 * performed in the list. For the document, it is the URL.
 	 * @return the string used for searching an object.
@@ -203,20 +207,6 @@ public:
 	int Compare(const GLang* lang) const;
 
 	/**
-	 * Clear the information associated with the document.
-	 * @param disk            Clear the reference to the corresponding block on
-	 *                        disk.
-	 */
-	void ClearInfos(bool disk);
-
-	/**
-	 * Clear the concept tree associated with the document.
-	 * @param disk            Clear the reference to the corresponding block on
-	 *                        disk.
-	 */
-	void ClearTree(bool disk);
-
-	/**
 	 * Release the tree.
     */
 	void ReleaseTree(void);
@@ -232,19 +222,6 @@ public:
     * @return the concept tree (and load it if necessary).
     */
 	GConceptTree* GetTree(void) const;
-
-private:
-
-	/**
-	 * Associate a concept tree with a document.
-	 *
-	 * The method is only called by GDocAnalyze to associate a tree to a document
-	 * loaded into memory but not in the storage.
-    * @param tree           Tree to associate.
-    */
-	void SetTree(GConceptTree& tree);
-
-public:
 
 	/**
 	* Get the URI.
@@ -323,24 +300,6 @@ public:
 	R::RNumCursor<size_t> GetFdbks(void) const;
 
 	/**
-	* Add a profile to the list of those which have assess the document.
-	* @param profileid       Identifier of the profile.
-	* @return true if it is a new feedback.
-	*/
-	bool InsertFdbk(size_t profileid);
-
-	/**
-	* Delete a profile from the list of those which have assess the document.
-	* @param profileid       Identifier of the profile.
-	*/
-	void DeleteFdbk(size_t profileid);
-
-	/**
-	* Clear all the assessments on the document.
-	*/
-	void ClearFdbks(void);
-
-	/**
 	* Compute the agreement ratio between two documents, i.e. the ratio between
 	* the number of profiles assessing them as relevant, and the total number
 	* of profiles assessing them.
@@ -373,6 +332,42 @@ public:
 	*/
 	void SetUpdated(R::RDate& date);
 
+private:
+
+	/**
+	 * Clear the concept tree and the vectors associated with the document.
+	 * @param disk            Clear the reference to the corresponding block on
+	 *                        disk.
+	 */
+	void Clear(bool disk);
+
+	/**
+	 * Associate a concept tree with a document.
+	 *
+	 * The method is only called by GDocAnalyze to associate a tree to a document
+	 * loaded into memory but not in the storage.
+    * @param tree           Tree to associate.
+    */
+	void SetTree(GConceptTree& tree);
+
+	/**
+	* Add a profile to the list of those which have assess the document.
+	* @param profileid       Identifier of the profile.
+	* @return true if it is a new feedback.
+	*/
+	bool InsertFdbk(size_t profileid);
+
+	/**
+	* Delete a profile from the list of those which have assess the document.
+	* @param profileid       Identifier of the profile.
+	*/
+	void DeleteFdbk(size_t profileid);
+
+	/**
+	* Clear all the assessments on the document.
+	*/
+	void ClearFdbks(void);
+
 	/**
 	* Update the representation of the document once a computation was done. The
 	* computed date and the status are updated.
@@ -393,6 +388,7 @@ public:
 	*/
 	void Update(GLang* lang,GDescription& desc,GConceptTree& tree);
 
+public:
 
 	/**
 	* Destruct the document.

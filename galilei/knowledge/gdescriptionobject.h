@@ -93,22 +93,6 @@ protected:
 	 */
 	virtual bool LoadVectors(void);
 
-	/**
-	* Add the references for the concepts for a given object type. This
-	* information is used for the inverse frequency factors.
-	* @param session         Session.
-	* @param ObjType         Object type.
-	*/
-	void AddRefs(GSession* session,tObjType ObjType) const;
-
-	/**
-	* Delete the references for the concepts for a given object type. This
-	* information is used for the inverse frequency factors.
-	* @param session         Session.
-	* @param ObjType         Object type.
-	*/
-	void DelRefs(GSession* session,tObjType ObjType) const;
-
 public:
 
 	/**
@@ -188,13 +172,6 @@ public:
 	 * @return Identifier of the block.
 	 */
 	inline size_t GetBlockId(void) const {return(BlockId);}
-
-	/**
-	* Copy a list of object references to the object for a given concept.
-	* @param concept         Concept
-	* @param list             List of concept references.
-	*/
-//	void Copy(GConcept* concept,const R::RContainer<GConceptRef,false,true>& list);
 
 private:
 

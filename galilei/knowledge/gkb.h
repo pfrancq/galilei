@@ -122,7 +122,7 @@ public:
 	 *
 	 * When the knowledge base is in the osOnDemand state, it is not necessary to
 	 * save something to the disk since an information is currently be loaded.
-    * @return the state of the session.
+    * @return the state.
     */
 	inline tObjState GetState(void) const {return(State);}
 
@@ -131,124 +131,119 @@ public:
 	*/
 	inline GStorage* GetStorage(void) const {return(Storage);}
 
-   /**
-	* Insert a new concept category.
-	* @param id              Identifier of the category.
-	* @param name            Name of the category.
-	*/
-	void InsertConceptCat(char id,const R::RString& name);
-
 	/**
 	* Get the a pointer to a type of concept.
+	* @param obj             Pseudo-parameter.
 	* @param id              Identifier of the type.
 	* @param null            If set to true, if the type does not exist,
 	*                        return 0, else an exception is generated.
 	* @return Pointer to a GConceptType.
 	*/
-	GConceptType* GetConceptType(char id,bool null);
+	GConceptType* GetObj(const GConceptType* obj,char id,bool null);
 
 	/**
 	* Get the a pointer to a type of concept. If the concept type doesn't
 	* exist, it is created.
+	* @param obj             Pseudo-parameter.
    * @param cat             Concept category.
 	* @param name            Name of the type.
 	* @param desc            Short description
 	* @return Pointer to a GConceptType.
 	*/
-	GConceptType* GetInsertConceptType(tConceptCat cat,const R::RString& name,const R::RString& desc);
+	GConceptType* GetObj(const GConceptType* obj,tConceptCat cat,const R::RString& name,const R::RString& desc);
 
 	/**
 	* Get the a pointer to a type of concept.
+	* @param obj             Pseudo-parameter.
 	* @param name            Name of the type.
 	* @param null            If set to true, if the type does not exist,
 	*                        return 0, else an exception is generated.
 	* @return Pointer to a GConceptType.
 	*/
-	GConceptType* GetConceptType(const R::RString& name,bool null);
+	GConceptType* GetObj(const GConceptType* obj,const R::RString& name,bool null);
 
 	/**
-	 * Get the number of concept types created in the system.
-    *
-    * In fact, it returns the highest identifier of a concept type.
-	 * @return the number of concept types.
+	 * Get the number of concept types.
+	 * @param obj            Pseudo-parameter.
 	 */
-	inline size_t GetNbConceptTypes(void) const
-   {
-       if(!ConceptTypes.GetNb())
-           return(0);
-       return(ConceptTypesByIds[ConceptTypesByIds.GetMaxPos()]->Id);
-   }
+	inline size_t GetNbObjs(const GConceptType* obj) const;
+
+	/**
+	 * Get the highest identifier of the concept types.
+	 * @param obj            Pseudo-parameter.
+	 */
+	inline size_t GetMaxObjId(const GConceptType* obj) const;
 
 	/**
 	* Get all concept types defined.
+	* @param obj             Pseudo-parameter.
 	* @return RCursor over GConceptType.
 	*/
-	inline R::RCursor<GConceptType> GetConceptTypes(void) const {return(R::RCursor<GConceptType>(ConceptTypes));}
+	inline R::RCursor<GConceptType> GetObjs(const GConceptType* obj) const;
 
 	/**
 	* Insert a new concept type.
+	* @param obj             Pseudo-parameter.
    * @param cat             Concept category.
 	* @param id              Identifier of the type.
 	* @param name            Name of the type.
 	* @param desc            Short description.
-	* @param refdocs         Number of documents referenced.
-	* @param refprofiles     Number of profiles referenced.
-	* @param refgroups       Number of communities referenced.
-	* @param reftopics       Number of topics referenced.
-	* @param refclasses      Number of classes referenced.
 	*/
-	void InsertConceptType(tConceptCat cat,char id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics,size_t refclasses);
+	void InsertObj(const GConceptType* obj,tConceptCat cat,char id,const R::RString& name,const R::RString& desc);
 
-  	/**
-	 * Get the number of concept created in the system.
-    *
-    * In fact, it returns the highest identifier of a concept.
-	 * @return the number of concepts.
+	/**
+	 * Get the number of concepts.
+	 * @param obj            Pseudo-parameter.
 	 */
-	inline size_t GetNbConcepts(void) const
-   {
-       if(!Concepts.GetNb())
-           return(0);
-       return(Concepts[Concepts.GetMaxPos()]->Id);
-   }
+	inline size_t GetNbObjs(const GConcept* obj) const;
+
+	/**
+	 * Get the highest identifier of the concepts.
+	 * @param obj            Pseudo-parameter.
+	 */
+	inline size_t GetMaxObjId(const GConcept* obj) const;
+
+	/**
+	* Get all concept defined.
+	* @param obj             Pseudo-parameter.
+	* @return RCursor over GConcept.
+	*/
+	inline R::RCursor<GConcept> GetObjs(const GConcept* obj) const;
 
 	/**
 	* Get the concept with a specific identifier.
 	* @param id             Identifier.
-	* @return Pointer to a GConcept.
+	* @return a pointer to a GConcept.
 	*/
-	GConcept* GetConcept(size_t id);
-
-	/**
-	* Get all concepts defined.
-	* @return RCursor over GConcept.
-	*/
-	R::RCursor<GConcept> GetConcepts(void) const;
+	GConcept* GetObj(const GConcept* obj,size_t id);
 
 	/**
 	* Get a pointer to a concept.
+	* @param obj             Pseudo-parameter.
 	* @param type            Type of the concept.
 	* @param concept         Name of the concept to insert.
 	* @param null            If set to true, if the object does not exist,
 	*                        return 0, else an exception is generated.
 	*/
-	GConcept* GetConcept(GConceptType* type,const R::RString& concept,bool null=false);
+	GConcept* GetObj(const GConcept* obj,GConceptType* type,const R::RString& concept,bool null=false);
 
 	/**
-	* Insert a concept.
+	* Insert a concept of a given type and name. If the concept already exists,
+	* nothing is done.
+	* @param obj             Pseudo-parameter.
 	* @param type            Type of the concept.
 	* @param concept         Name of the concept to insert.
-	* @return Pointer to the concept inserted.
+	* @return a pointer to the concept is the dictionary.
 	*/
-	GConcept* InsertConcept(GConceptType* type,const R::RString& concept);
+	GConcept* InsertObj(const GConcept* obj,GConceptType* type,const R::RString& concept);
 
 	/**
-	* Insert a concept. In practice, it is a copy of the concept which is
-	* inserted.
-	* @param concept         Concept to insert.
-	* @return Pointer to the concept inserted.
+	* Insert a concept that is exactly the same as a model. If the concept exist,
+	* nothing is done.
+	* @param concept         Model Concept.
+	* @return a pointer to the concept is the dictionary.
 	*/
-	GConcept* InsertConcept(const GConcept* concept);
+	GConcept* InsertObj(const GConcept& concept);
 
 	/**
 	 * Rename a concept.
@@ -256,69 +251,71 @@ public:
 	 * @param name           New name.
 	 * @return a pointer to the correct concept (may be an existing one).
 	 */
-	GConcept* RenameConcept(GConcept* concept,const R::RString& name);
+	GConcept* RenameObj(GConcept* concept,const R::RString& name);
 
 	/**
 	* Delete a given concept from the dictionary.
 	* @param concept         Concept to delete.
 	*/
-	void DeleteConcept(GConcept* concept);
+	void DeleteObj(GConcept* concept);
+
+protected:
 
 	/**
 	 * Clear the block index of all the concepts for a given object type.
-	 * @param session        Session.
     * @param type           Object type.
     */
-	void ClearIndex(GSession* session,tObjType type);
+	void ClearIndex(tObjType type);
 
-	/**
-	 * Clear the references of all the concepts and concept types for a given
-	 * object type.
-	 * @param session        Session.
-    * @param type           Object type.
-    */
-	void ClearRefs(GSession* session,tObjType type);
+public:
 
 	/**
 	* Get a predicate.
+	* @param obj             Pseudo-parameter.
 	* @param id              Identifier of the type.
 	* @param null            If set to true, if the type does not exist,
 	*                        return 0, else an exception is generated.
 	* @return a pointer to a predicate
 	*/
-	GPredicate* GetPredicate(size_t id,bool null);
+	GPredicate* GetObj(const GPredicate* obj,size_t id,bool null);
 
 	/**
 	* Get a predicate.
+	* @param obj             Pseudo-parameter.
 	* @param name            Name of the type.
 	* @param null            If set to true, if the type does not exist,
 	*                        return 0, else an exception is generated.
 	* @return a pointer to a predicate
 	*/
-	GPredicate* GetPredicate(const R::RString& name,bool null);
+	GPredicate* GetObj(const GPredicate* obj,const R::RString& name,bool null);
 
 	/**
 	* Get all predicates defined.
+	* @param obj             Pseudo-parameter.
 	*/
-	R::RCursor<GPredicate> GetPredicates(void) const;
+	R::RCursor<GPredicate> GetObjs(const GPredicate* obj) const;
 
 	/**
 	* Insert a new predicate.
+	* @param obj             Pseudo-parameter.
 	* @param id              Identifier of the type.
 	* @param name            Name of the type.
 	* @param desc            Short description.
+	* @return a pointer to the predicate created.
 	*/
-	GPredicate* InsertPredicate(size_t id,const R::RString& name,const R::RString& desc);
+	GPredicate* InsertObj(const GPredicate* obj,size_t id,const R::RString& name,const R::RString& desc);
 
 	/**
 	* Get a statement.
+	* @param obj             Pseudo-parameter.
 	* @param id              Identifier of the statement.
 	* @return Pointer to a statement.
 	*/
-	GStatement* GetStatement(size_t id);
+	GStatement* GetObj(const GStatement* obj,size_t id);
 
 	/**
 	* Insert a new statement.
+	* @param obj             Pseudo-parameter.
 	* @param id              Identifier of the statement.
 	* @param predicate       Identifier of the predicate.
 	* @param xi              Identifier of the \f$x_i\f$.
@@ -327,7 +324,7 @@ public:
 	* @param xjtype          Type of the \f$x_j\f$.
 	* @param weight          Weight of the statement.
 	*/
-	void InsertStatement(size_t id,size_t predicate,size_t xi,tObjType xitype,size_t xj,tObjType xjtype,double weight);
+	void InsertObj(const GStatement* obj,size_t id,size_t predicate,size_t xi,tObjType xitype,size_t xj,tObjType xjtype,double weight);
 
 	/**
 	* Destruct the session.
@@ -336,6 +333,11 @@ public:
 
 	friend class GConceptType;
 };
+
+
+//------------------------------------------------------------------------------
+// some inline implementations
+# include <gkb.hh>
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

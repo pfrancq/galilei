@@ -137,6 +137,24 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 //------------------------------------------------------------------------------
 template<class cObj,class cGroup,GALILEI::tObjType type>
+	void GALILEI::GGroup<cObj,cGroup,type>::InsertObjs(R::RCursor<cObj> objs)
+{
+	for(objs.Start();!objs.End();objs.Next())
+	{
+		R::RContainer<cObj,false,true>::InsertPtr(objs());
+		objs()->SetGroup(Id);
+	}
+	if(Session->GetState()!=osOnDemand)
+		State=osModified;
+	if(Data)
+		Data->Dirty();
+	if(Session->MustSaveResults()&&Session->GetState()!=osOnDemand)
+		Session->GetStorage()->SaveObj(static_cast<cGroup*>(this));
+}
+
+
+//------------------------------------------------------------------------------
+template<class cObj,class cGroup,GALILEI::tObjType type>
 	void GALILEI::GGroup<cObj,cGroup,type>::InsertPtr(cObj* obj)
 {
 	InsertObj(obj);
@@ -259,9 +277,11 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 //------------------------------------------------------------------------------
 template<class cObj,class cGroup,GALILEI::tObjType type>
-	void GALILEI::GGroup<cObj,cGroup,type>::Clear(void)
+	void GALILEI::GGroup<cObj,cGroup,type>::Clear(bool disk)
 {
 	GDescription::Clear();
+	if(disk)
+		GDescriptionObject<cGroup>::BlockId=0;
 	if(Data)
 		Data->Dirty();
 }
@@ -274,7 +294,7 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 	size_t tot;
 	R::RCursor<cObj> Obj(*this);
 	for(Obj.Start(),tot=0;!Obj.End();Obj.Next())
-		if(subject->IsIn(Obj()))
+		if(subject->IsUsed(Obj()))
 			tot++;
 	return(tot);
 }

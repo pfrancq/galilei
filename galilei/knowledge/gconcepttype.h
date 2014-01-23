@@ -61,8 +61,6 @@ namespace GALILEI{
 */
 class GConceptType : public GObject
 {
-private:
-
    /**
     * Category.
     */
@@ -83,31 +81,6 @@ private:
 	*/
 	R::RString Description;
 
-	/**
-	* Number of references in documents.
-	*/
-	size_t NbRefDocs;
-
-	/**
-	* Number of references in profiles.
-	*/
-	size_t NbRefProfiles;
-
-	/**
-	* Number of references in communities.
-	*/
-	size_t NbRefCommunities;
-
-	/**
-	 * Number of references in topics.
-	 */
-	size_t NbRefTopics;
-
-	/**
-	 * Number of references in classes.
-	 */
-	size_t NbRefClasses;
-
 public:
 
 	/**
@@ -125,17 +98,6 @@ public:
     * @return the class name.
     */
 	virtual R::RCString GetClassName(void) const {return("GConceptType");}
-
-	/**
-	* Set the references of a given language. This method is called when
-	* connecting to and disconnecting from a session.
-	* @param refdocs         Number of documents referenced.
-	* @param refprofiles     Number of profiles referenced.
-	* @param refcommunities  Number of communities referenced.
-	* @param reftopics       Number of topics referenced.
-	* @param refclasses      Number of classes referenced.
-	*/
-	void SetReferences(size_t refdocs,size_t refprofiles,size_t refcommunities,size_t reftopics,size_t refclasses);
 
 	/**
 	* Compare two concepts types.
@@ -175,97 +137,49 @@ public:
 
 	/**
 	* @return a cursor over the main hash table.
+	* @param obj             Pseudo-parameter.
 	*/
-	R::RCursor<R::RDblHashContainer<GConcept,false>::Hash> GetConcepts(void) const
-	{
-		return(R::RCursor<R::RDblHashContainer<GConcept,false>::Hash>(Concepts.GetCursor()));
-	}
+	R::RCursor<R::RDblHashContainer<GConcept,false>::Hash> GetObjs(const GConcept* obj) const;
 
 	/**
 	* Look if a given concept is in the dictionary.
-	* @param name            Name fo the concept to look for.
+	* @param obj             Pseudo-parameter.
+	* @param name            Name of the concept to look for.
 	* @return true if the concept is in the dictionary.
 	*/
-	bool IsIn(const R::RString& name) const;
-
-	/**
-	* Get a given concept from the dictionary. If the concept does not exist, it
-   * is created.
-	* @param name            Name of the concept to look for.
-	* @return Pointer to the concept.
-	*/
-	GConcept* GetInsertConcept(const R::RString& name);
+	bool IsIn(const GConcept* obj,const R::RString& name) const;
 
    /**
 	* Get a given concept from the dictionary.
+	* @param obj             Pseudo-parameter.
 	* @param name            Name of the concept to look for.
+	* @param null            If set to true, if the concept does not exist,
+	*                        return 0, else an exception is generated.
 	* @return Pointer to the concept.
 	*/
-	GConcept* GetConcept(const R::RString& name) const;
+	GConcept* GetObj(const GConcept* obj,const R::RString& name,bool null) const;
+
+private:
 
 	/**
 	* Insert a concept in the dictionary.
 	* @param concept         Concept.
 	*/
-	void InsertConcept(GConcept* concept);
+	void InsertObj(GConcept* concept);
 
 	/**
 	* Delete a concept from the dictionary.
 	* @param concept         Concept.
 	*/
-	void DeleteConcept(GConcept* concept);
+	void DeleteObj(GConcept* concept);
+
+public:
 
 	/**
 	* Get the total number of concepts.
+	* @param obj             Pseudo-parameter.
 	*/
-	size_t GetNbConcepts(void) const {return(Concepts.GetNb());}
-
-	/**
-	* Increase the number of objects of a given type using the dictionary of the
-	* language.
-	* @param ObjType        Type of the object.
-	*/
-	void IncRef(tObjType ObjType);
-
-	/**
-	* Decrease the number of objects of a given type using the dictionary of the
-	* language.
-	* @param ObjType        Type of the object.
-	*/
-	void DecRef(tObjType ObjType);
-
-	/**
-	* Get the number of objects of a given type using the dictionary of the
-	* language.
-	* @param ObjType        Type of the reference. If otAnyType, the method
-	*                       returns the number of references of all the
-	*                       objects.
-	*/
-	size_t GetRef(tObjType ObjType) const;
-
-	/**
-	* Clear the number of objects of a given type for this concept type.
-	* @param ObjType        Type of the object.
-	*/
-	void ClearRefs(tObjType ObjType);
-
-	/**
-	* Increase the number of objects of a given type that make a reference to a
-	* concept.
-	* @param concept        Concept.
-	* @param ObjType        Type of the object.
-	*/
-	size_t IncRef(GConcept* concept,tObjType ObjType);
-
-	/**
-	* Decrease the number of objects of a given type that make a reference to a
-	* concept.
-	* @param concept        Concept.
-	* @param ObjType        Type of the object.
-	*/
-	size_t DecRef(GConcept* concept,tObjType ObjType);
-
-public:
+	inline size_t GetNbObjs(const GConcept* obj) const;
 
 	/**
 	 * Destruct.
@@ -273,11 +187,21 @@ public:
 	virtual ~GConceptType(void);
 
 	friend class GConcept;
-	friend class GWeightInfo;
-	friend class GSession;
 	friend class GKB;
-	friend class GGALILEIApp;
 };
+
+
+//-----------------------------------------------------------------------------
+// inline implementations
+inline size_t GConceptType::GetNbObjs(const GConcept*) const
+{
+	return(Concepts.GetNb());
+}
+inline R::RCursor<R::RDblHashContainer<GConcept,false>::Hash> GConceptType::GetObjs(const GConcept*) const
+{
+	return(R::RCursor<R::RDblHashContainer<GConcept,false>::Hash>(Concepts.GetCursor()));
+}
+
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

@@ -2,12 +2,15 @@
 
 	GALILEI Research Project
 
-	GMeasure.cpp
+	GKB.hh
 
-	Generic Measure - Implementation.
+	Generic GALILEI Session - inline implementations.
 
-	Copyright 2005-2014 by Pascal Francq (pascal@francq.info).
-	Copyright 2005-2008 by the Université Libre de Bruxelles (ULB).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2004 by Julien Lamoral.
+	Copyright 2001-2004 by Valery Vandaele.
+	Copyright 2001-2004 by David Wartel.
+	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -29,36 +32,52 @@
 
 
 //------------------------------------------------------------------------------
-// include files for GALILEI
-#include <gmeasure.h>
-#include <gsession.h>
-#include <ggalileiapp.h>
-using namespace GALILEI;
-using namespace R;
-using namespace std;
-
-
-
-//------------------------------------------------------------------------------
 //
-//  GMeasure
+// class GKB
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GMeasure::GMeasure(GSession* session,GPlugInFactory* fac)
-	: GPlugIn(session,fac)
+inline size_t GKB::GetNbObjs(const GConceptType*) const
 {
+	return(ConceptTypes.GetNb());
 }
 
 
 //------------------------------------------------------------------------------
-void GMeasure::Info(size_t,...)
+inline size_t GKB::GetMaxObjId(const GConceptType*) const
 {
+	if(!ConceptTypes.GetNb())
+		return(0);
+	return(ConceptTypesByIds[ConceptTypesByIds.GetMaxPos()]->Id);
 }
 
 
 //------------------------------------------------------------------------------
-GMeasure::~GMeasure(void)
+inline R::RCursor<GConceptType> GKB::GetObjs(const GConceptType*) const
 {
+	return(R::RCursor<GConceptType>(ConceptTypes));
+}
+
+
+//------------------------------------------------------------------------------
+inline size_t GKB::GetNbObjs(const GConcept*) const
+{
+	return(Concepts.GetNb());
+}
+
+
+//------------------------------------------------------------------------------
+inline size_t GKB::GetMaxObjId(const GConcept*) const
+{
+	if(!Concepts.GetNb())
+		return(0);
+	return(Concepts[Concepts.GetMaxPos()]->Id);
+}
+
+
+//------------------------------------------------------------------------------
+inline R::RCursor<GConcept> GKB::GetObjs(const GConcept*) const
+{
+	return(R::RCursor<GConcept>(Concepts));
 }

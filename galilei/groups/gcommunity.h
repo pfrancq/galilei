@@ -79,6 +79,12 @@ public:
 	virtual R::RCString GetClassName(void) const {return("GCommunity");}
 
 	/**
+	 * Give the type of the object.
+    * @return otCommunity
+    */
+	static inline tObjType GetType(void) {return(otCommunity);}
+
+	/**
 	 * Get the similarity measure that must be used when computing the
 	 * similarity between the profiles grouped.
 	 */
@@ -151,6 +157,8 @@ public:
 	 * @return the identifier of the community.
 	 */
 	size_t GetCommunityId(void) const {return(CommunityId);}
+
+	friend class GObjects<GCommunity,hCommunities>;
 };
 
 

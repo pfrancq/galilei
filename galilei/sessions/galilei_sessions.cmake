@@ -3,11 +3,7 @@ SET(galilei_sessions_INST_INCLUDES
 	gobject.h
 	gobjects.h 
 	gobjects.hh
-	gobjectslist.h 
-	gobjectslist.hh	
     gsession.h
-    gsession.hh
-    gbasicsession.h
     ggalileiprg.h    
     gstorage.h
     gslot.h

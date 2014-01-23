@@ -145,7 +145,7 @@ void GLang::SkipSequence(const RString& word)
 GConceptType* GLang::GetDict(void) const
 {
 	if(!Dict)
-		const_cast<GLang*>(this)->Dict=Session->GetConceptType(GetCode()+RString("Terms"),false);
+		const_cast<GLang*>(this)->Dict=Session->GetObj(pConceptType,GetCode()+RString("Terms"),false);
 	return(Dict);
 }
 
@@ -154,7 +154,7 @@ GConceptType* GLang::GetDict(void) const
 GConceptType* GLang::GetStop(void) const
 {
 	if(!Stop)
-		const_cast<GLang*>(this)->Stop=Session->GetConceptType(GetCode()+RString("Stopwords"),false);
+		const_cast<GLang*>(this)->Stop=Session->GetObj(pConceptType,GetCode()+RString("Stopwords"),false);
 	return(Stop);
 }
 
@@ -164,7 +164,7 @@ bool GLang::InStop(const RString& name) const
 {
 	GConceptType* Stop=GetStop();
 	if(Stop)
-		return(Stop->IsIn(name));
+		return(Stop->GetObj(pConcept,name,true));
 	return(false);
 }
 

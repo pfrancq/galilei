@@ -49,6 +49,8 @@ namespace GALILEI{
 /**
 * The GCommunityCalc class provides a representation for a generic method to
 * compute the description of a specific community.
+*
+* See the documentation related to GPlugIn for more general information.
 * @author Pascal Francq
 * @short Generic Community Computing Method.
 */

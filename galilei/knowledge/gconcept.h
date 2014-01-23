@@ -60,29 +60,9 @@ protected:
 	GConceptType* Type;
 
 	/**
-	* Number of references in documents.
-	*/
-	size_t NbRefDocs;
-
-	/**
-	 * Inverse factor for documents.
-	 */
-	double IfDocs;
-
-	/**
 	 * Identifier of the block in the inverted file for the documents.
 	 */
 	size_t IndexDocs;
-
-	/**
-	* Number of references in profiles.
-	*/
-	size_t NbRefProfiles;
-
-	/**
-	 * Inverse factor for profiles.
-	 */
-	double IfProfiles;
 
 	/**
 	 * Identifier of the block in the inverted file for the profiles.
@@ -90,44 +70,14 @@ protected:
 	size_t IndexProfiles;
 
 	/**
-	* Number of references in communities.
-	*/
-	size_t NbRefCommunities;
-
-	/**
-	 * Inverse factor for communities.
-	 */
-	double IfCommunities;
-
-	/**
 	 * Identifier of the block in the inverted file for the communities.
 	 */
 	size_t IndexCommunities;
 
 	/**
-	 * Number of references in topics.
-	 */
-	size_t NbRefTopics;
-
-	/**
-	 * Inverse factor for topics.
-	 */
-	double IfTopics;
-
-	/**
 	 * Identifier of the block in the inverted file for the topics.
 	 */
 	size_t IndexTopics;
-
-	/**
-	 * Number of references in classes.
-	 */
-	size_t NbRefClasses;
-
-	/**
-	 * Inverse factor for classes.
-	 */
-	double IfClasses;
 
 	/**
 	 * Identifier of the block in the inverted file for the classes.
@@ -156,28 +106,19 @@ public:
 	* @param id              Identifier.
 	* @param name            Name of the concept.
 	* @param type            Type of the concept.
-	* @param refdocs         Number of documents referenced.
 	* @param idxdocs         Identifier of the block the inverted file related
 	*                        to the documents.
-	* @param refprofiles     Number of profiles referenced.
 	* @param idxprofiles     Identifier of the block the inverted file related
 	*                        to the profiles.
-	* @param refcommunities  Number of communities referenced.
 	* @param idxcommunities  Identifier of the block the inverted file related
 	*                        to the communities.
-	* @param reftopics       Number of topics referenced.
 	* @param idxtopics       Identifier of the block the inverted file related
 	*                        to the topics.
-	* @param refclasses      Number of classes referenced.
 	* @param idxclasses      Identifier of the block the inverted file related
 	*                        to the classes.
 	*/
 	GConcept(GSession* session,size_t id, const R::RString& name, GConceptType* type,
-			size_t refdocs, size_t idxdocs,
-			size_t refprofiles, size_t idxprofiles,
-			size_t refcommunities, size_t idxcommunities,
-			size_t reftopics, size_t idxtopics,
-			size_t refclasses,size_t idxclasses);
+			size_t idxdocs,size_t idxprofiles,size_t idxcommunities,	size_t idxtopics,size_t idxclasses);
 
 	/**
     * @return the class name.
@@ -241,44 +182,6 @@ public:
     * @param ObjType        Type of the reference.
     */
 	void ClearIndex(tObjType type);
-
-	/**
-	* Increase the number of references on this concept for a given object
-	* type.
-	* @param ObjType        Type of the reference.
-	*/
-	size_t IncRef(tObjType ObjType);
-
-	/**
-	* Decrease the number of references on this concept for a given object
-	* type.
-	* @param ObjType        Type of the reference.
-	*/
-	size_t DecRef(tObjType ObjType);
-
-	/**
-	* Clear the information of the references of the concept linked to a
-	* specific object.
-	* @param ObjType        Type of the object.
-	*/
-	virtual void ClearRefs(tObjType ObjType);
-
-	/**
-	* Get the number of references on this concept for a given object type.
-	* @param ObjType        Type of the reference. If otAnyType, the method
-	*                       returns the number of references of all the
-	*                       objects.
-	* @returns size_t.
-	*/
-	size_t GetRef(tObjType ObjType) const;
-
-	/**
-	 * Compute the inverse factor of the concept for a given object type (such
-	 * as the 'idf' for documents). In practice, the factor is computed once.
-	 * @return Inverse factor
-	 * @param ObjType        Type of the reference.
-	 */
-	double GetIF(tObjType ObjType) const;
 
 	/**
 	* Clear all the information of the concept.

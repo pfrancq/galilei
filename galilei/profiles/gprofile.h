@@ -56,8 +56,6 @@ namespace GALILEI{
 */
 class GProfile : public GDescriptionObject<GProfile>
 {
-protected:
-
 	/**
 	* The owner of the profile.
 	*/
@@ -147,6 +145,12 @@ public:
 	virtual R::RCString GetClassName(void) const {return("GProfile");}
 
 	/**
+	 * Give the type of the object.
+    * @return otProfile
+    */
+	static inline tObjType GetType(void) {return(otProfile);}
+
+	/**
 	* Compare two profiles by comparing their identifier.
 	* @see R::RContainer
 	* @param profile         Profile.
@@ -177,13 +181,6 @@ public:
 	* @return int
 	*/
 	int Compare(const size_t id) const;
-
-	/**
-	 * Clear the information associated with the profile.
-	 * @param disk            Clear the reference to the corresponding block on
-	 *                        disk.
-	 */
-	void ClearInfos(bool disk);
 
 	/**
 	 * @return the type of the profile.
@@ -284,6 +281,14 @@ public:
 	R::RCursor<GFdbk> GetFdbks(void) const;
 
 	/**
+	* Get the feedback of the profile on a specific document.
+	* @param docid           Identifier of the document.
+	*/
+	GFdbk* GetFdbk(size_t docid) const;
+
+private:
+
+	/**
 	* Add a feedback to the list of the profile.
 	* @param docid           Identifier of the document.
 	* @param fdbk            Feedback type.
@@ -297,8 +302,6 @@ public:
 	* @param docid           Identifier of the document.
 	*/
 	void DeleteFdbk(size_t docid);
-
-private:
 
 	/**
 	* Update the representation of the profile once a computation was done. The
@@ -317,7 +320,12 @@ private:
 	*/
 	void Update(GDescription& desc);
 
-public:
+	/**
+	 * Clear the information associated with the profile.
+	 * @param disk            Clear the reference to the corresponding block on
+	 *                        disk.
+	 */
+	void Clear(bool disk);
 
 	/**
 	* Clear the assessment of the profile.
@@ -325,23 +333,21 @@ public:
 	void ClearFdbks(void);
 
 	/**
-	* Get the feedback of the profile on a specific document.
-	* @param docid           Identifier of the document.
-	*/
-	GFdbk* GetFdbk(size_t docid) const;
-
-	/**
 	* This method is call by a document when it was modified.
 	* @param docid           Identifier of the document.
 	*/
 	void WasUpdated(size_t docid);
 
+public:
+
 	/**
-	* Destructor of the profile.
+	* Destructor of the profile. It is removed from its user and community.
 	*/
 	~GProfile(void);
 
 	friend class GSession;
+	friend class GDoc;
+	friend class GObjects<GProfile,hProfiles>;
 };
 
 

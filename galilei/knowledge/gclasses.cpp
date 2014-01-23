@@ -73,17 +73,18 @@ void GClasses::DeleteObj(GClass* obj)
 	GObjects<GClass,hClasses>::DeleteObj(obj);
 }
 
+
 //-----------------------------------------------------------------------------
 void GClasses::Clear(void)
 {
-	RTree<GClasses,GClass,false>::Clear();
-	GObjects<GClass,hClasses>::Clear(pClass);
+	Clear(pClass,true);
 }
 
 
 //-----------------------------------------------------------------------------
-void GClasses::Clear(const GClass* obj)
+void GClasses::Clear(const GClass*,bool del)
 {
-	RTree<GClasses,GClass,false>::Clear();
-	GObjects<GClass,hClasses>::Clear(obj);
+	if(del)
+		RTree<GClasses,GClass,false>::Clear();
+	GObjects<GClass,hClasses>::Clear(pClass,del);
 }

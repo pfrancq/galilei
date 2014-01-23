@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GPlugIns.cpp
+	GPlugInManager.cpp
 
-	Generic Plug-In Managers - Implementation.
+	Plug-In Manager - Implementation.
 
 	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
@@ -47,7 +47,13 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 GPlugInList::GPlugInList(GPlugInManager* mng,const RString& name)
-	: Name(name), Factories(20,10), Plugins(20,10), Current(0), Mng(mng)
+	: RObject(mng->GetName()+"|"+name), Name(name), Factories(20,10), Plugins(20,10), Current(0), Mng(mng)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GPlugInList::HandlerNotFound(const R::RNotification& /*notification*/)
 {
 }
 
@@ -150,7 +156,7 @@ GPlugInManager::GPlugInManager(const R::RString& name,tPluginsType type)
 	if(PluginsType==ptListSelect)
 		Data.Lists=new R::RContainer<GPlugInList,true,true>(10,5);
 	else
-		Data.List=new GPlugInList(this,RString::Null);
+		Data.List=new GPlugInList(this,name);
 }
 
 
@@ -602,13 +608,29 @@ void GPlugInManager::SetCurrentPlugIn(const R::RString& name,const R::RString& l
 	else
 		return;
 
-	List->Current=List->Factories.GetPtr(name);
-	if((!List->Current)&&need)
+	GPlugInFactory* NewCur(List->Factories.GetPtr(name));
+	if(!NewCur)
+	{
+		if(need)
+		{
+			if(PluginsType==ptListSelect)
+				mThrowGException("No plug-in '"+name+"' available for '"+Name+"' in category '"+list+"'");
+			else
+				mThrowGException("No plug-in '"+name+"' available for '"+Name+"'");
+		}
+		return;
+	}
+	if((!NewCur->GetPlugIn())&&need)
 	{
 		if(PluginsType==ptListSelect)
-			mThrowGException("No plug-in '"+name+"' available for '"+Name+"' in category '"+list+"'");
+			mThrowGException("Plug-in '"+name+"' is not enabled for '"+Name+"' in category '"+list+"'");
 		else
-			mThrowGException("No plug-in '"+name+"' available for '"+Name+"'");
+			mThrowGException("Plug-in '"+name+"' is not enabled for '"+Name+"'");
+	}
+	if(List->Current!=NewCur->GetPlugIn())
+	{
+		List->Current=NewCur->GetPlugIn();
+		List->PostNotification<GPlugIn*>(hCurrentPlugIn,NewCur->GetPlugIn());
 	}
 }
 
@@ -626,9 +648,13 @@ GPlugInFactory* GPlugInManager::GetCurrentFactory(const R::RString& list,int nee
 	else
 		List=Data.List;
 
-	if((!List->Current)&&need)
-		mThrowGException("No current plug-in available for '"+Name+"'");
-	return(List->Current);
+	if(!List->Current)
+	{
+		if(need)
+			mThrowGException("No current plug-in available for '"+Name+"'");
+		return(0);
+	}
+	return(List->Current->Factory);
 }
 
 

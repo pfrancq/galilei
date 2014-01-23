@@ -51,11 +51,13 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GMeasure class provides a representation for a specific measure (ex:
-* Similarities between profiles, similarities between documents and groups,
-* agreement ratios between profiles, ...).
-* @author Pascal Francq
-* @short Measures.
+ * The GMeasure class provides a representation for a specific measure (ex:
+ * Similarities between profiles, similarities between documents and groups,
+ * agreement ratios between profiles, ...).
+ *
+ * See the documentation related to GPlugIn for more general information.
+ * @author Pascal Francq
+ * @short Measures.
 */
 class GMeasure : public GPlugIn
 {
@@ -67,12 +69,6 @@ public:
 	* @param fac             Plug-in factory.
 	*/
 	GMeasure(GSession* session,GPlugInFactory* fac);
-
-	/**
-	* The measure must be re-initialized, i.e. all values must be considered
-	* as dirty.
-	*/
-	virtual void ReInit(void);
 
 	/**
 	* Get a measure. Each plug-in can handle several types of measure (first

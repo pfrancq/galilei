@@ -93,7 +93,12 @@ namespace GALILEI{
 template<class C,const R::hNotification* hEvents>
 	class GObjects : virtual GKB, protected R::RObjectContainer<C,true>
 {
-protected:
+	// Explicit use of methods from GKB
+	using GKB::InsertObj;
+	using GKB::GetObj;
+	using GKB::GetObjs;
+	using GKB::GetNbObjs;
+	using GKB::GetMaxObjId;
 
 	/**
 	 * Name of the objects.
@@ -141,11 +146,6 @@ protected:
 	bool Loaded;
 
 	/**
-	* Selected objects.
-	*/
-	R::RContainer<C,false,true> Selected;
-
-	/**
 	 * Temporary vector of references.
 	 */
 	R::RNumContainer<size_t,true> tmpRefs;
@@ -161,10 +161,117 @@ public:
 	GObjects(size_t size,const R::RString& name,tObjType type);
 
 	/**
+	* Insert an object.
+	* @param obj             object to insert.
+	* @param selected        Specify if the object is selected or not.
+	* @param parent          Parent object. This parameter is only used by
+	*                        GClasses.
+	*/
+	virtual void InsertObj(C* obj,C* parent=0);
+
+	/**
+	* Delete an object.
+	* @param obj             object to delete.
+	*/
+	virtual void DeleteObj(C* obj);
+
+	/**
+	 * Get the number of objects.
+	 * @param obj            Pseudo-parameter.
+	 */
+	inline size_t GetNbObjs(const C* obj) const;
+
+	/**
+	 * Get the highest identifier of the objects.
+	 * @param obj            Pseudo-parameter.
+	 */
+	inline size_t GetMaxObjId(const C* obj) const;
+
+	/**
+	 * Get the highest position occupied by an object.
+	 * @param obj            Pseudo-parameter.
+	 */
+	inline size_t GetMaxObjPos(const C* obj) const;
+
+	/**
+	 * Get the objects.
+	 * @param obj            Pseudo-parameter.
+	 * @return a cursor over the objects.
+	 */
+	inline R::RCursor<C> GetObjs(const C* obj) const;
+
+	/**
+	 * Fill an array of objects.
+	 * @param tab            Array that will be filled.
+	 * @param alloc          Must the array be allocated ?
+	 * @return number of objects in the array (including null pointers).
+	 */
+	inline size_t GetObjs(C** &tab,bool alloc);
+
+	/**
+	 * Get an object based on its identifier.
+	 * @param obj            Pseudo-parameter.
+	 * @param id             Identifier of the object.
+	 * @param load           If set to true, the object is eventually loaded
+	 *                       into memory.
+	 * @param null           If set to true, if the object does not exist,
+	 *                       return 0, else an exception is generated.
+	 * @return a pointer to a object.
+	 */
+	C* GetObj(const C* obj,size_t id,bool load=true,bool null=false);
+
+	/**
+	 * Get an object based on its name.
+	 * @param obj            Pseudo-parameter.
+	 * @param name           Name of the object.
+	 * @param load           If set to true, the object is eventually loaded
+	 *                       into memory.
+	 * @param null           If set to true, if the object does not exist,
+	 *                       return 0, else an exception is generated.
+	 * @return a pointer to a object.
+	 */
+	C* GetObj(const C* obj,const R::RString& name,bool load=true,bool null=false);
+
+	/**
+	 * Load the identifiers of all objects described by a specific concept.
+	 * @param obj            Pseudo-parameter.
+	 * @param concept        Concept to search for.
+	 * @param refs           Identifiers of the objects.
+	 */
+	void LoadIndex(const C* obj,GConcept* concept,R::RNumContainer<size_t,true>& refs);
+
+	/**
+	 * Build the index of all the objects from scratch. Since only the object
+	 * descriptions are used, no occurrence information is available.
+	 * @param obj            Pseudo-parameter.
+	 */
+	void BuildIndex(const C* obj);
+
+	/**
+	 * Load the concept tree of a given object. This method generates an
+	 * exception for all objects excepted documents.
+	 * @param obj            Pseudo-parameter.
+	 * @param tree           Concept tree. If null,it is created.
+	 * @param blockid        Identifier of the block of the document.
+	 * @param id             Identifier of the document.
+	 */
+	void LoadTree(const C* obj,GConceptTree* &tree,size_t blockid,size_t id);
+
+private:
+
+	/**
 	 * Initialize the parameters.
 	 * @param config         Configuration structure.
 	 */
 	void Init(R::RConfig* config);
+
+	/**
+	 * Clear the list.
+	 * @param obj            Pseudo-parameter.
+	 * @param list           Specify if the objects must be deleted or just their
+	 *                       descriptions.
+	 */
+	virtual void Clear(const C* obj,bool del);
 
 	/**
 	 * Open the files in a given directory.
@@ -186,87 +293,13 @@ public:
 	inline bool DoCreateTree(const C* obj) const;
 
 	/**
-	* Insert an object.
-	* @param obj             object to insert.
-	* @param selected        Specify if the object is selected or not.
-	* @param parent          Parent object. This parameter is only used by
-	*                        GClasses.
-	*/
-	virtual void InsertObj(C* obj,C* parent=0);
-
-	/**
-	* Delete an object.
-	* @param obj             object to delete.
-	*/
-	virtual void DeleteObj(C* obj);
-
-	/**
-	 * Clear the list.
-	 * @param obj            Pseudo-parameter.
-	 */
-	virtual void Clear(const C* obj);
-
-	/**
-	 * Get the number of objects of a given type.
-	 * @param obj            Pseudo-parameter.
-	 */
-	inline size_t GetNbObjs(const C* obj) const;
-
-	/**
-	 * Get the highest identifier of the objects of a given type.
-	 * @param obj            Pseudo-parameter.
-	 */
-	inline size_t GetMaxObjId(const C* obj) const;
-
-	/**
-	 * Get the objects of a given type.
-	 * @param obj            Pseudo-parameter.
-	 * @return a cursor over the objects.
-	 */
-	inline R::RCursor<C> GetObjs(const C* obj) const;
-
-	/**
-	 * Fill an array of objects of a given type.
-	 * @param tab            Array that will be filled.
-	 * @param alloc          Must the array be allocated ?
-	 * @return number of objects in the array (including null pointers).
-	 */
-	inline size_t GetObjs(C** &tab,bool alloc);
-
-	/**
-	 * Get an object of a given type based on its identifier.
-	 * @param obj            Pseudo-parameter.
-	 * @param id             Identifier of the object.
-	 * @param load           If set to true, the object is eventually loaded
-	 *                       into memory.
-	 * @param null           If set to true, if the object does not exist,
-	 *                       return 0, else an exception is generated.
-	 * @return a pointer to a object.
-	 */
-	C* GetObj(const C* obj,size_t id,bool load=true,bool null=false);
-
-	/**
-	 * Get an object of a given type based on its name.
-	 * @param obj            Pseudo-parameter.
-	 * @param name           Name of the object.
-	 * @param load           If set to true, the object is eventually loaded
-	 *                       into memory.
-	 * @param null           If set to true, if the object does not exist,
-	 *                       return 0, else an exception is generated.
-	 * @return a pointer to a object.
-	 */
-	C* GetObj(const C* obj,const R::RString& name,bool load=true,bool null=false);
-
-protected:
-
-	/**
 	* Assign an identifier to an object.
 	* @param obj             Object.
 	*/
 	void AssignId(C* obj);
 
 	/**
-	* Load all the objects of a given type.
+	* Load all the objects.
 	* @param obj             Pseudo-parameter.
 	*/
 	void LoadObjs(const C* obj);
@@ -290,48 +323,20 @@ protected:
 	void SaveDesc(const C* obj,const R::RContainer<GVector,true,true>& vectors,size_t& blockid,size_t id);
 
 	/**
-	 * Flush the descriptions of the objects of a given type.
+	 * Flush the descriptions of the objects.
 	 * @param obj            Pseudo-parameter.
-	 * The reason for this trick is that C++ does not managed methods with the
-	 * same name, the same parameters but different return types.
 	 */
 	void FlushDesc(const C* obj);
 
-public:
-
-	/**
-	 * Load the identifiers of all objects of a given type described by a
-	 * specific concept.
-	 * @param obj            Pseudo-parameter.
-	 * @param concept        Concept to search for.
-	 * @param refs           Identifiers of the objects.
-	 */
-	void LoadIndex(const C* obj,GConcept* concept,R::RNumContainer<size_t,true>& refs);
-
-protected:
-
    /**
 	 * Update the index of a given object that is only described by a
-	 * description. The methods generates an exception for documents.
+	 * description.
 	 * @param obj            Pseudo-parameter.
 	 * @param desc           Description.
 	 * @param id             Identifier of the object.
 	 * @param add            Object must be added or removed from the index.
 	 */
 	void UpdateIndex(const C* obj,const GDescription& desc,size_t id,bool add);
-
-public:
-
-	/**
-	 * Build the index of all the objects of a given type from scratch. Since
-	 * only the object descriptions are used, no occurrence information is
-	 * available. The methods generates an exception for documents.
-	 * The methods generates an exception for documents.
-	 * @param obj            Pseudo-parameter.
-	 */
-	void BuildIndex(const C* obj);
-
-private:
 
 	/**
 	 * Load the next node in the file into a given tree. The method loads first
@@ -348,21 +353,9 @@ private:
     */
 	void SaveNode(GConceptNode* node);
 
-public:
-
 	/**
-	 * Load the concept tree of a given document.
-	 * @param obj            Pseudo-parameter.
-	 * @param tree           Concept tree. If null,it is created.
-	 * @param blockid        Identifier of the block of the document.
-	 * @param id             Identifier of the document.
-	 */
-	void LoadTree(const C* obj,GConceptTree* &tree,size_t blockid,size_t id);
-
-protected:
-
-	/**
-	 * Save the concept tree of a given document.
+	 * Save the concept tree of a given object. This method generates an
+	 * exception except for documents.
 	 * @param obj            Pseudo-parameter.
 	 * @param tree           Concept tree to save.
 	 * @param blockid        Identifier of the block of the document (0 means the
@@ -372,24 +365,18 @@ protected:
 	void SaveTree(const C* obj,const GConceptTree& tree,size_t& blockid,size_t id);
 
 	/**
-	 * Flush the file storing the concept trees of the documents.
+	 * Flush the file storing the concept trees of the objects.
 	 * @param obj            Pseudo-parameter.
 	 */
 	void FlushTree(const C* obj);
-
-public:
 
 	/**
 	 * Destructor.
 	 */
 	virtual ~GObjects(void);
 
-	friend class GDocAnalyze;
-	friend class GDoc;
-	friend class GClass;
-	friend class GTopic;
-	friend class GProfile;
-	friend class GCommunity;
+	friend class GSession;
+	friend class GClasses;
 };
 
 

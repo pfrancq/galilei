@@ -49,6 +49,8 @@ namespace GALILEI{
 /**
 * The GProfileCalc class provides a representation for a method to compute a
 * specific profile.
+*
+* See the documentation related to GPlugIn for more general information.
 * @author Pascal Francq
 * @short Generic Profile Computing Method.
 */

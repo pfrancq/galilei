@@ -48,6 +48,8 @@ namespace GALILEI{
  * The GAnalyzer provides a class to treat a set of tokens extracted from the
  * document currently analyzed. An analyzer can ask to treat each token or
  * each occurrence (depending on their type).
+ *
+ * See the documentation related to GPlugIn for more general information.
  * @short Token Analyzer
  */
 class GAnalyzer : public GPlugIn

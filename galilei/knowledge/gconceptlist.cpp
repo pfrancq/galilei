@@ -81,12 +81,8 @@ GConceptList::GConceptList(GSession* session,GConceptType* type,const R::RString
 
 //-----------------------------------------------------------------------------
 GConceptList::GConceptList(GSession* session,size_t id, const R::RString& name, GConceptType* type,const R::RString& def,
-		size_t refdocs, size_t idxdocs,
-		size_t refprofiles, size_t idxprofiles,
-		size_t refcommunities, size_t idxcommunities,
-		size_t reftopics, size_t idxtopics,
-		size_t refclasses, size_t idxclasses)
-	: GConcept(session,id,name,type,refdocs,idxdocs,refprofiles,idxprofiles,refcommunities,idxcommunities,reftopics,idxtopics,refclasses,idxclasses),
+		size_t idxdocs,size_t idxprofiles,size_t idxcommunities,size_t idxtopics,size_t idxclasses)
+	: GConcept(session,id,name,type,idxdocs,idxprofiles,idxcommunities,idxtopics,idxclasses),
 	  Concepts(10)
 {
 	BuildFromDef(def);
@@ -105,7 +101,7 @@ void GConceptList::BuildFromDef(const R::RString& def)
 	{
 		Id=def.Mid(static_cast<size_t>(Old),Pos-Old);
 		Old=Pos+1;
-		GConcept* ptr=Session->GetConcept(Id.ToSizeT());
+		GConcept* ptr=Session->GetObj(pConcept,Id.ToSizeT());
 		if(!ptr)
 			mThrowGException("Concept "+Id+" does not exist");
 		Concepts.InsertPtr(ptr);

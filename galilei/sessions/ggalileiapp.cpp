@@ -277,19 +277,19 @@ GSession* GGALILEIApp::GetSession(const R::RString& name,bool created)
 	catch(RException& e)
 	{
 		if(Session)
-			Sessions.DeletePtr(Session);
+			Sessions.DeletePtr(*Session);
 		throw GException(e.GetMsg());
 	}
 	catch(std::exception& e)
 	{
 		if(Session)
-			Sessions.DeletePtr(Session);
+			Sessions.DeletePtr(*Session);
 		throw GException(e.what());
 	}
 	catch(...)
 	{
 		if(Session)
-			Sessions.DeletePtr(Session);
+			Sessions.DeletePtr(*Session);
 		throw GException("Undefined Error");
 	}
 }
@@ -303,7 +303,7 @@ void GGALILEIApp::DeleteSession(GSession* session)
 	RCursor<GPlugInManager> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->Disconnect(session);
-	Sessions.DeletePtr(session);
+	Sessions.DeletePtr(*session);
 }
 
 

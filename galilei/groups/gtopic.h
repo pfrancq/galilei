@@ -77,6 +77,12 @@ public:
 	virtual R::RCString GetClassName(void) const {return("GTopic");}
 
 	/**
+	 * Give the type of the object.
+    * @return otTopic
+    */
+	static inline tObjType GetType(void) {return(otTopic);}
+
+	/**
 	 * Get the similarity measure that must be used when computing the
 	 * similarity between the documents grouped.
 	 */

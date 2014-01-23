@@ -103,28 +103,19 @@ public:
 	* @param name            Name of the concept.
 	* @param type            Type of the concept.
 	* @param def             Definition of the concept.
-	* @param refdocs         Number of documents referenced.
 	* @param idxdocs         Identifier of the block the inverted file related
 	*                        to the documents.
-	* @param refprofiles     Number of profiles referenced.
 	* @param idxprofiles     Identifier of the block the inverted file related
 	*                        to the profiles.
-	* @param refcommunities  Number of communities referenced.
 	* @param idxcommunities  Identifier of the block the inverted file related
 	*                        to the communities.
-	* @param reftopics       Number of topics referenced.
 	* @param idxtopics       Identifier of the block the inverted file related
 	*                        to the topics.
-	* @param refclasses      Number of classes referenced.
 	* @param idxclasses      Identifier of the block the inverted file related
 	*                        to the classes.
 	*/
 	GConceptList(GSession* session,size_t id, const R::RString& name, GConceptType* type,const R::RString& def,
-			size_t refdocs, size_t idxdocs,
-			size_t refprofiles, size_t idxprofiles,
-			size_t refcommunities, size_t idxcommunities,
-			size_t reftopics, size_t idxtopics,
-			size_t refclasses,size_t idxclasses);
+			size_t idxdocs, size_t idxprofiles, size_t idxcommunities, size_t idxtopics, size_t idxclasses);
 
 	/**
     * @return the class name.

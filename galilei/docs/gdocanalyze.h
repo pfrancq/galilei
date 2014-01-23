@@ -72,22 +72,6 @@ namespace GALILEI{
  * It is supposed that each token of a given type in a document as an unique
  * name and corresponds to one concept only. It is the responsibility of the
  * filter to ensure it.
-
- * Once a document is analyzed, it send a notification 'DocAnalyzed'. It can be
- * catched by all classes inheriting from R::RObject that become an observator
- * with the command (generally in the constructor):
- * @code
- * InsertObserver(HANDLER(TheClass::Handle),"DocAnalyzed");
- *
- * @endcode
- * A method must then by created:
- * @code
- * void TheClass::Handle(const R::RNotification& notification)
- *	{
- *	   GDocAnalyze* Analyzer(GetData<GDocAnalyze*>(notification));
- *    cout<<Analyzer->GetLang()->GetCode()<<endl;
- * }
- * @endcode
  *
  * @internal
  * The class manages the list of tokens found in the current document, in the

@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GPlugIns.h
+	GPlugInManager.h
 
-	Generic Plug-In Managers - Header.
+	Plug-In Manager - Header.
 
 	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
@@ -29,8 +29,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GPlugInsH
-#define GPlugInsH
+#ifndef GPlugInManagerH
+#define GPlugInManagerH
 
 
 //------------------------------------------------------------------------------
@@ -71,11 +71,18 @@ namespace GALILEI{
 
 /**
  * The GPlugInList manages a given list of plug-ins. It is manage by an
- * instance of a GPlugInManager.
+ * instance of GPlugInManager. Some lists have a current plug-in.
+ *
+ * Each time a new current plug-in is selected, GPlugInList emits a
+ * GALILEI::hCurrentPlugIn notification with the current plug-in as parameter (
+ * of de type GPluIn). The internal name of a list is composed from the name
+ * of the manager and its name separated by a | (for example
+ * "Measures|Features Evaluation"). The name of a list is the one of the manager
+ * if there is only one list (for example "Storage|Storage").
  * @author Pascal Francq
- * @short List of plug-ins.
+ * @short Plug-in List.
  */
-class GPlugInList
+class GPlugInList : public R::RObject
 {
 	/**
 	* The name of the list.
@@ -95,7 +102,7 @@ class GPlugInList
 	/**
 	* Current selected plug-in.
 	*/
-	GPlugInFactory* Current;
+	GPlugIn* Current;
 
 	/**
 	 * The manager of the list.
@@ -110,6 +117,13 @@ public:
 	* @param name            Name of the list.
 	*/
 	GPlugInList(GPlugInManager* mng,const R::RString& name);
+
+	/**
+	* This method is call when no handler is founded for a notification send by
+	* the session. Actually, it does nothing.
+	* @param notification    Notification.
+	*/
+	virtual void HandlerNotFound(const R::RNotification& notification);
 
 	/**
 	* Get the name of the plug-in list.
@@ -184,10 +198,20 @@ private:
 
 //-----------------------------------------------------------------------------
 /**
-* The GPlugInManager class provides a plug-in manager.
-* @author Pascal Francq
-* @short Plug-ins Manager.
-*/
+ * The GPlugInManager class provides a plug-in manager (for example, a list of
+ * storages). There are different kind of plug-in manager depending on how
+ * their plug-ins are treated:
+ * - A list of plug-ins where one is the current one.
+ * - A list of plug-ins to execute in a given order.
+ * - A simple list of plug-ins.
+ * - Multiple lists of plug-ins with, for each list, a current plug-in (in
+ * particular for GMeasure plug-ins).
+ *
+ * Several template methods are provided to get a plug-in, to get a cursor over
+ * plug-ins or to get the current one.
+ * @author Pascal Francq
+ * @short Plug-in Manager.
+ */
 class GPlugInManager
 {
 public:
@@ -206,8 +230,8 @@ public:
 protected:
 
 	/**
-	* Name of the manager.
-	*/
+	 * Name of the manager.
+	 */
 	R::RString Name;
 
 	/**
@@ -447,7 +471,9 @@ public:
 	}
 
 	/**
-	* Set the current method if the plug-ins must have a selected one.
+	* Set the current method if the plug-ins must have a selected one. An
+	* exception is generated if list doesn't exists, the plug-in doesn't exist
+	* or is not enabled
 	* @param name            Name of the method.
 	* @param list            List.
 	* @param need            If the parameter is non-null and the plug-in
@@ -467,7 +493,7 @@ public:
 	}
 
 	/**
-	* Get the current method.
+	* Get the current plug-in in a list.
 	* @param list            List.
 	* @param need            If the parameter is non-null and the plug-in
 	*                        doesn't exist, generate an exception.
@@ -495,7 +521,7 @@ public:
 		}
 		if(!List->Current)
 			return(0);
-		plugin* plug=List->Current->GetPlugIn<plugin>();
+		plugin* plug=dynamic_cast<plugin*>(List->Current);
 		if((!plug)&&need)
 		{
 			if(PluginsType==ptListSelect)
@@ -507,7 +533,7 @@ public:
 	}
 
 	/**
-	* Get the current method.
+	* Get the current plug-in in a list.
 	* @param need            If the parameter is non-null and the plug-in
 	*                        doesn't exist, generate an exception.
 	* @return Pointer to the GPlugIn, or null/exception if no plug-in is

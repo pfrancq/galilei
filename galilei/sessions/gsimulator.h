@@ -296,13 +296,6 @@ public:
 	 */
 	void PerformDegradation(char what,int nb);
 
-	/**
-	 * Select manually a given subject.
-	 * @param subject        Subject to select.
-	 * @param used           Subject used or not.
-	 */
-	void SetManualUsed(GSubject* subject,bool used);
-
 private:
 
 	/**
@@ -393,6 +386,8 @@ public:
 	 * Destruct the simulator.
 	 */
 	~GSimulator(void);
+
+	friend class GSession;
 };
 
 

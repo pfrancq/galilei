@@ -89,28 +89,40 @@ public:
 	virtual R::RCString GetClassName(void) const {return("GClass");}
 
 	/**
-	 * Clear the node.
+	 * Give the type of the object.
+    * @return otClass
+    */
+	static inline tObjType GetType(void) {return(otClass);}
+
+private:
+
+	/**
+	 * Clear the class.
+	 * @param disk            Clear the reference to the corresponding block on
+	 *                        disk.
 	 */
-	virtual void Clear(void);
+	virtual void Clear(bool disk);
+
+public:
 
 	/**
-	* Compare two groups by comparing their identifier.
+	* Compare two classes by comparing their identifier.
 	* @see R::RContainer
-	* @param grp             Group.
+	* @param theclass        Class.
 	* @return int
 	*/
-	int Compare(const GClass& grp) const;
+	int Compare(const GClass& theclass) const;
 
 	/**
-	* Compare two groups by comparing their identifier.
+	* Compare two classes by comparing their identifier.
 	* @see R::RContainer
-	* @param grp             Pointer to a group.
+	* @param theclass        Class.
 	* @return int
 	*/
-	int Compare(const GClass* grp) const;
+	int Compare(const GClass* theclass) const;
 
 	/**
-	* Compare the identifier of a group with another one.
+	* Compare the identifier of a class with another one.
 	* @see R::RContainer
 	* @param id              Identifier.
 	* @return int
@@ -118,12 +130,18 @@ public:
 	int Compare(const size_t id) const;
 
 	/**
+	* Compare the name of a class with another one.
+	* @see R::RContainer
+	* @param id              Identifier.
+	* @return int
+	*/
+	int Compare(const R::RString& name) const;
+
+	/**
 	* Get the date of the last analysis of the document.
 	* @return the date.
 	*/
 	R::RDate GetComputed(void) const {return(Computed);}
-
-private:
 
 	/**
 	* Update the representation of the class once a computation was done. The
@@ -141,8 +159,6 @@ private:
 	* \warning The description is cleared by this method.
 	*/
 	void Update(GDescription& desc);
-
-public:
 
 	/**
 	 * Get the cost of an Up operation of the current node. The method adds a
@@ -169,6 +185,7 @@ public:
 	friend class GClasses;
 	friend class R::RNodeCursor<GClasses,GClass>;
 	friend class R::RTree<GClasses,GClass,false>;
+	friend class GObjects<GClass,hClasses>;
 };
 
 

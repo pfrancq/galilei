@@ -147,11 +147,6 @@ public:
 	 * Destruct the object.
 	 */
 	virtual ~GObject(void);
-
-	friend class GObjects<GDoc,hDocs>;
-	friend class GObjects<GTopic,hTopics>;
-	friend class GObjects<GProfile,hProfiles>;
-	friend class GObjects<GCommunity,hCommunities>;
 };
 
 

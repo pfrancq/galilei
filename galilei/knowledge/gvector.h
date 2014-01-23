@@ -262,6 +262,19 @@ public:
 	double GetMaxAbsWeight(void) const;
 
 	/**
+	* Compute the sum of the weights of the concept references in the vector.
+	* @return double.
+	*/
+	double GetSumWeights(void) const;
+
+	/**
+	* Compute the sum of the absolute weights of the concept references in the
+   * vector.
+	* @return double.
+	*/
+	double GetSumAbsWeights(void) const;
+
+	/**
 	 * Extract all concepts related to a given type an put them into a given
 	 * vector that will be emptied.
 	 * @param vector         Destination vectors.
@@ -270,16 +283,32 @@ public:
 	void Extract(GVector& vector,const GConceptType* type);
 
 	/**
-	* Compute the Tf*Idf weights for all the elements of the vector.
-	* @param ObjType         Type of the reference (documents, profiles, etc.).
-	*/
-	void ComputeTfIdf(tObjType ObjType);
-
-	/**
-	 * Print the vector to the standard output.
-	 * @param msg            Header message.
+	 * Print the content of the vector.
+	 * @tparam S             Stream class that implements the << operator.
+	 * @param stream         Stream.
+	 * @param name           Name of the vector.
+	 * @param format         Format used to print the number. By default, it is "%E".
+	 * @param colsize        Size of a column. By default, it is 12.
 	 */
-	void Print(R::RString msg);
+	template<class S> void Print(S& stream,const R::RString& name,const char* format="%E",size_t colsize=12) const
+	{
+		if(name.GetLen())
+			stream<<name<<"=("<<MetaConcept->GetId()<<")=[";
+		else
+			stream<<"("<<MetaConcept->GetId()<<")=[";
+		R::RCursor<GConceptRef> Refs(*this);
+		for(Refs.Start();!Refs.End();Refs.Next())
+		{
+				R::RString Str("("+
+				               R::RString::Number(Refs()->GetConcept()->GetId())+
+				               ","+R::RString::Number(Refs()->GetWeight(),format)+")");
+				Str.SetLen(colsize," ");
+				if(Refs.GetPos()!=Refs.GetNb()-1)
+					Str+=" ";
+				stream<<Str;
+		}
+		stream<<"]"<<std::endl;
+	}
 
 	/**
 	 * Build the intersection two vectors. In practice, the weight of the

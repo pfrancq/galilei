@@ -137,13 +137,6 @@ GConceptRef& GConceptRef::operator/=(double w)
 
 
 //------------------------------------------------------------------------------
-double GConceptRef::GetQueryWeight(tObjType ObjType,double max) const
-{
-	return((Weight/max)*Concept->GetIF(ObjType));
-}
-
-
-//------------------------------------------------------------------------------
 GConceptRef::~GConceptRef(void)
 {
 }

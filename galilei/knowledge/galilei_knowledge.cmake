@@ -6,6 +6,7 @@ SET(galilei_knowledge_INST_INCLUDES
     gpredicate.h
     glang.h
     gkb.h
+	 gkb.hh
     gconceptref.h
     gvector.h
     gdescription.h
