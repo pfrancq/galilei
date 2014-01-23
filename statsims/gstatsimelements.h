@@ -86,17 +86,23 @@ protected:
 	 */
 	size_t FirstIndex;
 
+	/**
+	 * Weighting method used.
+    */
+	GMeasure* Weighting;
+
 public:
 
 	/**
 	* Constructor.
-	* @param ses            The GALILEI sessi,RTextFile& fon.
-	* @param objtype1       Type of the first objects.
-	* @param objtype2       Type of the second objects.
-	* @param stats          Statistics.
-	* @param idx            First index.
+	* @param ses             The GALILEI session.
+	* @param weighting       Weighting method.
+	* @param objtype1        Type of the first objects.
+	* @param objtype2        Type of the second objects.
+	* @param stats           Statistics.
+	* @param idx             First index.
 	*/
-	GStatSimElements(GSession* ses,tObjType objtype1,tObjType objtype2,RWorksheet& stats,size_t idx);
+	GStatSimElements(GSession* ses,GMeasure* weighting,tObjType objtype1,tObjType objtype2,RWorksheet& stats,size_t idx);
 
 	/**
 	 * Cursor over the first type of objects.
@@ -153,9 +159,9 @@ public:
 
 //------------------------------------------------------------------------------
 template<class E1,class E2>
-	GStatSimElements<E1,E2>::GStatSimElements(GSession* ses,tObjType objtype1,tObjType objtype2,RWorksheet& stats,size_t idx)
+	GStatSimElements<E1,E2>::GStatSimElements(GSession* ses,GMeasure* weighting,tObjType objtype1,tObjType objtype2,RWorksheet& stats,size_t idx)
 	: Session(ses), SameObjects(objtype1==objtype2),
-	  ObjType1(objtype1), ObjType2(objtype2), Stats(stats), FirstIndex(idx)
+	  ObjType1(objtype1), ObjType2(objtype2), Stats(stats), FirstIndex(idx), Weighting(weighting)
 {
 }
 
@@ -164,12 +170,12 @@ template<class E1,class E2>
 template<class E1,class E2>
 	void GStatSimElements<E1,E2>::CompareVectors(size_t id1,size_t id2)
 {
-	E1* Obj1(dynamic_cast<E1*>(Session->GetObj(ObjType1,id1)));
+	E1* Obj1(dynamic_cast<E1*>(Session->GetObj(static_cast<E1*>(0),id1)));
    if(!Obj1)
-       mThrowGException("No "+GetObjType(ObjType1,false,false)+" with identifier "+RString::Number(id1));
-	E2* Obj2(dynamic_cast<E2*>(Session->GetObj(ObjType2,id2)));
+       mThrowGException("No "+GetObjType(static_cast<E1*>(0),false,false)+" with identifier "+RString::Number(id1));
+	E2* Obj2(dynamic_cast<E2*>(Session->GetObj(static_cast<E2*>(0),id2)));
    if(!Obj2)
-       mThrowGException("No "+GetObjType(ObjType2,false,false)+" with identifier "+RString::Number(id2));
+       mThrowGException("No "+GetObjType(static_cast<E2*>(0),false,false)+" with identifier "+RString::Number(id2));
 
 	// See the common concepts : Parse the vector to found those associated wit the same concept
    RCursor<GVector> Vec1(Obj1->GetVectors());
@@ -201,7 +207,9 @@ template<class E1,class E2>
                  RString Idf;
                  if(SameObjects)
                  {
-                    Idf=","+RString::Number(Concept1()->GetConcept()->GetIF(ObjType1));
+						  double iffactor;
+						  Weighting->Measure(0,Concept1()->GetConcept(),ObjType1,&iffactor);
+                    Idf=","+RString::Number(iffactor);
                     //Idf=","+Idf;
                  }
                  cout<<Concept1()->GetConcept()->GetName()<<": "<<Value1+","+Value2+Idf<<endl;
@@ -468,7 +476,7 @@ template<class E1,class E2>
 				NbCols++;  // Increase the number of nearest neighbors
 
 				// Get the subject of Cur()
-				E2* Col(static_cast<E2*>(Session->GetObj(ObjType2,Cur()->Id)));
+				E2* Col(static_cast<E2*>(Session->GetObj(static_cast<E2*>(0),Cur()->Id)));
 				const GSubject* Subject2(Session->GetObj(pSubject,Col));
 
 				if(Sub()==Subject2)

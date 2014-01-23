@@ -51,7 +51,7 @@ using namespace std;
 * @author Pascal Francq
 * @short Groups Evaluation.
 */
-class GStatsSims : public GTool
+class GStatsSims : public R::RObject, public GTool
 {
 	/**
 	* Statistics on Documents.
@@ -123,6 +123,11 @@ class GStatsSims : public GTool
 	 */
 	RString MeasureType;
 
+	/**
+	 * Weighting method used.
+    */
+	GMeasure* Weighting;
+
 public:
 
 	/**
@@ -131,6 +136,19 @@ public:
 	* @param fac             Factory.
 	*/
 	GStatsSims(GSession* session,GPlugInFactory* fac);
+
+	/**
+	 * Initialize the plug-in. In practice, it set the Weighting variable and set
+	 * it as observer for GALILEI::hCurrentPlugIn notification.
+    */
+	virtual void Init(void);
+
+	/**
+	 * Handle the GALILEI;;hCurrentPlugIn notification. In practice, it set the
+	 * Weighting variable.
+    * @param notification
+    */
+	void HandleCurrentPlugIn(const R::RNotification& notification);
 
 	/**
 	* Configurations were applied from the factory.

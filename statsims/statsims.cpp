@@ -73,7 +73,7 @@ using namespace std;
 class GStatSimDocs : public GStatSimElements<GDoc,GDoc>
 {
 public:
-	GStatSimDocs(GSession* ses,RWorksheet& stats,size_t idx) : GStatSimElements<GDoc,GDoc>(ses,otDoc,otDoc,stats,idx)
+	GStatSimDocs(GSession* ses,GMeasure* weighting,RWorksheet& stats,size_t idx) : GStatSimElements<GDoc,GDoc>(ses,weighting,otDoc,otDoc,stats,idx)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Document Similarities");
 	}
@@ -85,12 +85,12 @@ public:
 
 	virtual R::RCursor<GDoc> GetE1Cursor(GSubject* sub)
 	{
-		return(R::RCursor<GDoc>(sub->GetObjs(pDoc)));
+		return(R::RCursor<GDoc>(sub->GetUsedObjs(pDoc)));
 	}
 
 	virtual R::RCursor<GDoc> GetE2Cursor(GSubject* sub)
 	{
-		return(R::RCursor<GDoc>(sub->GetObjs(pDoc)));
+		return(R::RCursor<GDoc>(sub->GetUsedObjs(pDoc)));
 	}
 };
 
@@ -101,7 +101,7 @@ class GStatSimProfiles : public GStatSimElements<GProfile,GProfile>
 {
 public:
 
-	GStatSimProfiles(GSession* ses,RWorksheet& stats,size_t idx) : GStatSimElements<GProfile,GProfile>(ses,otProfile,otProfile,stats,idx)
+	GStatSimProfiles(GSession* ses,GMeasure* weighting,RWorksheet& stats,size_t idx) : GStatSimElements<GProfile,GProfile>(ses,weighting,otProfile,otProfile,stats,idx)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profile Similarities");
 	}
@@ -131,7 +131,7 @@ class GStatSimDocGrp : public GStatSimElements<GDoc,GCommunity>
 
 public:
 
-	GStatSimDocGrp(GSession* ses,RWorksheet& stats,size_t idx) : GStatSimElements<GDoc,GCommunity>(ses,otDoc,otCommunity,stats,idx), Com(1)
+	GStatSimDocGrp(GSession* ses,GMeasure* weighting,RWorksheet& stats,size_t idx) : GStatSimElements<GDoc,GCommunity>(ses,weighting,otDoc,otCommunity,stats,idx), Com(1)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Document/Community Similarities");
 	}
@@ -143,7 +143,7 @@ public:
 
 	virtual R::RCursor<GDoc> GetE1Cursor(GSubject* sub)
 	{
-		return(sub->GetObjs(pDoc));
+		return(sub->GetUsedObjs(pDoc));
 	}
 
 	virtual R::RCursor<GCommunity> GetE2Cursor(GSubject* sub)
@@ -160,7 +160,7 @@ class GStatSimDocProf : public GStatSimElements<GDoc,GProfile>
 {
 public:
 
-	GStatSimDocProf(GSession* ses,RWorksheet& stats,size_t idx) : GStatSimElements<GDoc,GProfile>(ses,otDoc,otProfile,stats,idx)
+	GStatSimDocProf(GSession* ses,GMeasure* weighting,RWorksheet& stats,size_t idx) : GStatSimElements<GDoc,GProfile>(ses,weighting,otDoc,otProfile,stats,idx)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Document/Profile Similarities");
 	}
@@ -172,7 +172,7 @@ public:
 
 	virtual R::RCursor<GDoc> GetE1Cursor(GSubject* sub)
 	{
-		return(R::RCursor<GDoc>(sub->GetObjs(pDoc)));
+		return(R::RCursor<GDoc>(sub->GetUsedObjs(pDoc)));
 	}
 
 	virtual R::RCursor<GProfile> GetE2Cursor(GSubject* sub)
@@ -190,7 +190,7 @@ class GStatSimProfGrp : public GStatSimElements<GProfile,GCommunity>
 
 public:
 
-	GStatSimProfGrp(GSession* ses,RWorksheet& stats,size_t idx) : GStatSimElements<GProfile,GCommunity>(ses,otProfile,otCommunity,stats,idx), Com(1)
+	GStatSimProfGrp(GSession* ses,GMeasure* weighting,RWorksheet& stats,size_t idx) : GStatSimElements<GProfile,GCommunity>(ses,weighting,otProfile,otCommunity,stats,idx), Com(1)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profile/Community Similarities");
 	}
@@ -222,8 +222,25 @@ public:
 
 //------------------------------------------------------------------------------
 GStatsSims::GStatsSims(GSession* session,GPlugInFactory* fac)
-	: GTool(session,fac)
+	: RObject(fac->GetMng()->GetName()+"|"+fac->GetList()+"|"+fac->GetName()),
+	  GTool(session,fac)
 {
+}
+
+
+//------------------------------------------------------------------------------
+void GStatsSims::Init(void)
+{
+	GTool::Init();
+	Weighting=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Features Evaluation",0);
+	InsertObserver(HANDLER(GStatsSims::HandleCurrentPlugIn),hCurrentPlugIn,GALILEIApp->GetManager("Measures")->GetPlugInList("Features Evaluation"));
+}
+
+
+//------------------------------------------------------------------------------
+void GStatsSims::HandleCurrentPlugIn(const R::RNotification& notification)
+{
+	Weighting=dynamic_cast<GMeasure*>(GetData<GPlugIn*>(notification));
 }
 
 
@@ -294,7 +311,6 @@ void GStatsSims::DoExportDocsSims(void)
 template<class cObj>
 	double GStatsSims::ComputeInclusion(cObj* obj1,cObj* obj2)
 {
-
 	// if one description is empty -> the inclusion is null
 	if((!obj1->IsDefined())||(!obj2->IsDefined()))
 		return(0.0);
@@ -321,7 +337,9 @@ template<class cObj>
 				// Maximum value and add denominator
 				if(fabs(Concept1()->GetWeight())>Max)
 					Max=fabs(Concept1()->GetWeight());
-				double tmp(Concept1()->GetWeight()*Concept1()->GetConcept()->GetIF(obj1->GetObjType()));
+				double iffactor;
+				Weighting->Measure(0,Concept1()->GetConcept(),obj1->GetObjType(),&iffactor);
+				double tmp(Concept1()->GetWeight()*iffactor);
 				LocalDen+=tmp;
 
 				// Parse all the elements of Concept2 with an identifier lower than the current element of Concept1
@@ -409,6 +427,9 @@ void GStatsSims::AddColumns(RWorksheet& stats,size_t& idx,const RString& name)
 //------------------------------------------------------------------------------
 void GStatsSims::Run(GSlot*)
 {
+	if(!Weighting)
+		mThrowGException("No plug-in selected for \"Features Evaluation\"");
+	
 	// Verify if the ideal communities should be created
 	if(GroupDoc||GroupProf)
 		Session->GetSimulator()->BuildIdealCommunities();
@@ -426,28 +447,28 @@ void GStatsSims::Run(GSlot*)
 	{
 		size_t First(Idx);
 		AddColumns(Stats,Idx,"Documents");
-		GStatSimDocs Stat(Session,Stats,First);
+		GStatSimDocs Stat(Session,Weighting,Stats,First);
 		Stat.Run(GetMeasureType());
 	}
 	if(ProfDoc)
 	{
 		size_t First(Idx);
 		AddColumns(Stats,Idx,"Documents/Profiles");
-		GStatSimDocProf Stat(Session,Stats,First);
+		GStatSimDocProf Stat(Session,Weighting,Stats,First);
 		Stat.Run(GetMeasureType());
 	}
 	if(GroupDoc)
 	{
 		size_t First(Idx);
 		AddColumns(Stats,Idx,"Documents/Communities");
-		GStatSimDocGrp Stat(Session,Stats,First);
+		GStatSimDocGrp Stat(Session,Weighting,Stats,First);
 		Stat.Run(GetMeasureType());
 	}
 	if(Profiles)
 	{
 		size_t First(Idx);
 		AddColumns(Stats,Idx,"Profiles");
-		GStatSimProfiles Stat(Session,Stats,First);
+		GStatSimProfiles Stat(Session,Weighting,Stats,First);
 		Stat.Run(GetMeasureType());
 	}
 	if(SameDocProf)
@@ -461,7 +482,7 @@ void GStatsSims::Run(GSlot*)
 	{
 		size_t First(Idx);
 		AddColumns(Stats,Idx,"Profiles/Communities");
-		GStatSimProfGrp Stat(Session,Stats,First);
+		GStatSimProfGrp Stat(Session,Weighting,Stats,First);
 		Stat.Run(GetMeasureType());
 	}
 
