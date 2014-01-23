@@ -71,7 +71,7 @@ bool TopicsEval::IsObjAloneInIdealGroup(GDoc* obj)
 {
 	RCursor<GSubject> ThGrp(Session->GetObjs(pSubject,obj));
 	for(ThGrp.Start();!ThGrp.End();ThGrp.Next())
-		if(ThGrp()->GetNbObjs(otDoc)==1)
+		if(ThGrp()->GetNbUsedObjs(otDoc)==1)
 			return(true);
 	return(false);
 }
@@ -87,12 +87,12 @@ void TopicsEval::ComputeBestLocalRecallPrecision(RCursor<GDoc>& objs,ClusterScor
 		for(ThGrp.Start();!ThGrp.End();ThGrp.Next())
 		{
 			double recall(0.0),precision(0.0);
-			size_t InThGrp(ThGrp()->GetNbObjs(ObjType));
+			size_t InThGrp(ThGrp()->GetNbUsedObjs(ObjType));
 			if(InThGrp==1)
 				recall=1.0;
 			else
 			{
-				size_t ElseInThGrp(ThGrp()->GetNbObjs(grp->Group)-1);
+				size_t ElseInThGrp(ThGrp()->GetNbUsedObjs(grp->Group)-1);
 				precision+=((double)(ElseInThGrp))/((double)(ingroup-1));
 				size_t ElseInGrp(grp->Group->GetNbObjs(ThGrp())-1);
 				recall+=((double)(ElseInGrp))/((double)(InThGrp-1));

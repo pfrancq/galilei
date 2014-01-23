@@ -143,7 +143,7 @@ template<class cGroup,class cObj>
 	const GSubject* ThGrp(Session->GetObj(pSubject,obj));
 	if(!ThGrp)
 		throw GException("ClusteringEval<cGroup,cObj>::IsObjAloneInIdealGroup(cObj*): ThGrp cannot be null");
-	return(ThGrp->GetNbObjs(ObjType)==1);
+	return(ThGrp->GetNbUsedObjs(ObjType)==1);
 }
 
 
@@ -156,7 +156,7 @@ template<class cGroup,class cObj>
 		const GSubject* ThGrp(Session->GetObj(pSubject,objs()));
 		if(!ThGrp)
 			throw GException("ClusteringEval<cGroup,cObj>::ComputeBestLocalRecallPrecision(cObj*,ClusterScore<cGroup>*,size_t): ThGrp cannot be null");
-		size_t InThGrp(ThGrp->GetNbObjs(ObjType));
+		size_t InThGrp(ThGrp->GetNbUsedObjs(ObjType));
 		if(InThGrp==1)
 		{
 			// Precision is null
@@ -164,7 +164,7 @@ template<class cGroup,class cObj>
 		}
 		else
 		{
-			size_t ElseInThGrp(ThGrp->GetNbObjs(grp->Group)-1);
+			size_t ElseInThGrp(ThGrp->GetNbUsedObjs(grp->Group)-1);
 			grp->Precision+=((double)(ElseInThGrp))/((double)(ingroup-1));
 			size_t ElseInGrp(grp->Group->GetNbObjs(ThGrp)-1);
 			grp->Recall+=((double)(ElseInGrp))/((double)(InThGrp-1));
@@ -251,8 +251,8 @@ template<class cGroup,class cObj>
 
 	// Go through the languages to define the maximal sizes and allocate the matrix
 	MaxRows=MaxCols=0;
-	NbRows=Session->GetNbObjs(pSubject,ObjType);
-	NbCols=Session->GetNbObjs(GroupType);
+	NbRows=Session->GetNbUsedObjs(ObjType);
+	NbCols=Session->GetNbUsedObjs(GroupType);
 	if((!NbRows)||(!NbCols))
 		return;
 	if(NbRows>MaxRows) MaxRows=NbRows;
@@ -279,10 +279,10 @@ template<class cGroup,class cObj>
 	RCursor<GSubject> GroupsIdeal(Session->GetObjs(pSubject));
 	for(GroupsIdeal.Start(),NbTot=0;!GroupsIdeal.End();GroupsIdeal.Next())
 	{
-		if(!GroupsIdeal()->GetNbObjs(ObjType))
+		if(!GroupsIdeal()->GetNbUsedObjs(ObjType))
 			continue;
 		memset(VectorColsTemp,0,NbCols*sizeof(double));
-		RCursor<cObj> Prof(GroupsIdeal()->GetObjs(static_cast<cObj*>(0)));
+		RCursor<cObj> Prof(GroupsIdeal()->GetUsedObjs(static_cast<cObj*>(0)));
 		for(Prof.Start();!Prof.End();Prof.Next())
 		{
 			if(Prof()->GetGroupId()==cNoRef)
