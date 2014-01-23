@@ -54,7 +54,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Gravitational Point Group Description Computing Method.
 */
-class GCommunityCalcGravitation : public GCommunityCalc, GDescriptionFilter
+class GCommunityCalcGravitation : public R::RObject, public GCommunityCalc, GDescriptionFilter
 {
    /**
 	* Maximal number of most weighted concepts to be taken.
@@ -83,10 +83,10 @@ class GCommunityCalcGravitation : public GCommunityCalc, GDescriptionFilter
 	 */
 	GDescription Internal;
 
-   /**
-	* Temporary descriptions gathered.
-	*/
-	GDescription Tmp;
+	/**
+	 * Weighting method used.
+    */
+	GMeasure* Weighting;
 
 public:
 
@@ -96,6 +96,19 @@ public:
 	* @param fac             Factory.
 	*/
 	GCommunityCalcGravitation(GSession* session,GPlugInFactory* fac);
+
+	/**
+	 * Initialize the plug-in. In practice, it set the Weighting variable and set
+	 * it as observer for GALILEI::hCurrentPlugIn notification.
+    */
+	virtual void Init(void);
+
+	/**
+	 * Handle the GALILEI;;hCurrentPlugIn notification. In practice, it set the
+	 * Weighting variable.
+    * @param notification
+    */
+	void HandleCurrentPlugIn(const R::RNotification& notification);
 
 	/**
 	* Configurations were applied from the factory.

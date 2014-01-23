@@ -57,10 +57,27 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 GCommunityCalcGravitation::GCommunityCalcGravitation(GSession* session,GPlugInFactory* fac)
-	: GCommunityCalc(session,fac), GDescriptionFilter(),
+	: RObject(fac->GetMng()->GetName()+"|"+fac->GetList()+"|"+fac->GetName()),
+	  GCommunityCalc(session,fac), GDescriptionFilter(),
 	  LMax(60), LMin(0), Method(0),
 	  Profiles(session)
 {
+}
+
+
+//------------------------------------------------------------------------------
+void GCommunityCalcGravitation::Init(void)
+{
+	GCommunityCalc::Init();
+	Weighting=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Features Evaluation",0);
+	InsertObserver(HANDLER(GCommunityCalcGravitation::HandleCurrentPlugIn),hCurrentPlugIn,GALILEIApp->GetManager("Measures")->GetPlugInList("Features Evaluation"));
+}
+
+
+//------------------------------------------------------------------------------
+void GCommunityCalcGravitation::HandleCurrentPlugIn(const R::RNotification& notification)
+{
+	Weighting=dynamic_cast<GMeasure*>(GetData<GPlugIn*>(notification));
 }
 
 
@@ -95,14 +112,13 @@ void GCommunityCalcGravitation::ComputeCentroid(const GCommunity* grp)
 	RCursor<GProfile> Prof(grp->GetObjs());
 	for(Prof.Start();!Prof.End();Prof.Next())
 	{
-		Tmp=(*Prof())();
-		Tmp.Normalize();
-		Internal+=Tmp;
+		Internal+=(*Prof())();
 		Profiles.InsertDescription(&(*Prof())());
 	}
 
 	// Multiply by the if factors and divided by the number of profiles
-	Internal.MultiplyIF(Profiles);
+	//Internal.MultiplyIF(Profiles);
+	Weighting->Measure(1,&Internal,otProfile);
 	Internal/=Profiles.GetNb();
 
 	// Compute the description
@@ -124,6 +140,9 @@ void GCommunityCalcGravitation::ComputePrototype(const GCommunity* grp)
 //-----------------------------------------------------------------------------
 void GCommunityCalcGravitation::Compute(const GCommunity* grp)
 {
+	if(!Weighting)
+		mThrowGException("No plug-in selected for \"Features Evaluation\"");
+
 	switch(Method)
 	{
 		case 1: ComputeCentroid(grp); break;

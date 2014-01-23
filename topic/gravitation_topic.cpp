@@ -56,10 +56,27 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 GTopicCalcGravitation::GTopicCalcGravitation(GSession* session,GPlugInFactory* fac)
-	: GTopicCalc(session,fac), GDescriptionFilter(),
+	: RObject(fac->GetMng()->GetName()+"|"+fac->GetList()+"|"+fac->GetName()),
+	  GTopicCalc(session,fac), GDescriptionFilter(),
 	  LMax(60), LMin(0), Method(0),
 	  Docs(session)
 {
+}
+
+
+//------------------------------------------------------------------------------
+void GTopicCalcGravitation::Init(void)
+{
+	GTopicCalc::Init();
+	Weighting=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Features Evaluation",0);
+	InsertObserver(HANDLER(GTopicCalcGravitation::HandleCurrentPlugIn),hCurrentPlugIn,GALILEIApp->GetManager("Measures")->GetPlugInList("Features Evaluation"));
+}
+
+
+//------------------------------------------------------------------------------
+void GTopicCalcGravitation::HandleCurrentPlugIn(const R::RNotification& notification)
+{
+	Weighting=dynamic_cast<GMeasure*>(GetData<GPlugIn*>(notification));
 }
 
 
@@ -94,14 +111,12 @@ void GTopicCalcGravitation::ComputeCentroid(const GTopic* grp)
 	RCursor<GDoc> Doc(grp->GetObjs());
 	for(Doc.Start();!Doc.End();Doc.Next())
 	{
-		Tmp=(*Doc())();
-		Tmp.Normalize();
-		Internal+=Tmp;
+		Internal+=(*Doc())();
 		Docs.InsertDescription(&(*Doc())());
 	}
 
 	// Multiply by the if factors and divided by the number of documents
-	Internal.MultiplyIF(Docs);
+	Weighting->Measure(1,&Internal,otDoc);
 	Internal/=Docs.GetNb();
 
 	// Compute the description
@@ -120,6 +135,9 @@ void GTopicCalcGravitation::ComputePrototype(const GTopic* grp)
 //-----------------------------------------------------------------------------
 void GTopicCalcGravitation::Compute(const GTopic* grp)
 {
+	if(!Weighting)
+		mThrowGException("No plug-in selected for \"Features Evaluation\"");
+	
 	switch(Method)
 	{
 		case 1: ComputeCentroid(grp); break;
