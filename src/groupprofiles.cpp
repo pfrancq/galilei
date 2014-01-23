@@ -184,7 +184,7 @@ protected:
 	/**
 	* Make the grouping for a specific Language.
 	*/
-	virtual void Run(void) {RunGrouping(GetSession()->GetObjs(pCommunity),Profiles,GetSession()->GetMaxObjId(otProfile));}
+	virtual void Run(void) {RunGrouping(GetSession()->GetObjs(pCommunity),Profiles,GetSession()->GetMaxObjId(pProfile));}
 
 public:
 
