@@ -109,8 +109,8 @@ void ChoquetEstimation::ComputeSims(void)
 	size_t NbInter(0);
 	size_t MaxLine;
 
-	RCursor<GDoc> Cur1(Session->GetSelectedObjs(pDoc));
-	RCursor<GDoc> Cur2(Session->GetSelectedObjs(pDoc));
+	RCursor<GDoc> Cur1(Session->GetUsedObjs(pDoc));
+	RCursor<GDoc> Cur2(Session->GetUsedObjs(pDoc));
 	for(Cur1.Start(),MaxLine=Cur1.GetNb()-1;Cur1.GetPos()<MaxLine;Cur1.Next())
 	{
 		for(Cur2.GoTo(Cur1.GetPos());!Cur2.End();Cur2.Next())

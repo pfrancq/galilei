@@ -170,6 +170,12 @@ public:
 	GGenericSims(GSession* session,GPlugInFactory* fac,tObjType lines,tObjType cols);
 
 	/**
+	 * Handle the case that a message send was not caught. In practice, this
+	 * methods does nothing.
+    */
+	virtual void HandlerNotFound(const R::RNotification& notification);
+
+	/**
 	 * Virtual method inherits from R::RObject and that must be re-implemented
 	 * in all child classes.
 	 * @return Name of the class.
@@ -186,11 +192,6 @@ public:
 	* Configurations were applied from the factory.
 	*/
 	virtual void ApplyConfig(void);
-
-	/**
-	 * Initialize the measure.
-	 */
-	virtual void Init(void);
 
 	/**
 	 * Compute the similarity for each category.

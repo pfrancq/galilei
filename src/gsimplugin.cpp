@@ -26,6 +26,12 @@
 */
 
 
+
+//------------------------------------------------------------------------------
+// include files for GALILEI
+#include <ggalileiapp.h>
+
+
 //------------------------------------------------------------------------------
 // include files for the plug-in
 #include <gsimplugin.h>
@@ -43,7 +49,7 @@
 
 //------------------------------------------------------------------------------
 GSimPlugIn::GSimPlugIn(GSession* session,GPlugInFactory* fac,tObjType lines,tObjType cols)
-	: GMatrixMeasure(session,fac,lines,cols,lines==cols)
+	: GMatrixMeasure(session,fac,lines,cols,lines==cols), Weighting(0)
 {
 	Sims=new GComputeSim*[GetNbConceptCats()];
 	Sims[ccText]=Sims[ccSemantic]=new GComputeSimCos(this);
@@ -53,11 +59,35 @@ GSimPlugIn::GSimPlugIn(GSession* session,GPlugInFactory* fac,tObjType lines,tObj
 
 
 //------------------------------------------------------------------------------
+void GSimPlugIn::Init(void)
+{
+	GMatrixMeasure::Init();
+	Weighting=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Features Evaluation",0);
+	InsertObserver(HANDLER(GSimPlugIn::HandleCurrentPlugIn),hCurrentPlugIn,GALILEIApp->GetManager("Measures")->GetPlugInList("Features Evaluation"));
+}
+
+
+//------------------------------------------------------------------------------
+void GSimPlugIn::HandleCurrentPlugIn(const R::RNotification& notification)
+{
+	Weighting=dynamic_cast<GMeasure*>(GetData<GPlugIn*>(notification));
+}
+
+
+//------------------------------------------------------------------------------
 double GSimPlugIn::GetIF(GConcept* concept) const
 {
-	double IF(concept->GetIF(GetLinesType()));
+	if(!Weighting)
+		mThrowGException("No plug-in selected for \"Features Evaluation\"");
+	
+	double IF;
+	Weighting->Measure(0,concept,GetLinesType(),&IF);
 	if(GetLinesType()!=GetColsType())
-		IF+=concept->GetIF(GetColsType());
+	{
+		double res;
+		Weighting->Measure(0,concept,GetColsType(),&res);
+		IF+=res;
+	}
 	return(IF);
 }
 

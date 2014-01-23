@@ -47,6 +47,13 @@ template<class cObj1,class cObj2>
 
 //------------------------------------------------------------------------------
 template<class cObj1,class cObj2>
+	void GGenericSims<cObj1,cObj2>::HandlerNotFound (const RNotification&)
+{
+}
+
+
+//------------------------------------------------------------------------------
+template<class cObj1,class cObj2>
 	RString GGenericSims<cObj1,cObj2>::GetFilesName(void) const
 {
 	return(RString(GMatrixMeasure::GetFilesName()+RString::Number(SimType)));
@@ -88,14 +95,6 @@ template<class cObj1,class cObj2>
 	else
 		SimType=sim;
 	EmitSignal=FindParam<RParamValue>("EmitSignal")->GetBool();
-}
-
-
-//------------------------------------------------------------------------------
-template<class cObj1,class cObj2>
-	void GGenericSims<cObj1,cObj2>::Init(void)
-{
-	GMatrixMeasure::Init();
 }
 
 
@@ -235,14 +234,14 @@ template<class cObj1,class cObj2>
 	if(obj1==obj2)
 		return(1.0);
 	if(!URI)
-		URI=Session->GetInsertConceptType(ccLink,"URI","Uniform Resource Identifier");
+		URI=Session->GetObj(pConceptType,ccLink,"URI","Uniform Resource Identifier");
 
 	Desc1=dynamic_cast<cObj1*>(obj1);
 	Desc2=dynamic_cast<cObj2*>(obj2);
 	if(GetLinesType()==otDoc)
-		Concept1=Session->GetConcept(URI,obj1->GetName(),true);
+		Concept1=Session->GetObj(pConcept,URI,obj1->GetName(),true);
 	if(GetColsType()==otDoc)
-		Concept2=Session->GetConcept(URI,obj2->GetName(),true);
+		Concept2=Session->GetObj(pConcept,URI,obj2->GetName(),true);
 
 	if((!Desc1->IsDefined())||(!Desc2->IsDefined()))
 		return(0.0);

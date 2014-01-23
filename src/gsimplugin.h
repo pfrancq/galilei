@@ -119,6 +119,11 @@ protected:
 	 */
 	GComputeSim** Sims;
 
+	/**
+	 * Weighting method.
+    */
+	GMeasure* Weighting;
+
 public:
 
 	/**
@@ -128,6 +133,19 @@ public:
 	* @param cols            Type of the elements in the columns.
 	*/
 	GSimPlugIn(GSession* session,GPlugInFactory* fac,tObjType lines,tObjType cols);
+
+	/**
+	 * Initialize the plug-in. In practice, it set the Weighting variable and set
+	 * it as observer for GALILEI::hCurrentPlugIn notification.
+    */
+	virtual void Init(void);
+
+	/**
+	 * Handle the GALILEI;;hCurrentPlugIn notification. In practice, it set the
+	 * Weighting variable.
+    * @param notification
+    */
+	void HandleCurrentPlugIn(const R::RNotification& notification);
 
 	/**
 	 * @return the inverse factor of a given concept. If the elements in the
