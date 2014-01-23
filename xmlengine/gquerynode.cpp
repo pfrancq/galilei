@@ -104,14 +104,14 @@ GQueryNode::GQueryNode(GSession* session,const RString& str,bool type)
 		int Pos(str.Find(':',-1));
 		RString ConceptType(str.Mid(0,Pos));
 		RString Concept(str.Mid(Pos+1));
-		GConceptType* Type(session->GetConceptType(ConceptType,false));
-		Value.Concept=Type->GetConcept(Concept);
+		GConceptType* Type(session->GetObj(pConceptType,ConceptType,false));
+		Value.Concept=session->InsertObj(pConcept,Type,Concept);
 	}
 	else
 	{
 		GLang* Lang(GALILEIApp->GetPlugIn<GLang>("Lang","en"));
-		GConceptType* Terms(session->GetConceptType("Terms",false));
-		Value.Concept=Terms->GetConcept(Lang->GetStemming(str.Trim()));
+		GConceptType* Terms(session->GetObj(pConceptType,"Terms",false));
+		Value.Concept=session->InsertObj(pConcept,Terms,Lang->GetStemming(str.Trim()));
 	}
 }
 

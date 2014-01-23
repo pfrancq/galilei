@@ -109,6 +109,11 @@ class GEngineXML : public RObject, public GEngine
 	 * Temporary identifiers.
 	 */
 	RContainer<cRef,true,false> TmpRefs;
+	
+	/**
+	 * Weighting method used.
+    */
+	GMeasure* Weighting;
 
 public:
 
@@ -130,7 +135,9 @@ public:
 	virtual void ApplyConfig(void);
 
 	/**
-	 * This method is called each time a session is opened.
+	 * This method is called each time a session is opened. In particular, it
+	 * sets the Weighting variable and insert it as observer for
+	 * GALILEI::hCurrentPlugIn notification.
     */
 	virtual void Init(void);
 
@@ -140,22 +147,36 @@ public:
 	virtual void Done(void);
 
 	/**
-	 * Handle a notification that a document was analyzed.
-    * @param notification   Notification.
+	 * Handle the GALILEI;;hCurrentPlugIn notification. In practice, it set the
+	 * Weighting variable.
+    * @param notification
     */
-	void HandleDocAnalyzed(const R::RNotification& notification);
+	void HandleCurrentPlugIn(const R::RNotification& notification);
 
 	/**
-	 * Handle a notification that an object type must be recomputed.
-    * @param notification   Notification.
-    */
-	void HandleForceReCompute(const R::RNotification& notification);
+	 * This method handles the notifications that imply that the tf/idf factors
+	 * must be updated by adding the references of the sender.
+	 * @param notification   Notification received.
+	 */
+	void HandleAddDoc(const R::RNotification& notification);
 
 	/**
-	 * Handle a notification that a file was reset.
+	 * This method handles the notifications that imply that the tf/idf factors
+	 * must be updated by removing the references of the sender.
+	 * @param notification   Notification received.
+	 */
+	void HandleDelDoc(const R::RNotification& notification);
+
+	/**
+	 * Reset the engine.
+    */
+	virtual void Reset(void);
+
+	/**
+	 * Handle a notification that an object type must be reinitialized.
     * @param notification   Notification.
     */
-	void HandleResetFile(const R::RNotification& notification);
+	void HandleReInit(const R::RNotification& notification);
 
 	/**
 	* Request a query.

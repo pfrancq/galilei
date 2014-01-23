@@ -124,14 +124,20 @@ class GProm : RPromKernel
 	 */
 	RContainer<cOccur,true,true> TmpOccurs;
 
+	/**
+	 * Weighting method used.
+    */
+	GMeasure* Weighting;
+
 public:
 
 	/**
 	* Constructor.
 	* @param engine          Engine.
 	* @param query           Query.
+	* @param weighting       Weighting method.
 	*/
-	GProm(GEngineXML* engine,GQuery* query);
+	GProm(GEngineXML* engine,GQuery* query,GMeasure* weighting);
 
 	/**
 	 * Add a node (document fragment) to the PROMETHEE kernel.

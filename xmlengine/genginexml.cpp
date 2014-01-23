@@ -42,6 +42,7 @@
 #include <gdoc.h>
 #include <gdocanalyze.h>
 #include <rbinaryfile.h>
+#include <gmeasure.h>
 
 
 //-----------------------------------------------------------------------------
@@ -173,21 +174,28 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GEngineXML::GEngineXML(GSession* session,GPlugInFactory* fac) :
-	GEngine(session,fac), TfIdf(0), Distance(0), Specificity(0), TfIff(0),
-	NbResults(40), Trees(1000), Iffs(10000), IffsDirty(false), TmpRefs(10000)
+GEngineXML::GEngineXML(GSession* session,GPlugInFactory* fac)
+	: RObject(fac->GetMng()->GetName()+"|"+fac->GetList()+"|"+fac->GetName()),
+	  GEngine(session,fac), TfIdf(0), Distance(0), Specificity(0), TfIff(0),
+	  NbResults(40), Trees(1000), Iffs(10000), IffsDirty(false), TmpRefs(10000)
 {
-	InsertObserver(HANDLER(GEngineXML::HandleDocAnalyzed),"DocAnalyzed");
-	InsertObserver(HANDLER(GEngineXML::HandleForceReCompute),"ForceReCompute",session);
-	InsertObserver(HANDLER(GEngineXML::HandleResetFile),"ResetFile",session);
+	// Document notifications
+	InsertObserver(HANDLER(GEngineXML::HandleAddDoc),hDocs[oeUpdated]);
+	InsertObserver(HANDLER(GEngineXML::HandleDelDoc),hDocs[oeAboutToBeUpdated]);
+	InsertObserver(HANDLER(GEngineXML::HandleDelDoc),hDocs[oeAboutToBeDeleted]);
+	InsertObserver(HANDLER(GEngineXML::HandleReInit),hReInit,session);
 }
 
 
 //------------------------------------------------------------------------------
 void GEngineXML::Init(void)
 {
+	GEngine::Init();
+ 	Weighting=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Features Evaluation",0);
+	InsertObserver(HANDLER(GEngineXML::HandleCurrentPlugIn),hCurrentPlugIn,GALILEIApp->GetManager("Measures")->GetPlugInList("Features Evaluation"));
+
 	// Verify the size of the array
-	Iffs.VerifyTab(Session->GetNbConcepts()+1);
+	Iffs.VerifyTab(Session->GetMaxObjId(pConcept)+1);
 	SaveIffs=false;
 
 	// Look if a binary file exists ?
@@ -221,6 +229,13 @@ void GEngineXML::Init(void)
 			Ref->Children.InsertPtrAt(Keyword,i,true);
 		}
 	}
+}
+
+
+//------------------------------------------------------------------------------
+void GEngineXML::HandleCurrentPlugIn(const R::RNotification& notification)
+{
+	Weighting=dynamic_cast<GMeasure*>(GetData<GPlugIn*>(notification));
 }
 
 
@@ -275,49 +290,48 @@ void GEngineXML::ApplyConfig()
 
 
 //------------------------------------------------------------------------------
-void GEngineXML::HandleDocAnalyzed(const RNotification& notification)
+void GEngineXML::HandleAddDoc(const RNotification& notification)
 {
-	GDocAnalyze* Analyzer(GetData<GDocAnalyze*>(notification));
-	if(Analyzer->GetSession()!=Session)
-		return;
-
 	// If the references are dirty -> wait to recompute everything if needed
 	if(IffsDirty)
 		return;
 
-	// Verify and clear
-	Iffs.VerifyTab(Session->GetNbConcepts()+1);
-
-	// First remove the references of the previous description
-	GConceptTree* Tree(0);
-	Analyzer->GetDoc()->LoadTree(Tree);
-	UpdateRefs(Tree,false);
-	delete Tree;
-
-	// Update the references for the document just analyzed
-	UpdateRefs(&Analyzer->GetTree(),true);
-}
-
-
-//------------------------------------------------------------------------------
-void GEngineXML::HandleForceReCompute(const R::RNotification& notification)
-{
-	GSessionMsg& Msg(GetData<GSessionMsg&>(notification));
-	if(Msg.GetType()==otDoc)
+	// Verify that the sender is a document
+	GDoc* Doc(dynamic_cast<GDoc*>(notification.GetSender()));
+	if(Doc)
 	{
-		// ForceReCompute IFF
-		IffsDirty=true;
+		Iffs.VerifyTab(Session->GetMaxObjId(pConcept)+1);
+		UpdateRefs(Doc->GetTree(),true);
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void GEngineXML::HandleResetFile(const R::RNotification& notification)
+void GEngineXML::HandleDelDoc(const RNotification& notification)
 {
-	GSessionMsg& Msg(GetData<GSessionMsg&>(notification));
-	if((Msg.GetType()==otDoc)&&(Msg.GetMeta()==otDescFile))
+	// If the references are dirty -> wait to recompute everything if needed
+	if(IffsDirty)
+		return;
+
+	// Verify that the sender is a document
+	GDoc* Doc(dynamic_cast<GDoc*>(notification.GetSender()));
+	if(Doc&&Session->IsUsed(Doc))
 	{
-		// Remove the file
+		Iffs.VerifyTab(Session->GetMaxObjId(pConcept)+1);
+		UpdateRefs(Doc->GetTree(),false);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GEngineXML::Reset(void)
+{
+	// ForceReCompute IFF
+	IffsDirty=true;
+
+	// Remove the file if the results must be saved
+	if(Session->MustSaveResults())
+	{
 		const RURI uri(GALILEIApp->GetIndexDir()+RFile::GetDirSeparator()+Session->GetName()+RFile::GetDirSeparator()+"GEngineXML.bin");
 		RFile::RemoveFile(uri);
 	}
@@ -325,8 +339,22 @@ void GEngineXML::HandleResetFile(const R::RNotification& notification)
 
 
 //------------------------------------------------------------------------------
- void GEngineXML::Request(GMetaEngine* caller,const RString& query)
- {
+void GEngineXML::HandleReInit(const R::RNotification& notification)
+{
+	// Manage only documents
+	GSessionMsg& Msg(GetData<GSessionMsg&>(notification));
+	if(Msg.GetType()!=otDoc)
+		return;
+	Reset();
+}
+
+
+//------------------------------------------------------------------------------
+void GEngineXML::Request(GMetaEngine* caller,const RString& query)
+{
+	if(!Weighting)
+		mThrowGException("No plug-in selected for \"Features Evaluation\"");
+	
 	// Recompute References if necessary
 	if(IffsDirty)
 		RecomputeRefs();
@@ -350,7 +378,7 @@ void GEngineXML::HandleResetFile(const R::RNotification& notification)
 		Res->Print();
 
 	// Create a PROMETHEE kernel and a solution for each fragment
-	GProm Prom(this,&Req);
+	GProm Prom(this,&Req,Weighting);
 	RCursor<GResNodes> Docs(Res->GetDocs());
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
@@ -510,7 +538,7 @@ GEngineXML::cIff* GEngineXML::GetIff(size_t conceptid)
 void GEngineXML::UpdateRefs(const GConceptTree* tree,bool add)
 {
 	// Verify the size
-	TmpRefs.VerifyTab(Session->GetNbConcepts()+1);
+	TmpRefs.VerifyTab(Session->GetMaxObjId(pConcept)+1);
 
 	// Build the nodes for the tree passed
 	RNodeCursor<GConceptTree,GConceptNode> Cur(*tree);
@@ -557,7 +585,7 @@ void GEngineXML::UpdateRefs(const GConceptTree* tree,bool add)
 void GEngineXML::RecomputeRefs(void)
 {
 	// Clear everything
-	Iffs.Clear(Session->GetNbConcepts()+1);
+	Iffs.Clear(Session->GetMaxObjId(pConcept)+1);
 
 	// Go trough each document and load the current structure
 	GConceptTree* Tree(0);

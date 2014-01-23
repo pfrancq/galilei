@@ -41,6 +41,7 @@
 #include <gdoc.h>
 #include <gvector.h>
 #include <gsession.h>
+#include <gmeasure.h>
 
 
 //-----------------------------------------------------------------------------
@@ -129,14 +130,14 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GProm::GProm(GEngineXML* engine,GQuery* query)
+GProm::GProm(GEngineXML* engine,GQuery* query,GMeasure* weighting)
 	: RPromKernel("Structured Search",3,5), Engine(engine), Query(query),
 	  TfIdf      (new RPromLinearCriterion(RPromCriterion::Maximize,Engine->TfIdf, "Tf/Idf")),
 	  TfIff      (new RPromLinearCriterion(RPromCriterion::Maximize,Engine->TfIff,"Tf/Iff")),
 	  Specificity(new RPromLinearCriterion(RPromCriterion::Minimize,Engine->Specificity,"Specificity")),
 	  Distance   (new RPromLinearCriterion(RPromCriterion::Minimize,Engine->Distance,"Distance")),
 	  Type       (new RPromLinearCriterion(RPromCriterion::Maximize,Engine->Type,"Type")),
-	  TfIdfs(1000), TmpOccurs(1000)
+	  TfIdfs(1000), TmpOccurs(1000), Weighting(weighting)
 {
 	if(TfIdf->IsActive())
 		AddCriterion(TfIdf);
@@ -209,7 +210,11 @@ double GProm::ComputeTfIdf(GResNode* node)
 			if(fabs(Ref()->GetWeight())>MaxWeight)
 				MaxWeight=fabs(Ref()->GetWeight());
 			if(Query->IsIn(Ref()->GetConcept()))
-				Local+=Ref()->GetWeight()*Ref()->GetConcept()->GetIF(otDoc);
+			{
+				double iffactor;
+				Weighting->Measure(0,Ref()->GetConcept(),otDoc,&iffactor);
+				Local+=Ref()->GetWeight()*iffactor;
+			}
 		}
 		Num+=(Vector()->GetNb()*Local/MaxWeight);
 		Den+=Vector()->GetNb();
@@ -254,7 +259,7 @@ double GProm::ComputeTfIff(GResNode* node)
 			Max=Weight;
 
 		// Takes only the the concept of the query in account
-		if(Query->IsIn(Engine->GetSession()->GetConcept(Occur()->Id)))
+		if(Query->IsIn(Engine->GetSession()->GetObj(pConcept,Occur()->Id)))
 			Sum+=Weight*Engine->GetIff(Occur()->Id,node->GetNode()->GetConceptId());
 	}
 
