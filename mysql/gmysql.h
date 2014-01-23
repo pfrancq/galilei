@@ -273,14 +273,6 @@ public:
 	virtual void SaveConcept(GConcept* concept);
 
 	/**
-	* Save the references of a given object type for a given concept.
-	* @param concept         Concept.
-	* @param what            Type of the object.
-	* @param refs            Number of references.
-	*/
-	virtual void SaveRefs(const GConcept* concept,tObjType what,size_t refs);
-
-	/**
 	 * Save the index information of a given object type for a given concept.
 	 * @param concept        Concept.
 	 * @param what           Type of the object.
@@ -336,6 +328,13 @@ public:
 	* @param classid         Identifier of the class.
 	*/
 	virtual void LoadObj(GClass* &classp,size_t classid);
+
+  /**
+	* Method that load a class that is stored.
+	* @param classp          Pointer to the class that will be created.
+	* @param name            Name of the class.
+	*/
+	virtual void LoadObj(GClass* &classp,const R::RString& name);
 
 	/**
 	* Method that load the classes from where they are stored. This method is

@@ -27,15 +27,10 @@ CREATE TABLE `concepts` (
   `name` text collate utf8_bin  NOT NULL,
   `typeid` int(11) unsigned NOT NULL default '0',
   `def` text collate utf8_bin  NOT NULL,
-  `refdocs` int(11) unsigned NOT NULL default '0',
   `indexdocs` int(11) unsigned NOT NULL default '0',
-  `refprofiles` int(11) unsigned NOT NULL default '0',
   `indexprofiles` int(11) unsigned NOT NULL default '0',
-  `refcommunities` int(11) unsigned NOT NULL default '0',
   `indexcommunities` int(11) unsigned NOT NULL default '0',
-  `reftopics` int(11) unsigned NOT NULL default '0',
   `indextopics` int(11) unsigned NOT NULL default '0',
-  `refclasses` int(11) unsigned NOT NULL default '0',
   `indexclasses` int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (`conceptid`),
   KEY `conceptndx` (`typeid`,`name`(255))
@@ -54,11 +49,6 @@ CREATE TABLE `concepttypes` (
   `catid` int(11) unsigned,
   `name` varchar(50) collate utf8_bin NOT NULL,
   `description` varchar(200) collate utf8_bin NOT NULL,
-  `refdocs` int(11) unsigned NOT NULL default '0',
-  `refcommunities` int(11) unsigned NOT NULL default '0',
-  `refprofiles` int(11) unsigned NOT NULL default '0',
-  `reftopics` int(11) unsigned NOT NULL default '0',
-  `refclasses` int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (`typeid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
@@ -226,7 +216,7 @@ CREATE TABLE `subjects` (
   `subjectid` int(11) unsigned NOT NULL,
   `name` varchar(250) collate utf8_bin NOT NULL,
   `parent` int(11) unsigned NOT NULL,
-  `selected` BOOL default '1',
+  `used` BOOL default '0',
   PRIMARY KEY  (`subjectid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
