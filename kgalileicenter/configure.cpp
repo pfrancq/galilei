@@ -322,13 +322,6 @@ void Configure::applySession(void)
 //------------------------------------------------------------------------------
 void Configure::initSimulation(void)
 {
-	if(!App->getSession())
-	{
-		MaxDepth->setEnabled(false);
-		ManualSubjects->setEnabled(false);
-		Subjects->setEnabled(false);
-	}
-
 	// Read Values
 	NbOK->setValue(App->getSession()->GetDouble("Nb","Simulator","Profiles","Relevant"));
 	RelOK->setChecked(App->getSession()->GetBool("Percentage","Simulator","Profiles","Relevant"));
@@ -356,11 +349,8 @@ void Configure::initSimulation(void)
 	grpPercentage->setEnabled(CreateProfiles->isChecked());
 	grpType->setEnabled(CreateProfiles->isChecked());
 
-	// Read Subjects
-	if(!App->getSession())
-	{
-		return;
-	}
+
+	// Set subjects
 	MaxDepth->setMaximum(App->getSession()->GetMaxDepth());
 	Depth->setText(QString::number(App->getSession()->GetMaxDepth()));
 	Subjects->header()->setResizeMode(0,QHeaderView::ResizeToContents);
@@ -369,6 +359,7 @@ void Configure::initSimulation(void)
 	RNodeCursor<GSubjects,GSubject> Cur(App->getSession()->GetObjs(pSubject,pSubject));
 	for(Cur.Start();!Cur.End();Cur.Next())
 		addSubject(Cur(),0);
+	Subjects->setEnabled(ManualSubjects->isChecked());
 }
 
 
@@ -419,7 +410,7 @@ void Configure::applySimulation(void)
 	{
 		QSubjectItem* item(dynamic_cast<QSubjectItem*>(Subjects->topLevelItem(i)));
 		if(!item) continue;
-		App->getSession()->GetSimulator()->SetManualUsed(item->Subject,item->Select);
+		App->getSession()->SetUsed(item->Subject,item->Select);
 		applySubSubjects(item);
 	}
 }

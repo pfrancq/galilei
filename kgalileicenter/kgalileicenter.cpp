@@ -194,7 +194,7 @@ void KGALILEICenter::initActions(void)
 	Actions.insert(Actions.size(),addAction("&Group Profiles","communitiesCalc",SLOT(communitiesCalc()),"media-seek-forward"));
 
 	// Menu "Debug"
-	Actions.insert(Actions.size(),addAction("Test Subjects","testSubjects",SLOT(testSubjects())));
+	Actions.insert(Actions.size(),addAction("Repair Subjects","repairSubjects",SLOT(repairSubjects())));
 	Actions.insert(Actions.size(),addAction("Initialize the simulation","subjectsCreate",SLOT(subjectsCreate())));
 	Actions.insert(Actions.size(),addAction("Create Ideal &Communities","communitiesCreate",SLOT(communitiesCreate())));
 	Actions.insert(Actions.size(),addAction("Create Ideal &Topics","topicsCreate",SLOT(topicsCreate())));
@@ -501,7 +501,7 @@ void KGALILEICenter::docsClear(void)
 {
 	if(Doc)
 	{
-		Doc->ForceReCompute(otDoc);
+		Doc->ReInit(pDoc,false);
 		updateWins<KViewDoc>();
 	}
 }
@@ -697,7 +697,7 @@ void KGALILEICenter::topicsClear(void)
 {
 	if(Doc)
 	{
-		Doc->ForceReCompute(otTopic);
+		Doc->ReInit(pTopic);
 		updateWins<KViewTopics>();
 	}
 }
@@ -739,7 +739,7 @@ void KGALILEICenter::profilesClear()
 {
 	if(Doc)
 	{
-		Doc->ForceReCompute(otProfile);
+		Doc->ReInit(pProfile,false);
 		updateWins<KViewProfile>();
 	}
 }
@@ -790,7 +790,7 @@ void KGALILEICenter::communitiesClear()
 {
 	if(Doc)
 	{
-		Doc->ForceReCompute(otCommunity);
+		Doc->ReInit(pCommunity);
 		updateWins<KViewCommunities>();
 	}
 }
@@ -896,10 +896,10 @@ void KGALILEICenter::communitiesCreate(void)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenter::testSubjects(void)
+void KGALILEICenter::repairSubjects(void)
 {
-	QSessionProgressDlg Dlg(this,"Test Subjects");
-	QTestSubjects* Task(new QTestSubjects(this));
+	QSessionProgressDlg Dlg(this,"Repair Subjects");
+	QRepairSubjects* Task(new QRepairSubjects(this));
 	Dlg.Run(Task);
 }
 

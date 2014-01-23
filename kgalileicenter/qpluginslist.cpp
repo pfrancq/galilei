@@ -30,6 +30,8 @@
 //-----------------------------------------------------------------------------
 // include files for Qt/KDE
 #include <QtGui/QTreeWidget>
+#include <qsessionprogress.h>
+#include <kgalileicenter.h>
 
 
 //-----------------------------------------------------------------------------
@@ -344,6 +346,7 @@ void QPlugInsList::slotChange(QListWidgetItem* act,QListWidgetItem*)
 	About->setEnabled(f->PlugIn->GetPlugIn()&&f->PlugIn->HasAbout());
 	Enable->setChecked(f->Enable);
 	Params->setEnabled(f->PlugIn->GetPlugIn());
+	Reset->setEnabled(f->PlugIn->GetPlugIn());
 }
 
 
@@ -357,6 +360,7 @@ void QPlugInsList::slotEnable(bool state)
 	Configure->setEnabled(f->PlugIn->GetPlugIn()&&f->PlugIn->HasConfigure());
 	About->setEnabled(f->PlugIn->GetPlugIn()&&f->PlugIn->HasAbout());
 	Params->setEnabled(f->PlugIn->GetPlugIn());
+	Reset->setEnabled(f->PlugIn->GetPlugIn());
 }
 
 
@@ -425,4 +429,29 @@ void QPlugInsList::slotParams(void)
 	Dlg.setButtons(KDialog::Ok);
 	Dlg.resize(sizeHint());
 	Dlg.exec();
+}
+
+
+//-----------------------------------------------------------------------------
+class QReset : public QSessionThread
+{
+	GPlugIn* PlugIn;
+public:
+	QReset(KGALILEICenter* app,GPlugIn* plugin) : QSessionThread(app), PlugIn(plugin) {}
+	virtual void DoIt(void)
+	{
+	 	Parent->setLabelText("Reset the plug-in '"+ToQString(PlugIn->GetName())+"'");
+		PlugIn->Reset();
+	}
+};
+
+
+//-----------------------------------------------------------------------------
+void QPlugInsList::slotReset(void)
+{
+	if(!List->currentItem()) return;
+	QPlugIn* f=dynamic_cast<QPlugIn*>(List->currentItem());
+	if(!f) return;
+	QSessionProgressDlg Dlg(KGALILEICenter::App,"Reset Plug-In",false);
+	Dlg.Run(new QReset(KGALILEICenter::App,f->PlugIn->GetPlugIn()));
 }

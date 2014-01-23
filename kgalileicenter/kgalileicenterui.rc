@@ -15,7 +15,7 @@
 		<Action name="createDatabase"/>
 		<Action name="importDocs"/>
 		<Action name="importUsersData"/>
-		<Action name="runTool"/>			
+		<Action name="runTool"/>
 		<separator/>
 		<Action name="sessionQuit"/>
 	</Menu>
@@ -29,7 +29,7 @@
 		<Action name="exportDocs"/>
 		<Action name="indexDocs"/>
 		<separator/>
-		<Action name="docsAnalyze"/>		
+		<Action name="docsAnalyze"/>
 		<Action name="docsIndexer"/>
 		<separator/>
 		<Action name="docAnalyze"/>
@@ -51,7 +51,7 @@
 		<Action name="showClasses"/>
 	</Menu>
 	<Menu name="Users"><text>&amp;Users</text>
-		<Action name="subprofilesClear"/>
+		<Action name="profilesClear"/>
 		<Separator/>
 		<Action name="showUsers"/>
 		<Separator/>
@@ -65,16 +65,16 @@
 		<Action name="communitiesCalc"/>
 	</Menu>
 	<Menu name="Debug"><text>S&amp;imulation</text>
-		<Action name="testSubjects"/>
+		<Action name="repairSubjects"/>
 		<Separator/>
 		<Action name="simulationDlg"/>
 		<Action name="subjectsCreate"/>
 		<Separator/>
 		<Action name="communitiesCreate"/>
 		<Action name="topicsCreate"/>
-		<Action name="topicsClassesCreate"/>		
+		<Action name="topicsClassesCreate"/>
 		<Action name="classesCreate"/>
-		<Action name="classesDocsCreate"/>		
+		<Action name="classesDocsCreate"/>
 		<Separator/>
 		<Action name="doFdbks"/>
 		<Action name="doAssessments"/>
@@ -101,7 +101,7 @@
 	<Action name="sessionConnect"/>
 	<Separator/>
 	<Action name="docsAnalyze"/>
-	<Action name="showDocs"/>	
+	<Action name="showDocs"/>
 	<Separator/>
 	<Action name="showUsers"/>
 	<Action name="profilesCalc"/>

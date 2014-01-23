@@ -54,6 +54,15 @@
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QTreeWidget" name="Dict">
+          <property name="toolTip">
+           <string>Concepts and their global weighting value based on the current measure.</string>
+          </property>
+          <property name="statusTip">
+           <string>Concepts and their global weighting value based on the current measure.</string>
+          </property>
+          <property name="whatsThis">
+           <string>Concepts and their global weighting value based on the current measure.</string>
+          </property>
           <property name="rootIsDecorated">
            <bool>false</bool>
           </property>
@@ -69,27 +78,27 @@
           </column>
           <column>
            <property name="text">
-            <string>IDocsF</string>
+            <string>Docs</string>
            </property>
           </column>
           <column>
            <property name="text">
-            <string>IProfilesF</string>
+            <string>Profiles</string>
            </property>
           </column>
           <column>
            <property name="text">
-            <string>IComF</string>
+            <string>Coms</string>
            </property>
           </column>
           <column>
            <property name="text">
-            <string>ITopicsF</string>
+            <string>Topics</string>
            </property>
           </column>
           <column>
            <property name="text">
-            <string>IClassesF</string>
+            <string>Classes</string>
            </property>
           </column>
          </widget>

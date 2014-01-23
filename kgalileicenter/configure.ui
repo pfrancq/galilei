@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>615</width>
-    <height>534</height>
+    <height>580</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
       <bool>false</bool>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab_15">
       <attribute name="title">
@@ -76,7 +76,7 @@
              </widget>
             </item>
             <item>
-             <widget class="KIntNumInput" name="DescBlock">
+             <widget class="KIntNumInput" name="DescBlock" native="true">
               <property name="toolTip">
                <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
@@ -95,7 +95,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The binary files are composed from several blocks, each block having the same size. The user can specify the size in KB of the blocks.&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Warning&lt;/span&gt;: Once the size is fixed, it must &lt;span style=&quot; font-weight:600;&quot;&gt;not&lt;/span&gt; be modify (or the files must be deleted from the disk).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
-              <property name="minimum">
+              <property name="minimum" stdset="0">
                <number>0</number>
               </property>
              </widget>
@@ -124,7 +124,7 @@ p, li { white-space: pre-wrap; }
              </widget>
             </item>
             <item>
-             <widget class="KIntNumInput" name="DescCache">
+             <widget class="KIntNumInput" name="DescCache" native="true">
               <property name="toolTip">
                <string>Specify the number of blocks maintened in the cache.</string>
               </property>
@@ -132,7 +132,7 @@ p, li { white-space: pre-wrap; }
                <string>Specify the number of blocks stored in the cache. If the cache is full and a new block must be loaded, the less used block is removed.
 A large cache speeds up the treatment but needs more RAM.</string>
               </property>
-              <property name="minimum">
+              <property name="minimum" stdset="0">
                <number>0</number>
               </property>
              </widget>
@@ -209,7 +209,7 @@ p, li { white-space: pre-wrap; }
              </widget>
             </item>
             <item>
-             <widget class="KIntNumInput" name="DescTolerance">
+             <widget class="KIntNumInput" name="DescTolerance" native="true">
               <property name="toolTip">
                <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
@@ -221,7 +221,7 @@ p, li { white-space: pre-wrap; }
                <string>The tolerance specifies the amount of space reserved in a given block for further modifications in the objects already contained in it.
 If the objects indexed are computed onece, the tolerance can be fixed to 0.</string>
               </property>
-              <property name="minimum">
+              <property name="minimum" stdset="0">
                <number>0</number>
               </property>
              </widget>
@@ -290,7 +290,7 @@ If the objects indexed are computed onece, the tolerance can be fixed to 0.</str
                 </widget>
                </item>
                <item>
-                <widget class="KIntNumInput" name="IndexBlock">
+                <widget class="KIntNumInput" name="IndexBlock" native="true">
                  <property name="toolTip">
                   <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
@@ -309,7 +309,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The binary files are composed from several blocks, each block having the same size. The user can specify the size in KB of the blocks.&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Warning&lt;/span&gt;: Once the size is fixed, it must &lt;span style=&quot; font-weight:600;&quot;&gt;not&lt;/span&gt; be modify (or the files must be deleted from the disk).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
-                 <property name="minimum">
+                 <property name="minimum" stdset="0">
                   <number>0</number>
                  </property>
                 </widget>
@@ -338,7 +338,7 @@ p, li { white-space: pre-wrap; }
                 </widget>
                </item>
                <item>
-                <widget class="KIntNumInput" name="IndexCache">
+                <widget class="KIntNumInput" name="IndexCache" native="true">
                  <property name="toolTip">
                   <string>Specify the number of blocks maintened in the cache.</string>
                  </property>
@@ -346,7 +346,7 @@ p, li { white-space: pre-wrap; }
                   <string>Specify the number of blocks stored in the cache. If the cache is full and a new block must be loaded, the less used block is removed.
 A large cache speeds up the treatment but needs more RAM.</string>
                  </property>
-                 <property name="minimum">
+                 <property name="minimum" stdset="0">
                   <number>0</number>
                  </property>
                 </widget>
@@ -423,7 +423,7 @@ p, li { white-space: pre-wrap; }
                 </widget>
                </item>
                <item>
-                <widget class="KIntNumInput" name="IndexTolerance">
+                <widget class="KIntNumInput" name="IndexTolerance" native="true">
                  <property name="toolTip">
                   <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
@@ -435,7 +435,7 @@ p, li { white-space: pre-wrap; }
                   <string>The tolerance specifies the amount of space reserved in a given block for further modifications in the objects already contained in it.
 If the objects indexed are computed onece, the tolerance can be fixed to 0.</string>
                  </property>
-                 <property name="minimum">
+                 <property name="minimum" stdset="0">
                   <number>0</number>
                  </property>
                 </widget>
@@ -493,7 +493,7 @@ If the objects indexed are computed onece, the tolerance can be fixed to 0.</str
              </widget>
             </item>
             <item>
-             <widget class="KIntNumInput" name="TreeBlock">
+             <widget class="KIntNumInput" name="TreeBlock" native="true">
               <property name="toolTip">
                <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
@@ -512,7 +512,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The binary files are composed from several blocks, each block having the same size. The user can specify the size in KB of the blocks.&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Warning&lt;/span&gt;: Once the size is fixed, it must &lt;span style=&quot; font-weight:600;&quot;&gt;not&lt;/span&gt; be modify (or the files must be deleted from the disk).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
-              <property name="minimum">
+              <property name="minimum" stdset="0">
                <number>0</number>
               </property>
              </widget>
@@ -541,7 +541,7 @@ p, li { white-space: pre-wrap; }
              </widget>
             </item>
             <item>
-             <widget class="KIntNumInput" name="TreeCache">
+             <widget class="KIntNumInput" name="TreeCache" native="true">
               <property name="toolTip">
                <string>Specify the number of blocks maintened in the cache.</string>
               </property>
@@ -549,7 +549,7 @@ p, li { white-space: pre-wrap; }
                <string>Specify the number of blocks stored in the cache. If the cache is full and a new block must be loaded, the less used block is removed.
 A large cache speeds up the treatment but needs more RAM.</string>
               </property>
-              <property name="minimum">
+              <property name="minimum" stdset="0">
                <number>0</number>
               </property>
              </widget>
@@ -626,7 +626,7 @@ p, li { white-space: pre-wrap; }
              </widget>
             </item>
             <item>
-             <widget class="KIntNumInput" name="TreeTolerance">
+             <widget class="KIntNumInput" name="TreeTolerance" native="true">
               <property name="toolTip">
                <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
@@ -638,7 +638,7 @@ p, li { white-space: pre-wrap; }
                <string>The tolerance specifies the amount of space reserved in a given block for further modifications in the objects already contained in it.
 If the objects indexed are computed onece, the tolerance can be fixed to 0.</string>
               </property>
-              <property name="minimum">
+              <property name="minimum" stdset="0">
                <number>0</number>
               </property>
              </widget>
@@ -1021,8 +1021,8 @@ If the objects indexed are computed onece, the tolerance can be fixed to 0.</str
                  </widget>
                 </item>
                 <item>
-                 <widget class="KIntNumInput" name="MaxDepth">
-                  <property name="minimum">
+                 <widget class="KIntNumInput" name="MaxDepth" native="true">
+                  <property name="minimum" stdset="0">
                    <number>0</number>
                   </property>
                  </widget>
@@ -1111,7 +1111,7 @@ If the objects indexed are computed onece, the tolerance can be fixed to 0.</str
                     </widget>
                    </item>
                    <item>
-                    <widget class="KDoubleNumInput" name="NbSubjects"/>
+                    <widget class="KDoubleNumInput" name="NbSubjects" native="true"/>
                    </item>
                    <item>
                     <widget class="QCheckBox" name="RelSubjects">
@@ -1151,7 +1151,7 @@ If the objects indexed are computed onece, the tolerance can be fixed to 0.</str
                     </widget>
                    </item>
                    <item>
-                    <widget class="KIntNumInput" name="NbMinDocsSubject"/>
+                    <widget class="KIntNumInput" name="NbMinDocsSubject" native="true"/>
                    </item>
                    <item>
                     <spacer name="spacer2_2">
@@ -1190,7 +1190,7 @@ If the objects indexed are computed onece, the tolerance can be fixed to 0.</str
                     </widget>
                    </item>
                    <item>
-                    <widget class="KDoubleNumInput" name="NbDocsPerSubject"/>
+                    <widget class="KDoubleNumInput" name="NbDocsPerSubject" native="true"/>
                    </item>
                    <item>
                     <widget class="QCheckBox" name="PercNbDocsPerSubject">
@@ -1250,7 +1250,7 @@ If the objects indexed are computed onece, the tolerance can be fixed to 0.</str
                     </widget>
                    </item>
                    <item>
-                    <widget class="KDoubleNumInput" name="SwitchPerc">
+                    <widget class="KDoubleNumInput" name="SwitchPerc" native="true">
                      <property name="maxValue" stdset="0">
                       <number>100</number>
                      </property>
@@ -1353,7 +1353,7 @@ If the objects indexed are computed onece, the tolerance can be fixed to 0.</str
                  </widget>
                 </item>
                 <item>
-                 <widget class="KIntNumInput" name="NbProfMin"/>
+                 <widget class="KIntNumInput" name="NbProfMin" native="true"/>
                 </item>
                 <item>
                  <spacer name="spacer3_2">
@@ -1382,7 +1382,7 @@ If the objects indexed are computed onece, the tolerance can be fixed to 0.</str
                  </widget>
                 </item>
                 <item>
-                 <widget class="KIntNumInput" name="NbProfMax"/>
+                 <widget class="KIntNumInput" name="NbProfMax" native="true"/>
                 </item>
                 <item>
                  <spacer name="horizontalSpacer_10">
@@ -1412,7 +1412,7 @@ If the objects indexed are computed onece, the tolerance can be fixed to 0.</str
                  </widget>
                 </item>
                 <item>
-                 <widget class="KDoubleNumInput" name="PercSocial"/>
+                 <widget class="KDoubleNumInput" name="PercSocial" native="true"/>
                 </item>
                 <item>
                  <spacer name="spacer3_2_2">
@@ -1454,7 +1454,7 @@ If the objects indexed are computed onece, the tolerance can be fixed to 0.</str
                  </widget>
                 </item>
                 <item>
-                 <widget class="KDoubleNumInput" name="NbOK"/>
+                 <widget class="KDoubleNumInput" name="NbOK" native="true"/>
                 </item>
                 <item>
                  <widget class="QCheckBox" name="RelOK">
@@ -1494,7 +1494,7 @@ If the objects indexed are computed onece, the tolerance can be fixed to 0.</str
                  </widget>
                 </item>
                 <item>
-                 <widget class="KDoubleNumInput" name="NbKO"/>
+                 <widget class="KDoubleNumInput" name="NbKO" native="true"/>
                 </item>
                 <item>
                  <widget class="QCheckBox" name="RelKO">
@@ -1534,7 +1534,7 @@ If the objects indexed are computed onece, the tolerance can be fixed to 0.</str
                  </widget>
                 </item>
                 <item>
-                 <widget class="KDoubleNumInput" name="NbH"/>
+                 <widget class="KDoubleNumInput" name="NbH" native="true"/>
                 </item>
                 <item>
                  <widget class="QCheckBox" name="RelH">
@@ -1583,7 +1583,7 @@ If the objects indexed are computed onece, the tolerance can be fixed to 0.</str
                  </widget>
                 </item>
                 <item>
-                 <widget class="KDoubleNumInput" name="PercErr"/>
+                 <widget class="KDoubleNumInput" name="PercErr" native="true"/>
                 </item>
                 <item>
                  <spacer name="horizontalSpacer_18">
@@ -1613,7 +1613,7 @@ If the objects indexed are computed onece, the tolerance can be fixed to 0.</str
                  </widget>
                 </item>
                 <item>
-                 <widget class="KIntNumInput" name="NbDocsAssess"/>
+                 <widget class="KIntNumInput" name="NbDocsAssess" native="true"/>
                 </item>
                 <item>
                  <spacer name="spacer2_3_3_2_2">

@@ -52,7 +52,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 /**
  * The QFillDatabase provides a class for importing a set of documents in the
- * current database. The documents may be categorized on a directory basis.
+ * current database. The documents may be categorized in subjects on a directory
+ * basis.
  * @author Pascal Francq
  * @short Fill Database
  */

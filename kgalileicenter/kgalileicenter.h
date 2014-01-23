@@ -435,9 +435,9 @@ private slots:
 	void communitiesCreate(void);
 
 	/**
-	 * Test the subjects.
+	 * Repair the subjects.
 	 */
-	void testSubjects(void);
+	void repairSubjects(void);
 
 	/**
 	 * Make a feedback cycle.

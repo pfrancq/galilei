@@ -29,6 +29,11 @@
 
 
 
+//------------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <math.h>
+
+
 //-----------------------------------------------------------------------------
 // include files for R/GALILEI Projects
 #include <rqt.h>
@@ -37,6 +42,7 @@
 #include <gstatement.h>
 #include <ggalileiapp.h>
 #include <gsession.h>
+#include <gmeasure.h>
 
 
 //-----------------------------------------------------------------------------
@@ -80,11 +86,9 @@ public:
 		//setIcon(0,KIconLoader::global()->loadIcon("dashboard-show",KIconLoader::Small));
 	}
 
-	QGObject(QTreeWidget* parent,GConcept* concept,const QString& id)
+	QGObject(QTreeWidget* parent,GConcept* concept,double docs,double profiles,double topics,double classes,double communities,const QString& id)
 		: QTreeWidgetItem(parent,QStringList()<<id<<ToQString(concept->GetName())
-			<<QString::number(concept->GetIF(otDoc))<<QString::number(concept->GetIF(otProfile))
-	        <<QString::number(concept->GetIF(otCommunity))<<QString::number(concept->GetIF(otTopic))
-	        <<QString::number(concept->GetIF(otClass))), Type(otConcept)
+			<<QString::number(docs)<<QString::number(profiles)<<QString::number(communities)<<QString::number(topics)<<QString::number(classes)), Type(otConcept)
 	{
 		Obj.Concept=concept;
 		//setIcon(0,KIconLoader::global()->loadIcon("dashboard-show",KIconLoader::Small));
@@ -116,7 +120,7 @@ public:
 	virtual void DoIt(void)
 	{
 		// Go trough each language and create a Item.
-		RCursor<GConceptType> Types(App->getSession()->GetConceptTypes());
+		RCursor<GConceptType> Types(App->getSession()->GetObjs(pConceptType));
 		for(Types.Start();!Types.End();Types.Next())
 			new QGObject(Dicts,Types());
 	}
@@ -171,6 +175,10 @@ void KViewDicts::update(void)
 //-----------------------------------------------------------------------------
 void KViewDicts::selectDict(QTreeWidgetItem* item,int)
 {
+	GMeasure* Weighting(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Features Evaluation",0));
+	if(!Weighting)
+		mThrowGException("No plug-in selected for \"Features Evaluation\"");
+
 	QGObject* ptr(dynamic_cast<QGObject*>(item));
 	if(!ptr)
 		return;
@@ -178,7 +186,7 @@ void KViewDicts::selectDict(QTreeWidgetItem* item,int)
 	CurDict=ptr->Obj.Dict;
 
     // Parse the double hash table
-    RCursor<RDblHashContainer<GConcept,false>::Hash> Cur(CurDict->GetConcepts());
+    RCursor<RDblHashContainer<GConcept,false>::Hash> Cur(CurDict->GetObjs(pConcept));
     for(Cur.Start();!Cur.End();Cur.Next())
     {
        RCursor<RDblHashContainer<GConcept,false>::Hash2> Cur2(*Cur());
@@ -187,10 +195,19 @@ void KViewDicts::selectDict(QTreeWidgetItem* item,int)
           RCursor<GConcept> Cur3(*Cur2());
           for(Cur3.Start();!Cur3.End();Cur3.Next())
           {
-        	  QString w(QString::number(Cur3()->GetId()));
-        	  while(w.length()<10)
-        		  w.prepend(' ');
-        	  new QGObject(Dict,const_cast<GConcept*>(Cur3()),w);
+				QString w(QString::number(Cur3()->GetId()));
+				while(w.length()<10)
+					w.prepend(' ');
+				double docs(NAN),profiles(NAN),communities(NAN),topics(NAN),classes(NAN);
+				if(Weighting)
+				{
+					Weighting->Measure(0,const_cast<GConcept*>(Cur3()),otDoc,&docs);
+					Weighting->Measure(0,const_cast<GConcept*>(Cur3()),otProfile,&profiles);
+					Weighting->Measure(0,const_cast<GConcept*>(Cur3()),otTopic,&topics);
+					Weighting->Measure(0,const_cast<GConcept*>(Cur3()),otClass,&classes);
+					Weighting->Measure(0,const_cast<GConcept*>(Cur3()),otCommunity,&communities);
+					new QGObject(Dict,const_cast<GConcept*>(Cur3()),docs,profiles,topics,classes,communities,w);
+				}
           }
        }
     }
@@ -233,11 +250,11 @@ void KViewDicts::newConcept(void)
 	if(Ok&&!text.isEmpty())
 	{
 		GConcept concept(App->getSession(),FromQString(text),CurDict);
-		GConcept* ptr=App->getSession()->InsertConcept(&concept);
+		GConcept* ptr=App->getSession()->InsertObj(concept);
 		QString w(QString::number(ptr->GetId()));
 		while(w.length()<10)
 			w.prepend(' ');
-		new QGObject(Dict,ptr,w);
+		new QGObject(Dict,ptr,0.0,0.0,0.0,0.0,0.0,w);
 	}
 }
 
@@ -251,7 +268,7 @@ void KViewDicts::delConcept(void)
 	if(KMessageBox::warningYesNo(this,"Do you want to delete the concept "+BuildConcept(concept)+"?","Warning")==KMessageBox::No)
 		return;
 	delete ptr;
-	App->getSession()->DeleteConcept(concept);
+	App->getSession()->DeleteObj(concept);
 }
 
 

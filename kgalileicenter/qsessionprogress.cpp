@@ -277,10 +277,10 @@ void QCreateIdealDocsClasses::DoIt(void)
 
 
 //-----------------------------------------------------------------------------
-void QTestSubjects::DoIt(void)
+void QRepairSubjects::DoIt(void)
 {
-	Parent->setLabelText("Test Subjects ...");
-	App->getSession()->TestSubjects();
+	Parent->setLabelText("Repair Subjects ...");
+	App->getSession()->Repair();
 }
 
 
@@ -359,9 +359,11 @@ void QIndexDocs::DoIt(void)
 QSessionProgressDlg::QSessionProgressDlg(KGALILEICenter* parent,const QString& c,bool cancel)
     : KProgressDialog(parent,c,""), GSlot(), Running(false), App(parent)
 {
-	showCancelButton(cancel);
-	setAllowCancel(cancel);
+	setAllowCancel(true);
+	showCancelButton(true);
 	setAutoClose(false);
+	if(!cancel)
+		setButtonText("Wait");
 	progressBar()->setVisible(false);
 	setMinimumSize(380,0);
 	adjustSize();
@@ -373,20 +375,23 @@ bool QSessionProgressDlg::Run(QSessionThread* task)
 {
 	EndMsg=QString::null;
 	Running=true;
-	task->Set(this);
+	if(task)
+		task->Set(this);
 	QEventLoop q;
 	setModal(true);
 	connect(this, SIGNAL(accepted()), &q, SLOT(quit()));
 	connect(this, SIGNAL(rejected()), &q, SLOT(quit()));
-	connect(task, SIGNAL(finish()), this, SLOT(Finish()));
+	if(task)
+		connect(task, SIGNAL(finish()), this, SLOT(Finish()));
 	Ret=false; // Suppose something goes wrong
 	show();
-	task->start();
+	if(task)
+		task->start();
 	q.exec();
 	if(App->getSession()&&App->getSession()->MustBreak())
 		App->getSession()->ResetBreak();
-	delete task;
-	//return(res);
+	if(task)
+		delete task;
 	return(Ret);
 }
 

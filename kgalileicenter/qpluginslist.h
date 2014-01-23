@@ -176,9 +176,14 @@ public slots:
 	void slotDown(void);
 
 	/**
-	 * Slot called when the Push button is pressed.
+	 * Slot called when the Params button is pressed.
 	 */
 	void slotParams(void);
+
+	/**
+	 * Slot called when the Reset button is pressed.
+	 */
+	void slotReset(void);
 };
 
 

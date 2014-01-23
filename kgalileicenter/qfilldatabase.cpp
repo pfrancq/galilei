@@ -138,7 +138,7 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent,int depth)
 			GSubject* Subject(0);
 			RString cat(Files()->GetFileName());
 
-			// Find parent topic
+			// Find parent subject
 			if(Info->Categorized)
 			{
 				if(!parent.IsEmpty())
@@ -146,8 +146,14 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent,int depth)
 					Subject=Session->GetObj(pSubject,parent);
 					cat=parent+"/"+cat;
 				}
-				if(depth<=Info->Depth->value())
-					Session->InsertObj(Subject,new GSubject(Session,Session->GetNbObjs(pSubject,otSubject)+1,cat,true));
+				if((Info->MaxDepth->value()==0)||(depth<=Info->MaxDepth->value()))
+				{
+					// Create a new subject. Its identifier is one above the greatest.
+					GSubject* New(new GSubject(Session,Session->GetMaxObjId(otSubject)+1,cat));
+					Session->InsertObj(Subject,New);
+					if(Info->Used)
+						 Session->SetUsed(New,true);
+				}
 				else
 					cat=parent;
 			}
@@ -165,12 +171,16 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent,int depth)
 
 			// Must be a normal document
 			GDoc* doc(new GDoc(Session,Files()->GetURI(),Files()->GetURI()(),Info->Lang,Info->DefaultMIME));
-			App->getSession()->InsertObj(doc);
+			Session->InsertObj(doc);
 			if(Info->Categorized)
 			{
 				GSubject* Subject(Session->GetObj(pSubject,parent));
 				if(Subject)
-					App->getSession()->InsertObj(Subject,doc);
+				{
+					Session->InsertObj(Subject,doc);
+					if(Info->Used)
+						 Session->SetUsed(doc,Subject,true);
+				}
 			}
 		}
 	}
@@ -200,7 +210,7 @@ void QFillDatabase::run(void)
 {
 	// Init
 	KUDirectory->setMode(KFile::Directory);
-	Topics->setChecked(true);
+	Subjects->setChecked(true);
 	RContainer<cLang,true,true> theLangs(20);
 	Language->setEnabled(false);
 	RCastCursor<GPlugIn,GLang> Langs(GALILEIApp->GetPlugIns<GLang>("Lang"));
@@ -217,7 +227,7 @@ void QFillDatabase::run(void)
 		Parent=FromQString(ParentName->text());
 		if(Dir.IsEmpty())
 		{
-			KMessageBox::error(this,"You must specify a directory containing all the categories! ");
+			KMessageBox::error(this,"You must specify a directory containing all the subjects! ");
 			return;
 		}
 		if((HasParent->isChecked())&&Parent.IsEmpty())
@@ -229,7 +239,7 @@ void QFillDatabase::run(void)
 		if(FixLanguage->isChecked())
 			Lang=theLangs.GetPtr(Language->currentText())->Lang;
 		DefaultMIME=FromQString(DefaultMIMEType->text());
-		Categorized=Topics->isChecked();
+		Categorized=Subjects->isChecked();
 		QSessionProgressDlg Dlg(App,"Fill Database");
 		Dlg.Run(new QImportDocs(App,this));
 	}

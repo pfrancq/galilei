@@ -278,12 +278,12 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
-* Test the subjects.
+* Repair the subjects.
 */
-class QTestSubjects : public QSessionThread
+class QRepairSubjects : public QSessionThread
 {
 public:
-	QTestSubjects(KGALILEICenter* app) : QSessionThread(app) {}
+	QRepairSubjects(KGALILEICenter* app) : QSessionThread(app) {}
 	virtual void DoIt(void);
 };
 
