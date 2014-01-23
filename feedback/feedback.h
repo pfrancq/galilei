@@ -68,7 +68,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Feedback Profile Computing Method.
 */
-class GProfileCalcFeedback : public GProfileCalc, GDescriptionFilter
+class GProfileCalcFeedback : public R::RObject, public GProfileCalc, GDescriptionFilter
 {
    /**
 	* Maximal number of most weighted concepts to be taken.
@@ -110,10 +110,10 @@ class GProfileCalcFeedback : public GProfileCalc, GDescriptionFilter
 	 */
 	GDescription Internal;
 
-   /**
-	* Temporary descriptions gathered.
-	*/
-	GDescription Tmp;
+	/**
+	 * Weighting method used.
+    */
+	GMeasure* Weighting;
 
 public:
 
@@ -123,6 +123,19 @@ public:
 	* @param fac            Factory.
 	*/
 	GProfileCalcFeedback(GSession* session,GPlugInFactory* fac);
+
+	/**
+	 * Initialize the plug-in. In practice, it set the Weighting variable and set
+	 * it as observer for GALILEI::hCurrentPlugIn notification.
+    */
+	virtual void Init(void);
+
+	/**
+	 * Handle the GALILEI;;hCurrentPlugIn notification. In practice, it set the
+	 * Weighting variable.
+    * @param notification
+    */
+	void HandleCurrentPlugIn(const R::RNotification& notification);
 
 	/**
 	* Configurations were applied from the factory.

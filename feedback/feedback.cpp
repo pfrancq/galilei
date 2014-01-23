@@ -50,6 +50,7 @@ using namespace R;
 #include <gconcepttype.h>
 #include <gsession.h>
 #include <gfdbk.h>
+#include <gmeasure.h>
 using namespace GALILEI;
 
 
@@ -62,7 +63,8 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GProfileCalcFeedback::GProfileCalcFeedback(GSession* session,GPlugInFactory* fac)
-	: GProfileCalc(session,fac), GDescriptionFilter(),
+	: RObject(fac->GetMng()->GetName()+"|"+fac->GetList()+"|"+fac->GetName()),
+	  GProfileCalc(session,fac), GDescriptionFilter(),
 	  LMax(60), LMin(0),
 	  IncrementalMode(false), Alpha(1.0)
 {
@@ -73,6 +75,22 @@ GProfileCalcFeedback::GProfileCalcFeedback(GSession* session,GPlugInFactory* fac
 	Sets[ftRelevant]=new GDescriptionSet(session);
 	Sets[ftFuzzyRelevant]=new GDescriptionSet(session);
 	Sets[ftIrrelevant]=new GDescriptionSet(session);
+}
+
+
+//------------------------------------------------------------------------------
+void GProfileCalcFeedback::Init(void)
+{
+	GProfileCalc::Init();
+	Weighting=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Features Evaluation",0);
+	InsertObserver(HANDLER(GProfileCalcFeedback::HandleCurrentPlugIn),hCurrentPlugIn,GALILEIApp->GetManager("Measures")->GetPlugInList("Features Evaluation"));
+}
+
+
+//------------------------------------------------------------------------------
+void GProfileCalcFeedback::HandleCurrentPlugIn(const R::RNotification& notification)
+{
+	Weighting=dynamic_cast<GMeasure*>(GetData<GPlugIn*>(notification));
 }
 
 
@@ -92,6 +110,9 @@ void GProfileCalcFeedback::ApplyConfig(void)
 //-----------------------------------------------------------------------------
 void GProfileCalcFeedback::Compute(const GProfile* profile)
 {
+	if(!Weighting)
+		mThrowGException("No plug-in selected for \"Features Evaluation\"");
+	
 	// Clear all descriptions before computing
 	Description.Clear();
 	Internal.Clear();
@@ -126,16 +147,15 @@ void GProfileCalcFeedback::Compute(const GProfile* profile)
 			continue;
 
 		// Normalize the description and add it to corresponding set
-		Tmp=(*Doc)();
-		Tmp.Normalize();
-		Desc[Fdbk()->GetFdbk()]+=Tmp;
+		Desc[Fdbk()->GetFdbk()]+=(*Doc)();
 		Sets[Fdbk()->GetFdbk()]->InsertDescription(&(*Doc)());
 	}
 
 	// Multiply by the if factors
-	Desc[ftRelevant].MultiplyIF(*Sets[ftRelevant]);
-	Desc[ftFuzzyRelevant].MultiplyIF(*Sets[ftFuzzyRelevant]);
-	Desc[ftIrrelevant].MultiplyIF(*Sets[ftIrrelevant]);
+	Weighting->Measure(2,&Desc[ftRelevant],otDoc,Sets[ftRelevant]);
+	Weighting->Measure(2,&Desc[ftFuzzyRelevant],otDoc,Sets[ftFuzzyRelevant]);
+	Weighting->Measure(2,&Desc[ftIrrelevant],otDoc,Sets[ftIrrelevant]);
+
 
 	// Add the description to Internal
 	if(Sets[ftRelevant]->GetNb())
