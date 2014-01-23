@@ -74,7 +74,7 @@ void GStringIndexer::ApplyConfig(void)
 void GStringIndexer::TreatTokens(GDocAnalyze* analyzer)
 {
 	if(!TermsSpace)
-		TermsSpace=Session->GetInsertConceptType(ccText,"Terms","Terms");
+		TermsSpace=Session->GetObj(pConceptType,ccText,"Terms","Terms");
 
 	RCursor<GToken> Token(analyzer->GetTokens());
 	for(Token.Start();!Token.End();Token.Next())
@@ -94,7 +94,7 @@ void GStringIndexer::TreatTokens(GDocAnalyze* analyzer)
 			continue;
 
 		// OK -> Assign a concept to it
-		GConcept* Concept(TermsSpace->GetInsertConcept(Term));
+		GConcept* Concept(Session->InsertObj(pConcept,TermsSpace,Term));
 		Token()->SetConcept(Concept);
 	}
 }

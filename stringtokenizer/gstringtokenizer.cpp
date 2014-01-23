@@ -259,8 +259,8 @@ bool GStringTokenizer::TreatChar(GDocAnalyze* analyzer,const R::RChar& car)
 				if(!Occur->GetToken()->GetConcept())
 				{
 					if(!URISpace)
-						URISpace=Session->GetInsertConceptType(ccLink,"URI","Uniform Resource Identifier");
-					Occur->GetToken()->SetConcept(URISpace->GetInsertConcept(Token));
+						URISpace=Session->GetObj(pConceptType,ccLink,"URI","Uniform Resource Identifier");
+					Occur->GetToken()->SetConcept(Session->InsertObj(pConcept,URISpace,Token));
 				}
 				analyzer->SetCurrentVector(Cur);
 			}
