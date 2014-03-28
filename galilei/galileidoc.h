@@ -195,7 +195,7 @@ namespace GALILEI{
  * void MyPlugIn::HandleCurrentPlugIn(const R::RNotification& notification)
  * {
  *	   GMeasure* Weighting(dynamic_cast<GMeasure*>(GetData<GPlugIn*>(notification)));
- * 	cout<<Weighting->GetName()<<endl;
+ * 	   cout<<Weighting->GetName()<<endl;
  * }
  * @endcode
  * For safety raesons, the methods HandleAddDoc and HandleDelDoc verifies that
