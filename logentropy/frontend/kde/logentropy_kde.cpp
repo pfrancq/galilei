@@ -32,7 +32,6 @@
 #include <kaboutdata.h>
 #include <kaboutapplicationdialog.h>
 #include <KDE/KLocale>
-#include <ui_config.h>
 
 
 //------------------------------------------------------------------------------
@@ -44,22 +43,6 @@ using namespace GALILEI;
 using namespace std;
 
 
-
-//------------------------------------------------------------------------------
-class Config : public KDialog, public Ui_Config
-{
-public:
-	Config(void)
-	{
-		setCaption("Configure Log Entropy Plug-In");
-		QWidget* widget=new QWidget(this);
-		setupUi(widget);
-		setMainWidget(widget);
-		setButtons(KDialog::Cancel|KDialog::Apply);
-		connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
-		adjustSize();
-	}
-};
 
 
 
