@@ -32,6 +32,12 @@
 #ifndef GGroupH
 #define GGroupH
 
+
+//------------------------------------------------------------------------------
+// include files for R Libraries Project
+#include <ircontainer.h>
+
+
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
