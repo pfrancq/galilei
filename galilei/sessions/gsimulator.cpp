@@ -940,7 +940,7 @@ void GSimulator::BuildIdealLeafTopics(void)
 		Grps()->AssignIdeal(grp);
 
 		// Update the topic.
-		Grps()->CreateDescription();
+		Grps()->CreateDescription(sdNames);
 		grp->Update(*Grps());
 	}
 }

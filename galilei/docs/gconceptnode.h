@@ -110,11 +110,6 @@ public:
 	virtual void Clear(void);
 
 	/**
-    * @return a pointer to the concept tree.
-    */
-	GConceptTree* GetTree(void) const;
-
-	/**
     * @return the type of the token corresponding to the node.
     */
 	tTokenType GetType(void) const {return(Type);}
@@ -139,7 +134,7 @@ public:
 	* @return the number of child nodes.
 	*/
 	size_t GetNbNodes(void) const;
-	
+
 	/**
     * @return the total number of child nodes (including all possible children).
     */

@@ -97,13 +97,13 @@ int GSubject::Compare(const RString& name) const
 
 
 //------------------------------------------------------------------------------
-void GSubject::CreateDescription(void)
+void GSubject::CreateDescription(tSubjectDesc desc)
 {
 	// If a description exists, leave it
 	if(IsDefined())
 		return;
 
-	switch(Tree->DescType)
+	switch(desc)
 	{
 		// Description is build based on the name of the subject and its parents
 		case sdNames:
@@ -152,7 +152,7 @@ void GSubject::CreateDescription(void)
 				// Compute the common information entities of all the children
 				RNodeCursor<GSubjects,GSubject> Child(this);
 				Child.Start();
-				Child()->CreateDescription();
+				Child()->CreateDescription(desc);
 				(*Vectors)=(*Child()->Vectors);
 				for(;!Child.End();Child.Next())
 				{

@@ -224,8 +224,9 @@ public:
 	 * Create a description. In practice, it is computed as name of
 	 * the subject and its parents, or as the gravitation center of the
 	 * documents (for a leaf node) or of the children (for a non-leaf node).
+	 * @param desc           Type of description to create.
 	 */
-	void CreateDescription(void);
+	void CreateDescription(tSubjectDesc desc);
 
 	/**
 	* Verify if a document is used by the subject.

@@ -89,13 +89,6 @@ void GConceptNode::Clear(void)
 
 
 //------------------------------------------------------------------------------
-GConceptTree* GConceptNode::GetTree(void) const
-{
-	return(RNode<GConceptTree,GConceptNode,false>::GetTree());
-}
-
-
-//------------------------------------------------------------------------------
 GConceptNode* GConceptNode::GetParent(void) const
 {
 	return(RNode<GConceptTree,GConceptNode,false>::GetParent());
