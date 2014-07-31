@@ -47,11 +47,10 @@ class GNodeInfos : public RNodeGA<GNodeInfos,RObjH,GChromoH>
 public:
 
 	/**
-	* Construct the node.
-	* @param owner          Owner of the node.
+	* Construct the node
 	* @param id             Identifier of the node.
 	*/
-	GNodeInfos(GChromoH* owner,size_t id,size_t max);
+	GNodeInfos(size_t id,size_t max);
 
 	int Compare(const GNodeInfos* n) const;
 

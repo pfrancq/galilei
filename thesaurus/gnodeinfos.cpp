@@ -43,8 +43,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GNodeInfos::GNodeInfos(GChromoH* owner,size_t id,size_t max)
-	: RNodeGA<GNodeInfos,RObjH,GChromoH>(owner,id,max)
+GNodeInfos::GNodeInfos(size_t id,size_t max)
+	: RNodeGA<GNodeInfos,RObjH,GChromoH>(id,max)
 {
 }
 
