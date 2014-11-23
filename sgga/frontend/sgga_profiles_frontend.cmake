@@ -1,5 +1,5 @@
 IF(KDE4_FOUND)
     SET(sgga_profiles_AVAILABLE_FRONTENDS kde)
-    SET(sgga_profiles_kde_DEPENDENCY rcorekde ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
+    SET(sgga_profiles_kde_DEPENDENCY rcoreqt ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
     ADD_FRONTEND_SOURCE_FILE(sgga_profiles_frontend sgga_profiles kde sgga_profiles_INCLUDES)
 ENDIF(KDE4_FOUND)

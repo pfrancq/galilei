@@ -1,5 +1,5 @@
 IF(KDE4_FOUND)
     SET(nngga_docs_AVAILABLE_FRONTENDS kde)
-    SET(nngga_docs_kde_DEPENDENCY rcorekde ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
+    SET(nngga_docs_kde_DEPENDENCY rcoreqt ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
     ADD_FRONTEND_SOURCE_FILE(nngga_docs_frontend nngga_docs kde nngga_docs_INCLUDES)
 ENDIF(KDE4_FOUND)
