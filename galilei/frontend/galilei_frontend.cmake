@@ -1,6 +1,5 @@
-IF(KDE4_FOUND)	
-    SET(galilei_AVAILABLE_FRONTENDS kde)
-    SET(galilei_kde_DEPENDENCY rcorekde ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS} )
-    ADD_FRONTEND_SOURCE_FILE(galilei_frontend galilei kde galilei_INCLUDES)
-ENDIF(KDE4_FOUND)
-  
+IF(QT4_FOUND)
+    SET(galilei_AVAILABLE_FRONTENDS qt)
+    SET(galilei_kde_DEPENDENCY rcoreqt ${QT_LIBRARIES} )
+    ADD_FRONTEND_SOURCE_FILE(galilei_frontend galilei qt galilei_INCLUDES)
+ENDIF(QT4_FOUND)

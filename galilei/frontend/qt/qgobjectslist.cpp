@@ -89,98 +89,98 @@ public:
 		: QTreeWidgetItem(parent, QStringList()<<((lang)?ToQString(lang->GetLangName()):"?????")<<""), Type(otLang)
 	{
 		Obj.Lang=lang;
-		setIcon(0,KIconLoader::global()->loadIcon("flag-yellow",KIconLoader::Small));
+		setIcon(0,QIcon::fromTheme("flag-yellow"));
 	}
 
 	QGObject(QTreeWidget* parent,GSubject* subject,size_t nb)
 		: QTreeWidgetItem(parent, QStringList()<<ToQString(subject->GetName())<<QString::number(nb)), Type(otSubject)
 	{
 		Obj.Subject=subject;
-		setIcon(0,KIconLoader::global()->loadIcon("dashboard-show",KIconLoader::Small));
+		setIcon(0,QIcon::fromTheme("dashboard-show"));
 	}
 
 	QGObject(QTreeWidgetItem* parent,GDoc* doc)
 		: QTreeWidgetItem(parent, QStringList()<<ToQString("["+RString::Number(doc->GetId())+"] "+doc->GetName())<<ToQString(doc->GetURI()())), Type(otDoc)
 	{
 		Obj.Doc=doc;
-		setIcon(0,KIconLoader::global()->loadIcon("text-xml",KIconLoader::Small));
+		setIcon(0,QIcon::fromTheme("text-xml"));
 	}
 
 	QGObject(QTreeWidgetItem* parent,GDoc* doc,const RDate& when)
 		: QTreeWidgetItem(parent, QStringList()<<ToQString(doc->GetName())<<ToQString(when)), Type(otDoc)
 	{
 		Obj.Doc=doc;
-		setIcon(0,KIconLoader::global()->loadIcon("text-xml",KIconLoader::Small));
+		setIcon(0,QIcon::fromTheme("text-xml"));
 	}
 
 	QGObject(QTreeWidget* parent,GDoc* doc,const RDate& when)
 		: QTreeWidgetItem(parent, QStringList()<<ToQString(doc->GetName())<<ToQString(when)), Type(otDoc)
 	{
 		Obj.Doc=doc;
-		setIcon(0,KIconLoader::global()->loadIcon("text-xml",KIconLoader::Small));
+		setIcon(0,QIcon::fromTheme("text-xml"));
 	}
 
 	QGObject(QTreeWidget* parent,GDoc* doc,const RString& info,double num,const RDate& when)
 		: QTreeWidgetItem(parent, QStringList()<<ToQString(doc->GetName())<<ToQString(info)+" ["+QString::number(num)+","+ToQString(when)+"]"), Type(otDoc)
 	{
 		Obj.Doc=doc;
-		setIcon(0,KIconLoader::global()->loadIcon("text-xml",KIconLoader::Small));
+		setIcon(0,QIcon::fromTheme("text-xml"));
 	}
 
 	QGObject(QTreeWidgetItem* parent,GProfile* prof,const RDate& when)
 		: QTreeWidgetItem(parent, QStringList()<<ToQString(prof->GetName())+" ("+ToQString(GetProfileType(prof->GetProfileType(),true,false))+" of "+ToQString(prof->GetUser()->GetFullName())+")"<<ToQString(when)), Type(otProfile)
 	{
 		Obj.Profile=prof;
-		setIcon(0,KIconLoader::global()->loadIcon("personal",KIconLoader::Small));
+		setIcon(0,QIcon::fromTheme("personal"));
 	}
 
 	QGObject(QTreeWidget* parent,GProfile* prof,const RDate& when)
 		: QTreeWidgetItem(parent, QStringList()<<ToQString(prof->GetName())+" ("+ToQString(GetProfileType(prof->GetProfileType(),true,false))+" of "+ToQString(prof->GetUser()->GetFullName())+")"<<ToQString(when)), Type(otProfile)
 	{
 		Obj.Profile=prof;
-		setIcon(0,KIconLoader::global()->loadIcon("personal",KIconLoader::Small));
+		setIcon(0,QIcon::fromTheme("personal"));
 	}
 
 	QGObject(QTreeWidgetItem* parent,GProfile* prof)
 		: QTreeWidgetItem(parent, QStringList()<<ToQString(prof->GetName())<<ToQString(GetProfileType(prof->GetProfileType(),true,false))+" of "+ToQString(prof->GetUser()->GetFullName())), Type(otProfile)
 	{
 		Obj.Profile=prof;
-		setIcon(0,KIconLoader::global()->loadIcon("edit-find-user",KIconLoader::Small));
+		setIcon(0,QIcon::fromTheme("edit-find-user"));
 	}
 
 	QGObject(QTreeWidget* parent,GUser* user)
 		: QTreeWidgetItem(parent, QStringList()<<ToQString(user->GetFullName())<<QString::number(user->GetNb())), Type(otUser)
 	{
 		Obj.User=user;
-		setIcon(0,KIconLoader::global()->loadIcon("personal",KIconLoader::Small));
+		setIcon(0,QIcon::fromTheme("personal"));
 	}
 
 	QGObject(QTreeWidget* parent,GTopic* topic)
 		: QTreeWidgetItem(parent, QStringList()<<ToQString(topic->GetName())<<QString::number(topic->GetNbObjs())), Type(otTopic)
 	{
 		Obj.Topic=topic;
-		setIcon(0,KIconLoader::global()->loadIcon("window_new",KIconLoader::Small));
+		setIcon(0,QIcon::fromTheme("window_new"));
 	}
 
 	QGObject(QTreeWidget* parent,GTopic* topic,const QString& score)
 		: QTreeWidgetItem(parent, QStringList()<<ToQString(topic->GetName())<<score), Type(otTopic)
 	{
 		Obj.Topic=topic;
-		setIcon(0,KIconLoader::global()->loadIcon("window_new",KIconLoader::Small));
+		setIcon(0,QIcon::fromTheme("window_new"));
 	}
 
 	QGObject(QTreeWidget* parent,GCommunity* community)
 		: QTreeWidgetItem(parent, QStringList()<<ToQString(community->GetName())<<QString::number(community->GetNbObjs())), Type(otCommunity)
 	{
 		Obj.Community=community;
-		setIcon(0,KIconLoader::global()->loadIcon("user-group-new",KIconLoader::Small));
+		setIcon(0,QIcon::fromTheme("user-group-new"));
 	}
 
 	QGObject(QTreeWidget* parent,GCommunity* community,const QString& score)
 		: QTreeWidgetItem(parent, QStringList()<<ToQString(community->GetName())<<score), Type(otCommunity)
 	{
 		Obj.Community=community;
-		setIcon(0,KIconLoader::global()->loadIcon("group-user-new",KIconLoader::Small));
+		setIcon(0,QIcon::fromTheme("group-user-new"));
 	}
 
 	QGObject(QTreeWidget* parent,tFdbkType fdbk)
@@ -191,15 +191,15 @@ public:
 		{
 			case ftRelevant:
 				setText(0,"Relevant Documents");
-				setIcon(0,KIconLoader::global()->loadIcon("folder-green",KIconLoader::Small));
+				setIcon(0,QIcon::fromTheme("folder-green"));
 				break;
 			case ftFuzzyRelevant:
 				setText(0,"Fuzzy Relevant Documents");
-				setIcon(0,KIconLoader::global()->loadIcon("folder-orange",KIconLoader::Small));
+				setIcon(0,QIcon::fromTheme("folder-orange"));
 				break;
 			case ftIrrelevant:
 				setText(0,"Irrelevant Documents");
-				setIcon(0,KIconLoader::global()->loadIcon("folder-red",KIconLoader::Small));
+				setIcon(0,QIcon::fromTheme("folder-red"));
 				break;
 			default:
 				break;
@@ -210,7 +210,7 @@ public:
 		: QTreeWidgetItem(parent,QStringList()<<ToQString(doc->GetTitle())<<ToQString(doc->GetURI()()))
 	{
 		Obj.DocRetrieved=doc;
-		setIcon(0,KIconLoader::global()->loadIcon("document",KIconLoader::Small));
+		setIcon(0,QIcon::fromTheme("document"));
 	}
 
 	QGObject(QTreeWidget* parent,GSubject* subject) : QTreeWidgetItem(parent,QStringList()<<ToQString(subject->GetName())<<QString::number(subject->GetId()))

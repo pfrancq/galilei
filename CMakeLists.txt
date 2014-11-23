@@ -21,7 +21,7 @@ OPTION(rcmake-verbose "Enable verbose output during cmake construction" OFF)
 
 IF(UNIX)
     ADD_DEFINITIONS("-fexceptions")
-    MESSAGE(STATUS "C++ exceptions will be re-enabled (since KDE4 detection disable them)")
+    MESSAGE(STATUS "C++ exceptions will be re-enabled")
     ADD_DEFINITIONS("-pedantic")
     ADD_DEFINITIONS("-Wno-long-long")
     ADD_DEFINITIONS("-DPIC")

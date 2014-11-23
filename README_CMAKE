@@ -62,21 +62,8 @@ The available options are (also cmake options are still available), and don't fo
 CMAKE_INSTALL_PREFIX=/path/to/install/top/dir -> where to install files
 CMAKE_BUILD_TYPE=<Debug|Release> -> where original default is Release
 
-iconv-library=/path/to/libiconv.so -> where to find iconv library if not in standard library path
-iconv-include=/path/to/libiconv_includes -> where to find iconv includes if not in standard include path
-
-disable-mysql=<true|false> -> Disable mysql support (by default, mysql support is enabled [false])
-mysql-library=/path/to/libmysqlclient.so -> where to find mysql client library if not in standard library path
-mysql-include=/path/to/libmysqlclient_includes -> where to find mysql client includes if not in standard include path
-
-curl-library=/path/to/libcurl.so -> where to find curl library if not in standard library path
-curl-include=/path/to/libcurl_includes -> where to find curl includes if not in standard include path
-
-disable-kde=<true|false> -> Disable kde 3 support (by default, kde support is enabled [false])
+disable-qt=<true|false> -> Disable Qt support (by default, Qt support is enabled [false])
 rcmake-verbose=<true|false> -> Enable verbose output during cmake run (by default, verbose output is disabled [true], useful for debug of cmake scripts)
-
-disable-rmath=<true|false> -> Disable rmath library construction (by default, rmath library is enabled [false])
-disable-roptimization=<true|false> -> Disable roptimization library construction (by default, roptimization library is enabled [false])
 
 ABOUT INSTALLATION
 ------------------
