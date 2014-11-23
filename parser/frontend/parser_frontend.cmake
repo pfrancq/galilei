@@ -1,5 +1,5 @@
 IF(KDE4_FOUND)
     SET(parser_AVAILABLE_FRONTENDS kde)
-    SET(parser_kde_DEPENDENCY rcorekde ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
+    SET(parser_kde_DEPENDENCY rcoreqt ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
     ADD_FRONTEND_SOURCE_FILE(parser_frontend parser kde parser_INCLUDES)
 ENDIF(KDE4_FOUND)

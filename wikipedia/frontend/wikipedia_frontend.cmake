@@ -1,5 +1,5 @@
 IF(KDE4_FOUND)
     SET(wikipedia_AVAILABLE_FRONTENDS kde)
-    SET(wikipedia_kde_DEPENDENCY rcorekde ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
+    SET(wikipedia_kde_DEPENDENCY rcoreqt ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
     ADD_FRONTEND_SOURCE_FILE(wikipedia_frontend wikipedia kde wikipedia_INCLUDES)
 ENDIF(KDE4_FOUND)
