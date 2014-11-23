@@ -1,5 +1,5 @@
 IF(KDE4_FOUND)
     SET(html_AVAILABLE_FRONTENDS kde)
-    SET(html_kde_DEPENDENCY rcorekde ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
+    SET(html_kde_DEPENDENCY rcoreqt ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
     ADD_FRONTEND_SOURCE_FILE(html_frontend html kde html_INCLUDES)
 ENDIF(KDE4_FOUND)
