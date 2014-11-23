@@ -1,5 +1,5 @@
 IF(KDE4_FOUND)
     SET(metaenginesum_AVAILABLE_FRONTENDS kde)
-    SET(metaenginesum_kde_DEPENDENCY rcorekde ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
+    SET(metaenginesum_kde_DEPENDENCY rcoreqt ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
     ADD_FRONTEND_SOURCE_FILE(metaenginesum_frontend metaenginesum kde metaenginesum_INCLUDES)
 ENDIF(KDE4_FOUND)
