@@ -1,5 +1,5 @@
 IF(KDE4_FOUND)
     SET(sugs_AVAILABLE_FRONTENDS kde)
-    SET(sugs_kde_DEPENDENCY rcorekde ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
+    SET(sugs_kde_DEPENDENCY rcoreqt ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
     ADD_FRONTEND_SOURCE_FILE(sugs_frontend sugs kde sugs_INCLUDES)
 ENDIF(KDE4_FOUND)
