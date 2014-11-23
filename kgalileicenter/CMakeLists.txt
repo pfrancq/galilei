@@ -52,7 +52,7 @@ KDE4_ADD_UI_FILES(KGALILEICENTER_SOURCES
 
 
 KDE4_ADD_EXECUTABLE(kgalileicenter ${KGALILEICENTER_SOURCES})
-TARGET_LINK_LIBRARIES(kgalileicenter galilei galileikde roptimization rcore rcorekde rmath ${KDE4_KDEUI_LIBS} ${KDE4_KDECORE_LIBS} ${KDE4_KPARTS_LIBS})
+TARGET_LINK_LIBRARIES(kgalileicenter galilei galileiqt roptimization rcore rcoreqt rmath ${KDE4_KDEUI_LIBS} ${KDE4_KDECORE_LIBS} ${KDE4_KPARTS_LIBS})
 
 
 ########### install files ###############

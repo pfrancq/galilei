@@ -88,14 +88,14 @@ int main(int argc, char *argv[])
 	try
 	{
 		KApplication app;
-		KGALILEICenter* Center=new KGALILEICenter(argc,argv);
+		KGALILEICenter Center(argc,argv);
 		if(app.isSessionRestored())
 		{
 //			RESTORE(Center);
 		}
 		else
 		{
-			Center->Execute();
+			Center.Execute();
 		}
 		return(app.exec());
 	}
