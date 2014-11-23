@@ -1,5 +1,5 @@
 IF(KDE4_FOUND)
     SET(langhu_AVAILABLE_FRONTENDS kde)
-    SET(langhu_kde_DEPENDENCY rcorekde ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
+    SET(langhu_kde_DEPENDENCY rcoreqt ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
     ADD_FRONTEND_SOURCE_FILE(langhu_frontend langhu kde langhu_INCLUDES)
 ENDIF(KDE4_FOUND)
