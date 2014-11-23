@@ -1,5 +1,5 @@
 IF(KDE4_FOUND)
     SET(communitieseval_AVAILABLE_FRONTENDS kde)
-    SET(communitieseval_kde_DEPENDENCY rcorekde galileikde ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
+    SET(communitieseval_kde_DEPENDENCY rcoreqt galileiqt ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
     ADD_FRONTEND_SOURCE_FILE(communitieseval_frontend communitieseval kde communitieseval_INCLUDES)
 ENDIF(KDE4_FOUND)

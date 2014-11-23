@@ -1,5 +1,5 @@
 IF(KDE4_FOUND)
     SET(topicseval_AVAILABLE_FRONTENDS kde)
-    SET(topicseval_kde_DEPENDENCY rcorekde galileikde galileikde ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
+    SET(topicseval_kde_DEPENDENCY rcoreqt galileiqt ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
     ADD_FRONTEND_SOURCE_FILE(topicseval_frontend topicseval kde topicseval_INCLUDES)
 ENDIF(KDE4_FOUND)
