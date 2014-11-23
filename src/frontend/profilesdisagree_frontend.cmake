@@ -1,5 +1,5 @@
 IF(KDE4_FOUND)
     SET(profilesdisagree_AVAILABLE_FRONTENDS kde)
-    SET(profilesdisagree_kde_DEPENDENCY rcorekde galileikde ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
+    SET(profilesdisagree_kde_DEPENDENCY rcoreqt galileiqt ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
     ADD_FRONTEND_SOURCE_FILE(profilesdisagree_frontend profilesdisagree kde profilesdisagree_INCLUDES)
 ENDIF(KDE4_FOUND)
