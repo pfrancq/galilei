@@ -1,5 +1,5 @@
 IF(KDE4_FOUND)
     SET(xmlengine_AVAILABLE_FRONTENDS kde)
-    SET(xmlengine_kde_DEPENDENCY rcorekde ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
+    SET(xmlengine_kde_DEPENDENCY rcoreqt ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
     ADD_FRONTEND_SOURCE_FILE(xmlengine_frontend xmlengine kde xmlengine_INCLUDES)
 ENDIF(KDE4_FOUND)
