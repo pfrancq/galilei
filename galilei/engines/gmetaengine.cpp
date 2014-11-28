@@ -50,7 +50,7 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GMetaEngine::GMetaEngine(GSession* session,GPlugInFactory* fac)
-	: GPlugIn(session,fac), RDownload(), Results(200)
+	: GPlugIn(session,fac), RDownloadFile(), Results(200)
 {
 }
 
@@ -70,7 +70,7 @@ RString GMetaEngine::GetTextFragment(GDocFragment* fragment)
 	if(fragment->GetURI().GetScheme()!="file")
 	{
 		File=TmpFile.GetName();
-		DownloadFile(fragment->GetDoc()->GetURI(),File);
+		Download(fragment->GetDoc()->GetURI(),File);
 	}
 	else
 		File=fragment->GetDoc()->GetURI();

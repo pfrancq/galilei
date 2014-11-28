@@ -58,7 +58,7 @@ namespace GALILEI{
 * See the documentation related to GPlugIn for more general information.
 * @short Meta-search Engine
 */
-class GMetaEngine : public GPlugIn, R::RDownload
+class GMetaEngine : public GPlugIn, R::RDownloadFile
 {
 protected:
 

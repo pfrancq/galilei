@@ -84,7 +84,7 @@ namespace GALILEI{
  * @author Pascal Francq
  * @short Document Analysis.
  */
-class GDocAnalyze : R::RDownload
+class GDocAnalyze : R::RDownloadFile
 {
 	/**
 	 * Current document analyzed.

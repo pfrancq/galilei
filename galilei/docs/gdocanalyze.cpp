@@ -68,7 +68,7 @@ bool Debug=false;
 
 //------------------------------------------------------------------------------
 GDocAnalyze::GDocAnalyze(GSession* session)
-	: RDownload(), Session(session), Description(), Tree(0,20000,2000), Tokenizer(0),
+	: RDownloadFile(), Session(session), Description(), Tree(0,20000,2000), Tokenizer(0),
 	  DefaultText(0), DCMI(0), DefaultURI(0), MemoryTokens(500), MemoryOccurs(20000),
 	  OrderTokens(27,27,50,20), Tokens(500), Occurs(20000), Top(200), Depths(100,50),
 	  SyntacticPos(20)
@@ -675,7 +675,7 @@ void GDocAnalyze::Analyze(GDoc* doc)
 	if(doc->GetURI().GetScheme()!="file")
 	{
 		File=TmpFile.GetName();
-		DownloadFile(doc->GetURI(),File);
+		Download(doc->GetURI(),File);
 	}
 	else
 		File=doc->GetURI();
