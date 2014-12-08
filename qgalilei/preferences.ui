@@ -39,11 +39,7 @@
       </widget>
      </item>
      <item>
-      <widget class="KUrlRequester" name="IndexDir">
-       <property name="toolTip">
-        <string>Path where the </string>
-       </property>
-      </widget>
+      <widget class="QLineEdit" name="IndexDir"/>
      </item>
     </layout>
    </item>
@@ -113,26 +109,22 @@
       </widget>
      </item>
      <item>
-      <widget class="KUrlRequester" name="PrgPath">
-       <property name="toolTip">
-        <string>Path where the programs are stored.</string>
-       </property>
-       <property name="whatsThis">
-        <string>The application can run a script files to automatize some tasks. This field specifies the default path for the dialog box.</string>
-       </property>
-      </widget>
+      <widget class="QLineEdit" name="PrgPath"/>
      </item>
     </layout>
    </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>KUrlRequester</class>
-   <extends>QFrame</extends>
-   <header>kurlrequester.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

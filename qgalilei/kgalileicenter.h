@@ -53,12 +53,16 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
+class QGALILEI;
+
+
+//-----------------------------------------------------------------------------
 /**
  * This class represents the main window.
  * @author Pascal Francq.
  * @short Main Window.
  */
-class KGALILEICenter : public KXmlGuiWindow, public GSlot, public GGALILEIApp
+class KGALILEICenter : public KXmlGuiWindow, public GSlot
 {
 	Q_OBJECT
 
@@ -122,24 +126,12 @@ public:
 	/**
 	 * The application.
 	 */
-	static KGALILEICenter* App;
+	static QGALILEI* App;
 
 	/**
 	* Construct the KGALILEICenterApp
-	* @param argc            Number of arguments.
-	* @param argv            Values of arguments.
 	*/
-	KGALILEICenter(int argc, char *argv[]);
-
-	/**
-	 * Initialize the application.
-	 */
-	virtual void Init(void);
-
-	/**
-	 * Run the application.
-	 */
-	virtual void Run(void);
+	KGALILEICenter(QGALILEI* app);
 
 	/**
 	* Returns a pointer to the current session.

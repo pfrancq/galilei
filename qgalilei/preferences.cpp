@@ -37,8 +37,8 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for Qt/KDE
-#include <kfiledialog.h>
+// include files for Qt
+//#include <kfiledialog.h>
 
 
 //-----------------------------------------------------------------------------
@@ -48,9 +48,12 @@
 
 //------------------------------------------------------------------------------
 // includes files for current application
-#include <kgalileicenter.h>
+#include <qgalileiwin.h>
 #include <preferences.h>
-#include <kapplication.h>
+//#include <kapplication.h>
+using namespace R;
+using namespace GALILEI;
+using namespace std;
 
 
 
@@ -61,15 +64,13 @@
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-Preferences::Preferences(KGALILEICenter* app)
-	: KDialog(app), Ui_Preferences(), App(app)
+Preferences::Preferences(QGALILEIWin* win)
+	: QDialog(win), Ui_Preferences(), Win(win)
 {
-	setCaption("Preferences");
-	QWidget* widget=new QWidget(this);
-	setupUi(widget);
-	setMainWidget(widget);
-	setButtons(KDialog::Cancel|KDialog::Apply);
-	connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
+	setupUi(this);
+	setWindowTitle("Preferences");
+	connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
+   connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 	connect(buttonAdd,SIGNAL(pressed()),this,SLOT(slotAddDir()));
 	connect(buttonDel,SIGNAL(pressed()),this,SLOT(slotDelDir()));
 }
@@ -78,20 +79,21 @@ Preferences::Preferences(KGALILEICenter* app)
 //------------------------------------------------------------------------------
 void Preferences::exec(void)
 {
-	IndexDir->setUrl(ToQString(App->GetIndexDir()));
-	R::RCursor<R::RString> Cur(App->GetPlugInsPath());
-	for(Cur.Start();!Cur.End();Cur.Next())
-		Dirs->addItem(ToQString(*Cur()));
-	PrgPath->setMode(KFile::Directory|KFile::ExistingOnly|KFile::LocalOnly);
-	PrgPath->setUrl(ToQString(App->PrgPath));
-
-	if(KDialog::exec())
+//	IndexDir->setUrl(ToQString(Win->GetIndexDir()));
+//	R::RCursor<R::RString> Cur(Win->GetPlugInsPath());
+//	for(Cur.Start();!Cur.End();Cur.Next())
+//		Dirs->addItem(ToQString(*Cur()));
+//	PrgPath->setMode(KFile::Directory|KFile::ExistingOnly|KFile::LocalOnly);
+//	PrgPath->setUrl(ToQString(Win->PrgPath));
+//
+	if(QDialog::exec())
 	{
-		App->SetIndexDir(FromQString(IndexDir->url().url()));
-		App->ClearPlugInsPath();
-		for(int i=0;i<Dirs->count();i++)
-			App->AddPlugInsPath(R::FromQString(Dirs->item(i)->text()));
-		App->PrgPath=R::FromQString(PrgPath->url().url());
+		cout<<"OK"<<endl;
+//		Win->SetIndexDir(FromQString(IndexDir->url().url()));
+//		Win->ClearPlugInsPath();
+//		for(int i=0;i<Dirs->count();i++)
+//			Win->AddPlugInsPath(R::FromQString(Dirs->item(i)->text()));
+//		Win->PrgPath=R::FromQString(PrgPath->url().url());
 	}
 }
 
@@ -99,9 +101,9 @@ void Preferences::exec(void)
 //-----------------------------------------------------------------------------
 void Preferences::slotAddDir(void)
 {
-	QString newdir=KFileDialog::getExistingDirectory(KUrl::fromPath("~"),this,"Add new directory for plug-ins");
-	if((!newdir.isEmpty())&&(!Dirs->findItems(newdir,Qt::MatchExactly).count()))
-		Dirs->addItem(newdir);
+//	QString newdir=KFileDialog::getExistingDirectory(KUrl::fromPath("~"),this,"Add new directory for plug-ins");
+//	if((!newdir.isEmpty())&&(!Dirs->findItems(newdir,Qt::MatchExactly).count()))
+//		Dirs->addItem(newdir);
 }
 
 

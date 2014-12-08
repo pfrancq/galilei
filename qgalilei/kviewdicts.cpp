@@ -46,15 +46,15 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for Qt/KDE
+// include files for Qt
 #include <QtGui/QInputDialog>
-#include <kmessagebox.h>
-#include <kapplication.h>
+#include <QMessageBox>
 
 
 //-----------------------------------------------------------------------------
 // application specific includes
 #include <kviewdicts.h>
+#include <qgalileiwin.h>
 #include <qsessionprogress.h>
 
 
@@ -94,6 +94,14 @@ public:
 		//setIcon(0,KIconLoader::global()->loadIcon("dashboard-show",KIconLoader::Small));
 	}
 
+	QGObject(QTreeWidget* parent,GConcept* concept,const QString& id)
+		: QTreeWidgetItem(parent,QStringList()<<id<<ToQString(concept->GetName())
+			<<"No Info"<<"No Info"<<"No Info"<<"No Info"<<"No Info"), Type(otConcept)
+	{
+		Obj.Concept=concept;
+		//setIcon(0,KIconLoader::global()->loadIcon("dashboard-show",KIconLoader::Small));
+	}
+
 	QGObject(QTreeWidget* parent,GStatement* statement,const QString& str1,const QString& str2,const QString& str3)
 		: QTreeWidgetItem(parent,QStringList()<<str1<<str2<<str3), Type(otStatement)
 	{
@@ -116,13 +124,20 @@ private:
 	QTreeWidget* Dicts;
 
 public:
-	QLoadDicts(KGALILEICenter* app,QTreeWidget* dicts) : QSessionThread(app), Dicts(dicts) {}
+	QLoadDicts(QGALILEIWin* app,QTreeWidget* dicts) : QSessionThread(app), Dicts(dicts) {}
 	virtual void DoIt(void)
 	{
+		Parent->setWindowTitle("Load dictionnaries");
 		// Go trough each language and create a Item.
 		RCursor<GConceptType> Types(App->getSession()->GetObjs(pConceptType));
+		Parent->setRange(0,Types.GetNb());
+		Parent->setValue(0);
 		for(Types.Start();!Types.End();Types.Next())
+		{
 			new QGObject(Dicts,Types());
+			Parent->setLabelText(ToQString(Types()->GetDescription()));
+			Parent->setValue(Types.GetPos()+1);
+		}
 	}
 };
 
@@ -135,8 +150,8 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewDicts::KViewDicts(KGALILEICenter* app)
-	: QMdiSubWindow(), Ui_KViewDicts(), CurDict(0), App(app)
+KViewDicts::KViewDicts(QGALILEIWin* win)
+	: QMdiSubWindow(), Ui_KViewDicts(), CurDict(0), Win(win)
 {
 	QWidget* ptr=new QWidget();
 	setupUi(ptr);
@@ -155,13 +170,14 @@ KViewDicts::KViewDicts(KGALILEICenter* app)
 //-----------------------------------------------------------------------------
 void KViewDicts::create(void)
 {
-	QSessionProgressDlg Dlg(App,"Load Dictionaries",true);
-	QLoadDicts* Task(new QLoadDicts(App,Dicts));
+//	QSessionProgressDlg Dlg(App,"Load Dictionaries",true);
+	QLoadDicts Task(Win,Dicts);
 	Dicts->sortItems(0,Qt::AscendingOrder);
 	Dicts->resizeColumnToContents(0);
 	Dicts->resizeColumnToContents(1);
-	connect(Task,SIGNAL(finish()),this,SLOT(update()));
-	Dlg.Run(Task);
+	//connect(&Task,SIGNAL(finish()),this,SLOT(update()));
+	Task.run();
+	update();
 }
 
 
@@ -176,8 +192,11 @@ void KViewDicts::update(void)
 void KViewDicts::selectDict(QTreeWidgetItem* item,int)
 {
 	GMeasure* Weighting(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Features Evaluation",0));
-	if(!Weighting)
-		mThrowGException("No plug-in selected for \"Features Evaluation\"");
+/*	if(!Weighting)
+	{
+		QMessageBox::critical(0, QWidget::tr("QGALILEI"),QWidget::trUtf8("No plug-in selected for \"Features Evaluation\""),QMessageBox::Ok);
+		return;
+	}*/
 
 	QGObject* ptr(dynamic_cast<QGObject*>(item));
 	if(!ptr)
@@ -198,9 +217,9 @@ void KViewDicts::selectDict(QTreeWidgetItem* item,int)
 				QString w(QString::number(Cur3()->GetId()));
 				while(w.length()<10)
 					w.prepend(' ');
-				double docs(NAN),profiles(NAN),communities(NAN),topics(NAN),classes(NAN);
 				if(Weighting)
 				{
+					double docs(NAN),profiles(NAN),communities(NAN),topics(NAN),classes(NAN);
 					Weighting->Measure(0,const_cast<GConcept*>(Cur3()),otDoc,&docs);
 					Weighting->Measure(0,const_cast<GConcept*>(Cur3()),otProfile,&profiles);
 					Weighting->Measure(0,const_cast<GConcept*>(Cur3()),otTopic,&topics);
@@ -208,6 +227,8 @@ void KViewDicts::selectDict(QTreeWidgetItem* item,int)
 					Weighting->Measure(0,const_cast<GConcept*>(Cur3()),otCommunity,&communities);
 					new QGObject(Dict,const_cast<GConcept*>(Cur3()),docs,profiles,topics,classes,communities,w);
 				}
+				else
+					new QGObject(Dict,const_cast<GConcept*>(Cur3()),w);
           }
        }
     }
@@ -249,8 +270,8 @@ void KViewDicts::newConcept(void)
 	QString text(QInputDialog::getText(this,"New concept", "Enter the name of the concept:",QLineEdit::Normal,QString(),&Ok));
 	if(Ok&&!text.isEmpty())
 	{
-		GConcept concept(App->getSession(),FromQString(text),CurDict);
-		GConcept* ptr=App->getSession()->InsertObj(concept);
+		GConcept concept(Win->getSession(),FromQString(text),CurDict);
+		GConcept* ptr=Win->getSession()->InsertObj(concept);
 		QString w(QString::number(ptr->GetId()));
 		while(w.length()<10)
 			w.prepend(' ');
@@ -265,10 +286,10 @@ void KViewDicts::delConcept(void)
 	QGObject* ptr(dynamic_cast<QGObject*>(Dict->currentItem()));
 	if(!ptr) return;
 	GConcept* concept(ptr->Obj.Concept);
-	if(KMessageBox::warningYesNo(this,"Do you want to delete the concept "+BuildConcept(concept)+"?","Warning")==KMessageBox::No)
-		return;
+	if(QMessageBox::warning(this,tr("QGALILEI"),"Do you want to delete the concept "+BuildConcept(concept)+"?",QMessageBox::Yes|QMessageBox::Cancel)==QMessageBox::Cancel)
+	  return;
 	delete ptr;
-	App->getSession()->DeleteObj(concept);
+	Win->getSession()->DeleteObj(concept);
 }
 
 
@@ -284,8 +305,8 @@ void KViewDicts::delStatement(void)
 {
 	QGObject* ptr(dynamic_cast<QGObject*>(Statements->currentItem()));
 	if(!ptr) return;
-	if(KMessageBox::warningYesNo(this,"Do you want to delete the current statement?","Warning")==KMessageBox::No)
-		return;
+	if(QMessageBox::warning(this,tr("QGALILEI"),"Do you want to delete the current statement?",QMessageBox::Yes|QMessageBox::Cancel)==QMessageBox::Cancel)
+	  return;
 	mToDo("KViewDicts::delStatement(void)");
 }
 

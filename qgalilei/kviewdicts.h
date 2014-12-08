@@ -51,8 +51,11 @@ using namespace GALILEI;
 //---------------------------------------------------------------------------
 // include files for current application
 #include <ui_kviewdicts.h>
-#include <kgalileicenter.h>
 
+
+//---------------------------------------------------------------------------
+// forward declaration
+class QGALILEIWin;
 
 //-----------------------------------------------------------------------------
 /**
@@ -70,16 +73,16 @@ class KViewDicts : public QMdiSubWindow, public Ui_KViewDicts
 	GConceptType* CurDict;
 
 	/**
-	 * Application.
+	 * Window.
 	 */
-	KGALILEICenter* App;
+	QGALILEIWin* Win;
 
 public:
-	
+
 	/**
 	* Constructor for the view
 	*/
-	KViewDicts(KGALILEICenter* app);
+	KViewDicts(QGALILEIWin* win);
 
 	/**
 	* Creates the list of dictionaries.

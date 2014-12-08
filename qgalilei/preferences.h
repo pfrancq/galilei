@@ -35,19 +35,20 @@
 #define PreferencesDlgh
 
 
-
 //-----------------------------------------------------------------------------
 // include files for R/GALILEI Project
 #include <galilei.h>
-using namespace R;
-using namespace GALILEI;
-using namespace std;
+
+
+//------------------------------------------------------------------------------
+// include files for Qt
+#include <QDialog>
 
 
 //------------------------------------------------------------------------------
 // include files for current project
 #include <ui_preferences.h>
-class KGALILEICenter;  // forward declaration
+class QGALILEIWin;  // forward declaration
 
 
 //------------------------------------------------------------------------------
@@ -57,22 +58,22 @@ class KGALILEICenter;  // forward declaration
  * @short Preferences Dialog.
  * @author Pascal Francq
  */
-class Preferences : KDialog, Ui_Preferences
+class Preferences : QDialog, Ui_Preferences
 {
 	Q_OBJECT
 
 	/**
-	 * The main application.
+	 * Main Window.
 	 */
-	KGALILEICenter* App;
+	QGALILEIWin* Win;
 
 public:
 
 	/**
 	 * Construct the dialog box.
-	 * @param app            Application.
+	 * @param win            Window.
 	 */
-	Preferences(KGALILEICenter* app);
+	Preferences(QGALILEIWin* win);
 
 	/**
 	 * Execute the dialog boxes. In practice, when the 'Apply' button is
