@@ -44,14 +44,10 @@
 
 
 //-----------------------------------------------------------------------------
-// includes files for Qt/KDE
-#include <kapplication.h>
-
-
-//-----------------------------------------------------------------------------
 // include files for current application
 #include <kviewmetaengine.h>
 #include <qsessionprogress.h>
+#include <qgalileiwin.h>
 
 
 
@@ -62,15 +58,14 @@
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-class QQuery : public QSessionThread
+class QQuery : public QSessionProgress
 {
 	RString Query;
-
 public:
-	QQuery(KGALILEICenter* app,const QString& query) : QSessionThread(app), Query(FromQString(query)) {}
+	QQuery(QGALILEIWin* win,const QString& query) : QSessionProgress(win,"Search: "+query), Query(FromQString(query)) {}
 	virtual void DoIt(void)
 	{
-		App->getSession()->RequestMetaEngine(Query);
+		Win->getSession()->RequestMetaEngine(Query);
 	}
 };
 
@@ -83,8 +78,8 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewMetaEngine::KViewMetaEngine(KGALILEICenter* app)
-	:  QMdiSubWindow(), Ui_KViewMetaEngine(), App(app)
+KViewMetaEngine::KViewMetaEngine(QGALILEIWin* win)
+	:  QMdiSubWindow(), Ui_KViewMetaEngine(), Win(win)
 {
 	QWidget* ptr=new QWidget();
 	setupUi(ptr);
@@ -97,15 +92,6 @@ KViewMetaEngine::KViewMetaEngine(KGALILEICenter* app)
 
 
 //-----------------------------------------------------------------------------
-void KViewMetaEngine::showResults(void)
-{
-	GMetaEngine* Meta(GALILEIApp->GetCurrentPlugIn<GMetaEngine>("MetaEngine"));
-	Results->Set(QGObjectsList::Docs,Meta,NbRes->value());
-	ResLabel->setText("<b>"+QString::number(Meta->GetNbResults())+" Results displayed.</b>");
-}
-
-
-//-----------------------------------------------------------------------------
 void KViewMetaEngine::QueryEngine(void)
 {
 	// If no keywords specified -->Error
@@ -114,8 +100,10 @@ void KViewMetaEngine::QueryEngine(void)
 		ResLabel->setText("<b> Enter first a query!</b>");
 		return;
 	}
-	QSessionProgressDlg Dlg(App,"Search: "+TxtQuery->text());
-	QQuery* Task(new QQuery(App,TxtQuery->text()));
-	connect(Task,SIGNAL(finish()),this,SLOT(showResults()));
-	Dlg.Run(Task);
+	if(QQuery(Win,TxtQuery->text()).run())
+	{
+		GMetaEngine* Meta(GALILEIApp->GetCurrentPlugIn<GMetaEngine>("MetaEngine"));
+		Results->Set(QGObjectsList::Docs,Meta,NbRes->value());
+		ResLabel->setText("<b>"+QString::number(Meta->GetNbResults())+" Results displayed.</b>");
+	}
 }

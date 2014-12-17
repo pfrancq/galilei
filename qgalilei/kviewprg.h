@@ -49,6 +49,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 // include files for current application
 #include <ui_kviewprg.h>
+class QGALILEIWin;
 
 
 //-----------------------------------------------------------------------------
@@ -64,6 +65,11 @@ class KViewPrg : public QMdiSubWindow, public Ui_KViewPrg, public GSlot
 	Q_OBJECT
 
 	/**
+	 * Main window.
+	 */
+	QGALILEIWin* Win;
+
+	/**
 	* Name of the program.
 	*/
 	RString Name;
@@ -77,9 +83,10 @@ public:
 
 	/**
 	* Constructor for the view.
+	* @param win            Main window.
 	* @param name           Name of the program.
 	*/
-	KViewPrg(const RString& name);
+	KViewPrg(QGALILEIWin* win,const RString& name);
 
 	/**
 	* The treatment for a specific document will begin.
@@ -138,6 +145,8 @@ public:
 	* Destruct the view.
 	*/
 	~KViewPrg(void);
+
+	friend class MyThread;
 };
 
 

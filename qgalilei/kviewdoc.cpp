@@ -40,12 +40,15 @@
 #include <rxmlfile.h>
 #include <guser.h>
 #include <gprofile.h>
+#include <gsession.h>
 
 
 //-----------------------------------------------------------------------------
 // application specific includes
 #include <kviewdoc.h>
 #include <qsessionprogress.h>
+#include <qgalileiwin.h>
+#include <rstringbuilder.h>
 
 
 
@@ -56,13 +59,11 @@
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-AddFdbkDlg::AddFdbkDlg(QWidget* parent)
-	: KDialog(parent), Ui_AddFdbkDlg(), User(0)
+AddFdbkDlg::AddFdbkDlg(GSession* session,QWidget* parent)
+	: QDialog(parent), Ui_AddFdbkDlg(), Session(session), User(0)
 {
-	GSession* Session(KGALILEICenter::App->getSession());
 	QWidget* widget=new QWidget(this);
 	setupUi(widget);
-	setMainWidget(widget);
 
 	connect(cbUsers,SIGNAL(activated(const QString&)),this,SLOT(slotChangeUser(const QString&)));
 	RCursor<GUser> Users(Session->GetObjs(static_cast<GUser*>(0)));
@@ -102,7 +103,7 @@ void AddFdbkDlg::FillProfiles(void)
 //-----------------------------------------------------------------------------
 void AddFdbkDlg::slotChangeUser(const QString& string)
 {
-	User=KGALILEICenter::App->getSession()->GetObj(static_cast<GUser*>(0),FromQString(string));
+	User=Session->GetObj(static_cast<GUser*>(0),FromQString(string));
 	FillProfiles();
 }
 
@@ -122,16 +123,16 @@ void AddFdbkDlg::slotChangeProfile(const QString& string)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewDoc::KViewDoc(KGALILEICenter* app,GDoc* doc)
-	: QMdiSubWindow(), Ui_KViewDoc(), App(app), Document(doc), bDelDoc(false)
+KViewDoc::KViewDoc(QGALILEIWin* win,GDoc* doc)
+	: QMdiSubWindow(), Ui_KViewDoc(), Win(win), Document(doc), bDelDoc(false)
 {
 	setUp();
 }
 
 
 //-----------------------------------------------------------------------------
-KViewDoc::KViewDoc(KGALILEICenter* app,const RURI& file,const RString& mime)
-	: QMdiSubWindow(), Ui_KViewDoc(), App(app), Document(new GDoc(app->getSession(),file,file(),0,mime)), bDelDoc(true)
+KViewDoc::KViewDoc(QGALILEIWin* win,const RURI& file)
+	: QMdiSubWindow(), Ui_KViewDoc(), Win(win), Document(new GDoc(win->getSession(),file,file(),0,RString::Null)), bDelDoc(true)
 {
 	setUp();
 }
@@ -148,23 +149,23 @@ void KViewDoc::setUp(void)
 	Vars->Set(Document);
 	try
 	{
-		Desc->Set(App->getSession(),&(*Document)());
+		Desc->Set(Win->getSession(),&(*Document)());
 	}
 	catch(GException& e)
 	{
-		KMessageBox::error(this,ToQString(e.GetMsg()),"GALILEI Exception");
+		QMessageBox::critical(0, QWidget::tr("GALILEI Exception"),QWidget::trUtf8(e.GetMsg()),QMessageBox::Ok);
 	}
 	Struct->Set(Document);
 	Assessments->Set(QGObjectsList::Assessments,Document);
 	connect(AddFeedback,SIGNAL(pressed()),this,SLOT(newFdbk()));
-	connect(App,SIGNAL(docsChanged()),this,SLOT(update()));
+	connect(Win,SIGNAL(docsChanged()),this,SLOT(update()));
 }
 
 
 //-----------------------------------------------------------------------------
 void KViewDoc::newFdbk(void)
 {
-	AddFdbkDlg dlg(this);
+	AddFdbkDlg dlg(Win->getSession(),this);
 	if(dlg.exec())
 	{
 		tFdbkType assess;
@@ -174,7 +175,7 @@ void KViewDoc::newFdbk(void)
 			assess=ftFuzzyRelevant;
 		else
 			assess=ftIrrelevant;
-		App->getSession()->InsertFdbk(dlg.Prof->GetId(),Document->GetId(),assess,RDate::GetToday());
+		Win->getSession()->InsertFdbk(dlg.Prof->GetId(),Document->GetId(),assess,RDate::GetToday());
 		Assessments->Set(QGObjectsList::Assessments,Document);
 	}
 }
@@ -184,7 +185,7 @@ void KViewDoc::newFdbk(void)
 void KViewDoc::update(void)
 {
 	Vars->Set(Document);
-	Desc->Set(App->getSession(),&(*Document)());
+	Desc->Set(Win->getSession(),&(*Document)());
 	Struct->Set(Document);
 }
 
@@ -192,10 +193,8 @@ void KViewDoc::update(void)
 //-----------------------------------------------------------------------------
 void KViewDoc::AnalyzeDoc(void)
 {
-	QSessionProgressDlg Dlg(App,ToQString("Analyze Document "+Document->GetName()));
-	QAnalyzeDoc* Task(new QAnalyzeDoc(App,Document));
-	connect(Task,SIGNAL(finish()),this,SLOT(update()));
-	Dlg.Run(Task);
+	if(QAnalyzeDoc(Win,Document).run())
+		update();
 }
 
 

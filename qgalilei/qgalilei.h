@@ -55,11 +55,15 @@ class QGALILEIWin;
  */
 class QGALILEI : /*public QApplication,*/ public GALILEI::GGALILEIApp
 {
-
 	/**
 	 * Main Window;
     */
 	QGALILEIWin* Main;
+
+	/**
+	 * Path for scripts.
+	 */
+	R::RString ScriptPath;
 
 public:
 
@@ -68,18 +72,40 @@ public:
     * @param argc           Number of argument.
     * @param argv           Arguments.
     */
-    QGALILEI(int argc, char *argv[]);
+	QGALILEI(int argc, char *argv[]);
 
-	 /**
+	/**
+	 * Create the configuration parameters.
+    */
+	virtual void CreateConfig(void);
+
+	/**
+	 * Initialize the application.
+    */
+	virtual void Init(void);
+
+	/**
 	  * "Run" the application. In practice, it just show the main widget and
 	  * call QApplication::instance()->exec().
      */
-	 virtual void Run(void);
+	virtual void Run(void);
+
+	/**
+	  * Get a path where the scripts must be initially searched.
+     * @return R::RString.
+     */
+	R::RString GetScriptPath(void) const {return(ScriptPath);}
+
+	/**
+	 * Set the path to search for scripts.
+    * @param path           Path.
+    */
+	void SetScriptPath(const QString& path);
 
 	 /**
 	  * Destructor.
      */
-    virtual ~QGALILEI(void);
+	virtual ~QGALILEI(void);
 };
 
 

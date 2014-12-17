@@ -39,9 +39,14 @@ using namespace GALILEI;
 
 
 //------------------------------------------------------------------------------
+// include files for Qt
+#include <QDialog>
+
+
+//------------------------------------------------------------------------------
 // include files for current project
 #include <ui_configure.h>
-class KGALILEICenter;  // forward declaration
+class QGALILEIWin;  // forward declaration
 
 
 //------------------------------------------------------------------------------
@@ -51,13 +56,14 @@ class KGALILEICenter;  // forward declaration
  * @short Configure Dialog.
  * @author Pascal Francq
  */
-class Configure : KDialog, Ui_Configure
+class Configure : QDialog, Ui_Configure
 {
 	Q_OBJECT
 
 	class Type
 	{
 	public:
+		GSession* Session;
 		RString Name;
 		size_t DescBlock;
 		size_t DescTolerance;
@@ -74,7 +80,7 @@ class Configure : KDialog, Ui_Configure
 		size_t TreeCache;
 		size_t TreeType;
 
-		Type(const RString& name);
+		Type(GSession* session,const RString& name);
 		void Apply(void);
 		int Compare(const Type& type) const {return(Name.Compare(type.Name));}
 		int Compare(const RString& type) const {return(Name.Compare(type));}
@@ -91,9 +97,9 @@ class Configure : KDialog, Ui_Configure
 	Type* CurType;
 
 	/**
-	 * The main application.
+	 * The main window.
 	 */
-	KGALILEICenter* App;
+	QGALILEIWin* Win;
 
 public:
 
@@ -101,7 +107,7 @@ public:
 	 * Construct the dialog box.
 	 * @param app            Application.
 	 */
-	Configure(KGALILEICenter* app);
+	Configure(QGALILEIWin* win);
 
 	/**
 	 * Execute the dialog boxes. In practice, when the 'Apply' button is

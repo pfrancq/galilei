@@ -38,6 +38,7 @@ using namespace R;
 // include files for GALILEI
 #include <gsession.h>
 #include <rqt.h>
+using namespace R;
 using namespace GALILEI;
 
 
@@ -75,8 +76,8 @@ KPrgConsole::KPrgConsole(void)
 	setWidget(ptr);
 	setAttribute(Qt::WA_DeleteOnClose);
 	setWindowTitle("Console");
-    Prg=new GGALILEIPrg(Results);
-    connect(Results,SIGNAL(EnterCmd(QString)),this,SLOT(RunCmd(QString)));
+	Prg=new GGALILEIPrg(Results);
+	connect(Results,SIGNAL(EnterCmd(QString)),this,SLOT(RunCmd(QString)));
 }
 
 

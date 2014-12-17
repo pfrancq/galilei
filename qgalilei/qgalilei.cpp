@@ -28,6 +28,11 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for R
+#include <rqt.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for Qt
 #include <QTranslator>
 #include <QLibraryInfo>
@@ -63,11 +68,35 @@ QGALILEI::QGALILEI(int argc, char *argv[])
 
 
 //-----------------------------------------------------------------------------
+void QGALILEI::CreateConfig(void)
+{
+	GGALILEIApp::CreateConfig();
+	Config.InsertParam(new RParamValue("ScriptPath",""));
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEI::Init(void)
+{
+	GGALILEIApp::Init();
+	ScriptPath=Config.Get("ScriptPath");
+}
+
+
+//-----------------------------------------------------------------------------
 void QGALILEI::Run(void)
 {
  	Main=new QGALILEIWin(this);
 	Main->show();
 	QApplication::instance()->exec();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEI::SetScriptPath(const QString& path)
+{
+	ScriptPath=FromQString(path);
+	Config.Set("ScriptPath",ScriptPath);
 }
 
 

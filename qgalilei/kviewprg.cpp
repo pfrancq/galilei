@@ -41,16 +41,15 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 // include files for Qt/KDE
-#include <kmessagebox.h>
 #include <QtCore/QThread>
 #include <QtGui/QCloseEvent>
-#include <kapplication.h>
+#include <QMessageBox>
 
 
 //-----------------------------------------------------------------------------
 // application specific includes
 #include <kviewprg.h>
-#include <kgalileicenter.h>
+#include <qgalileiwin.h>
 
 
 
@@ -86,31 +85,31 @@ void KViewPrg::MyThread::run(void)
 	try
 	{
 		GALILEIApp->RunPrg(Rec,Name);
-		if(KGALILEICenter::App->getSession()->MustBreak())
+		if(Rec->Win->getSession()->MustBreak())
 		{
-			KMessageBox::information(Rec,"Program Aborded");
-			KGALILEICenter::App->getSession()->ResetBreak();
+			QMessageBox::information(Rec,"Run Script","Program Aborded",QMessageBox::Ok);
+			Rec->Win->getSession()->ResetBreak();
 		}
 		else
 		{
-			KMessageBox::information(Rec,"Program Executed");
+			QMessageBox::information(Rec,"Run Script","Program Executed",QMessageBox::Ok);
 		}
 	}
 	catch(GException& e)
 	{
-		KMessageBox::error(Rec,ToQString(e.GetMsg()),"GException");
+		QMessageBox::critical(0,QWidget::tr("GALILEI Exception"),QWidget::trUtf8(e.GetMsg()),QMessageBox::Ok);
 	}
 	catch(RException& e)
 	{
-		KMessageBox::error(Rec,ToQString(e.GetMsg()),"RException");
+		QMessageBox::critical(0,QWidget::tr("R Exception"),QWidget::trUtf8(e.GetMsg()),QMessageBox::Ok);
 	}
 	catch(std::exception& e)
 	{
-		KMessageBox::error(Rec,e.what(),"std::exception");
+		QMessageBox::critical(0,QWidget::tr("Standard exception"),QWidget::trUtf8(e.what()),QMessageBox::Ok);
 	}
 	catch(...)
 	{
-		KMessageBox::error(Rec,"Undefined Error");
+		QMessageBox::critical(0,QWidget::tr("Unknown exception"),QWidget::trUtf8("Unknown problem"),QMessageBox::Ok);
 	}
 	Rec->endPrg();
 }
@@ -124,8 +123,8 @@ void KViewPrg::MyThread::run(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewPrg::KViewPrg(const RString& name)
-	: QMdiSubWindow(), Ui_KViewPrg(), Name(name), Prg(0)
+KViewPrg::KViewPrg(QGALILEIWin* win,const RString& name)
+	: QMdiSubWindow(), Ui_KViewPrg(), Win(win), Name(name), Prg(0)
 {
 	QWidget* ptr=new QWidget();
 	setupUi(ptr);
@@ -138,21 +137,21 @@ KViewPrg::KViewPrg(const RString& name)
 //-----------------------------------------------------------------------------
 void KViewPrg::NextDoc(const GDoc*)
 {
-	KApplication::kApplication()->processEvents();
+	QApplication::processEvents();
 }
 
 
 //-----------------------------------------------------------------------------
 void KViewPrg::NextProfile(const GProfile*)
 {
-	KApplication::kApplication()->processEvents();
+	QApplication::processEvents();
 }
 
 
 //-----------------------------------------------------------------------------
 void KViewPrg::NextGroupLang(const GLang*)
 {
-	KApplication::kApplication()->processEvents();
+	QApplication::processEvents();
 }
 
 
@@ -160,21 +159,21 @@ void KViewPrg::NextGroupLang(const GLang*)
 void KViewPrg::WriteStr(const RString& str)
 {
 	Output->append(ToQString(str));
-	KApplication::kApplication()->processEvents();
+	QApplication::processEvents();
 }
 
 
 //-----------------------------------------------------------------------------
 void KViewPrg::Interact(void)
 {
-	KApplication::kApplication()->processEvents();
+	QApplication::processEvents();
 }
 
 
 //-----------------------------------------------------------------------------
 void KViewPrg::run(void)
 {
-	KApplication::kApplication()->processEvents();
+	QApplication::processEvents();
 	if(Name.IsEmpty())
 	{
 		GGALILEIPrg Prg(0);
@@ -216,7 +215,7 @@ void KViewPrg::closeEvent(QCloseEvent *event)
 	else
 	{
 		// Ah ah, something runs -> ask to break it
-		KGALILEICenter::App->getSession()->SetBreak();
+		Win->getSession()->SetBreak();
 		event->ignore();
 	}
 }

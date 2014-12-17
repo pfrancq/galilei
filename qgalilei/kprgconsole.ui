@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>KPrgConsole</class>
- <widget class="QWidget" name="KPrgConsole" >
-  <property name="geometry" >
+ <widget class="QWidget" name="KPrgConsole">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,20 +10,20 @@
     <height>300</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" >
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QRConsole" native="1" name="Results" />
+    <widget class="R::QRConsole" name="Results" native="true"/>
    </item>
   </layout>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QRConsole</class>
+   <class>R::QRConsole</class>
    <extends>QWidget</extends>
-   <header>qrconsole.h</header>
+   <header location="global">qrconsole.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

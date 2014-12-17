@@ -5,14 +5,14 @@ SET(qgalilei_SOURCES
 	main.cpp
 	qgalilei.cpp
 	qgalileiwin.cpp
-#	kgalileicenter.cpp
-#	qpluginslist.cpp
 	qsessionprogress.cpp
-#	configure.cpp
+	qpluginslist.cpp
+	configure.cpp
 	preferences.cpp
-#	kviewdoc.cpp
-#	kviewmetaengine.cpp
-#	kviewprg.cpp
+	kviewdicts.cpp
+	kviewdoc.cpp
+	kviewmetaengine.cpp
+	kviewprg.cpp
 #	qfilldatabase.cpp
 #	qcreatedatabase.cpp
 #	kviewstats.cpp
@@ -21,29 +21,34 @@ SET(qgalilei_SOURCES
 #	kviewgroups.cpp
 #	kviewidealgroups.cpp
 #	kviewprofile.cpp
-	kviewdicts.cpp
-#	kprgconsole.cpp
+	kprgconsole.cpp
 #	kviewclasses.cpp
 )
 
 SET(qgalilei_HEADERS
 	qgalileiwin.h
 	qsessionprogress.h
-	kviewdicts.h
+	qpluginslist.h
+	configure.h
 	preferences.h
+	kviewdicts.h
+	kviewdoc.h
+	kviewmetaengine.h
+	kviewprg.h
+	kprgconsole.h
 )
 
-#KDE4_HANDLE_AUTOMOC(${QGALILEI_SOURCES})
 
 SET(qgalilei_FORMS
 	qgalileiwin.ui
-#	qpluginslist.ui
-#	configure.ui
+	qpluginslist.ui
+	configure.ui
 	preferences.ui
-#	kviewdoc.ui
-#	addfdbkdlg.ui
-#	kviewmetaengine.ui
-#	kviewprg.ui
+	kviewdicts.ui
+	kviewdoc.ui
+	addfdbkdlg.ui
+	kviewmetaengine.ui
+	kviewprg.ui
 #	qfilldatabase.ui
 #	kviewstats.ui
 #	kviewgroup.ui
@@ -52,15 +57,14 @@ SET(qgalilei_FORMS
 #	kviewidealgroups.ui
 #	kviewprofile.ui
 #	qcreatedatabase.ui
-	kviewdicts.ui
-#	kprgconsole.ui
+	kprgconsole.ui
 #	qchooselist.ui
 #	kviewclasses.ui
 )
 
 
 SET(qgalilei_RESOURCES
-#	qfame.qrc
+	qgalilei.qrc
 )
 
 
@@ -88,7 +92,7 @@ IF(WIN32)
 						"C:/Program Files/MySQL/MySQL Connector C 6.1/lib/vs11/mysqlclient.lib"
 						C:/curl/lib/libcurl.a C:/curl/lib/libcurldll.a)
 ELSE(WIN32)
-	TARGET_LINK_LIBRARIES(qgalilei rcore rcoreqt rmath galilei ${QT_LIBRARIES})
+	TARGET_LINK_LIBRARIES(qgalilei rcore rcoreqt rmath galilei galileiqt ${QT_LIBRARIES})
 ENDIF(WIN32)
 
 #KDE4_ADD_EXECUTABLE(qgalilei ${QGALILEI_SOURCES})

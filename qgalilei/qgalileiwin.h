@@ -50,6 +50,7 @@
 //-----------------------------------------------------------------------------
 // forward declaration
 class QGALILEI;
+using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
@@ -88,6 +89,27 @@ public:
 	*/
 	GALILEI::GSession* getSession(void) const {return(Session);}
 
+	/**
+	 * Get the application.
+    * @return a pointer of QGALILEI.
+    */
+	QGALILEI* GetApp(void) const {return(App);}
+
+	/**
+	 * Method that perform an update to every child window of a given class.
+    */
+	template<class cWin> void updateWins(void)
+	{
+		QList<QMdiSubWindow*> List(Desktop->subWindowList());
+		QListIterator<QMdiSubWindow*> i(List);
+		while(i.hasNext())
+		{
+			cWin* win(dynamic_cast<cWin*>(i.next()));
+			if(win)
+				 win->update();
+		}
+	}
+
 private:
 
 	/**
@@ -101,7 +123,7 @@ private:
     */
 	void sessionConnected(void);
 
-private slots :
+public slots :
 
 	/**
 	* Connect to a session.
@@ -114,9 +136,80 @@ private slots :
 	void sessionDisconnect(void);
 
 	/**
+	 * Compute an entire session.
+	 */
+	void computeSession(void);
+
+	/**
+	 * Show a console.
+	 */
+	void console(void);
+
+	/**
+	 * Run a script file.
+	 */
+	void runScript(void);
+
+	/**
 	 * Show the dictionaries.
 	 */
 	void showDicts(void);
+
+	/**
+	 * Show the documents.
+	 */
+	void showDocs(void);
+
+	/**
+	 * Show a document.
+	 */
+	void showDoc(GDoc* doc);
+
+	/**
+	 * Create for each document a corresponding file containing the keywords in
+	 * order to index them with ht://Dig.
+	 */
+	void exportDocDecs(void);
+
+	/**
+	* Clear the documents.
+	*/
+	void clearDocs(void);
+
+	/**
+	 * Analyze all the documents.
+	 */
+	void analyzeDocs(void);
+
+	/**
+	 * Index the documents.
+	 */
+	void indexDocs(void);
+
+	/**
+	 * Export the documents.
+	 */
+	void exportDocs(void);
+
+	/**
+	 * Analyze a document.
+	 */
+	void analyzeDoc(void);
+
+	/**
+	 * Query the meta engine
+	 */
+	void queryMetaEngine(void);
+
+	/**
+	 * Compute the trust.
+	 */
+	void computeTrust(void);
+
+	/**
+	 * Compute the suggestions.
+	 */
+	void computeSugs(void);
 
 	/**
 	 * Set the preferences.
@@ -127,6 +220,38 @@ private slots :
 	 * Set the options for the session.
 	 */
 	void configSession(void);
+
+	/**
+	 * Show an about dialog box.
+    */
+	void about(void);
+
+signals:
+
+	/**
+	 * The documents were re-computed.
+	 */
+	void docsChanged(void);
+
+	/**
+	 * The topics were re-computed.
+	 */
+	void topicsChanged(void);
+
+	/**
+	 * The profiles were re-computed.
+	 */
+	void profilesChanged(void);
+
+	/**
+	 * The communities were re-computed.
+	 */
+	void communitiesChanged(void);
+
+	/**
+	 * The classes were re-computed.
+	 */
+	void classesChanged(void);
 
 public:
 

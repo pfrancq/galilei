@@ -75,15 +75,6 @@ using namespace std;
 #include <QtGui/QLayout>
 
 
-
-//-------------------------------------------------Finish----------------------------
-// include files for KDE
-/*#include <klocale.h>
-#include <kapplication.h>
-#include <kiconloader.h>
-#include <kmessagebox.h>*/
-
-
 //-----------------------------------------------------------------------------
 // include files for current project
 #include <qsessionprogress.h>
@@ -94,127 +85,232 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 //
-// class All session threads
+// QSessionProgress
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-QSessionThread::QSessionThread(QGALILEIWin* app)
-	: /*QThread(),*/ Parent(0), App(app)
+QSessionProgress::QSessionProgress(QGALILEIWin* win,const QString& title)
+	: QProgressDialog(win), Win(win)
 {
+	setWindowTitle(title);
+	setAutoClose(false);
+	setAutoReset(false);
+	setWindowModality(Qt::WindowModal);
+	setMinimumSize(380,0);
 }
 
-//-----------------------------------------------------------------------------
-void QSessionThread::Set(QSessionProgressDlg* parent)
-{
-	//Parent=parent;
-}
-
 
 //-----------------------------------------------------------------------------
-bool QSessionThread::run(void)
+bool QSessionProgress::run(void)
 {
 	QApplication::setOverrideCursor(Qt::WaitCursor);
-	QProgressDialog progress(App);
-	progress.setAutoClose(false);
-	progress.setAutoReset(false);
-	progress.setMinimumDuration(0);
-	progress.setWindowModality(Qt::WindowModal);
-	progress.setMinimumSize(380,0);
-	progress.show();
+	setValue(0);
+	show();
 	QApplication::processEvents();
-	Parent=&progress;
 	bool OK(false);
 	try
 	{
 		DoIt();
-		progress.setLabelText("Finish");
-		progress.setCancelButtonText("OK");
-		progress.setValue(Parent->maximum());
+		setLabelText("Finish");
+		setCancelButtonText("OK");
+		setValue(maximum());
 		OK=true;
 	}
 	catch(GException& e)
 	{
-		progress.setCancelButtonText("Error");
-		progress.setLabelText(QWidget::trUtf8(e.GetMsg()));
+		setCancelButtonText("Error");
+		setLabelText(QWidget::trUtf8(e.GetMsg()));
 	}
 	catch(RException& e)
 	{
-		progress.setCancelButtonText("Error");
-		progress.setLabelText(QWidget::trUtf8(e.GetMsg()));
+		setCancelButtonText("Error");
+		setLabelText(QWidget::trUtf8(e.GetMsg()));
 	}
 	catch(std::exception& e)
 	{
-		progress.setCancelButtonText("Error");
-		progress.setLabelText(QWidget::trUtf8(e.what()));
+		setCancelButtonText("Error");
+		setLabelText(QWidget::trUtf8(e.what()));
 	}
 	catch(...)
 	{
-		progress.setCancelButtonText("Error");
-		progress.setLabelText(QWidget::trUtf8("Unknown"));
+		setCancelButtonText("Error");
+		setLabelText(QWidget::trUtf8("Unknown"));
 	}
 	QApplication::setOverrideCursor(Qt::ArrowCursor);
-	OK=OK&&(!Parent->wasCanceled());
-	progress.exec();
+	OK=OK&&(!wasCanceled());
+	exec();
 	return(OK);
 }
 
 
-//-----------------------------------------------------------------------------
-void QCreateSession::DoIt(void)
+//------------------------------------------------------------------------------
+void QSessionProgress::StartJob(const R::RString& job)
 {
-	Parent->setWindowTitle("Connect to database '"+ToQString(Name)+"'");
-	Parent->setRange(0,7);
-	Parent->setValue(0);
-	Parent->setLabelText("Load Concepts, Predicates and Statements ...");
-	Session=GALILEIApp->GetSession(Name,true);
-	Parent->setValue(1);
-	if(App->getSession()->MustBreak())
-		return;
-	Parent->setLabelText("Load Classes ...");
-	App->getSession()->LoadObjs(pClass);
-	Parent->setValue(2);
-	Parent->setLabelText("Load Topics ...");
-	App->getSession()->LoadObjs(pTopic);
-	Parent->setValue(3);
-	if(App->getSession()->MustBreak())
-		return;
-	Parent->setLabelText("Loading Documents ...");
-	App->getSession()->LoadObjs(pDoc);
-	Parent->setValue(4);
-	if(App->getSession()->MustBreak())
-		return;
-	Parent->setLabelText("Load Communities ...");
-	App->getSession()->LoadObjs(pCommunity);
-	Parent->setValue(5);
-	if(App->getSession()->MustBreak())
-		return;
-	Parent->setLabelText("Load Users/Profiles/Feedbacks ...");
-	App->getSession()->LoadObjs(pUser);
-	Parent->setValue(2);
-	if(App->getSession()->MustBreak())
-		return;
-	Parent->setLabelText("Load Subjects ...");
-	App->getSession()->LoadObjs(pSubject);
-	//Parent->setValue(7);
+	setLabelText(ToQString(job));
 }
 
 
-////-----------------------------------------------------------------------------
-//void QAnalyzeDoc::DoIt(void)
-//{
-//	App->getSession()->AnalyzeDoc(Doc,Parent);
-//}
+//------------------------------------------------------------------------------
+void QSessionProgress::EndJob(const R::RString& msg)
+{
+	setLabelText(ToQString(msg));
+}
+
+
+//-----------------------------------------------------------------------------
+void QSessionProgress::NextGroupLang(const GLang* lang)
+{
+	if(lang)
+		setLabelText("Treat "+ToQString(lang->GetLangName())+" language");
+}
+
+
+//-----------------------------------------------------------------------------
+void QSessionProgress::NextConceptType(const GConceptType* type)
+{
+	if(type)
+		setLabelText("Treat concept type '"+ToQString(type->GetName())+"'");
+}
+
+
+//-----------------------------------------------------------------------------
+void QSessionProgress::NextDoc(const GDoc* doc)
+{
+	if(doc)
+	{
+		QString DocName;
+		if(doc->GetName().GetLen()>80)
+			DocName=ToQString(doc->GetName().Mid(0,20))+"..."+ToQString(doc->GetName().Mid(doc->GetName().GetLen()-57,57));
+		else
+		{
+			if(doc->GetName().GetLen())
+				DocName=ToQString(doc->GetName());
+			else
+			{
+				if(doc->GetURI()().GetLen()>80)
+					DocName=ToQString(doc->GetURI()().Mid(0,20))+"..."+ToQString(doc->GetURI()().Mid(doc->GetURI()().GetLen()-57,57));
+				else
+					DocName=ToQString(doc->GetURI()());
+			}
+		}
+		setLabelText("Treat document '"+DocName+"'");
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void QSessionProgress::NextProfile(const GProfile* prof)
+{
+	if(prof)
+		setLabelText("Treat profile '"+ToQString(prof->GetName())+"' ("+ToQString(prof->GetUser()->GetFullName())+")");
+}
+
+
+//------------------------------------------------------------------------------
+void QSessionProgress::Warning(const R::RString&)
+{
+	//KMessageBox::information(0,ToQString(msg),"GALILEI Warning");
+}
+
+
+//------------------------------------------------------------------------------
+void QSessionProgress::Error(const R::RString& msg)
+{
+	mThrowGException(msg);
+}
+
+
+//------------------------------------------------------------------------------
+void QSessionProgress::Alert(const R::RString&)
+{
+	//KMessageBox::information(0,ToQString(msg),"GALILEI Alert");
+}
+
+
+//------------------------------------------------------------------------------
+void QSessionProgress::WriteStr(const R::RString& str)
+{
+	setLabelText(ToQString(str));
+}
+
+
+//------------------------------------------------------------------------------
+void QSessionProgress::Interact(void)
+{
+	QCoreApplication::processEvents();
+}
+
+
+
+//-----------------------------------------------------------------------------
 //
+// Tasks
 //
-////-----------------------------------------------------------------------------
-//void QAnalyzeDocs::DoIt(void)
-//{
-//	Parent->setLabelText("Analyze Documents ...");
-//	App->getSession()->AnalyzeDocs(Parent);
-//}
-//
-//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+void QCreateSession::DoIt(void)
+{
+	setRange(0,7);
+	setValue(0);
+	setLabelText("Load Concepts, Predicates and Statements ...");
+	Session=GALILEIApp->GetSession(Name,true);
+	setValue(1);
+	if(Win->getSession()->MustBreak())
+		return;
+	setLabelText("Load Classes ...");
+	Win->getSession()->LoadObjs(pClass);
+	setValue(2);
+	setLabelText("Load Topics ...");
+	Win->getSession()->LoadObjs(pTopic);
+	setValue(3);
+	if(Win->getSession()->MustBreak())
+		return;
+	setLabelText("Loading Documents ...");
+	Win->getSession()->LoadObjs(pDoc);
+	setValue(4);
+	if(Win->getSession()->MustBreak())
+		return;
+	setLabelText("Load Communities ...");
+	Win->getSession()->LoadObjs(pCommunity);
+	setValue(5);
+	if(Win->getSession()->MustBreak())
+		return;
+	setLabelText("Load Users/Profiles/Feedbacks ...");
+	Win->getSession()->LoadObjs(pUser);
+	setValue(6);
+	if(Win->getSession()->MustBreak())
+		return;
+	setLabelText("Load Subjects ...");
+	Win->getSession()->LoadObjs(pSubject);
+}
+
+
+//-----------------------------------------------------------------------------
+void QAnalyzeDoc::DoIt(void)
+{
+	setLabelText("Analze '"+ToQString(Doc->GetURI()())+"'...");
+	Win->getSession()->AnalyzeDoc(Doc,this);
+}
+
+
+//-----------------------------------------------------------------------------
+void QIndexDocs::DoIt(void)
+{
+	setLabelText("Index Documents ...");
+	Win->getSession()->BuildIndex(static_cast<const GDoc*>(0));
+}
+
+
+//-----------------------------------------------------------------------------
+void QAnalyzeDocs::DoIt(void)
+{
+	setLabelText("Analyze Documents ...");
+	Win->getSession()->AnalyzeDocs(this);
+}
+
+
 ////-----------------------------------------------------------------------------
 //void QComputeProfiles::DoIt(void)
 //{
@@ -317,242 +413,44 @@ void QCreateSession::DoIt(void)
 //	Parent->setLabelText("Make assessments ...");
 //	App->getSession()->GetSimulator()->AddAssessments();
 //}
-//
-//
-////-----------------------------------------------------------------------------
-//void QComputeTrust::DoIt(void)
-//{
-//	Parent->setLabelText("Determine trust ...");
-//	App->getSession()->ComputeTrust();
-//}
-//
-//
-////-----------------------------------------------------------------------------
-//void QComputeSugs::DoIt(void)
-//{
-//	Parent->setLabelText("Make suggestions ...");
-//	App->getSession()->ComputeSugs();
-//}
-//
-//
+
+
+//-----------------------------------------------------------------------------
+void QComputeTrust::DoIt(void)
+{
+	setLabelText("Determine trust ...");
+	Win->getSession()->ComputeTrust();
+}
+
+
+//-----------------------------------------------------------------------------
+void QComputeSugs::DoIt(void)
+{
+	setLabelText("Make suggestions ...");
+	Win->getSession()->ComputeSugs();
+}
+
+
 ////-----------------------------------------------------------------------------
 //void QRunTool::DoIt(void)
 //{
 //	Parent->setLabelText("Run tool '"+ToQString(Tool)+"' of '"+ToQString(List)+"'...");
 //	App->getSession()->RunTool(Tool,List,Parent);
 //}
-//
-//
-////-----------------------------------------------------------------------------
-//void QComputeAll::DoIt(void)
-//{
-//	Parent->setLabelText("Analyze Documents ...");
-//	App->getSession()->AnalyzeDocs(Parent);
-//	if(App->getSession()->MustBreak())
-//		return;
-//	Parent->setLabelText("Compute Profiles ...");
-//	App->getSession()->CalcProfiles(Parent);
-//	if(App->getSession()->MustBreak())
-//		return;
-//	Parent->setLabelText("Groups Profiles ...");
-//	App->getSession()->GroupProfiles(Parent);
-//}
-//
-//
-////-----------------------------------------------------------------------------
-//void QIndexDocs::DoIt(void)
-//{
-//	Parent->setLabelText("Index Documents ...");
-//	App->getSession()->BuildIndex(static_cast<const GDoc*>(0));
-//}
-
 
 
 //-----------------------------------------------------------------------------
-//
-// class QSessionProgressDlg
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-QSessionProgressDlg::QSessionProgressDlg(QGALILEIWin* parent,const QString& c,bool cancel)
-    : QProgressDialog(parent), GSlot(), Running(false), App(parent)
+void QComputeAll::DoIt(void)
 {
-	setWindowTitle(c);
-	setAutoReset(false);
-	setAutoClose(false);
-	if(!cancel)
-		setCancelButtonText("Wait");
-	setMinimumSize(380,0);
-	adjustSize();
+	setLabelText("Analyze Documents ...");
+	Win->getSession()->AnalyzeDocs(this);
+	if(wasCanceled())
+		return;
+	setLabelText("Compute Profiles ...");
+	Win->getSession()->CalcProfiles(this);
+	if(wasCanceled())
+		return;
+	setLabelText("Groups Profiles ...");
+	Win->getSession()->GroupProfiles(this);
 }
 
-
-//-----------------------------------------------------------------------------
-bool QSessionProgressDlg::Run(QSessionThread* task)
-{
-	EndMsg=QString::null;
-	Running=true;
-	if(task)
-		task->Set(this);
-	QEventLoop q;
-	Loop=&q;
-	setModal(true);
-	connect(this, SIGNAL(accepted()), this, SLOT(closeMe()));
-	connect(this, SIGNAL(rejected()), this, SLOT(closeMe()));
-	connect(this, SIGNAL(finished(int)),&q, SLOT(quit()));
-
-	if(task)
-	{
-//		connect(task,SIGNAL(setValue(int)),this,SLOT(setValue(int)),Qt::QueuedConnection);
-//		connect(task,SIGNAL(setRange(int,int)),this,SLOT(setRange(int,int)),Qt::QueuedConnection);
-//		connect(task,SIGNAL(finish()),this,SLOT(Finish()),Qt::QueuedConnection);
-//		connect(task,SIGNAL(setLabel(const QString&)),this,SLOT(setLabelText(const QString&)),Qt::QueuedConnection);
-	}
-	Ret=false; // Suppose something goes wrong
-	show();
-//	if(task)
-//		task->start();
-	q.exec();
-	if(App->getSession()&&App->getSession()->MustBreak())
-		App->getSession()->ResetBreak();
-	if(task)
-		delete task;
-	cout<<"OK 2"<<endl;
-	return(Ret);
-}
-
-
-//------------------------------------------------------------------------------
-void QSessionProgressDlg::StartJob(const R::RString& job)
-{
-	setLabelText(ToQString(job));
-}
-
-
-//------------------------------------------------------------------------------
-void QSessionProgressDlg::EndJob(const R::RString& msg)
-{
-	EndMsg=ToQString(msg);
-}
-
-
-//-----------------------------------------------------------------------------
-void QSessionProgressDlg::NextGroupLang(const GLang* lang)
-{
-	if(lang)
-		setLabelText("Treat "+ToQString(lang->GetLangName())+" language");
-}
-
-
-//-----------------------------------------------------------------------------
-void QSessionProgressDlg::NextConceptType(const GConceptType* type)
-{
-	if(type)
-		setLabelText("Treat concept type '"+ToQString(type->GetName())+"'");
-}
-
-
-//-----------------------------------------------------------------------------
-void QSessionProgressDlg::NextDoc(const GDoc* doc)
-{
-	if(doc)
-	{
-		QString DocName;
-		if(doc->GetName().GetLen()>80)
-			DocName=ToQString(doc->GetName().Mid(0,20))+"..."+ToQString(doc->GetName().Mid(doc->GetName().GetLen()-57,57));
-		else
-		{
-			if(doc->GetName().GetLen())
-				DocName=ToQString(doc->GetName());
-			else
-			{
-				if(doc->GetURI()().GetLen()>80)
-					DocName=ToQString(doc->GetURI()().Mid(0,20))+"..."+ToQString(doc->GetURI()().Mid(doc->GetURI()().GetLen()-57,57));
-				else
-					DocName=ToQString(doc->GetURI()());
-			}
-		}
-		setLabelText("Treat document '"+DocName+"'");
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void QSessionProgressDlg::NextProfile(const GProfile* prof)
-{
-	if(prof)
-		setLabelText("Treat profile '"+ToQString(prof->GetName())+"' ("+ToQString(prof->GetUser()->GetFullName())+")");
-}
-
-
-//------------------------------------------------------------------------------
-void QSessionProgressDlg::Warning(const R::RString&)
-{
-	//KMessageBox::information(0,ToQString(msg),"GALILEI Warning");
-}
-
-
-//------------------------------------------------------------------------------
-void QSessionProgressDlg::Error(const R::RString& msg)
-{
-	mThrowGException(msg);
-}
-
-
-//------------------------------------------------------------------------------
-void QSessionProgressDlg::Alert(const R::RString&)
-{
-	//KMessageBox::information(0,ToQString(msg),"GALILEI Alert");
-}
-
-
-//------------------------------------------------------------------------------
-void QSessionProgressDlg::WriteStr(const R::RString& str)
-{
-	setLabelText(ToQString(str));
-}
-
-
-//------------------------------------------------------------------------------
-void QSessionProgressDlg::Interact(void)
-{
-	QCoreApplication::processEvents();
-}
-
-
-//-----------------------------------------------------------------------------
-void QSessionProgressDlg::reject(void)
-{
-	if(Running)
-		App->getSession()->SetBreak();
-	else
-	{
-		if(App->getSession()&&App->getSession()->MustBreak())
-			done(0);
-		else
-			done(1);
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void QSessionProgressDlg::closeMe(void)
-{
-	Loop->quit();
-	cout<<"OK"<<endl;
-}
-
-
-//-----------------------------------------------------------------------------
-void QSessionProgressDlg::Finish(void)
-{
-	Ret=true;
-	cout<<"Finish"<<endl;
-}
-
-
-//-----------------------------------------------------------------------------
-QSessionProgressDlg::~QSessionProgressDlg(void)
-{
-}

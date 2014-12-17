@@ -42,15 +42,16 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-// include files for KDE/Qt
+// include files for Qt
 #include <QtGui/QMdiSubWindow>
+#include <QtGui/QDialog>
 
 
 //---------------------------------------------------------------------------
 // include files for current application
 #include <ui_kviewdoc.h>
 #include <ui_addfdbkdlg.h>
-#include <kgalileicenter.h>
+class QGALILEIWin;  // forward declaration
 
 
 //---------------------------------------------------------------------------
@@ -64,9 +65,9 @@ class KViewDoc : public QMdiSubWindow, public Ui_KViewDoc
 	Q_OBJECT
 
 	/**
-	 * Application.
+	 * Main window.
 	 */
-	KGALILEICenter* App;
+	QGALILEIWin* Win;
 
 	/**
 	* Document to describe.
@@ -82,18 +83,17 @@ public:
 
 	/**
 	* Constructor for the view
-	* @param app            Application.
+	* @param win            Main window.
 	* @param doc            Document to represent.
 	*/
-	KViewDoc(KGALILEICenter* app,GDoc* doc);
+	KViewDoc(QGALILEIWin* win,GDoc* doc);
 
 	/**
 	* Constructor for the view
-	* @param app            Application.
+	* @param win            Main window.
 	* @param file           Document to represent.
-	* @param mime           Mime Type of the document.
 	*/
-	KViewDoc(KGALILEICenter* app,const RURI& file,const RString& mime);
+	KViewDoc(QGALILEIWin* win,const RURI& file);
 
 private:
 
@@ -135,9 +135,14 @@ public:
  * @short Adding Feedback
  * @author Pascal Francq.
  */
-class AddFdbkDlg : public KDialog, public Ui_AddFdbkDlg
+class AddFdbkDlg : public QDialog, public Ui_AddFdbkDlg
 {
 	Q_OBJECT
+
+	/**
+	 * The session.
+	 */
+	GSession* Session;
 
 	/**
 	 * Current user.
@@ -153,9 +158,10 @@ public:
 
 	/**
 	 * Construct the dialog box.
+	 * @param session        Session.
 	 * @param parent         Parent wisget.
 	 */
-	AddFdbkDlg(QWidget* parent);
+	AddFdbkDlg(GSession* session,QWidget* parent);
 
 private:
 

@@ -36,8 +36,6 @@
 //-----------------------------------------------------------------------------
 // include files for R/GALILEI
 #include <ggalileiprg.h>
-using namespace R;
-using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
@@ -64,7 +62,7 @@ class KPrgConsole : public QMdiSubWindow, public Ui_KPrgConsole
     /**
      * GALILEI interpreter.
      */
-    GGALILEIPrg* Prg;
+    GALILEI::GGALILEIPrg* Prg;
 
 public:
 

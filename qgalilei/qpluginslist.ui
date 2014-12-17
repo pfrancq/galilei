@@ -123,24 +123,16 @@
       </spacer>
      </item>
      <item>
-      <widget class="KPushButton" name="Up">
+      <widget class="QPushButton" name="Up">
        <property name="text">
         <string>Up</string>
-       </property>
-       <property name="icon">
-        <iconset>
-         <normaloff>../../../../../usr/share/icons/default.kde4/16x16/actions/go-up.png</normaloff>../../../../../usr/share/icons/default.kde4/16x16/actions/go-up.png</iconset>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="KPushButton" name="Down">
+      <widget class="QPushButton" name="Down">
        <property name="text">
         <string>Down</string>
-       </property>
-       <property name="icon">
-        <iconset>
-         <normaloff>../../../../../usr/share/icons/default.kde4/16x16/actions/go-down.png</normaloff>../../../../../usr/share/icons/default.kde4/16x16/actions/go-down.png</iconset>
        </property>
       </widget>
      </item>
@@ -174,13 +166,6 @@
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>KPushButton</class>
-   <extends>QPushButton</extends>
-   <header>kpushbutton.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections>
   <connection>
@@ -244,38 +229,6 @@
     <hint type="destinationlabel">
      <x>518</x>
      <y>0</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>Down</sender>
-   <signal>clicked()</signal>
-   <receiver>QPlugInsList</receiver>
-   <slot>slotDown()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>525</x>
-     <y>334</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>522</x>
-     <y>30</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>Up</sender>
-   <signal>clicked()</signal>
-   <receiver>QPlugInsList</receiver>
-   <slot>slotUp()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>439</x>
-     <y>334</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>523</x>
-     <y>94</y>
     </hint>
    </hints>
   </connection>

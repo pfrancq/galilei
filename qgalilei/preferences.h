@@ -92,6 +92,16 @@ public slots:
 	 * Slot called when the button to delete a directory was pressed.
 	 */
 	void slotDelDir(void);
+
+	/**
+	 * Slot called when the index directory must be edited.
+    */
+	void editIndexDir(void);
+
+	/**
+	 * Slot called when the script directory must be edited.
+    */
+	void editScriptDir(void);
 };
 
 

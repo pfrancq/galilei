@@ -49,7 +49,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 // include files for current application
 #include <ui_kviewmetaengine.h>
-#include <kgalileicenter.h>
+class QGALILEIWin;
 
 
 //-----------------------------------------------------------------------------
@@ -63,24 +63,19 @@ class KViewMetaEngine : public QMdiSubWindow, public Ui_KViewMetaEngine
 	Q_OBJECT
 
 	/**
-	 * Application.
+	 * Maion window.
 	 */
-	KGALILEICenter* App;
+	QGALILEIWin* Win;
 
 public:
 
 	/**
 	* Constructor for the view
-	* @param app            Application.
+	* @param win            Main window.
 	*/
-	KViewMetaEngine(KGALILEICenter* app);
+	KViewMetaEngine(QGALILEIWin* win);
 
 protected slots:
-
-	/**
-	 * Show the results.
-	 */
-	void showResults(void);
 
 	/**
 	* Process the query and display results.

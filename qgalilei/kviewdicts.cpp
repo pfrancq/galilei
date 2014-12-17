@@ -117,26 +117,25 @@ public:
 //
 //-----------------------------------------------------------------------------
 
-class QLoadDicts : public QSessionThread
+//-----------------------------------------------------------------------------
+class QLoadDicts : public QSessionProgress
 {
 private:
 
 	QTreeWidget* Dicts;
 
 public:
-	QLoadDicts(QGALILEIWin* app,QTreeWidget* dicts) : QSessionThread(app), Dicts(dicts) {}
+	QLoadDicts(QGALILEIWin* win,QTreeWidget* dicts) : QSessionProgress(win,"Load dictionnaries"), Dicts(dicts) {}
 	virtual void DoIt(void)
 	{
-		Parent->setWindowTitle("Load dictionnaries");
 		// Go trough each language and create a Item.
-		RCursor<GConceptType> Types(App->getSession()->GetObjs(pConceptType));
-		Parent->setRange(0,Types.GetNb());
-		Parent->setValue(0);
+		RCursor<GConceptType> Types(Win->getSession()->GetObjs(pConceptType));
+		setRange(0,Types.GetNb());
 		for(Types.Start();!Types.End();Types.Next())
 		{
 			new QGObject(Dicts,Types());
-			Parent->setLabelText(ToQString(Types()->GetDescription()));
-			Parent->setValue(Types.GetPos()+1);
+			setLabelText(ToQString(Types()->GetDescription()));
+			setValue(Types.GetPos()+1);
 		}
 	}
 };

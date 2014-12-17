@@ -99,6 +99,8 @@ QPlugInsList::QPlugInsList(QWidget* parent)
 	: QWidget(parent), Ui_QPlugInsList()
 {
 	setupUi(this);
+	connect(Down,SIGNAL(pressed()),this,SLOT(slotDown()));
+	connect(Up,SIGNAL(pressed()),this,SLOT(slotUp()));
 }
 
 
@@ -396,8 +398,8 @@ void QPlugInsList::slotParams(void)
 	if(!List->currentItem()) return;
 	QPlugIn* f=dynamic_cast<QPlugIn*>(List->currentItem());
 	if(!f) return;
-	KDialog Dlg(this);
-	Dlg.setCaption(ToQString("Parameters of "+f->PlugIn->GetName()));
+	QDialog Dlg(this);
+	Dlg.setWindowTitle(ToQString("Parameters of "+f->PlugIn->GetName()));
 	QTreeWidget* widget(new QTreeWidget(&Dlg));
 	widget->setRootIsDecorated(false);
 	widget->setColumnCount(2);
@@ -425,22 +427,23 @@ void QPlugInsList::slotParams(void)
 			item->setText(1,ToQString(Cur2()->GetDescription()));
 		}
 	}
-	Dlg.setMainWidget(widget);
-	Dlg.setButtons(KDialog::Ok);
+//	Dlg.setMainWidget(widget);
+//	Dlg.setButtons(KDialog::Ok);
 	Dlg.resize(sizeHint());
 	Dlg.exec();
 }
 
 
 //-----------------------------------------------------------------------------
-class QReset : public QSessionThread
+class QReset : public QSessionProgress
 {
 	GPlugIn* PlugIn;
 public:
-	QReset(KGALILEICenter* app,GPlugIn* plugin) : QSessionThread(app), PlugIn(plugin) {}
+	QReset(QGALILEIWin* win,GPlugIn* plugin)
+		: QSessionProgress(win,"Reset Plug-In"), PlugIn(plugin) {}
 	virtual void DoIt(void)
 	{
-	 	Parent->setLabelText("Reset the plug-in '"+ToQString(PlugIn->GetName())+"'");
+	 	setLabelText("Reset the plug-in '"+ToQString(PlugIn->GetName())+"'");
 		PlugIn->Reset();
 	}
 };
@@ -452,6 +455,5 @@ void QPlugInsList::slotReset(void)
 	if(!List->currentItem()) return;
 	QPlugIn* f=dynamic_cast<QPlugIn*>(List->currentItem());
 	if(!f) return;
-	QSessionProgressDlg Dlg(KGALILEICenter::App,"Reset Plug-In",false);
-	Dlg.Run(new QReset(KGALILEICenter::App,f->PlugIn->GetPlugIn()));
+	QReset(0,f->PlugIn->GetPlugIn()).run();
 }

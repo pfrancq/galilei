@@ -36,55 +36,39 @@
 //-----------------------------------------------------------------------------
 // forward class declaration for R/GALILEI projects
 #include <gslot.h>
-using namespace GALILEI;
-using namespace R;
+#include <rqt.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for Qt/KDE
-#include <QThread>
 #include <QProgressDialog>
-#include <QEventLoop>
 
 
 //-----------------------------------------------------------------------------
 // forward declaration
-class QSessionProgressDlg;
 class QGALILEIWin;
 
 
 //-----------------------------------------------------------------------------
 /**
-* The QSessionThread provides a generic thread for doing something in the
+* The QSessionProgressDlg provides a generic task for doing something in the
 * session.
 */
-class QSessionThread //: public QThread
+class QSessionProgress : public QProgressDialog, public GALILEI::GSlot
 {
-//	Q_OBJECT
+		Q_OBJECT
 
 protected:
 
 	/**
-	 * Parent widget.
+	 * Main Window.
 	 */
-//	QSessionProgressDlg* Parent;
-	QProgressDialog* Parent;
-
-	/**
-	 * Application.
-	 */
-	QGALILEIWin* App;
+	QGALILEIWin* Win;
 
 	/**
 	 * Constructor.
 	 */
-	QSessionThread(QGALILEIWin* app);
-
-	/**
-	 * Set the parent widget.
-	 * @param parent         Parent widget.
-	 */
-	void Set(QSessionProgressDlg* parent);
+	QSessionProgress(QGALILEIWin* win,const QString& title);
 
 public:
 
@@ -100,347 +84,6 @@ private:
 	 * Do the real task. This is the method to overload for child classes.
 	 */
 	virtual void DoIt(void)=0;
-
-//signals:
-//
-//	/**
-//	 * The signal is emitted when the job was done without any errors.
-//	 */
-//	void finish(void);
-//
-//	void setValue(int i);
-//
-//	void setRange(int min,int max);
-//
-//	void setLabel(const QString& str);
-
-	friend class QSessionProgressDlg;
-};
-
-
-//-----------------------------------------------------------------------------
-/**
-* Create a session.
-*/
-class QCreateSession : public QSessionThread
-{
-	GSession* &Session;
-	RString Name;
-public:
-	QCreateSession(QGALILEIWin* app,GSession* &session,const RString& name) : QSessionThread(app), Session(session), Name(name) {}
-	virtual void DoIt(void);
-};
-
-
-////-----------------------------------------------------------------------------
-///**
-//* Analyze a document.
-//*/
-//class QAnalyzeDoc : public QSessionThread
-//{
-//	GDoc* Doc;
-//public:
-//	QAnalyzeDoc(QGALILEI* app,GDoc* doc) : QSessionThread(app), Doc(doc) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Analyze all the documents.
-//*/
-//class QAnalyzeDocs : public QSessionThread
-//{
-//public:
-//	QAnalyzeDocs(QGALILEI* app) : QSessionThread(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Compute the profiles.
-//*/
-//class QComputeProfiles : public QSessionThread
-//{
-//public:
-//	QComputeProfiles(QGALILEI* app) : QSessionThread(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Compute a given profile.
-//*/
-//class QComputeProfile : public QSessionThread
-//{
-//	GProfile* Profile;
-//public:
-//	QComputeProfile(QGALILEI* app,GProfile* profile) : QSessionThread(app), Profile(profile) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Groups the profiles.
-//*/
-//class QGroupProfiles : public QSessionThread
-//{
-//public:
-//	QGroupProfiles(QGALILEI* app) : QSessionThread(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Groups the documents.
-//*/
-//class QGroupDocs : public QSessionThread
-//{
-//public:
-//	QGroupDocs(QGALILEI* app) : QSessionThread(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Create the ideal subjects.
-//* @param save           Save modified elements.
-//*/
-//class QCreateIdealSubjects : public QSessionThread
-//{
-//public:
-//	QCreateIdealSubjects(QGALILEI* app) : QSessionThread(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Create the ideal communities.
-//* @param save           Save modified elements.
-//*/
-//class QCreateIdealCommunities : public QSessionThread
-//{
-//public:
-//	QCreateIdealCommunities(QGALILEI* app) : QSessionThread(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Create the ideal topics.
-//*/
-//class QCreateIdealTopics : public QSessionThread
-//{
-//public:
-//	QCreateIdealTopics(QGALILEI* app) : QSessionThread(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Create the ideal topics from the classes.
-//*/
-//class QCreateIdealTopicsFromClasses : public QSessionThread
-//{
-//public:
-//	QCreateIdealTopicsFromClasses(QGALILEI* app) : QSessionThread(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Create the ideal classes.
-//*/
-//class QCreateIdealClasses : public QSessionThread
-//{
-//public:
-//	QCreateIdealClasses(QGALILEI* app) : QSessionThread(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Create the ideal classes using documents.
-//*/
-//class QCreateIdealDocsClasses : public QSessionThread
-//{
-//public:
-//	QCreateIdealDocsClasses(QGALILEI* app) : QSessionThread(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Repair the subjects.
-//*/
-//class QRepairSubjects : public QSessionThread
-//{
-//public:
-//	QRepairSubjects(QGALILEI* app) : QSessionThread(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Make a feedback cycle.
-//*/
-//class QMakeFdbks : public QSessionThread
-//{
-//public:
-//	QMakeFdbks(QGALILEI* app) : QSessionThread(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Make a assessment cycle.
-//*/
-//class QMakeAssessments : public QSessionThread
-//{
-//public:
-//	QMakeAssessments(QGALILEI* app) : QSessionThread(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Compute the trust.
-//*/
-//class QComputeTrust : public QSessionThread
-//{
-//public:
-//	QComputeTrust(QGALILEI* app) : QSessionThread(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Compute the suggestions.
-//*/
-//class QComputeSugs : public QSessionThread
-//{
-//public:
-//	QComputeSugs(QGALILEI* app) : QSessionThread(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Run a tool.
-//*/
-//class QRunTool : public QSessionThread
-//{
-//	/**
-//	 * Name of the tool.
-//	 */
-//	RString Tool;
-//
-//	/**
-//	 * List of the tool.
-//	 */
-//	RString List;
-//
-//public:
-//	QRunTool(QGALILEI* app,const RString& tool,const RString& list) : QSessionThread(app), Tool(tool), List(list) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Compute all the elements.
-//*/
-//class QComputeAll : public QSessionThread
-//{
-//public:
-//	QComputeAll(QGALILEI* app) : QSessionThread(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Index the documents.
-//*/
-//class QIndexDocs : public QSessionThread
-//{
-//public:
-//	QIndexDocs(QGALILEI* app) : QSessionThread(app) {}
-//	virtual void DoIt(void);
-//};
-
-
-//-----------------------------------------------------------------------------
-/**
-* The QSessionProgressDlg provides a dialog box to show the progress of
-* something done on a session.
-* @author Pascal Francq
-* @short Progress Dialog Box.
-*/
-class QSessionProgressDlg : public QProgressDialog, public GSlot
-{
-	Q_OBJECT
-
-	/**
-	* Session.
-	*/
-	GSession* Session;
-
-	/**
-	* Is something running?
-	*/
-	bool Running;
-
-	/**
-	 * Return results.
-	 */
-	int Ret;
-
-	/**
-	 * Application.
-	 */
-	QGALILEIWin* App;
-
-	/**
-	 * End message.
-	 */
-	QString EndMsg;
-
-	QEventLoop* Loop;
-
-public:
-
-	/**
-	* Constructor.
-	* @param parent         Parent widget.
-	* @param c              Caption of the dialog box.
-	* @param cancel         Cancel Button?
-	*/
-	QSessionProgressDlg(QGALILEIWin* parent,const QString& c,bool cancel=true);
-
-	/**
-	* Run a thread "in" this dialog box.
-	* @param task            Task to execute.
-	*/
-	bool Run(QSessionThread* task);
 
 	/**
 	* Start a job.
@@ -458,25 +101,25 @@ public:
 	* Method called each time a new language is analyzed.
 	* @param lang           Pointer to the current lang.
 	*/
-	virtual void NextGroupLang(const GLang* lang);
+	virtual void NextGroupLang(const GALILEI::GLang* lang);
 
 	/**
 	* The treatment for a specific concept type will begin.
 	* @param type            Concept type.
 	*/
-	virtual void NextConceptType(const GConceptType* type);
+	virtual void NextConceptType(const GALILEI::GConceptType* type);
 
 	/**
 	* The treatment for a specific document will begin.
 	* @param doc            Document.
 	*/
-	virtual void NextDoc(const GDoc* doc);
+	virtual void NextDoc(const GALILEI::GDoc* doc);
 
 	/**
 	* The treatment for a specific profile will begin.
 	* @param prof           Profile.
 	*/
-	virtual void NextProfile(const GProfile* prof);
+	virtual void NextProfile(const GALILEI::GProfile* prof);
 
 	/**
 	* Forward a warning.
@@ -508,29 +151,277 @@ public:
 	* control of the process to the GUI.
 	*/
 	virtual void Interact(void);
+};
 
-	/**
-	 * The 'Cancel' Button was called.
-	 */
-	virtual void reject(void);
 
-public slots:
-
-	/**
-	* Put the dialog in the final state.
-	*/
-	void Finish(void);
-
-	void closeMe(void);
-
+//-----------------------------------------------------------------------------
+/**
+* Create a session.
+*/
+class QCreateSession : public QSessionProgress
+{
+	GALILEI::GSession* &Session;
+	R::RString Name;
 public:
+	QCreateSession(QGALILEIWin* win,GALILEI::GSession* &session,const R::RString& name)
+		: QSessionProgress(win,"Connect to database '"+R::ToQString(name)+"'"), Session(session), Name(name) {}
+	virtual void DoIt(void);
+};
 
-	/**
-	* Destruct.App
-	*/
-	virtual ~QSessionProgressDlg(void);
 
-	friend class QSessionThread;
+//-----------------------------------------------------------------------------
+/**
+* Analyze a document.
+*/
+class QAnalyzeDoc : public QSessionProgress
+{
+	GALILEI::GDoc* Doc;
+public:
+	QAnalyzeDoc(QGALILEIWin* win,GALILEI::GDoc* doc) : QSessionProgress(win,"Analyze a document"), Doc(doc) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Index the documents.
+*/
+class QIndexDocs : public QSessionProgress
+{
+public:
+	QIndexDocs(QGALILEIWin* win) : QSessionProgress(win,"Index the documents") {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Analyze all the documents.
+*/
+class QAnalyzeDocs : public QSessionProgress
+{
+public:
+	QAnalyzeDocs(QGALILEIWin* win) : QSessionProgress(win,"Analyze Documents") {}
+	virtual void DoIt(void);
+};
+
+
+////-----------------------------------------------------------------------------
+///**
+//* Compute the profiles.
+//*/
+//class QComputeProfiles : public QSessionProgress
+//{
+//public:
+//	QComputeProfiles(QGALILEIWin* win) : QSessionProgress(app) {}
+//	virtual void DoIt(void);
+//};
+//
+//
+//
+////-----------------------------------------------------------------------------
+///**
+//* Compute a given profile.
+//*/
+//class QComputeProfile : public QSessionProgress
+//{
+//	GProfile* Profile;
+//public:
+//	QComputeProfile(QGALILEIWin* win,GProfile* profile) : QSessionProgress(app), Profile(profile) {}
+//	virtual void DoIt(void);
+//};
+//
+//
+////-----------------------------------------------------------------------------
+///**
+//* Groups the profiles.
+//*/
+//class QGroupProfiles : public QSessionProgress
+//{
+//public:
+//	QGroupProfiles(QGALILEIWin* win) : QSessionProgress(app) {}
+//	virtual void DoIt(void);
+//};
+//
+//
+//
+////-----------------------------------------------------------------------------
+///**
+//* Groups the documents.
+//*/
+//class QGroupDocs : public QSessionProgress
+//{
+//public:
+//	QGroupDocs(QGALILEIWin* win) : QSessionProgress(app) {}
+//	virtual void DoIt(void);
+//};
+//
+//
+////-----------------------------------------------------------------------------
+///**
+//* Create the ideal subjects.
+//* @param save           Save modified elements.
+//*/
+//class QCreateIdealSubjects : public QSessionProgress
+//{
+//public:
+//	QCreateIdealSubjects(QGALILEIWin* win) : QSessionProgress(app) {}
+//	virtual void DoIt(void);
+//};
+//
+//
+////-----------------------------------------------------------------------------
+///**
+//* Create the ideal communities.
+//* @param save           Save modified elements.
+//*/
+//class QCreateIdealCommunities : public QSessionProgress
+//{
+//public:
+//	QCreateIdealCommunities(QGALILEIWin* win) : QSessionProgress(app) {}
+//	virtual void DoIt(void);
+//};
+//
+//
+////-----------------------------------------------------------------------------
+///**
+//* Create the ideal topics.
+//*/
+//class QCreateIdealTopics : public QSessionProgress
+//{
+//public:
+//	QCreateIdealTopics(QGALILEIWin* win) : QSessionProgress(app) {}
+//	virtual void DoIt(void);
+//};
+//
+//
+////-----------------------------------------------------------------------------
+///**
+//* Create the ideal topics from the classes.
+//*/
+//class QCreateIdealTopicsFromClasses : public QSessionProgress
+//{
+//public:
+//	QCreateIdealTopicsFromClasses(QGALILEIWin* win) : QSessionProgress(app) {}
+//	virtual void DoIt(void);
+//};
+//
+//
+////-----------------------------------------------------------------------------
+///**
+//* Create the ideal classes.
+//*/
+//class QCreateIdealClasses : public QSessionProgress
+//{
+//public:
+//	QCreateIdealClasses(QGALILEIWin* win) : QSessionProgress(app) {}
+//	virtual void DoIt(void);
+//};
+//
+//
+////-----------------------------------------------------------------------------
+///**
+//* Create the ideal classes using documents.
+//*/
+//class QCreateIdealDocsClasses : public QSessionProgress
+//{
+//public:
+//	QCreateIdealDocsClasses(QGALILEIWin* win) : QSessionProgress(app) {}
+//	virtual void DoIt(void);
+//};
+//
+//
+////-----------------------------------------------------------------------------
+///**
+//* Repair the subjects.
+//*/
+//class QRepairSubjects : public QSessionProgress
+//{
+//public:
+//	QRepairSubjects(QGALILEIWin* win) : QSessionProgress(app) {}
+//	virtual void DoIt(void);
+//};
+//
+//
+////-----------------------------------------------------------------------------
+///**
+//* Make a feedback cycle.
+//*/
+//class QMakeFdbks : public QSessionProgress
+//{
+//public:
+//	QMakeFdbks(QGALILEIWin* win) : QSessionProgress(app) {}
+//	virtual void DoIt(void);
+//};
+//
+//
+////-----------------------------------------------------------------------------
+///**
+//* Make a assessment cycle.
+//*/
+//class QMakeAssessments : public QSessionProgress
+//{
+//public:
+//	QMakeAssessments(QGALILEIWin* win) : QSessionProgress(app) {}
+//	virtual void DoIt(void);
+//};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Compute the trust.
+*/
+class QComputeTrust : public QSessionProgress
+{
+public:
+	QComputeTrust(QGALILEIWin* win) : QSessionProgress(win,"Compute Trust") {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Compute the suggestions.
+*/
+class QComputeSugs : public QSessionProgress
+{
+public:
+	QComputeSugs(QGALILEIWin* win) : QSessionProgress(win,"Compute Suggestions") {}
+	virtual void DoIt(void);
+};
+
+
+////-----------------------------------------------------------------------------
+///**
+//* Run a tool.
+//*/
+//class QRunTool : public QSessionProgress
+//{
+//	/**
+//	 * Name of the tool.
+//	 */
+//	RString Tool;
+//
+//	/**
+//	 * List of the tool.
+//	 */
+//	RString List;
+//
+//public:
+//	QRunTool(QGALILEIWin* win,const RString& tool,const RString& list) : QSessionProgress(app), Tool(tool), List(list) {}
+//	virtual void DoIt(void);
+//};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Compute all the elements.
+*/
+class QComputeAll : public QSessionProgress
+{
+public:
+	QComputeAll(QGALILEIWin* win) : QSessionProgress(win,"Compute Complete Session") {}
+	virtual void DoIt(void);
 };
 
 

@@ -48,19 +48,19 @@ int main(int argc, char* argv[])
 	}
 	catch(GALILEI::GException& e)
 	{
-		QMessageBox::critical(0, QWidget::tr("QGALILEI"),QWidget::trUtf8(e.GetMsg()),QMessageBox::Ok);
+		QMessageBox::critical(0,QWidget::tr("GALILEI Exception"),QWidget::trUtf8(e.GetMsg()),QMessageBox::Ok);
 	}
 	catch(R::RException& e)
 	{
-		QMessageBox::critical(0, QWidget::tr("QGALILEI"),QWidget::trUtf8(e.GetMsg()),QMessageBox::Ok);
+		QMessageBox::critical(0,QWidget::tr("R Exception"),QWidget::trUtf8(e.GetMsg()),QMessageBox::Ok);
 	}
 	catch(std::exception& e)
 	{
-		QMessageBox::critical(0, QWidget::tr("QGALILEI"),QWidget::trUtf8(e.what()),QMessageBox::Ok);
+		QMessageBox::critical(0,QWidget::tr("Standard exception"),QWidget::trUtf8(e.what()),QMessageBox::Ok);
 	}
 	catch(...)
 	{
-		QMessageBox::critical(0, QWidget::tr("QGALILEI"),QWidget::trUtf8("Unknown problem"),QMessageBox::Ok);
+		QMessageBox::critical(0,QWidget::tr("Unknown exception"),QWidget::trUtf8("Unknown problem"),QMessageBox::Ok);
 	}
  	return(0);
 }

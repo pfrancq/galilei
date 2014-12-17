@@ -28,14 +28,23 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <cmath>
+
+
+//-----------------------------------------------------------------------------
 // include files for R/GALILEI
 #include <rqt.h>
+#include <qgobjectslist.h>
+#include <gmetaengine.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for Qt
 #include <QMessageBox>
 #include <QInputDialog>
+#include <QFileDialog>
+#include <QProgressDialog>
 
 
 //-----------------------------------------------------------------------------
@@ -45,6 +54,11 @@
 #include <qsessionprogress.h>
 #include <kviewdicts.h>
 #include <preferences.h>
+#include <configure.h>
+#include <kviewdoc.h>
+#include <kviewmetaengine.h>
+#include <kprgconsole.h>
+#include <kviewprg.h>
 using namespace std;
 using namespace R;
 using namespace GALILEI;
@@ -75,31 +89,139 @@ QGALILEIWin::QGALILEIWin(QGALILEI* app)
 //-----------------------------------------------------------------------------
 void QGALILEIWin::connectMenus(void)
 {
+	// Menu 'Session'
 	connect(aConnect,SIGNAL(triggered()),this,SLOT(sessionConnect()));
 	connect(aDisconnect,SIGNAL(triggered()),this,SLOT(sessionDisconnect()));
+	connect(aComputeSession,SIGNAL(triggered()),this,SLOT(computeSession()));
+	connect(aConsole,SIGNAL(triggered()),this,SLOT(console()));
+	connect(aRunScript,SIGNAL(triggered()),this,SLOT(runScript()));
+	connect(aStatistics,SIGNAL(triggered()),this,SLOT(statistics()));
+	connect(aCreateSession,SIGNAL(triggered()),this,SLOT(createSession()));
+	connect(aImportDocs,SIGNAL(triggered()),this,SLOT(importDocs()));
+	connect(aRunTool,SIGNAL(triggered()),this,SLOT(runTool()));
 	connect(aExit,SIGNAL(triggered()),this,SLOT(close()));
 
+	// Menu 'Documents'
 	connect(aDicts,SIGNAL(triggered()),this,SLOT(showDicts()));
+	connect(aShowDocs,SIGNAL(triggered()),this,SLOT(showDocs()));
+	connect(aExportDocDecs,SIGNAL(triggered()),this,SLOT(exportDocDecs()));
+	connect(aIndexDocs,SIGNAL(triggered()),this,SLOT(indexDocs()));
+	connect(aClearDocs,SIGNAL(triggered()),this,SLOT(clearDocs));
+	connect(aAnalyzeDocs,SIGNAL(triggered()),this,SLOT(analyzeDocs()));
+	connect(aExportDocs,SIGNAL(triggered()),this,SLOT(exportDocs()));
+	connect(aAnalyzeDoc,SIGNAL(triggered()),this,SLOT(analyzeDoc()));
+	connect(aQuery,SIGNAL(triggered()),this,SLOT(queryMetaEngine()));
+	connect(aComputeTrust,SIGNAL(triggered()),this,SLOT(computeTrust()));
+	connect(aComputeSugs,SIGNAL(triggered()),this,SLOT(computeSugs()));
 
+	// Menu 'Topics'
+	connect(aShowClasses,SIGNAL(triggered()),this,SLOT(showClasses()));
+	connect(aShowTopics,SIGNAL(triggered()),this,SLOT(showTopics()));
+	connect(aClearTopics,SIGNAL(triggered()),this,SLOT(clearTopics()));
+	connect(aGroupDocs,SIGNAL(triggered()),this,SLOT(groupDocs()));
+
+	// Menu 'Users'
+	connect(aShowUsers,SIGNAL(triggered()),this,SLOT(showUsers()));
+	connect(aClearProfiles,SIGNAL(triggered()),this,SLOT(clearProfiles()));
+	connect(aComputeProfiles,SIGNAL(triggered()),this,SLOT(computeProfiles()));
+	connect(aComputeProfile,SIGNAL(triggered()),this,SLOT(computeProfile()));
+
+	// Menu 'Communities'
+	connect(aShowCommunities,SIGNAL(triggered()),this,SLOT(showCommunities()));
+	connect(aClearCommunities,SIGNAL(triggered()),this,SLOT(clearCommunities()));
+	connect(aGroupProfiles,SIGNAL(triggered()),this,SLOT(groupProfiles()));
+
+	// Menu 'Simulation'
+	connect(aRepairSubjects,SIGNAL(triggered()),this,SLOT(repairSubjects()));
+	connect(aInitSimulation,SIGNAL(triggered()),this,SLOT(initSimulation()));
+	connect(aCreateIdealClasses,SIGNAL(triggered()),this,SLOT(createIdealClasses()));
+	connect(aCreateIdealClassesDocuments,SIGNAL(triggered()),this,SLOT(createIdealClassesDocuments()));
+	connect(aCreateIdealTopics,SIGNAL(triggered()),this,SLOT(createIdealTopics()));
+	connect(aCreateIdealCommunities,SIGNAL(triggered()),this,SLOT(createIdealCommunities()));
+	connect(aFeedbackCycle,SIGNAL(triggered()),this,SLOT(feedbackCycle()));
+	connect(aAssessmentCycle,SIGNAL(triggered()),this,SLOT(assessmentCycle()));
+	connect(aCompareIdealClasses,SIGNAL(triggered()),this,SLOT(compareIdealClasses()));
+	connect(aCompareIdealTopics,SIGNAL(triggered()),this,SLOT(compareIdealTopics()));
+	connect(aCompareIdealCommunities,SIGNAL(triggered()),this,SLOT(compareIdealCommunities()));
+
+	// Menu 'Window'
 	connect(aCloseAll,SIGNAL(triggered()),Desktop,SLOT(closeAllSubWindows()));
 	connect(aTile,SIGNAL(triggered()),Desktop,SLOT(tileSubWindows()));
 	connect(aCascade,SIGNAL(triggered()),Desktop,SLOT(cascadeSubWindows()));
 
+	// Menu 'Settings'
 	connect(aConfigSession,SIGNAL(triggered()),this,SLOT(configSession()));
 	connect(aConfigQGALILEI,SIGNAL(triggered()),this,SLOT(configQGALILEI()));
+
+	// Menu 'Help'
+	connect(aAbout,SIGNAL(triggered()),this,SLOT(about()));
 }
 
 
 //-----------------------------------------------------------------------------
 void QGALILEIWin::sessionConnected(void)
 {
+	// Menu 'Session'
 	aConnect->setEnabled(Session==0);
 	aDisconnect->setEnabled(Session);
+	aComputeSession->setEnabled(Session);
+	aConsole->setEnabled(Session);
+	aRunScript->setEnabled(Session);
+	aStatistics->setEnabled(Session);
+	aCreateSession->setEnabled(Session);
+	aImportDocs->setEnabled(Session);
+	aRunTool->setEnabled(Session);
+
+	// Menu 'Documents'
 	aDicts->setEnabled(Session);
-	aConfigSession->setEnabled(Session);
+	aShowDocs->setEnabled(Session);
+	aExportDocDecs->setEnabled(Session);
+	aIndexDocs->setEnabled(Session);
+	aClearDocs->setEnabled(Session);
+	aAnalyzeDocs->setEnabled(Session);
+	aExportDocs->setEnabled(Session);
+	aAnalyzeDoc->setEnabled(Session);
+	aQuery->setEnabled(Session);
+	aComputeTrust->setEnabled(Session);
+	aComputeSugs->setEnabled(Session);
+
+	// Menu 'Topics'
+	aShowClasses->setEnabled(Session);
+	aShowTopics->setEnabled(Session);
+	aClearTopics->setEnabled(Session);
+	aGroupDocs->setEnabled(Session);
+
+	// Menu 'Users'
+	aShowUsers->setEnabled(Session);
+	aClearProfiles->setEnabled(Session);
+	aComputeProfiles->setEnabled(Session);
+	aComputeProfile->setEnabled(false);
+
+	// Menu 'Communities'
+	aShowCommunities->setEnabled(Session);
+	aClearCommunities->setEnabled(Session);
+	aGroupProfiles->setEnabled(Session);
+
+	// Menu 'Simulation'
+	aRepairSubjects->setEnabled(Session);
+	aInitSimulation->setEnabled(Session);
+	aCreateIdealClasses->setEnabled(Session);
+	aCreateIdealClassesDocuments->setEnabled(Session);
+	aCreateIdealTopics->setEnabled(Session);
+	aCreateIdealCommunities->setEnabled(Session);
+	aFeedbackCycle->setEnabled(Session);
+	aAssessmentCycle->setEnabled(Session);
+	aCompareIdealClasses->setEnabled(Session);
+	aCompareIdealTopics->setEnabled(Session);
+	aCompareIdealCommunities->setEnabled(Session);
+
+	// Menu 'Window'
 	aCloseAll->setEnabled(Session);
 	aTile->setEnabled(Session);
 	aCascade->setEnabled(Session);
+
+	// Menu 'Settings'
+	aConfigSession->setEnabled(Session);
 }
 
 
@@ -137,6 +259,41 @@ void QGALILEIWin::sessionDisconnect(void)
 	}
 }
 
+//-----------------------------------------------------------------------------
+void QGALILEIWin::computeSession(void)
+{
+	if(QComputeAll(this).run())
+	{
+		emit docsChanged();
+		emit topicsChanged();
+		emit profilesChanged();
+		emit communitiesChanged();
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::console(void)
+{
+	KPrgConsole* ptr(new KPrgConsole());
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::runScript(void)
+{
+	QString file(QFileDialog::getSaveFileName(this,"Open Script File...","","*.kprg|KGALILEICenter Programs"));
+	if(file.isEmpty())
+		return;
+	KViewPrg* ptr(new KViewPrg(this,FromQString(file)));
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
+}
+
 
 //-----------------------------------------------------------------------------
 void QGALILEIWin::showDicts(void)
@@ -146,6 +303,192 @@ void QGALILEIWin::showDicts(void)
 	ptr->adjustSize();
 	ptr->show();
 	ptr->create();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::showDocs(void)
+{
+	QGObjectsList* ptr(new QGObjectsList());
+	connect(ptr,SIGNAL(Show(GDoc*)),this,SLOT(showDoc(GDoc*)));
+	ptr->setAttribute(Qt::WA_DeleteOnClose);
+	Desktop->addSubWindow(ptr)->setWindowTitle("Documents");
+	ptr->Set(Session,QGObjectsList::Docs);
+	ptr->adjustSize();
+	ptr->show();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::showDoc(GDoc* doc)
+{
+	KViewDoc* ptr(new KViewDoc(this,doc));
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::exportDocDecs(void)
+{
+	QString dir(QFileDialog::getExistingDirectory(this,"Choose directory where to export the files","",QFileDialog::ShowDirsOnly));
+	if(dir.isEmpty())
+		return;
+	QApplication::setOverrideCursor(Qt::WaitCursor);
+	QProgressDialog dlg(this);
+	dlg.setWindowTitle("Export documents");
+	dlg.show();
+	QApplication::processEvents();
+	RString pre(FromQString(dir));
+	pre+="/doc";
+	RCursor<GDoc> Docs(Session->GetObjs(pDoc));
+	size_t nb;
+	dlg.setRange(0,Docs.GetNb());
+	dlg.setValue(0);
+	for(Docs.Start(),nb=0;!Docs.End();Docs.Next(),nb++)
+	{
+		if(dlg.wasCanceled())
+			break;
+		dlg.setValue(static_cast<int>((nb*100)/Docs.GetNb()));
+		QApplication::processEvents();
+		if(!Docs()->GetLang())
+			continue;
+		RString name(pre+RString::Number(Docs()->GetId())+".txt");
+		dlg.setLabelText(ToQString(name));
+		QApplication::processEvents();
+		RTextFile file(name);
+		file.Open(RIO::Create);
+		RConstCursor<GVector> Vector(Docs()->GetVectors());
+		for(Vector.Start();!Vector.End();Vector.Next())
+		{
+			RConstCursor<GConceptRef> Ref(Vector()->GetRefs());
+			for(Ref.Start();!Ref.End();Ref.Next())
+			{
+				for(size_t i=lround(Ref()->GetWeight())+1;--i;)
+				{
+					file<<Session->GetStorage()->LoadConcept(Ref()->GetId());
+				}
+				file<<endl;
+			}
+		}
+		file.Close();
+		dlg.setValue(Docs.GetPos()+1);
+	}
+	QApplication::setOverrideCursor(Qt::ArrowCursor);
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::indexDocs(void)
+{
+	QIndexDocs(this).run();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::clearDocs(void)
+{
+	QApplication::setOverrideCursor(Qt::WaitCursor);
+	Session->ReInit(pDoc,false);
+	updateWins<KViewDoc>();
+	QApplication::setOverrideCursor(Qt::ArrowCursor);
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::analyzeDocs(void)
+{
+	if(QAnalyzeDocs(this).run())
+		updateWins<KViewDoc>();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::exportDocs(void)
+{
+	QString file(QFileDialog::getSaveFileName(this,"Choose file where to export the files descriptions","","*.*"));
+	if(file.isEmpty())
+		return;
+	QApplication::setOverrideCursor(Qt::WaitCursor);
+	QProgressDialog dlg(this);
+	dlg.setWindowTitle("Export documents");
+	dlg.show();
+	QApplication::processEvents();
+	RTextFile Export(FromQString(file),"utf-8");
+	Export.SetAddSeparator(false);
+	Export.Open(RIO::Create);
+	Export<<"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"<<endl;
+	Export<<"<!DOCTYPE documents>"<<endl;
+	Export<<"<documents>"<<endl;
+	RCursor<GDoc> Docs(Session->GetObjs(pDoc));
+	dlg.setRange(0,Docs.GetNb());
+	dlg.setValue(0);
+	for(Docs.Start();!Docs.End();Docs.Next())
+	{
+		Export<<"\t<document id=\""<<Docs()->GetId()<<"\" url=\""<<Docs()->GetURI()()<<"\">"<<endl;
+		RConstCursor<GVector> Vector(Docs()->GetVectors());
+		for(Vector.Start();!Vector.End();Vector.Next())
+		{
+			Export<<"\t\t<vector type=\""<<Vector()->GetMetaConcept()->GetName()<<"\">"<<endl;
+			RConstCursor<GConceptRef> Ref(Vector()->GetRefs());
+			for(Ref.Start();!Ref.End();Ref.Next())
+			{
+				Export<<"\t\t\t<concept>"<<endl;
+				Export<<"\t\t\t\t<id>"<<Ref()->GetId()<<"</id>"<<endl;
+				Export<<"\t\t\t\t<weight>"<<Ref()->GetWeight()<<"</weight>"<<endl;
+				Export<<"\t\t\t</concept>"<<endl;
+			}
+			Export<<"\t\t</vector>"<<endl;
+		}
+		Export<<"\t</document>"<<endl;
+		dlg.setValue(Docs.GetPos()+1);
+	}
+	Export<<"</documents>"<<endl;
+	QApplication::setOverrideCursor(Qt::ArrowCursor);
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::analyzeDoc(void)
+{
+	QString file(QFileDialog::getOpenFileName(this,"Document to analyse","","*.*"));
+	if(file.isEmpty())
+		return;
+	KViewDoc* ptr(new KViewDoc(this,FromQString(file)));
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
+	ptr->AnalyzeDoc();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::queryMetaEngine(void)
+{
+	if(!App->GetCurrentPlugIn<GMetaEngine>("MetaEngine",false))
+	{
+		QMessageBox::information(this,"Error","No Meta Engine Method selected!!");
+		return;
+	}
+	KViewMetaEngine* ptr(new KViewMetaEngine(this));
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::computeTrust(void)
+{
+	QComputeTrust(this).run();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::computeSugs(void)
+{
+	QComputeSugs(this).run();
 }
 
 
@@ -160,8 +503,26 @@ void QGALILEIWin::configQGALILEI(void)
 //-----------------------------------------------------------------------------
 void QGALILEIWin::configSession(void)
 {
-//	Configure Dlg(this);
-//	Dlg.exec();
+	Configure Dlg(this);
+	Dlg.exec();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::about(void)
+{
+	QMessageBox::about(this,"QGALILEI","<b>Qt GALILEI Center</b><br/>"
+		"Pascal Francq (Project Manager)<br/>"
+		"Faiza Gaultier (Past Researcher)<br/>"
+		"Nicolas Kumps (Past Researcher)<br/>"
+		"Marjorie Paternostre (Past Researcher)<br/>"
+		 +QWidget::trUtf8("Stéphane Rideau (Past Researcher)<br/>")+
+		 "Sarah Rolfo (Past Researcher)<br/>"
+		+QWidget::trUtf8("Xavier Sacré (CMake Support)<br/>")+
+		"Marco Saerens (Scientific Advisor)<br/>"
+		"Jean-Baptiste Valsamis (Past Researcher)<br/>"
+		"Valery Vandaele (Past Researcher)<br/>"
+		"David Wartel (Past Researcher)");
 }
 
 
