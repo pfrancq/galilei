@@ -145,7 +145,7 @@ public:
 //------------------------------------------------------------------------------
 GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
 	: RApplication(name,argc,argv), RContainer<GPlugInManager,true,false>(20,10),
-	  Sessions(10), LoadDialogs(dlg), PlugInsPath(10), MIMES(50,25),
+	  Sessions(10), LoadDialogs(dlg), PlugInsPaths(10), MIMES(50,25),
 	  Exts(50,25), Log("/var/log/galilei/galilei.log")
 {
 	Log.Open(RIO::Append);
@@ -218,10 +218,10 @@ void GGALILEIApp::Init(void)
 	IndexDir=Config.Get("IndexDir");
 	RCursor<RString> Cur(Config.GetList("PlugIns Path"));
 	for(Cur.Start();!Cur.End();Cur.Next())
-		PlugInsPath.InsertPtr(new RString(*Cur()));
+		PlugInsPaths.InsertPtr(new RString(*Cur()));
 
 	// Load the plug-in factories.
-	Load(PlugInsPath,LoadDialogs);
+	Load(PlugInsPaths,LoadDialogs);
 
 	// Re-load the configuration files (to take the factories into account).
 	Config.Load(true);
@@ -304,6 +304,28 @@ void GGALILEIApp::DeleteSession(GSession* session)
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->Disconnect(session);
 	Sessions.DeletePtr(*session);
+}
+
+
+//------------------------------------------------------------------------------
+void GGALILEIApp::SetIndexDir(const R::RString& name)
+{
+	IndexDir=name;
+	Config.Set("IndexDir",IndexDir);
+}
+
+
+//------------------------------------------------------------------------------
+void GGALILEIApp::SetPlugInsPaths(const R::iRContainer<R::RString>& paths)
+{
+	Config.Reset("PlugIns Path");
+	PlugInsPaths.Clear();
+	RCursor<RString> Cur(paths);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Config.AddToList("PlugIns Path",*Cur());
+		PlugInsPaths.InsertPtr(new RString(*Cur()));
+	}
 }
 
 
@@ -488,17 +510,6 @@ GPlugInFactory* GGALILEIApp::GetCurrentFactory(const R::RString& mng,const R::RS
 
 
 //------------------------------------------------------------------------------
-void GGALILEIApp::Apply(void)
-{
-	Config.Set("IndexDir",IndexDir);
-	Config.Reset("PlugIns Path");
-	RCursor<RString> Cur(PlugInsPath);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		Config.AddToList("PlugIns Path",*Cur());
-}
-
-
-//------------------------------------------------------------------------------
 void GGALILEIApp::RunPrg(GSlot* rec,const RString& filename)
 {
 	try
@@ -589,9 +600,6 @@ void GGALILEIApp::DelMIMES(GFilter* f)
 //------------------------------------------------------------------------------
 GGALILEIApp::~GGALILEIApp(void)
 {
-	// Save the configuration structures
-	Apply();
-
 	// Delete manually the session (since GALILEIApp is used by the destructor).
 	Sessions.Clear();
 

@@ -46,7 +46,6 @@ using namespace std;
 #include <ggalileiapp.h>
 #include <gsession.h>
 #include <gstorage.h>
-
 #include "gconceptnode.h"
 using namespace GALILEI;
 

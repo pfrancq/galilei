@@ -63,7 +63,7 @@
              </spacer>
             </item>
             <item>
-             <widget class="KDoubleNumInput" name="CutoffFrequency"/>
+             <widget class="QDoubleSpinBox" name="CutoffFrequency"/>
             </item>
            </layout>
           </item>
@@ -116,11 +116,7 @@
              </widget>
             </item>
             <item>
-             <widget class="KIntNumInput" name="NbNearest">
-              <property name="minimum">
-               <number>0</number>
-              </property>
-             </widget>
+             <widget class="QSpinBox" name="NbNearest"/>
             </item>
             <item>
              <spacer name="horizontalSpacer">
@@ -143,11 +139,7 @@
              </widget>
             </item>
             <item>
-             <widget class="KIntNumInput" name="NbSamples">
-              <property name="minimum">
-               <number>0</number>
-              </property>
-             </widget>
+             <widget class="QSpinBox" name="NbSamples"/>
             </item>
            </layout>
           </item>
@@ -184,7 +176,18 @@
              </widget>
             </item>
             <item>
-             <widget class="KUrlRequester" name="Dir"/>
+             <widget class="QLineEdit" name="Dir">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="EditDir">
+              <property name="text">
+               <string>...</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
@@ -223,11 +226,7 @@
              </spacer>
             </item>
             <item>
-             <widget class="KDoubleNumInput" name="MinSim">
-              <property name="minimum">
-               <double>-9999.000000000000000</double>
-              </property>
-             </widget>
+             <widget class="QDoubleSpinBox" name="MinSim"/>
             </item>
            </layout>
           </item>
@@ -267,20 +266,7 @@ In practice, the minimum measure is computed as the sum of the average and the p
              </spacer>
             </item>
             <item>
-             <widget class="KDoubleNumInput" name="DeviationRate">
-              <property name="minimum">
-               <double>-9999.000000000000000</double>
-              </property>
-              <property name="decimals">
-               <number>5</number>
-              </property>
-              <property name="minValue" stdset="0">
-               <number>-10</number>
-              </property>
-              <property name="maxValue" stdset="0">
-               <number>10</number>
-              </property>
-             </widget>
+             <widget class="QDoubleSpinBox" name="DeviationRate"/>
             </item>
            </layout>
           </item>
@@ -318,23 +304,6 @@ In practice, the minimum measure is computed as the sum of the average and the p
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
- <customwidgets>
-  <customwidget>
-   <class>KUrlRequester</class>
-   <extends>QFrame</extends>
-   <header>kurlrequester.h</header>
-  </customwidget>
-  <customwidget>
-   <class>KDoubleNumInput</class>
-   <extends>QWidget</extends>
-   <header>knuminput.h</header>
-  </customwidget>
-  <customwidget>
-   <class>KIntNumInput</class>
-   <extends>QWidget</extends>
-   <header>knuminput.h</header>
-  </customwidget>
- </customwidgets>
  <includes>
   <include location="local">knuminput.h</include>
   <include location="local">knuminput.h</include>
@@ -347,54 +316,5 @@ In practice, the minimum measure is computed as the sum of the average and the p
   <include location="local">kpushbutton.h</include>
  </includes>
  <resources/>
- <connections>
-  <connection>
-   <sender>File</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>Dir</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>67</x>
-     <y>197</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>330</x>
-     <y>200</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>StaticMinSim</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>MinSim</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>58</x>
-     <y>265</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>393</x>
-     <y>266</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>StaticMinSim</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>DeviationRate</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>56</x>
-     <y>261</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>358</x>
-     <y>301</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

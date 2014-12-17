@@ -38,9 +38,6 @@ using namespace R;
 // include files for Qt/KDE
 #include <QtGui/QCheckBox>
 #include <QtGui/QGroupBox>
-#include <knuminput.h>
-#include <kurlrequester.h>
-#include <kmessagebox.h>
 
 
 //------------------------------------------------------------------------------
@@ -64,12 +61,11 @@ QGMatrixMeasureDlg::QGMatrixMeasureDlg(const QString& title)
 {
 	QWidget* widget=new QWidget(this);
 	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->setupUi(widget);
-	setMainWidget(widget);
-	setButtons(KDialog::Cancel|KDialog::Apply);
+//	setButtons(KDialog::Cancel|KDialog::Apply);
 	connect(this,SIGNAL(applyClicked()),this,SLOT(ApplyDlg()));
 	connect(static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->Type,SIGNAL(currentIndexChanged(int)),this,SLOT(ChangeType(int)));
-	setCaption(title);
-	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->Dir->setMode(KFile::Directory);
+	setWindowTitle(title);
+//	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->Dir->setMode(KFile::Directory);
 	adjustSize();
 }
 
@@ -118,7 +114,7 @@ void QGMatrixMeasureDlg::Init(GPlugIn* plugin)
 	Dlg->MinSim->setEnabled(!plugin->FindParam<RParamValue>("AutomaticMinMeasure")->GetBool());
 	Dlg->Memory->setChecked(plugin->FindParam<RParamValue>("Memory")->GetBool());
 	Dlg->File->setChecked(plugin->FindParam<RParamValue>("Storage")->GetBool());
-	Dlg->Dir->setUrl(ToQString(plugin->FindParam<RParamValue>("Dir")->Get()));
+	Dlg->Dir->setText(ToQString(plugin->FindParam<RParamValue>("Dir")->Get()));
 	Dlg->Dir->setEnabled(Dlg->File->isChecked());
 	Dlg->Type->setCurrentIndex(plugin->FindParam<RParamValue>("Type")->GetInt());
 	Dlg->NbNearest->setValue(plugin->FindParam<RParamValue>("NbNearest")->GetUInt());
@@ -140,7 +136,7 @@ void QGMatrixMeasureDlg::Done(GPlugIn* plugin)
 	plugin->FindParam<RParamValue>("NbSamples")->SetUInt(Dlg->NbSamples->value());
 	plugin->FindParam<RParamValue>("Memory")->SetBool(Dlg->Memory->isChecked());
 	plugin->FindParam<RParamValue>("Storage")->SetBool(Dlg->File->isChecked());
-	plugin->FindParam<RParamValue>("Dir")->Set(FromQString(Dlg->Dir->url().url()));
+	plugin->FindParam<RParamValue>("Dir")->Set(FromQString(Dlg->Dir->text()));
 	plugin->FindParam<RParamValue>("Type")->SetInt(Dlg->Type->currentIndex());
 	plugin->FindParam<RParamValue>("FastNN")->SetBool(Dlg->FastNN->isChecked());
 }

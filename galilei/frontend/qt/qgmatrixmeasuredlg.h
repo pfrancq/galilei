@@ -37,7 +37,7 @@
 // include files for Qt/KDE
 #include <QtGui/QGroupBox>
 #include <QtGui/QBoxLayout>
-#include <kdialog.h>
+#include <QtGui/QDialog>
 
 
 //-----------------------------------------------------------------------------
@@ -63,7 +63,7 @@ namespace GALILEI{
  * @author Pascal Francq
  * @short Configuration For Measures Between Two Elements
  */
-class QGMatrixMeasureDlg : public KDialog
+class QGMatrixMeasureDlg : public QDialog
 {
 	Q_OBJECT
 
@@ -119,7 +119,7 @@ public:
 	 * @endcode
 	 */
 	virtual void Panel(void);
-	
+
 	/**
 	 * Method called before the dialog box is opened. It uses the values of the
 	 * parameters to initialize the dialog box. This method can be override

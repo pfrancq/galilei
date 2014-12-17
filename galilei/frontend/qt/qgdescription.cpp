@@ -28,8 +28,8 @@
 
 
 //------------------------------------------------------------------------------
-// include files for Qt/KDE
-#include <kmessagebox.h>
+// include files for Qt
+#include <QtGui/QMessageBox>
 
 
 //------------------------------------------------------------------------------
@@ -136,19 +136,19 @@ void QGDescription::Set(GSession*,const GDescription* desc)
 	}
 	catch(GException& e)
 	{
-		KMessageBox::error(this,ToQString(e.GetMsg()),"GALILEI Exception");
+		QMessageBox::critical(this,QWidget::tr("GALILEI Exception"),ToQString(e.GetMsg()),QMessageBox::Ok);
 	}
 	catch(RException& e)
 	{
-		KMessageBox::error(this,ToQString(e.GetMsg()),"R Exception");
+		QMessageBox::critical(this,QWidget::tr("R Exception"),ToQString(e.GetMsg()),QMessageBox::Ok);
 	}
 	catch(std::exception& e)
 	{
-		KMessageBox::error(this,e.what(),"std::exception");
+		QMessageBox::critical(this,QWidget::tr("std::Exception"),ToQString(e.what()),QMessageBox::Ok);
 	}
 	catch(...)
 	{
-		KMessageBox::error(this,"Undefined Error");
+		QMessageBox::critical(this,QWidget::tr("Exception"),ToQString("Undefined"),QMessageBox::Ok);
 	}
 }
 

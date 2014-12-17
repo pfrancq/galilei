@@ -100,7 +100,7 @@ protected:
 	/**
 	* Path where to search for plug-ins
 	*/
-	R::RContainer<R::RString,true,false> PlugInsPath;
+	R::RContainer<R::RString,true,false> PlugInsPaths;
 
 	/**
 	 * Directory where to binary files of the index are stored.
@@ -171,23 +171,18 @@ public:
 	* Set the name of the index directory.
 	* @param name            Name.
 	*/
-	void SetIndexDir(const R::RString& name) {IndexDir=name;}
+	void SetIndexDir(const R::RString& name);
 
 	/**
 	* Get the list of plug-ins paths.
 	*/
-	R::RCursor<R::RString> GetPlugInsPath(void) const {return(R::RCursor<R::RString>(PlugInsPath));}
+	R::RCursor<R::RString> GetPlugInsPaths(void) const {return(R::RCursor<R::RString>(PlugInsPaths));}
 
 	/**
-	* Clear the list of plug-ins paths.
+	* Set the list of plug-ins paths.
+	* @âram paths            Paths to set.
 	*/
-	void ClearPlugInsPath(void) {PlugInsPath.Clear();}
-
-	/**
-	* Add a new plug-ins path in the list.
-	* @param path            Path to add.
-	*/
-	void AddPlugInsPath(const R::RString& path) {PlugInsPath.InsertPtr(new R::RString(path));}
+	void SetPlugInsPaths(const R::iRContainer<R::RString>& paths);
 
 protected:
 
@@ -405,11 +400,6 @@ public:
 	{
 		SetCurrentPlugIn(mng,name,R::RString::Null,need);
 	}
-
-	/**
-	* Apply the configuration.
-	*/
-	void Apply(void);
 
 	/**
 	* Run a "program".
