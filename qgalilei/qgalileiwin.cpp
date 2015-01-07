@@ -37,6 +37,7 @@
 #include <rqt.h>
 #include <qgobjectslist.h>
 #include <gmetaengine.h>
+#include <gtool.h>
 
 
 //-----------------------------------------------------------------------------
@@ -59,6 +60,16 @@
 #include <kviewmetaengine.h>
 #include <kprgconsole.h>
 #include <kviewprg.h>
+#include <kviewstats.h>
+#include <qcreatedatabase.h>
+#include <qfilldatabase.h>
+#include <ui_qchooselist.h>
+#include <kviewgroup.h>
+#include <kviewgroups.h>
+#include <kviewclasses.h>
+#include <kviewclass.h>
+#include <kviewprofile.h>
+#include <kviewusers.h>
 using namespace std;
 using namespace R;
 using namespace GALILEI;
@@ -106,7 +117,7 @@ void QGALILEIWin::connectMenus(void)
 	connect(aShowDocs,SIGNAL(triggered()),this,SLOT(showDocs()));
 	connect(aExportDocDecs,SIGNAL(triggered()),this,SLOT(exportDocDecs()));
 	connect(aIndexDocs,SIGNAL(triggered()),this,SLOT(indexDocs()));
-	connect(aClearDocs,SIGNAL(triggered()),this,SLOT(clearDocs));
+	connect(aClearDocs,SIGNAL(triggered()),this,SLOT(clearDocs()));
 	connect(aAnalyzeDocs,SIGNAL(triggered()),this,SLOT(analyzeDocs()));
 	connect(aExportDocs,SIGNAL(triggered()),this,SLOT(exportDocs()));
 	connect(aAnalyzeDoc,SIGNAL(triggered()),this,SLOT(analyzeDoc()));
@@ -296,6 +307,74 @@ void QGALILEIWin::runScript(void)
 
 
 //-----------------------------------------------------------------------------
+void QGALILEIWin::statistics(void)
+{
+	KViewStats* ptr(new KViewStats());
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::createSession(void)
+{
+	QCreateDatabase(this).run();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::importDocs(void)
+{
+	QFillDatabase(this).run();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::runTool(void)
+{
+	GPlugInManager* Manager(GALILEIApp->GetManager("Tools"));
+
+	// Create the dialog box
+	QDialog Choose(this);
+	Ui_QChooseList Ui;
+	QWidget* widget(new QWidget(&Choose));
+	Ui.setupUi(widget);
+
+	// Init the dialog box with the lists
+	Ui.Desc->setText("Choose the tool to run");
+	RCursor<GPlugInList> Lists(Manager->GetPlugInLists());
+	int Row(0),i;
+	for(Lists.Start(),i=0;!Lists.End();Lists.Next(),i++)
+	{
+		if(Lists()->GetName()==ToolCat)
+			Row=i;
+		Ui.List->addItem(ToQString(Lists()->GetName()));
+	}
+	Ui.List->setCurrentRow(Row);
+	if(!Choose.exec())
+		return;
+	ToolCat=FromQString(Ui.List->item(Ui.List->currentRow())->text());
+
+	// Init the dialog box with the plug-ins
+	RCastCursor<GPlugIn,GTool> Tools(Manager->GetPlugIns<GTool>(ToolCat));
+	Ui.List->clear();
+	for(Tools.Start(),i=0,Row=0;!Tools.End();Tools.Next(),i++)
+	{
+		if(Tools()->GetName()==Tool)
+			Row=i;
+		Ui.List->addItem(ToQString(Tools()->GetName()));
+	}
+	Ui.List->setCurrentRow(Row);
+	if(!Choose.exec())
+		return;
+
+	Tool=FromQString(Ui.List->item(Ui.List->currentRow())->text());
+	QRunTool(this,Tool,ToolCat).run();
+}
+
+
+//-----------------------------------------------------------------------------
 void QGALILEIWin::showDicts(void)
 {
 	KViewDicts* ptr(new KViewDicts(this));
@@ -464,6 +543,160 @@ void QGALILEIWin::analyzeDoc(void)
 
 
 //-----------------------------------------------------------------------------
+void QGALILEIWin::showClasses(void)
+{
+	KViewClasses* ptr(new KViewClasses(this));
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::showClass(GClass* theclass)
+{
+	KViewClass* ptr(new KViewClass(this,theclass));
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::clearTopics(void)
+{
+	if(Session)
+	{
+		QApplication::setOverrideCursor(Qt::WaitCursor);
+		Session->ReInit(pTopic);
+		updateWins<KViewTopics>();
+		QApplication::setOverrideCursor(Qt::ArrowCursor);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::groupDocs(void)
+{
+	QApplication::setOverrideCursor(Qt::WaitCursor);
+	QGroupDocs(this).run();
+	emit topicsChanged();
+	updateWins<KViewTopic>();
+	QApplication::setOverrideCursor(Qt::ArrowCursor);
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::showTopics(void)
+{
+	KViewTopics* ptr(new KViewTopics(this));
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::showTopic(GTopic* topic)
+{
+	KViewTopic* ptr(new KViewTopic(this,topic));
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::clearProfiles(void)
+{
+	if(Session)
+	{
+		Session->ReInit(pProfile,false);
+		updateWins<KViewProfile>();
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::showUsers(void)
+{
+	KViewUsers* ptr(new KViewUsers(this));
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::showProfile(GProfile* profile)
+{
+	KViewProfile* ptr(new KViewProfile(this,profile));
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::computeProfiles(void)
+{
+	QComputeProfiles(this).run();
+	emit profilesChanged();
+	updateWins<KViewProfile>();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::computeProfile(void)
+{
+	KViewProfile* win(dynamic_cast<KViewProfile*>(Desktop->activeSubWindow()));
+	if(!win) return;
+	win->ComputeProfile();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::clearCommunities()
+{
+	if(Session)
+	{
+		Session->ReInit(pCommunity);
+		updateWins<KViewCommunities>();
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::showCommunities(void)
+{
+	KViewCommunities* ptr(new KViewCommunities(this));
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::showCommunity(GCommunity* community)
+{
+	KViewCommunity* ptr(new KViewCommunity(this,community));
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::groupProfiles(void)
+{
+	QGroupProfiles(this).run();
+	emit communitiesChanged();
+	updateWins<KViewCommunity>();
+}
+
+
+
+//-----------------------------------------------------------------------------
 void QGALILEIWin::queryMetaEngine(void)
 {
 	if(!App->GetCurrentPlugIn<GMetaEngine>("MetaEngine",false))
@@ -489,6 +722,101 @@ void QGALILEIWin::computeTrust(void)
 void QGALILEIWin::computeSugs(void)
 {
 	QComputeSugs(this).run();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::repairSubjects(void)
+{
+	QRepairSubjects(this).run();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::initSimulation(void)
+{
+	QInitSimulation(this).run();
+	emit docsChanged();
+	emit topicsChanged();
+	emit profilesChanged();
+	emit communitiesChanged();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::createIdealTopics(void)
+{
+//	QSessionProgressDlg Dlg(App,"Create Ideal Topics");
+//	QCreateIdealTopics* Task(new QCreateIdealTopics(this));
+//	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
+//	Dlg.Run(Task);
+//	updateWins<KViewTopics>();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::createIdealTopicsDocuments(void)
+{
+//	QSessionProgressDlg Dlg(App,"Create Ideal Topics");
+//	QCreateIdealTopicsFromClasses* Task(new QCreateIdealTopicsFromClasses(this));
+//	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
+//	Dlg.Run(Task);
+//	updateWins<KViewTopics>();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::createIdealClasses(void)
+{
+//	QSessionProgressDlg Dlg(App,"Create Ideal Classes");
+//	QCreateIdealClasses* Task(new QCreateIdealClasses(this));
+//	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
+//	Dlg.Run(Task);
+//	updateWins<KViewClasses>();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::createIdealClassesDocuments(void)
+{
+//	QSessionProgressDlg Dlg(App,"Create Ideal Classes");
+//	QCreateIdealDocsClasses* Task(new QCreateIdealDocsClasses(this));
+//	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
+//	Dlg.Run(Task);
+//	updateWins<KViewClasses>();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::createCommunities(void)
+{
+//	QSessionProgressDlg Dlg(App,"Create Ideal Communities");
+//	QCreateIdealCommunities* Task(new QCreateIdealCommunities(this));
+//	connect(Task,SIGNAL(finish()),this,SLOT(emitCommunitiesChanged()));
+//	Dlg.Run(Task);
+//	updateWins<KViewCommunities>();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::feedbackCycle(void)
+{
+//	QSessionProgressDlg Dlg(App,"Feedback Cycle");
+//	QMakeFdbks* Task(new QMakeFdbks(this));
+//	connect(Task,SIGNAL(finish()),this,SLOT(emitProfilesChanged()));
+//	Dlg.Run(Task);
+//	updateWins<KViewProfile>();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::assessmentCycle(void)
+{
+//	QSessionProgressDlg Dlg(App,"Assessments Cycle");
+//	QMakeAssessments* Task(new QMakeAssessments(this));
+//	connect(Task,SIGNAL(finish()),this,SLOT(emitProfilesChanged()));
+//	Dlg.Run(Task);
+//	updateWins<KViewProfile>();
 }
 
 

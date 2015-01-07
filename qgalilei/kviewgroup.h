@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	KViewTopic.h
+	KViewGroup.h
 
-	Window to manipulate a specific topic - Header.
+	Window to manipulate a specific group (topic or community) - Header.
 
 	Copyright 2008-2014 by Pascal Francq (pascal@francq.info).
 
@@ -28,8 +28,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef KViewTopicH
-#define KViewTopicH
+#ifndef KViewGroupH
+#define KViewGroupH
 
 
 //-----------------------------------------------------------------------------
@@ -48,6 +48,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 // include files for current application
 #include <ui_kviewgroup.h>
+class QGALILEIWin;  // forward declaration
 
 
 //-----------------------------------------------------------------------------
@@ -63,15 +64,21 @@ template<class cGroup>
 protected:
 
 	/**
+	 * Main window.
+	 */
+	QGALILEIWin* Win;
+
+	/**
 	 * Object represented.
 	 */
 	cGroup* Obj;
 
 	/**
-	 * Construct the widget.
-	 * @param obj            Object to represent.
-	 */
-	KViewGroup(cGroup* obj);
+	* Construct the widget.
+	* @param win             Main window.
+	* @param obj             Object to represent.
+	*/
+	KViewGroup(QGALILEIWin* win,cGroup* obj);
 
 	/**
 	 * Update the widget.
@@ -95,9 +102,10 @@ public:
 
 	/**
 	* Construct the view.
-	* @param topic          Corresponding topic.
+	* @param win             Main window.
+	* @param topic           Corresponding topic.
 	*/
-	KViewTopic(GTopic* topic);
+	KViewTopic(QGALILEIWin* win,GTopic* topic);
 
 public slots:
 
@@ -113,7 +121,7 @@ public slots:
 * The KViewCommunity class represents a window to manipulate a specific
 * community.
 * @author Pascal Francq.
-* @short Topic Window.
+* @short Community Window.
 */
 class KViewCommunity : public KViewGroup<GCommunity>
 {
@@ -123,9 +131,10 @@ public:
 
 	/**
 	* Construct the view.
+	* @param win             Main window.
 	* @param community       Corresponding community.
 	*/
-	KViewCommunity(GCommunity* community);
+	KViewCommunity(QGALILEIWin* win,GCommunity* community);
 
 public slots:
 
@@ -134,6 +143,7 @@ public slots:
 	 */
 	void update(void);
 };
+
 
 
 //-----------------------------------------------------------------------------

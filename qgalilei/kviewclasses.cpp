@@ -50,13 +50,12 @@ using namespace std;
 //-----------------------------------------------------------------------------
 // include files for Qt/KDE
 #include <QtGui/QInputDialog>
-#include <kapplication.h>
 
 
 //-----------------------------------------------------------------------------
 // application specific includes
 #include <kviewclasses.h>
-#include <kgalileicenter.h>
+#include <qgalileiwin.h>
 
 
 
@@ -76,14 +75,14 @@ public:
 		: QTreeWidgetItem(parent, QStringList()<<desc<<ToQString(c->GetName()+" ("+RString::Number(c->GetId())+")"))
 	{
 		Class=c;
-		setIcon(0,KIconLoader::global()->loadIcon("text-xml",KIconLoader::Small));
+//		setIcon(0,KIconLoader::global()->loadIcon("text-xml",KIconLoader::Small));
 	}
 
 	Item(QTreeWidget* parent,GClass* c,const QString& desc)
 		: QTreeWidgetItem(parent, QStringList()<<desc<<ToQString(c->GetName()+" ("+RString::Number(c->GetId())+")"))
 	{
 		Class=c;
-		setIcon(0,KIconLoader::global()->loadIcon("text-xml",KIconLoader::Small));
+//		setIcon(0,KIconLoader::global()->loadIcon("text-xml",KIconLoader::Small));
 	}
 };
 
@@ -96,8 +95,8 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewClasses::KViewClasses(void)
-	: QMdiSubWindow(), Ui_KViewClasses(), AllDescriptors(false)
+KViewClasses::KViewClasses(QGALILEIWin* win)
+	: QMdiSubWindow(), Ui_KViewClasses(), Win(win), AllDescriptors(false)
 {
 	QWidget* ptr=new QWidget();
 	setupUi(ptr);
@@ -159,7 +158,7 @@ void KViewClasses::buildClass(GClass* c,Item* parent)
 void KViewClasses::update(void)
 {
 	List->clear();
-	RNodeCursor<GClasses,GClass> Cur(*KGALILEICenter::App->getSession());
+	RNodeCursor<GClasses,GClass> Cur(*Win->getSession()->GetClassTree());
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Item* item(new Item(List,Cur(),buildDesc(Cur())));

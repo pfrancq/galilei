@@ -13,16 +13,21 @@ SET(qgalilei_SOURCES
 	kviewdoc.cpp
 	kviewmetaengine.cpp
 	kviewprg.cpp
-#	qfilldatabase.cpp
-#	qcreatedatabase.cpp
-#	kviewstats.cpp
-#	kviewgroup.cpp
-#	kviewusers.cpp
-#	kviewgroups.cpp
-#	kviewidealgroups.cpp
-#	kviewprofile.cpp
 	kprgconsole.cpp
-#	kviewclasses.cpp
+	kviewstats.cpp
+	qfilldatabase.cpp
+	qcreatedatabase.cpp
+	kviewgroup.cpp
+	kviewgroups.cpp
+	kviewclasses.cpp
+	kviewclass.cpp
+	kviewprofile.cpp
+	kviewusers.cpp
+#
+#	kviewidealgroups.cpp
+#
+
+#
 )
 
 SET(qgalilei_HEADERS
@@ -36,6 +41,14 @@ SET(qgalilei_HEADERS
 	kviewmetaengine.h
 	kviewprg.h
 	kprgconsole.h
+	kviewstats.h
+	qfilldatabase.h
+	kviewgroup.h
+	kviewgroups.h
+	kviewclasses.h
+	kviewclass.h
+	kviewprofile.h
+	kviewusers.h
 )
 
 
@@ -49,17 +62,24 @@ SET(qgalilei_FORMS
 	addfdbkdlg.ui
 	kviewmetaengine.ui
 	kviewprg.ui
-#	qfilldatabase.ui
-#	kviewstats.ui
-#	kviewgroup.ui
-#	kviewusers.ui
-#	kviewgroups.ui
-#	kviewidealgroups.ui
-#	kviewprofile.ui
-#	qcreatedatabase.ui
 	kprgconsole.ui
-#	qchooselist.ui
-#	kviewclasses.ui
+	kviewstats.ui
+	qfilldatabase.ui
+	qcreatedatabase.ui
+	qchooselist.ui
+	kviewgroup.ui
+	kviewgroups.ui
+	kviewclasses.ui
+	kviewclass.ui
+	kviewprofile.ui
+	kviewusers.ui
+
+#	kviewidealgroups.ui
+#
+
+
+#
+#
 )
 
 

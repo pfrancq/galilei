@@ -32,6 +32,12 @@
 #ifndef KViewUsersH
 #define KViewUsersH
 
+//-----------------------------------------------------------------------------
+// include files for R/GALILEI
+#include <qgobjectslist.h>
+using namespace R;
+using namespace GALILEI;
+
 
 //-----------------------------------------------------------------------------
 // include files for KDE/Qt
@@ -41,6 +47,7 @@
 //-----------------------------------------------------------------------------
 //include files for current application
 #include <ui_kviewusers.h>
+class QGALILEIWin;  // forward declaration
 
 
 //-----------------------------------------------------------------------------
@@ -53,12 +60,18 @@ class KViewUsers : public QMdiSubWindow, public Ui_KViewUsers
 {
 	Q_OBJECT
 
+	/**
+	 * Main window.
+	 */
+	QGALILEIWin* Win;
+
 public:
 
 	/**
 	* Construct the widget.
+	* @param win            Main window.
 	*/
-	KViewUsers(void);
+	KViewUsers(QGALILEIWin* win);
 
 public slots:
 

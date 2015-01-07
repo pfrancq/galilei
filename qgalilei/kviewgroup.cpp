@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	KViewTopic.cpp
+	KViewGroup.cpp
 
-	Window to manipulate a specific topic - Implementation.
+	Window to manipulate a specific group (topic or community) - Implementation.
 
 	Copyright 2008-2014 by Pascal Francq (pascal@francq.info).
 
@@ -29,9 +29,6 @@
 
 //-----------------------------------------------------------------------------
 // includes files for Qt/KDE
-#include <kfiledialog.h>
-#include <kmessagebox.h>
-#include <kapplication.h>
 
 
 //-----------------------------------------------------------------------------
@@ -42,7 +39,7 @@
 //-----------------------------------------------------------------------------
 // include files for current application
 #include <kviewgroup.h>
-#include <kgalileicenter.h>
+#include <qgalileiwin.h>
 
 
 
@@ -54,8 +51,8 @@
 
 //-----------------------------------------------------------------------------
 template<class cGroup>
-	KViewGroup<cGroup>::KViewGroup(cGroup* obj)
-		: QMdiSubWindow(), Ui_KViewGroup(), Obj(obj)
+	KViewGroup<cGroup>::KViewGroup(QGALILEIWin* win,cGroup* obj)
+		: QMdiSubWindow(), Ui_KViewGroup(), Win(win), Obj(obj)
 {
 	QWidget* ptr=new QWidget();
 	setupUi(ptr);
@@ -69,7 +66,7 @@ template<class cGroup>
 	void KViewGroup<cGroup>::update(QGObjectsList::oType type)
 {
 	Vars->Set(Obj);
-	Desc->Set(KGALILEICenter::App->getSession(),&(*Obj)());
+	Desc->Set(Win->getSession(),&(*Obj)());
 	Objects->Set(type,Obj);
 }
 
@@ -82,13 +79,13 @@ template<class cGroup>
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewTopic::KViewTopic(GTopic* topic)
-	: KViewGroup<GTopic>(topic)
+KViewTopic::KViewTopic(QGALILEIWin* win,GTopic* topic)
+	: KViewGroup<GTopic>(win,topic)
 {
 	setWindowTitle(ToQString("Topic '"+Obj->GetName()+"'"));
 	ObjectsTab->setTabText(1,"Documents");
-	connect(Objects,SIGNAL(Show(GDoc*)),dynamic_cast<KGALILEICenter*>(GALILEIApp),SLOT(showDoc(GDoc*)));
-	connect(dynamic_cast<KGALILEICenter*>(GALILEIApp),SIGNAL(topicsChanged()),this,SLOT(update()));
+	connect(Objects,SIGNAL(Show(GDoc*)),Win,SLOT(showDoc(GDoc*)));
+	connect(Win,SIGNAL(topicsChanged()),this,SLOT(update()));
 	update();
 }
 
@@ -108,13 +105,13 @@ void KViewTopic::update(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewCommunity::KViewCommunity(GCommunity* community)
-	: KViewGroup<GCommunity>(community)
+KViewCommunity::KViewCommunity(QGALILEIWin* win,GCommunity* community)
+	: KViewGroup<GCommunity>(win,community)
 {
 	setWindowTitle(ToQString("Community '"+Obj->GetName()+"'"));
 	ObjectsTab->setTabText(1,"Profiles");
-	connect(Objects,SIGNAL(Show(GProfile*)),dynamic_cast<KGALILEICenter*>(GALILEIApp),SLOT(showProfile(GProfile*)));
-	connect(dynamic_cast<KGALILEICenter*>(GALILEIApp),SIGNAL(communitiesChanged()),this,SLOT(update()));
+	connect(Objects,SIGNAL(Show(GProfile*)),Win,SLOT(showProfile(GProfile*)));
+	connect(Win,SIGNAL(communitiesChanged()),this,SLOT(update()));
 	update();
 }
 

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>675</width>
-    <height>282</height>
+    <height>284</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -187,7 +187,7 @@
        </widget>
       </item>
       <item>
-       <widget class="KUrlRequester" name="URL"/>
+       <widget class="QLineEdit" name="URL"/>
       </item>
      </layout>
     </widget>
@@ -205,26 +205,12 @@
       </widget>
      </item>
      <item>
-      <widget class="KUrlRequester" name="ConfigPath">
-       <property name="toolTip">
-        <string>Path where the config files are stored.</string>
-       </property>
-       <property name="whatsThis">
-        <string>Each session has its own configuration files stored in a directory (typically stored in ~/.r/config/lib/galilei/sessions).  A basic configuration file containing the needed information to connect to the database is created. The directory where to stored it can be specified.</string>
-       </property>
-      </widget>
+      <widget class="QLineEdit" name="ConfigPath"/>
      </item>
     </layout>
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>KUrlRequester</class>
-   <extends>QFrame</extends>
-   <header>kurlrequester.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

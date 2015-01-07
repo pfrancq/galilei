@@ -44,15 +44,16 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-// include files for Qt/KDE
-#include <kmessagebox.h>
-#include <kapplication.h>
+// include files for Qt
+#include <QMessageBox>
+#include <QFileDialog>
 
 
 //------------------------------------------------------------------------------
 // include files for current project
 #include <qfilldatabase.h>
 #include <qsessionprogress.h>
+#include <qgalileiwin.h>
 
 
 
@@ -90,20 +91,20 @@ public:
 /**
  * Thread used to import the documents.
  */
-class QImportDocs : public QSessionThread
+class QImportDocs : public QSessionProgress
 {
 	QFillDatabase* Info;
 	GSession* Session;
 public:
-	QImportDocs(KGALILEICenter* app,QFillDatabase* info);
+	QImportDocs(QGALILEIWin* win,QFillDatabase* info);
 	virtual void DoIt(void);
 	void ParseDir(const RURI& uri,const RString& parent,int depth);
 };
 
 
 //-----------------------------------------------------------------------------
-QImportDocs::QImportDocs(KGALILEICenter* app,QFillDatabase* info)
-	: QSessionThread(app), Info(info), Session(app->getSession())
+QImportDocs::QImportDocs(QGALILEIWin* win,QFillDatabase* info)
+	: QSessionProgress(win,"Import Documents"), Info(info), Session(win->getSession())
 {
 }
 
@@ -128,7 +129,7 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent,int depth)
 	depth++;
 	RDir Dir(uri);
 	Dir.Open(RIO::Read);
-	Parent->setLabelText(ToQString(uri.GetPath()));
+	setLabelText(ToQString(uri.GetPath()));
 	RCursor<RFile> Files(Dir.GetEntries());
 	for(Files.Start();!Files.End();Files.Next())
 	{
@@ -166,7 +167,7 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent,int depth)
 			if(!InDir)
 			{
 				InDir=true;
-				Parent->setLabelText(ToQString(uri.GetPath()));
+				setLabelText(ToQString(uri.GetPath()));
 			}
 
 			// Must be a normal document
@@ -195,13 +196,13 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent,int depth)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-QFillDatabase::QFillDatabase(KGALILEICenter* parent)
-	: KDialog(parent), Ui_QFillDatabase(), App(parent)
+QFillDatabase::QFillDatabase(QGALILEIWin* parent)
+	: QDialog(parent), Ui_QFillDatabase(), Win(parent)
 {
-	setCaption("Fill Database");
+	setWindowTitle("Fill Database");
 	QWidget* widget=new QWidget(this);
 	setupUi(widget);
-	setMainWidget(widget);
+	connect(EditDir,SIGNAL(pressed()),this,SLOT(editDir()));
 }
 
 
@@ -209,7 +210,6 @@ QFillDatabase::QFillDatabase(KGALILEICenter* parent)
 void QFillDatabase::run(void)
 {
 	// Init
-	KUDirectory->setMode(KFile::Directory);
 	Subjects->setChecked(true);
 	RContainer<cLang,true,true> theLangs(20);
 	Language->setEnabled(false);
@@ -223,16 +223,16 @@ void QFillDatabase::run(void)
 	// Execute
 	if(exec())
 	{
-		Dir=FromQString(KUDirectory->url().url());
+		Dir=FromQString(KUDirectory->text());
 		Parent=FromQString(ParentName->text());
 		if(Dir.IsEmpty())
 		{
-			KMessageBox::error(this,"You must specify a directory containing all the subjects! ");
+			QMessageBox::critical(this,"Error","You must specify a directory containing all the subjects!",QMessageBox::Ok);
 			return;
 		}
 		if((HasParent->isChecked())&&Parent.IsEmpty())
 		{
-			KMessageBox::error(this,"You must insert a NAME for the parent or unchecked the \"Has Parent\" option! ");
+			QMessageBox::critical(this,"Error","You must insert a NAME for the parent or unchecked the \"Has Parent\" option!",QMessageBox::Ok);
 			return;
 		}
 		Lang=0;
@@ -240,8 +240,7 @@ void QFillDatabase::run(void)
 			Lang=theLangs.GetPtr(Language->currentText())->Lang;
 		DefaultMIME=FromQString(DefaultMIMEType->text());
 		Categorized=Subjects->isChecked();
-		QSessionProgressDlg Dlg(App,"Fill Database");
-		Dlg.Run(new QImportDocs(App,this));
+		QImportDocs(Win,this).run();
 	}
 }
 
@@ -339,4 +338,13 @@ void QFillDatabase::ChooseParentName(void)
 		QMessageBox::critical(this,"KGALILEICenter",QString("Undefined Error"));
 	}*/
 	std::cout<<"Choose Parent not implemented"<<std::endl;
+}
+
+
+//-----------------------------------------------------------------------------
+void QFillDatabase::editDir(void)
+{
+	QString fileName(QFileDialog::getExistingDirectory(this,"Choose directory",EditDir->text(),QFileDialog::ShowDirsOnly));
+   if(!fileName.isEmpty())
+		EditDir->setText(fileName);
 }

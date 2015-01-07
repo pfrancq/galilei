@@ -311,46 +311,46 @@ void QAnalyzeDocs::DoIt(void)
 }
 
 
-////-----------------------------------------------------------------------------
-//void QComputeProfiles::DoIt(void)
-//{
-//	Parent->setLabelText("Compute Profiles ...");
-//	App->getSession()->CalcProfiles(Parent);
-//}
-//
-//
-////-----------------------------------------------------------------------------
-//void QComputeProfile::DoIt(void)
-//{
-//	Parent->setLabelText("Compute Profile ...");
-//	App->getSession()->CalcProfile(Profile,0,0,Parent);
-//}
-//
-//
-////-----------------------------------------------------------------------------
-//void QGroupProfiles::DoIt(void)
-//{
-//	Parent->setLabelText("Groups Profiles ...");
-//	App->getSession()->GroupProfiles(Parent);
-//}
-//
-//
-////-----------------------------------------------------------------------------
-//void QGroupDocs::DoIt(void)
-//{
-//	Parent->setLabelText("Groups Documents ...");
-//	App->getSession()->GroupDocs(Parent);
-//}
-//
-//
-////-----------------------------------------------------------------------------
-//void QCreateIdealSubjects::DoIt(void)
-//{
-//	Parent->setLabelText("Start a Simulation ...");
-//	App->getSession()->GetSimulator()->StartSimulation();
-//}
-//
-//
+//-----------------------------------------------------------------------------
+void QComputeProfiles::DoIt(void)
+{
+	setLabelText("Compute Profiles ...");
+	Win->getSession()->CalcProfiles(this);
+}
+
+
+//-----------------------------------------------------------------------------
+void QComputeProfile::DoIt(void)
+{
+	setLabelText("Compute Profile ...");
+	Win->getSession()->CalcProfile(Profile,0,0,this);
+}
+
+
+//-----------------------------------------------------------------------------
+void QGroupProfiles::DoIt(void)
+{
+	setLabelText("Groups Profiles ...");
+	Win->getSession()->GroupProfiles(this);
+}
+
+
+//-----------------------------------------------------------------------------
+void QGroupDocs::DoIt(void)
+{
+	setLabelText("Groups Documents ...");
+	Win->getSession()->GroupDocs(this);
+}
+
+
+//-----------------------------------------------------------------------------
+void QInitSimulation::DoIt(void)
+{
+	setLabelText("Start a Simulation ...");
+	Win->getSession()->GetSimulator()->StartSimulation();
+}
+
+
 ////-----------------------------------------------------------------------------
 //void QCreateIdealCommunities::DoIt(void)
 //{
@@ -389,16 +389,16 @@ void QAnalyzeDocs::DoIt(void)
 //	Parent->setLabelText("Create Ideal Classes ...");
 //	App->getSession()->GetSimulator()->BuildIdealDocsClasses();
 //}
-//
-//
-////-----------------------------------------------------------------------------
-//void QRepairSubjects::DoIt(void)
-//{
-//	Parent->setLabelText("Repair Subjects ...");
-//	App->getSession()->Repair();
-//}
-//
-//
+
+
+//-----------------------------------------------------------------------------
+void QRepairSubjects::DoIt(void)
+{
+	setLabelText("Repair Subjects ...");
+	Win->getSession()->Repair();
+}
+
+
 ////-----------------------------------------------------------------------------
 //void QMakeFdbks::DoIt(void)
 //{
@@ -431,12 +431,12 @@ void QComputeSugs::DoIt(void)
 }
 
 
-////-----------------------------------------------------------------------------
-//void QRunTool::DoIt(void)
-//{
-//	Parent->setLabelText("Run tool '"+ToQString(Tool)+"' of '"+ToQString(List)+"'...");
-//	App->getSession()->RunTool(Tool,List,Parent);
-//}
+//-----------------------------------------------------------------------------
+void QRunTool::DoIt(void)
+{
+	setLabelText("Run tool '"+ToQString(Tool)+"' of '"+ToQString(List)+"'...");
+	Win->getSession()->RunTool(Tool,List,this);
+}
 
 
 //-----------------------------------------------------------------------------

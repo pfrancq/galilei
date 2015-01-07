@@ -40,11 +40,18 @@
 #include <ggalileiapp.h>
 #include <glang.h>
 using namespace R;
+using namespace GALILEI;
+using namespace std;
 
 
 //-----------------------------------------------------------------------------
-// include files for Qt/KDE
-#include <kmessagebox.h>
+// include files for Qt
+#include <QMessageBox>
+
+
+//-----------------------------------------------------------------------------
+// include files for current application
+#include <qgalileiwin.h>
 
 
 
@@ -58,11 +65,11 @@ using namespace R;
 /**
  * Thread used to create the documents.
  */
-class QCreateDB : public QSessionThread
+class QCreateDB : public QSessionProgress
 {
 	QCreateDatabase* Info;
 public:
-	QCreateDB(KGALILEICenter* app,QCreateDatabase* info) : QSessionThread(app), Info(info) {}
+	QCreateDB(QGALILEIWin* win,QCreateDatabase* info) : QSessionProgress(win,"Create Database"), Info(info) {}
 	RString GetConceptType(tConceptCat cat,const RString& name,const RString& desc,RDb* Db);
 	virtual void DoIt(void);
 };
@@ -91,14 +98,14 @@ RString QCreateDB::GetConceptType(tConceptCat cat,const RString& name,const RStr
 void QCreateDB::DoIt(void)
 {
 	// Create the database
-	Parent->setLabelText("Database structure created");
+	setLabelText("Database structure created");
 	RDbMySQL::Create(Info->Name,Info->Host,Info->User,Info->Pwd);
 	RDbMySQL Db(Info->Name,Info->Host,Info->User,Info->Pwd,"utf8");
- 	Parent->setLabelText("Dump database model");
+ 	setLabelText("Dump database model");
  	Db.RunSQLFile(Info->DbSchema);
 
 	// Create Languages
- 	Parent->setLabelText("Insert the language stopwords");
+ 	setLabelText("Insert the language stopwords");
  	RCursor<GPlugInFactory> Langs(GALILEIApp->GetFactories("Lang"));
  	RContainer<RString,true,false> Stops(200);
  	for(Langs.Start();!Langs.End();Langs.Next())
@@ -152,21 +159,20 @@ void QCreateDB::DoIt(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-QCreateDatabase::QCreateDatabase(KGALILEICenter* parent)
-	: KDialog(parent), Ui_QCreateDatabase(), App(parent)
+QCreateDatabase::QCreateDatabase(QGALILEIWin* parent)
+	: QDialog(parent), Ui_QCreateDatabase(), Win(parent)
 {
-	setCaption("Fill Database");
+	setWindowTitle("Fill Database");
 	QWidget* widget=new QWidget(this);
 	setupUi(widget);
-	setMainWidget(widget);
 }
 
 
 //------------------------------------------------------------------------------
 void QCreateDatabase::run(void)
 {
-	URL->setUrl(KUrl("http://www.otlet-institute.org/docs/NewDb.sql"));
-	ConfigPath->setUrl(QString(getenv("HOME"))+"/.r/config/lib/galilei/sessions");
+	URL->setText("http://www.otlet-institute.org/docs/NewDb.sql");
+	ConfigPath->setText(QString(getenv("HOME"))+"/.r/config/lib/galilei/sessions");
 	if(!exec())
 		return;
 	try
@@ -175,25 +181,24 @@ void QCreateDatabase::run(void)
 		Host=FromQString(hostName->text());
 		User=FromQString(userName->text());
 		Pwd=FromQString(password->text());
-		DbSchema=FromQString(URL->url().url());
-		ConfigDir=R::FromQString(ConfigPath->url().url());
-		QSessionProgressDlg Dlg(App,"Create Database");
-		Dlg.Run(new QCreateDB(App,this));
+		DbSchema=FromQString(URL->text());
+		ConfigDir=R::FromQString(ConfigPath->text());
+		QCreateDB(Win,this).run();
 	}
 	catch(GException& e)
 	{
-		KMessageBox::error(this,ToQString(e.GetMsg()),"GALILEI Exception");
+		QMessageBox::critical(this,QWidget::tr("GALILEI Exception"),QWidget::trUtf8(e.GetMsg()),QMessageBox::Ok);
 	}
 	catch(RException& e)
 	{
-		KMessageBox::error(this,ToQString(e.GetMsg()),"R Exception");
+		QMessageBox::critical(this,QWidget::tr("R Exception"),QWidget::trUtf8(e.GetMsg()),QMessageBox::Ok);
 	}
 	catch(std::exception& e)
 	{
-		KMessageBox::error(this,e.what(),"std::exception");
+		QMessageBox::critical(this,QWidget::tr("Standard exception"),QWidget::trUtf8(e.what()),QMessageBox::Ok);
 	}
 	catch(...)
 	{
-		KMessageBox::error(this,"Undefined Error");
+		QMessageBox::critical(this,QWidget::tr("Unknown exception"),QWidget::trUtf8("Unknown problem"),QMessageBox::Ok);
 	}
 }

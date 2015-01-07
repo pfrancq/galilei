@@ -48,6 +48,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 //include files for current application
 #include <ui_kviewgroups.h>
+class QGALILEIWin;  // forward declaration
 
 
 //-----------------------------------------------------------------------------
@@ -63,9 +64,14 @@ template<class cGroup>
 protected:
 
 	/**
+	 * Main window.
+	 */
+	QGALILEIWin* Win;
+
+	/**
 	 * Construct the window.
 	 */
-	KViewGroups(void);
+	KViewGroups(QGALILEIWin* win);
 };
 
 
@@ -85,7 +91,7 @@ public:
 	/**
 	* Construct the view.
 	*/
-	KViewTopics(void);
+	KViewTopics(QGALILEIWin* win);
 
 public slots:
 
@@ -117,7 +123,7 @@ public:
 	/**
 	* Construct the view.
 	*/
-	KViewCommunities(void);
+	KViewCommunities(QGALILEIWin* win);
 
 public slots:
 

@@ -76,6 +76,16 @@ class QGALILEIWin : public QMainWindow, public Ui_QGALILEIWin
 	 */
 	R::RString SessionName;
 
+	/**
+	 * Last tool category used.
+	 */
+	R::RString ToolCat;
+
+	/**
+	 * Last tool used.
+	 */
+	R::RString Tool;
+
 public:
 
 	/**
@@ -151,6 +161,26 @@ public slots :
 	void runScript(void);
 
 	/**
+	 * Compute all active statistics.
+	 */
+	void statistics(void);
+
+	/**
+	 * Create a new session.
+	 */
+	void createSession(void);
+
+	/**
+	 * Import documents in the current database.
+	 */
+	void importDocs(void);
+
+	/**
+	 * Run a specific tool.
+	 */
+	void runTool(void);
+
+	/**
 	 * Show the dictionaries.
 	 */
 	void showDicts(void);
@@ -196,6 +226,86 @@ public slots :
 	 */
 	void analyzeDoc(void);
 
+	 /**
+	  * Show the classes.
+	  */
+	 void showClasses(void);
+
+	/**
+	 * Show a given class.
+	 * @param class      Class.
+	 */
+	void showClass(GClass* theclass);
+
+	/**
+	 * Clear the topics.
+	 */
+	void clearTopics(void);
+
+	/**
+	 * Compute the topics.
+	 */
+	void groupDocs(void);
+
+	/**
+	 * Show the topics.
+	 */
+	void showTopics(void);
+
+	/**
+	 * Show a given topic.
+	 * @param topic          Topic.
+	 */
+	void showTopic(GTopic* topic);
+
+	/**
+	 * Clear the profiles.
+	 */
+	void clearProfiles(void);
+
+	/**
+	 * Show the users.
+	 */
+	void showUsers(void);
+
+	/**
+	 * Show a given profile.
+	 * @param profile        Profile to show.
+	 */
+	void showProfile(GProfile* profile);
+
+	/**
+	 * Compute the profiles.
+	 */
+	void computeProfiles(void);
+
+	/**
+	 * Compute the current profile.
+	 */
+	void computeProfile(void);
+
+	/**
+	 * Clear the communities.
+	 */
+	void clearCommunities(void);
+
+	/**
+	 * Show the communities.
+	 */
+	void showCommunities(void);
+
+	/**
+	 * Show a given community.
+	 * @param community      Community.
+	 */
+	void showCommunity(GCommunity* community);
+
+	/**
+	 * Compute the communities.
+	*/
+	void groupProfiles(void);
+
+
 	/**
 	 * Query the meta engine
 	 */
@@ -210,6 +320,51 @@ public slots :
 	 * Compute the suggestions.
 	 */
 	void computeSugs(void);
+
+	/**
+	 * Repair the subjects.
+	 */
+	void repairSubjects(void);
+
+	/**
+	 * Initialize the simulation by creating the ideal subjects.
+	 */
+	void initSimulation(void);
+
+	/**
+	 * Create ideal topics.
+	 */
+	void createIdealTopics(void);
+
+	/**
+	 * Create ideal topics from classes.
+	 */
+	void createIdealTopicsDocuments(void);
+
+	/**
+	 * Create ideal classes.
+	 */
+	void createIdealClasses(void);
+
+	/**
+	 * Create ideal classes.
+	 */
+	void createIdealClassesDocuments(void);
+
+	/**
+	 * Create ideal communities.
+	 */
+	void createCommunities(void);
+
+	/**
+	 * Make a feedback cycle.
+	 */
+	void feedbackCycle(void);
+
+	/**
+	 * Make a assessments cycle.
+	 */
+	void assessmentCycle(void);
 
 	/**
 	 * Set the preferences.

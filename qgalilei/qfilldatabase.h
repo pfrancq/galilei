@@ -35,18 +35,19 @@
 //------------------------------------------------------------------------------
 // include files for R/GALILEI
 #include <rdb.h>
-using namespace R;
+#include <glang.h>
 
 
 //------------------------------------------------------------------------------
-// include files for Qt/KDE
+// include files for Qt
 #include <QtGui/QListWidgetItem>
+#include <QDialog>
 
 
 //------------------------------------------------------------------------------
 // include files for current project
 #include <ui_qfilldatabase.h>
-#include <kgalileicenter.h>
+class QGALILEIWin;
 
 
 //------------------------------------------------------------------------------
@@ -57,17 +58,19 @@ using namespace R;
  * @author Pascal Francq
  * @short Fill Database
  */
-class QFillDatabase : private KDialog, private Ui_QFillDatabase
+class QFillDatabase : private QDialog, private Ui_QFillDatabase
 {
+	Q_OBJECT
+
 	/**
 	 * Current language chosen.
 	 */
-	GLang* Lang;
+	GALILEI::GLang* Lang;
 
 	/**
 	 * Directory to import;
 	 */
-	RString Dir;
+	R::RString Dir;
 
 	/**
 	 * Are the documents to import categorized.
@@ -77,25 +80,25 @@ class QFillDatabase : private KDialog, private Ui_QFillDatabase
 	/**
 	 * Name of the parent;
 	 */
-	RString Parent;
+	R::RString Parent;
 
 	/**
 	 * Default MIME Type.
 	 */
-	RString DefaultMIME;
+	R::RString DefaultMIME;
 
 	/**
-	 * Application.
+	 * Main window.
 	 */
-	KGALILEICenter* App;
+	QGALILEIWin* Win;
 
 public:
 
 	/**
 	 * Constructor.
-	 * @param parent         Parent widget.
+	 * @param parent         Main window.
 	 */
-	QFillDatabase(KGALILEICenter* parent);
+	QFillDatabase(QGALILEIWin* parent);
 
 	/**
 	 * Show the dialog box. If the user clicks on the 'OK' button, the database
@@ -117,12 +120,17 @@ public slots:
 	 * @param parentId       Identifier of the parent.
 	 * @param item           Item representing the parent.
 	 */
-	void InsertSubItem(RDb* db,int parentId,QListWidgetItem* item);
+	void InsertSubItem(R::RDb* db,int parentId,QListWidgetItem* item);
 
 	/**
 	 * Choose the name of the parent.
 	 */
 	void ChooseParentName(void);
+
+	/**
+	 * Slot called when the directory must be edited.
+    */
+	void editDir(void);
 
 	friend class QImportDocs;
 };

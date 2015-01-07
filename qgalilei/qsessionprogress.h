@@ -206,70 +206,70 @@ public:
 };
 
 
-////-----------------------------------------------------------------------------
-///**
-//* Compute the profiles.
-//*/
-//class QComputeProfiles : public QSessionProgress
-//{
-//public:
-//	QComputeProfiles(QGALILEIWin* win) : QSessionProgress(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Compute a given profile.
-//*/
-//class QComputeProfile : public QSessionProgress
-//{
-//	GProfile* Profile;
-//public:
-//	QComputeProfile(QGALILEIWin* win,GProfile* profile) : QSessionProgress(app), Profile(profile) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Groups the profiles.
-//*/
-//class QGroupProfiles : public QSessionProgress
-//{
-//public:
-//	QGroupProfiles(QGALILEIWin* win) : QSessionProgress(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Groups the documents.
-//*/
-//class QGroupDocs : public QSessionProgress
-//{
-//public:
-//	QGroupDocs(QGALILEIWin* win) : QSessionProgress(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Create the ideal subjects.
-//* @param save           Save modified elements.
-//*/
-//class QCreateIdealSubjects : public QSessionProgress
-//{
-//public:
-//	QCreateIdealSubjects(QGALILEIWin* win) : QSessionProgress(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
+//-----------------------------------------------------------------------------
+/**
+* Compute the profiles.
+*/
+class QComputeProfiles : public QSessionProgress
+{
+public:
+	QComputeProfiles(QGALILEIWin* win) : QSessionProgress(win,"Compute Profiles") {}
+	virtual void DoIt(void);
+};
+
+
+
+//-----------------------------------------------------------------------------
+/**
+* Compute a given profile.
+*/
+class QComputeProfile : public QSessionProgress
+{
+	GALILEI::GProfile* Profile;
+public:
+	QComputeProfile(QGALILEIWin* win,GALILEI::GProfile* profile) : QSessionProgress(win,"Compute Profile"), Profile(profile) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Groups the profiles.
+*/
+class QGroupProfiles : public QSessionProgress
+{
+public:
+	QGroupProfiles(QGALILEIWin* win) : QSessionProgress(win,"Group Profiles") {}
+	virtual void DoIt(void);
+};
+
+
+
+//-----------------------------------------------------------------------------
+/**
+* Groups the documents.
+*/
+class QGroupDocs : public QSessionProgress
+{
+public:
+	QGroupDocs(QGALILEIWin* win) : QSessionProgress(win,"Compute Topics") {}
+	virtual void DoIt(void);
+};
+
+
+
+//-----------------------------------------------------------------------------
+/**
+* Initialize the simualtion.
+*/
+class QInitSimulation : public QSessionProgress
+{
+public:
+	QInitSimulation(QGALILEIWin* win) : QSessionProgress(win,"Create Ideal Subjects") {}
+	virtual void DoIt(void);
+};
+
+
 ////-----------------------------------------------------------------------------
 ///**
 //* Create the ideal communities.
@@ -329,20 +329,20 @@ public:
 //	QCreateIdealDocsClasses(QGALILEIWin* win) : QSessionProgress(app) {}
 //	virtual void DoIt(void);
 //};
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Repair the subjects.
-//*/
-//class QRepairSubjects : public QSessionProgress
-//{
-//public:
-//	QRepairSubjects(QGALILEIWin* win) : QSessionProgress(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
+
+
+//-----------------------------------------------------------------------------
+/**
+* Repair the subjects.
+*/
+class QRepairSubjects : public QSessionProgress
+{
+public:
+	QRepairSubjects(QGALILEIWin* win) : QSessionProgress(win,"Repair Subjects") {}
+	virtual void DoIt(void);
+};
+
+
 ////-----------------------------------------------------------------------------
 ///**
 //* Make a feedback cycle.
@@ -391,26 +391,26 @@ public:
 };
 
 
-////-----------------------------------------------------------------------------
-///**
-//* Run a tool.
-//*/
-//class QRunTool : public QSessionProgress
-//{
-//	/**
-//	 * Name of the tool.
-//	 */
-//	RString Tool;
-//
-//	/**
-//	 * List of the tool.
-//	 */
-//	RString List;
-//
-//public:
-//	QRunTool(QGALILEIWin* win,const RString& tool,const RString& list) : QSessionProgress(app), Tool(tool), List(list) {}
-//	virtual void DoIt(void);
-//};
+//-----------------------------------------------------------------------------
+/**
+* Run a tool.
+*/
+class QRunTool : public QSessionProgress
+{
+	/**
+	 * Name of the tool.
+	 */
+	R::RString Tool;
+
+	/**
+	 * List of the tool.
+	 */
+	R::RString List;
+
+public:
+	QRunTool(QGALILEIWin* win,const R::RString& tool,const R::RString& list) : QSessionProgress(win,"Run Tool"), Tool(tool), List(list) {}
+	virtual void DoIt(void);
+};
 
 
 //-----------------------------------------------------------------------------

@@ -30,7 +30,7 @@
 //------------------------------------------------------------------------------
 // include files for current application
 #include <kviewgroups.h>
-#include <kgalileicenter.h>
+#include <qgalileiwin.h>
 #include <kapplication.h>
 
 
@@ -42,8 +42,8 @@
 
 //-----------------------------------------------------------------------------
 template<class cGroup>
-	KViewGroups<cGroup>::KViewGroups(void)
-		: QMdiSubWindow(), Ui_KViewGroups()
+	KViewGroups<cGroup>::KViewGroups(QGALILEIWin* win)
+		: QMdiSubWindow(), Ui_KViewGroups(), Win(win)
 {
 	QWidget* ptr=new QWidget();
 	setupUi(ptr);
@@ -60,23 +60,23 @@ template<class cGroup>
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewTopics::KViewTopics(void)
-	: KViewGroups<GTopic>()
+KViewTopics::KViewTopics(QGALILEIWin* win)
+	: KViewGroups<GTopic>(win)
 {
 	setWindowTitle("Topics");
-	connect(Objects,SIGNAL(Show(GDoc*)),dynamic_cast<KGALILEICenter*>(GALILEIApp),SLOT(showDoc(GDoc*)));
-	connect(Objects,SIGNAL(Show(GTopic*)),dynamic_cast<KGALILEICenter*>(GALILEIApp),SLOT(showTopic(GTopic*)));
-	connect(dynamic_cast<KGALILEICenter*>(GALILEIApp),SIGNAL(topicsChanged()),this,SLOT(update()));
+	connect(Objects,SIGNAL(Show(GDoc*)),Win,SLOT(showDoc(GDoc*)));
+	connect(Objects,SIGNAL(Show(GTopic*)),Win,SLOT(showTopic(GTopic*)));
+	connect(Win,SIGNAL(topicsChanged()),this,SLOT(update()));
 	connect(What,SIGNAL(returnPressed()),this,SLOT(FindNext()));
 	connect(Search,SIGNAL(clicked()),this,SLOT(FindNext()));
-	Objects->Set(KGALILEICenter::App->getSession(),QGObjectsList::Topics);
+	Objects->Set(Win->getSession(),QGObjectsList::Topics);
 }
 
 
 //-----------------------------------------------------------------------------
 void KViewTopics::update(void)
 {
-	Objects->Set(KGALILEICenter::App->getSession(),QGObjectsList::Topics);
+	Objects->Set(Win->getSession(),QGObjectsList::Topics);
 }
 
 
@@ -95,23 +95,23 @@ void KViewTopics::FindNext(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewCommunities::KViewCommunities(void)
-	: KViewGroups<GCommunity>()
+KViewCommunities::KViewCommunities(QGALILEIWin* win)
+	: KViewGroups<GCommunity>(win)
 {
 	setWindowTitle("Communities");
-	connect(Objects,SIGNAL(Show(GProfile*)),dynamic_cast<KGALILEICenter*>(GALILEIApp),SLOT(showProfile(GProfile*)));
-	connect(Objects,SIGNAL(Show(GCommunity*)),dynamic_cast<KGALILEICenter*>(GALILEIApp),SLOT(showCommunity(GCommunity*)));
-	connect(dynamic_cast<KGALILEICenter*>(GALILEIApp),SIGNAL(communitiesChanged()),this,SLOT(update()));
+	connect(Objects,SIGNAL(Show(GProfile*)),Win,SLOT(showProfile(GProfile*)));
+	connect(Objects,SIGNAL(Show(GCommunity*)),Win,SLOT(showCommunity(GCommunity*)));
+	connect(Win,SIGNAL(communitiesChanged()),this,SLOT(update()));
 	connect(What,SIGNAL(returnPressed()),this,SLOT(FindNext()));
 	connect(Search,SIGNAL(clicked()),this,SLOT(FindNext()));
-	Objects->Set(KGALILEICenter::App->getSession(),QGObjectsList::Communities);
+	Objects->Set(Win->getSession(),QGObjectsList::Communities);
 }
 
 
 //-----------------------------------------------------------------------------
 void KViewCommunities::update(void)
 {
-	Objects->Set(KGALILEICenter::App->getSession(),QGObjectsList::Communities);
+	Objects->Set(Win->getSession(),QGObjectsList::Communities);
 }
 
 

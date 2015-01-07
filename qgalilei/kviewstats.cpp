@@ -50,9 +50,7 @@ using namespace GALILEI;
 #include <kprogressdialog.h>
 #include <QtGui/QMessageBox>
 #include <QtGui/QTableWidget>
-#include <kapplication.h>
-#include <kmessagebox.h>
-//#include <kiconloader.h>
+#include <QProgressDialog>
 
 
 //-----------------------------------------------------------------------------
@@ -93,7 +91,6 @@ void KViewStats::ComputeStats(void)
 		QMessageBox::critical(this,"KGALILEICenter","No manager for the statistics plug-ins");
 		return;
 	}
-	KProgressDialog Dlg(this,"Compute Statistics");
 
 	// Look for the tools that are similarities
 	RContainer<GTool,false,false> Tools(10);
@@ -109,19 +106,20 @@ void KViewStats::ComputeStats(void)
 	}
 
 	// Set the progress bar correctly
-	Dlg.progressBar()->setMaximum(static_cast<int>(Tools.GetNb()+1));
+   QProgressDialog Dlg("Compute Statistics","Cancel",0,Tools.GetNb(),this);
+	Dlg.setWindowModality(Qt::WindowModal);
 
 	// Compute the statistics
 	Dlg.setMinimumDuration(0);
-	Dlg.progressBar()->setValue(0);
-	KApplication::kApplication()->processEvents();
+	Dlg.setValue(0);
+	QApplication::processEvents();
 	R::RCursor<GTool> Tool(Tools);
 	for(Tool.Start(),i=1;!Tool.End();Tool.Next(),i++)
 	{
-		Dlg.progressBar()->setValue(i);
+		Dlg.setValue(i);
 		Dlg.setLabelText(ToQString(Tool()->GetName()));
-		KApplication::kApplication()->processEvents();
-		if(Dlg.wasCancelled())
+		QApplication::processEvents();
+		if(Dlg.wasCanceled())
 			break;
 
 		try
@@ -182,18 +180,18 @@ void KViewStats::ComputeStats(void)
 		}
 		catch(RException& e)
 		{
-			KMessageBox::error(this,ToQString(e.GetMsg()),ToQString(Tool()->GetFactory()->GetList()));
+			QMessageBox::critical(this,ToQString(Tool()->GetFactory()->GetList()),ToQString(e.GetMsg()));
 		}
 		catch(std::exception& e)
 		{
-			KMessageBox::error(this,e.what(),ToQString(Tool()->GetFactory()->GetList()));
+			QMessageBox::critical(this,ToQString(Tool()->GetFactory()->GetList()),ToQString(e.what()));
 		}
 		catch(...)
 		{
-			KMessageBox::error(this,"Undefined Error");
+			QMessageBox::critical(this,ToQString(Tool()->GetFactory()->GetList()),"Undefined error");
 		}
 	}
-	Dlg.progressBar()->setValue(i);
+	Dlg.setValue(i);
 	Stats->setCurrentIndex(0);
 }
 

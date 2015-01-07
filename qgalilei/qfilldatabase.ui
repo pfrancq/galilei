@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>391</width>
-    <height>380</height>
+    <width>433</width>
+    <height>403</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -39,12 +39,12 @@
          </widget>
         </item>
         <item>
-         <widget class="KUrlRequester" name="KUDirectory">
-          <property name="minimumSize">
-           <size>
-            <width>200</width>
-            <height>0</height>
-           </size>
+         <widget class="QLineEdit" name="KUDirectory"/>
+        </item>
+        <item>
+         <widget class="QToolButton" name="EditDir">
+          <property name="text">
+           <string>...</string>
           </property>
          </widget>
         </item>
@@ -184,26 +184,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KIntSpinBox" name="MaxDepth">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define the maximal depth of the subject tree. If the depth of the directory hierarchy is greather than this maximal depth, the &amp;quot;lowest&amp;quot; directories are not considered as a specific subjects. If null, it is supposed that each directory corresponds to an unique subject.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="statusTip">
-           <string>Define the maximal depth of the subject tree.</string>
-          </property>
-          <property name="whatsThis">
-           <string>Define the maximal depth of the subject tree.</string>
-          </property>
-          <property name="value">
-           <number>0</number>
-          </property>
-          <property name="maxValue" stdset="0">
-           <number>2</number>
-          </property>
-          <property name="minValue" stdset="0">
-           <number>1</number>
-          </property>
-         </widget>
+         <widget class="QSpinBox" name="MaxDepth"/>
         </item>
         <item>
          <spacer name="spacer7">
@@ -294,19 +275,6 @@
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>KIntSpinBox</class>
-   <extends>QSpinBox</extends>
-   <header>knuminput.h</header>
-  </customwidget>
-  <customwidget>
-   <class>KUrlRequester</class>
-   <extends>QFrame</extends>
-   <header>kurlrequester.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections>
   <connection>

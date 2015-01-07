@@ -35,7 +35,7 @@
 //------------------------------------------------------------------------------
 // include files for current project
 #include <ui_qcreatedatabase.h>
-#include <kgalileicenter.h>
+class QGALILEIWin;
 
 
 //------------------------------------------------------------------------------
@@ -44,50 +44,50 @@
  * @author Pascal Francq
  * @short Create Database
  */
-class QCreateDatabase : private KDialog, private Ui_QCreateDatabase
+class QCreateDatabase : private QDialog, private Ui_QCreateDatabase
 {
 	/**
 	 * Name of the database;
 	 */
-	RString Name;
+	R::RString Name;
 
 	/**
 	 * User;
 	 */
-	RString User;
+	R::RString User;
 
 	/**
 	 * Password.
 	 */
-	RString Pwd;
+	R::RString Pwd;
 
 	/**
 	 * Host
 	 */
-	RString Host;
+	R::RString Host;
 
 	/**
 	 * URL containing the SQL file which will create the database.
 	 */
-	RString DbSchema;
+	R::RString DbSchema;
 
 	/**
 	 * Directory where to store the configuration file.
 	 */
-	RString ConfigDir;
+	R::RString ConfigDir;
 
 	/**
-	 * Application.
+	 * Main window.
 	 */
-	KGALILEICenter* App;
+	QGALILEIWin* Win;
 
 public:
 
 	/**
 	 * Constructor.
-	 * @param parent         Parent widget.
+	 * @param parent         Main window.
 	 */
-	QCreateDatabase(KGALILEICenter* parent);
+	QCreateDatabase(QGALILEIWin* parent);
 
 	/**
 	 * Show the dialog box. If the user clicks on the 'OK' button, the database

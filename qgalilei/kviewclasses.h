@@ -33,6 +33,13 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for R/GALILEI Projects
+#include <gclass.h>
+using namespace GALILEI;
+using namespace R;
+
+
+//-----------------------------------------------------------------------------
 // include files for KDE/Qt
 #include <QtGui/QMdiSubWindow>
 
@@ -40,6 +47,7 @@
 //-----------------------------------------------------------------------------
 //include files for current application
 #include <ui_kviewclasses.h>
+class QGALILEIWin;  // forward declaration
 
 
 //-----------------------------------------------------------------------------
@@ -56,6 +64,11 @@ class KViewClasses : public QMdiSubWindow, public Ui_KViewClasses
 	Q_OBJECT
 
 	/**
+	 * Main window.
+	 */
+	QGALILEIWin* Win;
+
+	/**
 	 * All the descriptor must be shown.
 	 */
 	bool AllDescriptors;
@@ -65,7 +78,7 @@ public:
 	/**
 	* Construct the widget.
 	*/
-	KViewClasses(void);
+	KViewClasses(QGALILEIWin* win);
 
 protected:
 

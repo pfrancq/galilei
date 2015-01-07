@@ -2,13 +2,11 @@
 
 	GALILEI Research Project
 
-	KViewProfile.h
+	KViewClass.h
 
-	Window to manipulate a given profile - Header.
+	Window to manipulate a specific class - Header.
 
-	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
-	Copyright 2001-2004 by David Wartel.
-	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
+	Copyright 2008-2014 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -30,15 +28,15 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef KViewProfileH
-#define KViewProfileH
+#ifndef KViewClassH
+#define KViewClassH
 
 
 //-----------------------------------------------------------------------------
-// include files for R/GALILEI
-#include <gprofile.h>
-using namespace R;
+// include files for R/GALILEI Projects
+#include <gclass.h>
 using namespace GALILEI;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -46,21 +44,23 @@ using namespace GALILEI;
 #include <QtGui/QMdiSubWindow>
 
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // include files for current application
-#include <ui_kviewprofile.h>
+#include <ui_kviewclass.h>
 class QGALILEIWin;  // forward declaration
 
 
 //-----------------------------------------------------------------------------
 /**
-* The KViewProfile class provides a window to manipulate a given profile.
-* @author Pascal Francq and David Wartel
-* @short Profile Window.
-*/
-class KViewProfile : public QMdiSubWindow, public Ui_KViewProfile
+ * The KViewClass provides a template widget to represent a class.
+ * @short class Group.
+ * @author Pascal Francq.
+ */
+class KViewClass : public QMdiSubWindow, public Ui_KViewClass
 {
 	Q_OBJECT
+
+protected:
 
 	/**
 	 * Main window.
@@ -68,43 +68,27 @@ class KViewProfile : public QMdiSubWindow, public Ui_KViewProfile
 	QGALILEIWin* Win;
 
 	/**
-	* Profile corresponding to the window.
-	*/
-	GProfile* Profile;
+	 * Class represented.
+	 */
+	GClass* Obj;
 
 public:
 
 	/**
 	* Construct the widget.
-	* @param win            Main window.
-	* @param profile        Profile to show.
+	* @param win             Main window.
+	* @param obj             Class to represent.
 	*/
-	KViewProfile(QGALILEIWin* win,GProfile* profile);
+	KViewClass(QGALILEIWin* win,GClass* obj);
 
 public slots:
 
 	/**
-	* Called to redraw the window.
-	*/
-	virtual void updateProfile(void);
-
-	/**
-	* Called to redraw the window.
-	*/
-	virtual void updateCommunity(void);
-
-public:
-
-	/**
-	* Compute the current profile.
-	*/
-	void ComputeProfile(void);
-
-	/**
-	* Destruct the widget.
-	*/
-	~KViewProfile(void);
+	 * Update the widget.
+	 */
+	void update(void);
 };
+
 
 
 //-----------------------------------------------------------------------------

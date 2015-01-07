@@ -49,13 +49,12 @@ using namespace std;
 //-----------------------------------------------------------------------------
 // include files for Qt/KDE
 #include <QtGui/QInputDialog>
-#include <kapplication.h>
 
 
 //-----------------------------------------------------------------------------
 // application specific includes
 #include <kviewusers.h>
-#include <kgalileicenter.h>
+#include <qgalileiwin.h>
 
 
 
@@ -66,7 +65,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewUsers::KViewUsers(void)
+KViewUsers::KViewUsers(QGALILEIWin* win)
 	: QMdiSubWindow(), Ui_KViewUsers()
 {
 	QWidget* ptr=new QWidget();
@@ -78,15 +77,15 @@ KViewUsers::KViewUsers(void)
 	connect(ModifyUser,SIGNAL(clicked()),this,SLOT(slotModifyUser()));
 	connect(NewProfile,SIGNAL(clicked()),this,SLOT(slotAddProfile()));
 	connect(ModifyProfile,SIGNAL(clicked()),this,SLOT(slotModifyProfile()));
-	connect(List,SIGNAL(Show(GProfile*)),dynamic_cast<KGALILEICenter*>(GALILEIApp),SLOT(showProfile(GProfile*)));
-	List->Set(KGALILEICenter::App->getSession(),QGObjectsList::Users);
+	connect(List,SIGNAL(Show(GProfile*)),Win,SLOT(showProfile(GProfile*)));
+	List->Set(Win->getSession(),QGObjectsList::Users);
 }
 
 
 //-----------------------------------------------------------------------------
 void KViewUsers::update(void)
 {
-	List->Set(KGALILEICenter::App->getSession(),QGObjectsList::Users);
+	List->Set(Win->getSession(),QGObjectsList::Users);
 }
 
 
@@ -97,7 +96,7 @@ void KViewUsers::slotAddUser(void)
 	QString Name(QInputDialog::getText(this,"New User", "Enter the name:",QLineEdit::Normal,QString(),&Ok));
 	if(Ok&&!Name.isEmpty())
 	{
-		KGALILEICenter::App->getSession()->InsertObj(new GUser(KGALILEICenter::App->getSession(),cNoRef,FromQString(Name),FromQString(Name)));
+		Win->getSession()->InsertObj(new GUser(Win->getSession(),cNoRef,FromQString(Name),FromQString(Name)));
 		update();
 	}
 }
@@ -112,7 +111,7 @@ void KViewUsers::slotModifyUser(void)
 	QString Name(QInputDialog::getText(this,"Modify User", "Enter the new name:",QLineEdit::Normal,ToQString(usr->GetName()),&Ok));
 	if(Ok&&!Name.isEmpty())
 	{
-		KGALILEICenter::App->getSession()->SetName(usr,FromQString(Name));
+		Win->getSession()->SetName(usr,FromQString(Name));
 		List->currentItem()->setText(0,Name);
 	}
 }
@@ -127,7 +126,7 @@ void KViewUsers::slotAddProfile(void)
 	QString Name(QInputDialog::getText(this,"Add Profile to "+ToQString(usr->GetName()), "Enter the profile name:",QLineEdit::Normal,QString(),&Ok));
 	if(Ok&&!Name.isEmpty())
 	{
-		KGALILEICenter::App->getSession()->InsertObj(new GProfile(KGALILEICenter::App->getSession(),usr,ptInterest,FromQString(Name),true));
+		Win->getSession()->InsertObj(new GProfile(Win->getSession(),usr,ptInterest,FromQString(Name),true));
 		update();
 	}
 }
@@ -142,7 +141,7 @@ void KViewUsers::slotModifyProfile(void)
 	QString Name(QInputDialog::getText(this,"Modify Profile", "Enter the new name:",QLineEdit::Normal,ToQString(prof->GetName()),&Ok));
 	if(Ok&&!Name.isEmpty())
 	{
-		KGALILEICenter::App->getSession()->SetName(prof,FromQString(Name));
+		Win->getSession()->SetName(prof,FromQString(Name));
 		List->currentItem()->setText(0,Name);
 	}
 }
