@@ -93,6 +93,13 @@ public:
 	 */
 	void Set(GProfile* profile);
 
+	/**
+	 * Put the variables of a given class.
+	 * @param theclass       Class.
+	 */
+	void Set(GClass* theclass);
+
+
 private:
 
 	/**

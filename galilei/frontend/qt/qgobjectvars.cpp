@@ -113,6 +113,18 @@ void QGObjectVars::Set(GProfile* profile)
 
 
 //------------------------------------------------------------------------------
+void QGObjectVars::Set(GClass* theclass)
+{
+	AddVar("Identifier",theclass->GetId());
+	AddVar("Class name",theclass->GetClassName());
+	AddVar("Depth",	theclass->GetDepth());
+	AddVar("Last Computed",theclass->GetComputed());
+	static_cast<Ui_QGObjectVars*>(Ui)->Vars->resizeColumnToContents(0);
+	static_cast<Ui_QGObjectVars*>(Ui)->Vars->resizeColumnToContents(1);
+}
+
+
+//------------------------------------------------------------------------------
 void QGObjectVars::AddVar(const QString& var,const RString& value)
 {
 	new QTreeWidgetItem(static_cast<Ui_QGObjectVars*>(Ui)->Vars,QStringList()<<var<<ToQString(value));

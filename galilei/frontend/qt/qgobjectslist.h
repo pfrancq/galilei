@@ -72,7 +72,7 @@ public:
 		CompTopics,         /** Topics with their quality are listed. */
 		IdealTopics,        /** Ideal topics are listed. */
 		Users,              /** Users are listed. */
-		Profiles,           /** Users are listed. */
+		Profiles,           /** Profiles are listed. */
 		Communities,        /** Communities are listed.*/
 		CompCommunities,    /** Communities with their quality are listed.*/
 		IdealCommunities,   /** Ideal communities are listed.*/
