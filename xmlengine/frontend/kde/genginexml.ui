@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>351</width>
-    <height>312</height>
+    <width>420</width>
+    <height>416</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -217,9 +217,9 @@
          </spacer>
         </item>
         <item>
-         <widget class="QCheckBox" name="TfIefActive">
+         <widget class="QCheckBox" name="TfIffActive">
           <property name="text">
-           <string>tf/ief</string>
+           <string>tf/iif</string>
           </property>
          </widget>
         </item>
@@ -315,7 +315,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KDoubleNumInput" name="TfIefP"/>
+         <widget class="KDoubleNumInput" name="TfIffP"/>
         </item>
        </layout>
       </item>
@@ -409,7 +409,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KDoubleNumInput" name="TfIefQ"/>
+         <widget class="KDoubleNumInput" name="TfIffQ"/>
         </item>
        </layout>
       </item>
@@ -503,7 +503,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KDoubleNumInput" name="TfIefWeight"/>
+         <widget class="KDoubleNumInput" name="TfIffWeight"/>
         </item>
        </layout>
       </item>

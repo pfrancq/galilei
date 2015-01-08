@@ -6,7 +6,7 @@
 
 	XML Search Engine - Implementation.
 
-	Copyright 2004-2014 by Pascal Francq.
+	Copyright 2010-2015 by Pascal Francq (pascal@francq.info).
    Copyright 2004-2005 by Jean-Baptiste Valsamis.
 	Copyright 2005-2009 by Faïza Abbaci.
 
@@ -191,7 +191,6 @@ GEngineXML::GEngineXML(GSession* session,GPlugInFactory* fac)
 void GEngineXML::Init(void)
 {
 	GEngine::Init();
- 	Weighting=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Features Evaluation",0);
 	InsertObserver(HANDLER(GEngineXML::HandleCurrentPlugIn),hCurrentPlugIn,GALILEIApp->GetManager("Measures")->GetPlugInList("Features Evaluation"));
 
 	// Verify the size of the array
@@ -273,6 +272,7 @@ void GEngineXML::CreateConfig(void)
 	InsertParam(RPromLinearCriterion::CreateParam("Distance","Distance Criterion"));
 	InsertParam(RPromLinearCriterion::CreateParam("Specificity","Specificity Criterion"));
 	InsertParam(RPromLinearCriterion::CreateParam("TfIff","Tf/Iff Criterion"));
+	InsertParam(RPromLinearCriterion::CreateParam("Occurrence","Occurrence Criterion"));
 }
 
 
@@ -286,6 +286,7 @@ void GEngineXML::ApplyConfig()
 	Distance=FindParam<RParamStruct>("Distance");
 	Specificity=FindParam<RParamStruct>("Specificity");
 	TfIff=FindParam<RParamStruct>("TfIff");
+	Occurrence=FindParam<RParamStruct>("Occurrence");
 }
 
 
@@ -352,11 +353,12 @@ void GEngineXML::HandleReInit(const R::RNotification& notification)
 //------------------------------------------------------------------------------
 void GEngineXML::Request(GMetaEngine* caller,const RString& query)
 {
+	Weighting=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Features Evaluation",0);
 	if(!Weighting)
 		mThrowGException("No plug-in selected for \"Features Evaluation\"");
-	
+
 	// Recompute References if necessary
-	if(IffsDirty)
+	if(IffsDirty&&TfIff->Get<RParamValue>("Active")->GetBool())
 		RecomputeRefs();
 
 	 // Make all the loaded trees unused

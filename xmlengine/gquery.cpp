@@ -6,7 +6,7 @@
 
 	Search Query - Implementation.
 
-	Copyright 2004-2014 by Pascal Francq.
+	Copyright 2010-2015 by Pascal Francq (pascal@francq.info).
    Copyright 2004-2005 by Jean-Baptiste Valsamis.
 	Copyright 2005-2009 by Faïza Abbaci.
 
@@ -259,10 +259,12 @@ void GQuery::FindOccurrences(GConcept* concept)
 		Results.Push(new GQueryRes());
 		return;
 	}
-
+	cout<<concept->GetName()<<endl;
+	
 	// Find all documents containing the concept
 	DocIds.Clear();
 	Engine->GetSession()->LoadIndex(pDoc,concept,DocIds);
+	cout<<"Documents "<<DocIds.GetNb()<<endl;
 
 	// If no results -> push an empty result
 	if(!DocIds.GetNb())

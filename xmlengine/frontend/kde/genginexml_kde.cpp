@@ -6,7 +6,7 @@
 
 	XML Search Engine (KDE Part) - Implementation.
 
-	Copyright 2004-2014 by Pascal Francq.
+	Copyright 2010-2015 by Pascal Francq (pascal@francq.info).
    Copyright 2004-2005 by Jean-Baptiste Valsamis.
 	Copyright 2005-2009 by Faïza Abbaci.
 
@@ -123,10 +123,10 @@ bool Configure(GPlugIn* fac)
 	Dlg.OccurrenceWeight->setValue(fac->FindParam<RParamStruct>("Occurrence")->Get<RParamValue>("Weight")->GetDouble());
 
 	// Tf/Ief
-	Dlg.TfIefActive->setChecked(fac->FindParam<RParamStruct>("TfIef")->Get<RParamValue>("Active")->GetBool());
-	Dlg.TfIefP->setValue(fac->FindParam<RParamStruct>("TfIef")->Get<RParamValue>("P")->GetDouble());
-	Dlg.TfIefQ->setValue(fac->FindParam<RParamStruct>("TfIef")->Get<RParamValue>("Q")->GetDouble());
-	Dlg.TfIefWeight->setValue(fac->FindParam<RParamStruct>("TfIef")->Get<RParamValue>("Weight")->GetDouble());
+	Dlg.TfIffActive->setChecked(fac->FindParam<RParamStruct>("TfIff")->Get<RParamValue>("Active")->GetBool());
+	Dlg.TfIffP->setValue(fac->FindParam<RParamStruct>("TfIff")->Get<RParamValue>("P")->GetDouble());
+	Dlg.TfIffQ->setValue(fac->FindParam<RParamStruct>("TfIff")->Get<RParamValue>("Q")->GetDouble());
+	Dlg.TfIffWeight->setValue(fac->FindParam<RParamStruct>("TfIff")->Get<RParamValue>("Weight")->GetDouble());
 
 	if(Dlg.exec())
 	{
@@ -159,10 +159,10 @@ bool Configure(GPlugIn* fac)
 		fac->FindParam<RParamStruct>("Occurrence")->Get<RParamValue>("Weight")->SetDouble(Dlg.OccurrenceWeight->value());
 
 		// Tf/Ief
-		fac->FindParam<RParamStruct>("TfIef")->Get<RParamValue>("Active")->SetBool(Dlg.TfIefActive->isChecked());
-		fac->FindParam<RParamStruct>("TfIef")->Get<RParamValue>("P")->SetDouble(Dlg.TfIefP->value());
-		fac->FindParam<RParamStruct>("TfIef")->Get<RParamValue>("Q")->SetDouble(Dlg.TfIefQ->value());
-		fac->FindParam<RParamStruct>("TfIef")->Get<RParamValue>("Weight")->SetDouble(Dlg.TfIefWeight->value());
+		fac->FindParam<RParamStruct>("TfIff")->Get<RParamValue>("Active")->SetBool(Dlg.TfIffActive->isChecked());
+		fac->FindParam<RParamStruct>("TfIff")->Get<RParamValue>("P")->SetDouble(Dlg.TfIffP->value());
+		fac->FindParam<RParamStruct>("TfIff")->Get<RParamValue>("Q")->SetDouble(Dlg.TfIffQ->value());
+		fac->FindParam<RParamStruct>("TfIff")->Get<RParamValue>("Weight")->SetDouble(Dlg.TfIffWeight->value());
 
 		return(true);
 	}

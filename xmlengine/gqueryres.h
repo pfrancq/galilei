@@ -6,7 +6,7 @@
 
 	Query Result - Header.
 
-	Copyright 2004-2014 by Pascal Francq.
+	Copyright 2008-2015 by Pascal Francq (pascal@francq.info).
    Copyright 2004-2005 by Jean-Baptiste Valsamis.
 	Copyright 2005-2009 by Faïza Abbaci.
 

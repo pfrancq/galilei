@@ -6,7 +6,7 @@
 
 	XML Search Engine - Header.
 
-	Copyright 2004-2014 by Pascal Francq.
+	Copyright 2010-2015 by Pascal Francq (pascal@francq.info).
    Copyright 2004-2005 by Jean-Baptiste Valsamis.
 	Copyright 2005-2009 by Faïza Abbaci.
 
@@ -57,27 +57,32 @@ class GEngineXML : public RObject, public GEngine
 	/**
 	* Parameter for the Tf/Idf criterion.
 	*/
-	RParam* TfIdf;
+	RParamStruct* TfIdf;
 
 	/**
 	* Parameter for the Type.
 	*/
-	RParam* Type;
+	RParamStruct* Type;
 
 	/**
 	* Parameter for the Distance criterion.
 	*/
-	RParam* Distance;
+	RParamStruct* Distance;
 
 	/**
 	* Parameter for the Specificity criterion.
 	*/
-	RParam* Specificity;
+	RParamStruct* Specificity;
 
 	/**
 	* Parameter for the TfIff criterion.
 	*/
-	RParam* TfIff;
+	RParamStruct* TfIff;
+
+	/**
+	* Parameter for the occurrence criterion.
+	*/
+	RParamStruct* Occurrence;
 
 	/**
 	* Number of results
@@ -109,7 +114,7 @@ class GEngineXML : public RObject, public GEngine
 	 * Temporary identifiers.
 	 */
 	RContainer<cRef,true,false> TmpRefs;
-	
+
 	/**
 	 * Weighting method used.
     */
@@ -147,7 +152,7 @@ public:
 	virtual void Done(void);
 
 	/**
-	 * Handle the GALILEI;;hCurrentPlugIn notification. In practice, it set the
+	 * Handle the GALILEI;;hCurrentPlugIn notification. In practice, it sets the
 	 * Weighting variable.
     * @param notification
     */
