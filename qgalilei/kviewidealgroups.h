@@ -6,7 +6,7 @@
 
 	Window to manipulate theoretical topics - Header.
 
-	Copyright 2008-2014 by Pascal Francq (pascal@francq.info).
+	Copyright 2008-2015 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -48,7 +48,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 //include files for current application
 #include <ui_kviewidealgroups.h>
-
+class QGALILEIWin;  // forward declaration
 
 
 //-----------------------------------------------------------------------------
@@ -63,7 +63,17 @@ template<class cGroup>
 	class KViewIdealGroups : public QMdiSubWindow, public Ui_KViewIdealGroups
 {
 protected:
-	KViewIdealGroups(void);
+
+	/**
+	 * Main window.
+	 */
+	QGALILEIWin* Win;
+
+	/**
+	* Construct the window.
+	* @param win            Main window.
+	*/
+	KViewIdealGroups(QGALILEIWin* win);
 };
 
 
@@ -82,8 +92,9 @@ public:
 
 	/**
 	* Construct the window.
+	* @param win            Main window.
 	*/
-	KViewIdealTopics(void);
+	KViewIdealTopics(QGALILEIWin* win);
 
 public slots:
 
@@ -116,8 +127,9 @@ public:
 
 	/**
 	* Construct the window.
+	* @param win            Main window.
 	*/
-	KViewIdealCommunities(void);
+	KViewIdealCommunities(QGALILEIWin* win);
 
 public slots:
 
@@ -146,9 +158,18 @@ class KViewIdealClasses : public QMdiSubWindow, public Ui_KViewIdealGroups
 {
 	Q_OBJECT
 
+	/**
+	 * Main window.
+	 */
+	QGALILEIWin* Win;
+
 public:
 
-	KViewIdealClasses(void);
+	/**
+	* Construct the window.
+	* @param win            Main window.
+	*/
+	KViewIdealClasses(QGALILEIWin* win);
 
 public slots:
 

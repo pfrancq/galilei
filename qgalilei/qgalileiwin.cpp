@@ -6,7 +6,7 @@
 
 	Main windows - Implementation.
 
-	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2015 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -70,6 +70,7 @@
 #include <kviewclass.h>
 #include <kviewprofile.h>
 #include <kviewusers.h>
+#include <kviewidealgroups.h>
 using namespace std;
 using namespace R;
 using namespace GALILEI;
@@ -146,8 +147,9 @@ void QGALILEIWin::connectMenus(void)
 	connect(aRepairSubjects,SIGNAL(triggered()),this,SLOT(repairSubjects()));
 	connect(aInitSimulation,SIGNAL(triggered()),this,SLOT(initSimulation()));
 	connect(aCreateIdealClasses,SIGNAL(triggered()),this,SLOT(createIdealClasses()));
-	connect(aCreateIdealClassesDocuments,SIGNAL(triggered()),this,SLOT(createIdealClassesDocuments()));
+	connect(aCreateIdealClassesDocs,SIGNAL(triggered()),this,SLOT(createIdealClassesDocs()));
 	connect(aCreateIdealTopics,SIGNAL(triggered()),this,SLOT(createIdealTopics()));
+	connect(aCreateIdealTopicsClasses,SIGNAL(triggered()),this,SLOT(createIdealTopicsClasses()));
 	connect(aCreateIdealCommunities,SIGNAL(triggered()),this,SLOT(createIdealCommunities()));
 	connect(aFeedbackCycle,SIGNAL(triggered()),this,SLOT(feedbackCycle()));
 	connect(aAssessmentCycle,SIGNAL(triggered()),this,SLOT(assessmentCycle()));
@@ -217,7 +219,7 @@ void QGALILEIWin::sessionConnected(void)
 	aRepairSubjects->setEnabled(Session);
 	aInitSimulation->setEnabled(Session);
 	aCreateIdealClasses->setEnabled(Session);
-	aCreateIdealClassesDocuments->setEnabled(Session);
+	aCreateIdealClassesDocs->setEnabled(Session);
 	aCreateIdealTopics->setEnabled(Session);
 	aCreateIdealCommunities->setEnabled(Session);
 	aFeedbackCycle->setEnabled(Session);
@@ -746,77 +748,167 @@ void QGALILEIWin::initSimulation(void)
 //-----------------------------------------------------------------------------
 void QGALILEIWin::createIdealTopics(void)
 {
-//	QSessionProgressDlg Dlg(App,"Create Ideal Topics");
-//	QCreateIdealTopics* Task(new QCreateIdealTopics(this));
-//	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
-//	Dlg.Run(Task);
-//	updateWins<KViewTopics>();
+	QCreateIdealTopics(this).run();
+	emit topicsChanged();
+	updateWins<KViewTopics>();
 }
 
 
 //-----------------------------------------------------------------------------
-void QGALILEIWin::createIdealTopicsDocuments(void)
+void QGALILEIWin::createIdealTopicsClasses(void)
 {
-//	QSessionProgressDlg Dlg(App,"Create Ideal Topics");
-//	QCreateIdealTopicsFromClasses* Task(new QCreateIdealTopicsFromClasses(this));
-//	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
-//	Dlg.Run(Task);
-//	updateWins<KViewTopics>();
+	QCreateIdealTopicsClasses(this).run();
+	emit topicsChanged();
+	updateWins<KViewTopics>();
 }
 
 
 //-----------------------------------------------------------------------------
 void QGALILEIWin::createIdealClasses(void)
 {
-//	QSessionProgressDlg Dlg(App,"Create Ideal Classes");
-//	QCreateIdealClasses* Task(new QCreateIdealClasses(this));
-//	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
-//	Dlg.Run(Task);
-//	updateWins<KViewClasses>();
+	QCreateIdealClasses(this).run();
+	emit topicsChanged();
+	updateWins<KViewClasses>();
 }
 
 
 //-----------------------------------------------------------------------------
-void QGALILEIWin::createIdealClassesDocuments(void)
+void QGALILEIWin::createIdealClassesDocs(void)
 {
-//	QSessionProgressDlg Dlg(App,"Create Ideal Classes");
-//	QCreateIdealDocsClasses* Task(new QCreateIdealDocsClasses(this));
-//	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
-//	Dlg.Run(Task);
-//	updateWins<KViewClasses>();
+	QCreateIdealClassesDocs(this).run();
+	emit topicsChanged();
+	updateWins<KViewClasses>();
 }
 
 
 //-----------------------------------------------------------------------------
-void QGALILEIWin::createCommunities(void)
+void QGALILEIWin::createIdealCommunities(void)
 {
-//	QSessionProgressDlg Dlg(App,"Create Ideal Communities");
-//	QCreateIdealCommunities* Task(new QCreateIdealCommunities(this));
-//	connect(Task,SIGNAL(finish()),this,SLOT(emitCommunitiesChanged()));
-//	Dlg.Run(Task);
-//	updateWins<KViewCommunities>();
+	QCreateIdealCommunities(this).run();
+	emit communitiesChanged();
+	updateWins<KViewCommunities>();
 }
 
 
 //-----------------------------------------------------------------------------
 void QGALILEIWin::feedbackCycle(void)
 {
-//	QSessionProgressDlg Dlg(App,"Feedback Cycle");
-//	QMakeFdbks* Task(new QMakeFdbks(this));
-//	connect(Task,SIGNAL(finish()),this,SLOT(emitProfilesChanged()));
-//	Dlg.Run(Task);
-//	updateWins<KViewProfile>();
+	QFeedbackCycle(this).run();
+	emit profilesChanged();
+	updateWins<KViewProfile>();
 }
 
 
 //-----------------------------------------------------------------------------
 void QGALILEIWin::assessmentCycle(void)
 {
-//	QSessionProgressDlg Dlg(App,"Assessments Cycle");
-//	QMakeAssessments* Task(new QMakeAssessments(this));
-//	connect(Task,SIGNAL(finish()),this,SLOT(emitProfilesChanged()));
-//	Dlg.Run(Task);
-//	updateWins<KViewProfile>();
+	QAssessmentCycle(this).run();
+	emit profilesChanged();
+	updateWins<KViewProfile>();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::compareIdealCommunities(void)
+{
+	try
+	{
+		QApplication::setOverrideCursor(Qt::WaitCursor);
+		KViewIdealCommunities* ptr(new KViewIdealCommunities(this));
+		Desktop->addSubWindow(ptr);
+		ptr->adjustSize();
+		ptr->show();
+	}
+	catch(GALILEI::GException& e)
+	{
+		QApplication::setOverrideCursor(Qt::ArrowCursor);
+		QMessageBox::critical(0,QWidget::tr("GALILEI Exception"),QWidget::trUtf8(e.GetMsg()),QMessageBox::Ok);
+	}
+	catch(R::RException& e)
+	{
+		QApplication::setOverrideCursor(Qt::ArrowCursor);
+		QMessageBox::critical(0,QWidget::tr("R Exception"),QWidget::trUtf8(e.GetMsg()),QMessageBox::Ok);
+	}
+	catch(std::exception& e)
+	{
+		QApplication::setOverrideCursor(Qt::ArrowCursor);
+		QMessageBox::critical(0,QWidget::tr("Standard exception"),QWidget::trUtf8(e.what()),QMessageBox::Ok);
+	}
+	catch(...)
+	{
+		QApplication::setOverrideCursor(Qt::ArrowCursor);
+		QMessageBox::critical(0,QWidget::tr("Unknown exception"),QWidget::trUtf8("Unknown problem"),QMessageBox::Ok);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::compareIdealTopics(void)
+{
+	try
+	{
+		QApplication::setOverrideCursor(Qt::WaitCursor);
+		KViewIdealTopics* ptr(new KViewIdealTopics(this));
+		Desktop->addSubWindow(ptr);
+		ptr->adjustSize();
+		ptr->show();
+		QApplication::setOverrideCursor(Qt::ArrowCursor);
+	}
+	catch(GALILEI::GException& e)
+	{
+		QApplication::setOverrideCursor(Qt::ArrowCursor);
+		QMessageBox::critical(0,QWidget::tr("GALILEI Exception"),QWidget::trUtf8(e.GetMsg()),QMessageBox::Ok);
+	}
+	catch(R::RException& e)
+	{
+		QApplication::setOverrideCursor(Qt::ArrowCursor);
+		QMessageBox::critical(0,QWidget::tr("R Exception"),QWidget::trUtf8(e.GetMsg()),QMessageBox::Ok);
+	}
+	catch(std::exception& e)
+	{
+		QApplication::setOverrideCursor(Qt::ArrowCursor);
+		QMessageBox::critical(0,QWidget::tr("Standard exception"),QWidget::trUtf8(e.what()),QMessageBox::Ok);
+	}
+	catch(...)
+	{
+		QApplication::setOverrideCursor(Qt::ArrowCursor);
+		QMessageBox::critical(0,QWidget::tr("Unknown exception"),QWidget::trUtf8("Unknown problem"),QMessageBox::Ok);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::compareIdealClasses(void)
+{
+	try
+	{
+		QApplication::setOverrideCursor(Qt::WaitCursor);
+		KViewIdealClasses* ptr(new KViewIdealClasses(this));
+		Desktop->addSubWindow(ptr);
+		ptr->adjustSize();
+		ptr->show();
+		QApplication::setOverrideCursor(Qt::ArrowCursor);
+	}
+	catch(GALILEI::GException& e)
+	{
+		QApplication::setOverrideCursor(Qt::ArrowCursor);
+		QMessageBox::critical(0,QWidget::tr("GALILEI Exception"),QWidget::trUtf8(e.GetMsg()),QMessageBox::Ok);
+	}
+	catch(R::RException& e)
+	{
+		QApplication::setOverrideCursor(Qt::ArrowCursor);
+		QMessageBox::critical(0,QWidget::tr("R Exception"),QWidget::trUtf8(e.GetMsg()),QMessageBox::Ok);
+	}
+	catch(std::exception& e)
+	{
+		QApplication::setOverrideCursor(Qt::ArrowCursor);
+		QMessageBox::critical(0,QWidget::tr("Standard exception"),QWidget::trUtf8(e.what()),QMessageBox::Ok);
+	}
+	catch(...)
+	{
+		QApplication::setOverrideCursor(Qt::ArrowCursor);
+		QMessageBox::critical(0,QWidget::tr("Unknown exception"),QWidget::trUtf8("Unknown problem"),QMessageBox::Ok);
+	}
 }
 
 

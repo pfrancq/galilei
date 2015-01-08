@@ -6,7 +6,7 @@
 
 	Window to manipulate theoretical topics - Implementation.
 
-	Copyright 2008-2014 by Pascal Francq (pascal@francq.info).
+	Copyright 2008-2015 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -35,13 +35,12 @@
 //-----------------------------------------------------------------------------
 // include files for Qt/KDE
 #include <QtGui/QProgressDialog>
-#include <kapplication.h>
 
 
 //------------------------------------------------------------------------------
 // include files for current application
 #include <kviewidealgroups.h>
-#include <kgalileicenter.h>
+#include <qgalileiwin.h>
 
 
 
@@ -53,8 +52,8 @@
 
 //-----------------------------------------------------------------------------
 template<class cGroup>
-	KViewIdealGroups<cGroup>::KViewIdealGroups(void)
-		: QMdiSubWindow(), Ui_KViewIdealGroups()
+	KViewIdealGroups<cGroup>::KViewIdealGroups(QGALILEIWin* win)
+		: QMdiSubWindow(), Ui_KViewIdealGroups(), Win(win)
 {
 	QWidget* ptr=new QWidget();
 	setupUi(ptr);
@@ -72,12 +71,12 @@ template<class cGroup>
 
 
 //-----------------------------------------------------------------------------
-KViewIdealTopics::KViewIdealTopics(void)
-	: KViewIdealGroups<GTopic>()
+KViewIdealTopics::KViewIdealTopics(QGALILEIWin* win)
+	: KViewIdealGroups<GTopic>(win)
 {
-	connect(Ideal,SIGNAL(Show(GDoc*)),dynamic_cast<KGALILEICenter*>(GALILEIApp),SLOT(showDoc(GDoc*)));
-	connect(Computed,SIGNAL(Show(GDoc*)),dynamic_cast<KGALILEICenter*>(GALILEIApp),SLOT(showDoc(GDoc*)));
-	connect(dynamic_cast<KGALILEICenter*>(GALILEIApp),SIGNAL(topicsChanged()),this,SLOT(update()));
+	connect(Ideal,SIGNAL(Show(GDoc*)),Win,SLOT(showDoc(GDoc*)));
+	connect(Computed,SIGNAL(Show(GDoc*)),Win,SLOT(showDoc(GDoc*)));
+	connect(Win,SIGNAL(topicsChanged()),this,SLOT(update()));
 	update();
 }
 
@@ -94,8 +93,8 @@ void KViewIdealTopics::update(void)
 	               "Precision="+QString::number(precision)+
 	               " - Recall="+QString::number(recall)+
 	               " - Total="+QString::number(total));
-	Ideal->Set(KGALILEICenter::App->getSession(),QGObjectsList::IdealTopics);
-	Computed->Set(KGALILEICenter::App->getSession(),QGObjectsList::CompTopics);
+	Ideal->Set(Win->getSession(),QGObjectsList::IdealTopics);
+	Computed->Set(Win->getSession(),QGObjectsList::CompTopics);
 }
 
 
@@ -114,12 +113,12 @@ KViewIdealTopics::~KViewIdealTopics(void)
 
 
 //-----------------------------------------------------------------------------
-KViewIdealCommunities::KViewIdealCommunities(void)
-	: KViewIdealGroups<GCommunity>()
+KViewIdealCommunities::KViewIdealCommunities(QGALILEIWin* win)
+	: KViewIdealGroups<GCommunity>(win)
 {
-	connect(Ideal,SIGNAL(Show(GProfile*)),dynamic_cast<KGALILEICenter*>(GALILEIApp),SLOT(showProfile(GProfile*)));
-	connect(Computed,SIGNAL(Show(GProfile*)),dynamic_cast<KGALILEICenter*>(GALILEIApp),SLOT(showProfile(GProfile*)));
-	connect(dynamic_cast<KGALILEICenter*>(GALILEIApp),SIGNAL(communitiesChanged()),this,SLOT(update()));
+	connect(Ideal,SIGNAL(Show(GProfile*)),Win,SLOT(showProfile(GProfile*)));
+	connect(Computed,SIGNAL(Show(GProfile*)),Win,SLOT(showProfile(GProfile*)));
+	connect(Win,SIGNAL(communitiesChanged()),this,SLOT(update()));
 	update();
 }
 
@@ -136,8 +135,8 @@ void KViewIdealCommunities::update(void)
 	               "Precision="+QString::number(precision)+
 	               " - Recall="+QString::number(recall)+
 	               " - Total="+QString::number(total));
-	Ideal->Set(KGALILEICenter::App->getSession(),QGObjectsList::IdealCommunities);
-	Computed->Set(KGALILEICenter::App->getSession(),QGObjectsList::CompCommunities);
+	Ideal->Set(Win->getSession(),QGObjectsList::IdealCommunities);
+	Computed->Set(Win->getSession(),QGObjectsList::CompCommunities);
 }
 
 
@@ -155,8 +154,8 @@ KViewIdealCommunities::~KViewIdealCommunities(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewIdealClasses::KViewIdealClasses(void)
-	: QMdiSubWindow(), Ui_KViewIdealGroups()
+KViewIdealClasses::KViewIdealClasses(QGALILEIWin* win)
+	: QMdiSubWindow(), Ui_KViewIdealGroups(), Win(win)
 {
 	// Set up the widget
 	QWidget* ptr=new QWidget();
@@ -165,9 +164,9 @@ KViewIdealClasses::KViewIdealClasses(void)
 	setAttribute(Qt::WA_DeleteOnClose);
 
 	// Connect the window and update it
-	connect(Ideal,SIGNAL(Show(GClass*)),dynamic_cast<KGALILEICenter*>(GALILEIApp),SLOT(showClass(GClass*)));
-	connect(Computed,SIGNAL(Show(GClass*)),dynamic_cast<KGALILEICenter*>(GALILEIApp),SLOT(showClass(GClass*)));
-	connect(dynamic_cast<KGALILEICenter*>(GALILEIApp),SIGNAL(classesChanged()),this,SLOT(update()));
+	connect(Ideal,SIGNAL(Show(GClass*)),Win,SLOT(showClass(GClass*)));
+	connect(Computed,SIGNAL(Show(GClass*)),Win,SLOT(showClass(GClass*)));
+	connect(Win,SIGNAL(classesChanged()),this,SLOT(update()));
 	update();
 }
 
@@ -176,23 +175,23 @@ KViewIdealClasses::KViewIdealClasses(void)
 void KViewIdealClasses::update(void)
 {
 	GMeasure* Compare(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Classes Evaluation"));
-    QProgressDialog Progress("Classes Evaluation...", "Abort Evaluation", 0,3, this);
-    Progress.setMinimumDuration(0);
-    Progress.setWindowModality(Qt::WindowModal);
+	QProgressDialog Progress("Classes Evaluation...", "Abort Evaluation", 0,3, this);
+	Progress.setMinimumDuration(0);
+	Progress.setWindowModality(Qt::WindowModal);
 	double treerank;
-    Progress.setValue(0);
-	KApplication::kApplication()->processEvents();
-	Computed->Set(KGALILEICenter::App->getSession(),QGObjectsList::Classes);
-    if(Progress.wasCanceled())
-            return;
-    Progress.setValue(1);
-	KApplication::kApplication()->processEvents();
-	Ideal->Set(KGALILEICenter::App->getSession(),QGObjectsList::Subjects);
+	Progress.setValue(0);
+	QCoreApplication::processEvents();
+	Computed->Set(Win->getSession(),QGObjectsList::Classes);
+	if(Progress.wasCanceled())
+		return;
+	Progress.setValue(1);
+	QCoreApplication::processEvents();
+	Ideal->Set(Win->getSession(),QGObjectsList::Subjects);
 	Progress.setValue(2);
-	KApplication::kApplication()->processEvents();
-    if(Progress.wasCanceled())
-            return;
-    Compare->Info(0,&treerank);
+	QCoreApplication::processEvents();
+	if(Progress.wasCanceled())
+		return;
+	Compare->Info(0,&treerank);
 	setWindowTitle("Classes Comparison: TreeRank="+QString::number(treerank));
 	Progress.setValue(3);
 }

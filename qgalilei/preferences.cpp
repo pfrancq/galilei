@@ -6,7 +6,7 @@
 
 	Preferences Dialog Box - Implementation.
 
-	Copyright 2010 by Paul Otlet Institute.
+	Copyright 2010-2015 by Pascal Francq (pascal@francq.info).
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).

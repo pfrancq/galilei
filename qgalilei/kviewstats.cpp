@@ -6,7 +6,7 @@
 
 	Window for the running some instruction to the session - Implementation.
 
-	Copyright 2002-2014 by Pascal Francq (pascal@francq.info).
+	Copyright 2002-2015 by Pascal Francq (pascal@francq.info).
 	Copyright 2002-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or

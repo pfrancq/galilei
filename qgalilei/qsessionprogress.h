@@ -6,7 +6,7 @@
 
 	Dialog Box to show the progress of the something done on a session - Header.
 
-	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2015 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -270,65 +270,64 @@ public:
 };
 
 
-////-----------------------------------------------------------------------------
-///**
-//* Create the ideal communities.
-//* @param save           Save modified elements.
-//*/
-//class QCreateIdealCommunities : public QSessionProgress
-//{
-//public:
-//	QCreateIdealCommunities(QGALILEIWin* win) : QSessionProgress(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Create the ideal topics.
-//*/
-//class QCreateIdealTopics : public QSessionProgress
-//{
-//public:
-//	QCreateIdealTopics(QGALILEIWin* win) : QSessionProgress(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Create the ideal topics from the classes.
-//*/
-//class QCreateIdealTopicsFromClasses : public QSessionProgress
-//{
-//public:
-//	QCreateIdealTopicsFromClasses(QGALILEIWin* win) : QSessionProgress(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Create the ideal classes.
-//*/
-//class QCreateIdealClasses : public QSessionProgress
-//{
-//public:
-//	QCreateIdealClasses(QGALILEIWin* win) : QSessionProgress(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Create the ideal classes using documents.
-//*/
-//class QCreateIdealDocsClasses : public QSessionProgress
-//{
-//public:
-//	QCreateIdealDocsClasses(QGALILEIWin* win) : QSessionProgress(app) {}
-//	virtual void DoIt(void);
-//};
+//-----------------------------------------------------------------------------
+/**
+* Create the ideal communities.
+*/
+class QCreateIdealCommunities : public QSessionProgress
+{
+public:
+	QCreateIdealCommunities(QGALILEIWin* win) : QSessionProgress(win,"Create Ideal Communities") {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Create the ideal topics.
+*/
+class QCreateIdealTopics : public QSessionProgress
+{
+public:
+	QCreateIdealTopics(QGALILEIWin* win) : QSessionProgress(win,"Create Ideal Topics") {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Create the ideal topics from the classes.
+*/
+class QCreateIdealTopicsClasses : public QSessionProgress
+{
+public:
+	QCreateIdealTopicsClasses(QGALILEIWin* win) : QSessionProgress(win,"Create Ideal Topics") {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Create the ideal classes.
+*/
+class QCreateIdealClasses : public QSessionProgress
+{
+public:
+	QCreateIdealClasses(QGALILEIWin* win) : QSessionProgress(win,"Create Ideal Classes") {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Create the ideal classes using documents.
+*/
+class QCreateIdealClassesDocs : public QSessionProgress
+{
+public:
+	QCreateIdealClassesDocs(QGALILEIWin* win) : QSessionProgress(win,"Create Ideal Classes") {}
+	virtual void DoIt(void);
+};
 
 
 //-----------------------------------------------------------------------------
@@ -343,28 +342,28 @@ public:
 };
 
 
-////-----------------------------------------------------------------------------
-///**
-//* Make a feedback cycle.
-//*/
-//class QMakeFdbks : public QSessionProgress
-//{
-//public:
-//	QMakeFdbks(QGALILEIWin* win) : QSessionProgress(app) {}
-//	virtual void DoIt(void);
-//};
-//
-//
-////-----------------------------------------------------------------------------
-///**
-//* Make a assessment cycle.
-//*/
-//class QMakeAssessments : public QSessionProgress
-//{
-//public:
-//	QMakeAssessments(QGALILEIWin* win) : QSessionProgress(app) {}
-//	virtual void DoIt(void);
-//};
+//-----------------------------------------------------------------------------
+/**
+* Make a feedback cycle.
+*/
+class QFeedbackCycle : public QSessionProgress
+{
+public:
+	QFeedbackCycle(QGALILEIWin* win) : QSessionProgress(win,"Feedback Cycle") {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Make a assessment cycle.
+*/
+class QAssessmentCycle : public QSessionProgress
+{
+public:
+	QAssessmentCycle(QGALILEIWin* win) : QSessionProgress(win,"Assessments Cycle") {}
+	virtual void DoIt(void);
+};
 
 
 //-----------------------------------------------------------------------------

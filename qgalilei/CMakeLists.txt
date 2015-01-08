@@ -23,11 +23,7 @@ SET(qgalilei_SOURCES
 	kviewclass.cpp
 	kviewprofile.cpp
 	kviewusers.cpp
-#
-#	kviewidealgroups.cpp
-#
-
-#
+	kviewidealgroups.cpp
 )
 
 SET(qgalilei_HEADERS
@@ -49,6 +45,7 @@ SET(qgalilei_HEADERS
 	kviewclass.h
 	kviewprofile.h
 	kviewusers.h
+	kviewidealgroups.h
 )
 
 
@@ -73,13 +70,7 @@ SET(qgalilei_FORMS
 	kviewclass.ui
 	kviewprofile.ui
 	kviewusers.ui
-
-#	kviewidealgroups.ui
-#
-
-
-#
-#
+	kviewidealgroups.ui
 )
 
 

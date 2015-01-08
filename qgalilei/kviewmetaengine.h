@@ -4,9 +4,9 @@
 
 	KViewMetaEngine.h
 
-	Window to manipulate a specific group - Header.
+	Search Window - Header.
 
-	Copyright 2008-2014 by Pascal Francq (pascal@francq.info).
+	Copyright 2008-2015 by Pascal Francq (pascal@francq.info).
 	Copyright 2001 by Valery Vandaele.
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
@@ -54,7 +54,7 @@ class QGALILEIWin;
 
 //-----------------------------------------------------------------------------
 /**
-* The KViewMetaEngine class represents a window to manipulate a specific groups.
+* The KViewMetaEngine class represents a window to search for documents.
 * @author Pascal Francq.
 * @short Search Window.
 */

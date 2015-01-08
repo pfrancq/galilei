@@ -41,7 +41,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>20</height>
+     <height>34</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSession">
@@ -84,7 +84,7 @@
    </widget>
    <widget class="QMenu" name="menuTopics">
     <property name="title">
-     <string>Topics</string>
+     <string>&amp;Topics</string>
     </property>
     <addaction name="aShowClasses"/>
     <addaction name="separator"/>
@@ -94,7 +94,7 @@
    </widget>
    <widget class="QMenu" name="menuUsers">
     <property name="title">
-     <string>Users</string>
+     <string>&amp;Users</string>
     </property>
     <addaction name="aShowUsers"/>
     <addaction name="separator"/>
@@ -104,7 +104,7 @@
    </widget>
    <widget class="QMenu" name="menuCommunities">
     <property name="title">
-     <string>Communities</string>
+     <string>&amp;Communities</string>
     </property>
     <addaction name="aShowCommunities"/>
     <addaction name="separator"/>
@@ -113,14 +113,14 @@
    </widget>
    <widget class="QMenu" name="menuSimulation">
     <property name="title">
-     <string>Simulation</string>
+     <string>Si&amp;mulation</string>
     </property>
     <addaction name="aRepairSubjects"/>
     <addaction name="separator"/>
     <addaction name="aInitSimulation"/>
     <addaction name="separator"/>
     <addaction name="aCreateIdealClasses"/>
-    <addaction name="aCreateIdealClassesDocuments"/>
+    <addaction name="aCreateIdealClassesDocs"/>
     <addaction name="aCreateIdealTopics"/>
     <addaction name="aCreateIdealTopicsClasses"/>
     <addaction name="aCreateIdealCommunities"/>
@@ -143,7 +143,7 @@
    </widget>
    <widget class="QMenu" name="menuSettings">
     <property name="title">
-     <string>Settings</string>
+     <string>Settin&amp;gs</string>
     </property>
     <addaction name="separator"/>
     <addaction name="aConfigSession"/>
@@ -152,7 +152,7 @@
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>Help</string>
+     <string>He&amp;lp</string>
     </property>
     <addaction name="aAbout"/>
    </widget>
@@ -204,7 +204,7 @@
      <normaloff>:/icons/svn-commit.png</normaloff>:/icons/svn-commit.png</iconset>
    </property>
    <property name="text">
-    <string>Connect</string>
+    <string>&amp;Connect</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
@@ -219,7 +219,7 @@
      <normaloff>:/icons/svn-commit.png</normaloff>:/icons/svn-commit.png</iconset>
    </property>
    <property name="text">
-    <string>Disconnect</string>
+    <string>&amp;Disconnect</string>
    </property>
   </action>
   <action name="aDicts">
@@ -243,7 +243,7 @@
   </action>
   <action name="aCascade">
    <property name="text">
-    <string>&amp;Cascade</string>
+    <string>Ca&amp;scade</string>
    </property>
   </action>
   <action name="aConfigSession">
@@ -272,7 +272,7 @@
   </action>
   <action name="aIndexDocs">
    <property name="text">
-    <string>Index Documents</string>
+    <string>I&amp;ndex Documents</string>
    </property>
   </action>
   <action name="aAnalyzeDocs">
@@ -291,7 +291,7 @@
   </action>
   <action name="aAnalyzeDoc">
    <property name="text">
-    <string>Load and Analyze a Document</string>
+    <string>&amp;Load and Analyze a Document</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -303,17 +303,20 @@
      <normaloff>:/icons/edit-find.png</normaloff>:/icons/edit-find.png</iconset>
    </property>
    <property name="text">
-    <string>Query Meta Engine</string>
+    <string>&amp;Search</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="aComputeTrust">
    <property name="text">
-    <string>Compute Trust</string>
+    <string>C&amp;ompute Trust</string>
    </property>
   </action>
   <action name="aComputeSugs">
    <property name="text">
-    <string>Compute Suggestions</string>
+    <string>Co&amp;mpute Suggestions</string>
    </property>
   </action>
   <action name="aComputeSession">
@@ -331,7 +334,7 @@
      <normaloff>:/icons/utilities-terminal.png</normaloff>:/icons/utilities-terminal.png</iconset>
    </property>
    <property name="text">
-    <string>Con&amp;sole</string>
+    <string>Co&amp;nsole</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+K</string>
@@ -369,12 +372,12 @@
      <normaloff>:/icons/document-import.png</normaloff>:/icons/document-import.png</iconset>
    </property>
    <property name="text">
-    <string>Import Documents</string>
+    <string>&amp;Import Documents</string>
    </property>
   </action>
   <action name="aRunTool">
    <property name="text">
-    <string>Run Tool</string>
+    <string>R&amp;un Tool</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+T</string>
@@ -434,7 +437,7 @@
   </action>
   <action name="aComputeProfile">
    <property name="text">
-    <string>Compute &amp;Profile</string>
+    <string>C&amp;ompute Profile</string>
    </property>
   </action>
   <action name="aShowCommunities">
@@ -454,7 +457,7 @@
   </action>
   <action name="aAbout">
    <property name="text">
-    <string>About</string>
+    <string>&amp;About</string>
    </property>
   </action>
   <action name="aRepairSubjects">
@@ -469,7 +472,7 @@
   </action>
   <action name="aCreateIdealCommunities">
    <property name="text">
-    <string>Create Ideal &amp;Communities</string>
+    <string>Create I&amp;deal Communities</string>
    </property>
   </action>
   <action name="aCreateIdealTopics">
@@ -487,7 +490,7 @@
     <string>Create Ideal &amp;Classes</string>
    </property>
   </action>
-  <action name="aCreateIdealClassesDocuments">
+  <action name="aCreateIdealClassesDocs">
    <property name="text">
     <string>Create Ideal C&amp;lasses (using Documents)</string>
    </property>

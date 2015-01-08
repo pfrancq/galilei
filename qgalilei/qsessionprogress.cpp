@@ -6,7 +6,7 @@
 
 	Dialog Box to show the progress of the something done on a session  - Implementation.
 
-	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2015 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -116,28 +116,32 @@ bool QSessionProgress::run(void)
 		setCancelButtonText("OK");
 		setValue(maximum());
 		OK=true;
+		QApplication::setOverrideCursor(Qt::ArrowCursor);
 	}
 	catch(GException& e)
 	{
+		QApplication::setOverrideCursor(Qt::ArrowCursor);
 		setCancelButtonText("Error");
 		setLabelText(QWidget::trUtf8(e.GetMsg()));
 	}
 	catch(RException& e)
 	{
+		QApplication::setOverrideCursor(Qt::ArrowCursor);
 		setCancelButtonText("Error");
 		setLabelText(QWidget::trUtf8(e.GetMsg()));
 	}
 	catch(std::exception& e)
 	{
+		QApplication::setOverrideCursor(Qt::ArrowCursor);
 		setCancelButtonText("Error");
 		setLabelText(QWidget::trUtf8(e.what()));
 	}
 	catch(...)
 	{
+		QApplication::setOverrideCursor(Qt::ArrowCursor);
 		setCancelButtonText("Error");
 		setLabelText(QWidget::trUtf8("Unknown"));
 	}
-	QApplication::setOverrideCursor(Qt::ArrowCursor);
 	OK=OK&&(!wasCanceled());
 	exec();
 	return(OK);
@@ -351,44 +355,44 @@ void QInitSimulation::DoIt(void)
 }
 
 
-////-----------------------------------------------------------------------------
-//void QCreateIdealCommunities::DoIt(void)
-//{
-//	Parent->setLabelText("Create Ideal Communities ...");
-//	App->getSession()->GetSimulator()->BuildIdealCommunities();
-//}
-//
-//
-////-----------------------------------------------------------------------------
-//void QCreateIdealTopics::DoIt(void)
-//{
-//	Parent->setLabelText("Create Ideal Topics ...");
-//	App->getSession()->GetSimulator()->BuildIdealTopics();
-//}
-//
-//
-////-----------------------------------------------------------------------------
-//void QCreateIdealTopicsFromClasses::DoIt(void)
-//{
-//	Parent->setLabelText("Create Ideal Topics ...");
-//	App->getSession()->GetSimulator()->BuildIdealLeafTopics();
-//}
-//
-//
-////-----------------------------------------------------------------------------
-//void QCreateIdealClasses::DoIt(void)
-//{
-//	Parent->setLabelText("Create Ideal Classes ...");
-//	App->getSession()->GetSimulator()->BuildIdealClasses();
-//}
-//
-//
-////-----------------------------------------------------------------------------
-//void QCreateIdealDocsClasses::DoIt(void)
-//{
-//	Parent->setLabelText("Create Ideal Classes ...");
-//	App->getSession()->GetSimulator()->BuildIdealDocsClasses();
-//}
+//-----------------------------------------------------------------------------
+void QCreateIdealCommunities::DoIt(void)
+{
+	setLabelText("Create Ideal Communities ...");
+	Win->getSession()->GetSimulator()->BuildIdealCommunities();
+}
+
+
+//-----------------------------------------------------------------------------
+void QCreateIdealTopics::DoIt(void)
+{
+	setLabelText("Create Ideal Topics ...");
+	Win->getSession()->GetSimulator()->BuildIdealTopics();
+}
+
+
+//-----------------------------------------------------------------------------
+void QCreateIdealTopicsClasses::DoIt(void)
+{
+	setLabelText("Create Ideal Topics using classes ...");
+	Win->getSession()->GetSimulator()->BuildIdealLeafTopics();
+}
+
+
+//-----------------------------------------------------------------------------
+void QCreateIdealClasses::DoIt(void)
+{
+	setLabelText("Create Ideal Classes ...");
+	Win->getSession()->GetSimulator()->BuildIdealClasses();
+}
+
+
+//-----------------------------------------------------------------------------
+void QCreateIdealClassesDocs::DoIt(void)
+{
+	setLabelText("Create Ideal Classes using documents ...");
+	Win->getSession()->GetSimulator()->BuildIdealDocsClasses();
+}
 
 
 //-----------------------------------------------------------------------------
@@ -399,20 +403,20 @@ void QRepairSubjects::DoIt(void)
 }
 
 
-////-----------------------------------------------------------------------------
-//void QMakeFdbks::DoIt(void)
-//{
-//	Parent->setLabelText("Make feedbacks ...");
-//	App->getSession()->GetSimulator()->ShareDocuments();
-//}
-//
-//
-////-----------------------------------------------------------------------------
-//void QMakeAssessments::DoIt(void)
-//{
-//	Parent->setLabelText("Make assessments ...");
-//	App->getSession()->GetSimulator()->AddAssessments();
-//}
+//-----------------------------------------------------------------------------
+void QFeedbackCycle::DoIt(void)
+{
+	setLabelText("Make feedbacks ...");
+	Win->getSession()->GetSimulator()->ShareDocuments();
+}
+
+
+//-----------------------------------------------------------------------------
+void QAssessmentCycle::DoIt(void)
+{
+	setLabelText("Make assessments ...");
+	Win->getSession()->GetSimulator()->AddAssessments();
+}
 
 
 //-----------------------------------------------------------------------------

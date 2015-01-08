@@ -6,7 +6,7 @@
 
 	Main windows - Header.
 
-	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2015 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -339,7 +339,7 @@ public slots :
 	/**
 	 * Create ideal topics from classes.
 	 */
-	void createIdealTopicsDocuments(void);
+	void createIdealTopicsClasses(void);
 
 	/**
 	 * Create ideal classes.
@@ -349,12 +349,12 @@ public slots :
 	/**
 	 * Create ideal classes.
 	 */
-	void createIdealClassesDocuments(void);
+	void createIdealClassesDocs(void);
 
 	/**
 	 * Create ideal communities.
 	 */
-	void createCommunities(void);
+	void createIdealCommunities(void);
 
 	/**
 	 * Make a feedback cycle.
@@ -365,6 +365,21 @@ public slots :
 	 * Make a assessments cycle.
 	 */
 	void assessmentCycle(void);
+
+	/**
+	 * Compare the current communities with the ideal ones.
+	 */
+	void compareIdealCommunities(void);
+
+	/**
+	 * Compare the current topics with the ideal ones.
+	 */
+	void compareIdealTopics(void);
+
+	/**
+	 * Compare the current classes with the ideal ones.
+	 */
+	void compareIdealClasses(void);
 
 	/**
 	 * Set the preferences.

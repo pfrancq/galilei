@@ -6,7 +6,7 @@
 
 	Window to manipulate a given profile - Implementation.
 
-	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2015 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2004 by David Wartel.
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
