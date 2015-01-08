@@ -6,7 +6,7 @@
 
 	Subjects - Header.
 
-	Copyright 2002-2014 by Pascal Francq (pascal@francq.info).
+	Copyright 2002-2015 by Pascal Francq (pascal@francq.info).
 	Copyright 2002-2004 by Julien Lamoral.
 	Copyright 2002-2004 by David Wartel.
 	Copyright 2002-2008 by the Université Libre de Bruxelles (ULB).

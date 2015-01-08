@@ -6,7 +6,7 @@
 
 	Generic Filter for documents - Header.
 
-	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2015 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or

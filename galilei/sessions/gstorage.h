@@ -6,7 +6,7 @@
 
 	Generic Storage Manager - Header.
 
-	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2015 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or

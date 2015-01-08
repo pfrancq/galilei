@@ -6,6 +6,7 @@
 
 	Generic Link Method - Implementation.
 
+	Copyright 2003-2015 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2004 by Valery Vandaele.
 	Copyright 2003-2008 Université Libre de Bruxelles (ULB).
 

@@ -6,7 +6,7 @@
 
 	Suggestions - Implementation.
 
-	Copyright 2005-2014 by Pascal Francq (pascal@francq.info).
+	Copyright 2005-2015 by Pascal Francq (pascal@francq.info).
 	Copyright 2005-2008 Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
