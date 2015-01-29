@@ -34,6 +34,9 @@
        <property name="text">
         <string>Search</string>
        </property>
+       <property name="shortcut">
+        <string>Return</string>
+       </property>
       </widget>
      </item>
      <item>
