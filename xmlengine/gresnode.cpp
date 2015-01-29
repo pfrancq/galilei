@@ -58,12 +58,31 @@ const size_t MaximumSyntacticPos(20);
 GResNode::GResNode(GResNodes* parent,GConceptNode* node)
 	: Parent(parent), Node(node), MinPos(cNoRef), MaxPos(0), Children(20)
 {
+/*	if(!Node)
+		mThrowGException("Cannot insert a null node");*/
+	if(Node)
+	{
+		if(Node->GetSyntacticPos()>MaxPos)
+			MaxPos=Node->GetSyntacticPos();
+		if(Node->GetSyntacticPos()<MinPos)
+			MinPos=Node->GetSyntacticPos();
+	}
 }
 
 
 //------------------------------------------------------------------------------
 int GResNode::Compare(const GResNode& node) const
 {
+	// Treat null nodes
+	if(!Node)
+	{
+		if(node.Node)
+			return(-1);
+		return(0);
+	}
+	else if(!node.Node)
+		return(1);
+
 	// Compare concept
 	if(Node!=node.Node)
 		return(CompareIds(Node->GetConceptId(),node.Node->GetConceptId()));
@@ -91,10 +110,21 @@ int GResNode::Compare(const GResNode& node) const
 //------------------------------------------------------------------------------
 void GResNode::AddChild(GConceptNode* child)
 {
-	if(child->GetSyntacticPos()>MaxPos)
-		MaxPos=child->GetSyntacticPos();
-	if(child->GetSyntacticPos()<MinPos)
-		MinPos=child->GetSyntacticPos();
+	// compute the extract to associate to that node
+	size_t max(0), min(0);
+	if(child->GetType()==ttText)
+	{
+		min=child->GetSyntacticPos();
+		max=child->GetSyntacticPos();
+	}
+	else
+	{
+		min=max=child->GetSyntacticPos();
+	}
+	if(max>MaxPos)
+		MaxPos=max;
+	if(min<MinPos)
+		MinPos=min;
 	bool Find;
 	size_t Idx(Children.GetIndex(*child,Find));
 	if(!Find)

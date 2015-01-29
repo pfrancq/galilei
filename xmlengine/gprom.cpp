@@ -62,10 +62,11 @@
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GPromSol::GPromSol(const size_t id,GResNode* node)
-	: RPromSol(id,RString::Number(node->GetNode()->GetSyntacticPos()),5), Node(node)
+GPromSol::GPromSol(const size_t id,size_t pos,GResNode* node)
+	: RPromSol(id,RString::Number(pos),5), Node(node)
 {
-
+/*	if(!Node)
+		mThrowGException("Cannot insert a null node");*/
 }
 
 
@@ -156,7 +157,12 @@ GProm::GProm(GEngineXML* engine,GQuery* query,GMeasure* weighting)
 void GProm::Add(GResNode* node)
 {
 	// Create the solution
-	GPromSol* Sol(new GPromSol(GetNbSols(),node));
+	GPromSol* Sol;
+	if(node->GetNode())
+		Sol=new GPromSol(GetNbSols(),node->GetNode()->GetSyntacticPos(),node);
+	else
+		Sol=new GPromSol(GetNbSols(),0,node);
+
 	AddSol(Sol);
 
 	// Assign the criteria
@@ -341,6 +347,8 @@ double GProm::ComputeDistance(GResNode* node)
 double GProm::ComputeType(GResNode* node)
 {
 	double Ret;
+	if(!node->GetNode())
+		return(0);
 	switch(node->GetNode()->GetType())
 	{
 		case ttLink:

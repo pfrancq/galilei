@@ -401,13 +401,12 @@ void GEngineXML::Request(GMetaEngine* caller,const RString& query)
 		double Ranking((Sol()->GetFi()-Min)/(Max-Min));
 		size_t DocId(Fragment->Node->GetParent()->GetDocId());
 		const GConceptTree* Tree(GetTree(DocId));
-		caller->AddResult(
-			DocId,
-			Fragment->Node->GetNode()->GetPos(),
-			Tree->GetNode(Fragment->Node->GetMinPos())->GetPos(),
-			Tree->GetNode(Fragment->Node->GetMaxPos())->GetPos(),
-			Ranking,
-			this);
+		const GConceptNode* MinNode(Tree->GetNode(Fragment->Node->GetMinPos()));
+		const GConceptNode* MaxNode(Tree->GetNode(Fragment->Node->GetMaxPos()));
+		size_t Pos(0);
+		if(Fragment->Node->GetNode())
+			Pos=Fragment->Node->GetNode()->GetPos();
+		caller->AddResult(DocId,Pos,MinNode->GetPos(),MaxNode->GetPos(),Ranking,this);
 	}
 }
 

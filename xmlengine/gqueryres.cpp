@@ -78,7 +78,12 @@ void GQueryRes::AddDoc(GEngineXML* engine,size_t docid,GConcept* concept)
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		if(Cur()->GetType()==ttText)
-			Occurs->InsertPtr(Cur()->GetParent(),Cur()); // Insert a node and its parent
+		{
+			//if(Cur()->GetParent())
+				Occurs->InsertPtr(Cur()->GetParent(),Cur()); // Insert a node and its parent
+			//else
+			//	Occurs->InsertPtr(Cur()); // Insert a node and its children
+		}
 		else
 			Occurs->InsertPtr(Cur()); // Insert a node and its children
 	}

@@ -65,9 +65,10 @@ public:
 	/**
 	 * Constructor.
     * @param id             Identifier of the solution.
+	 * @param pos            Position of the node.
     * @param node           Node.
     */
-	GPromSol(const size_t id,GResNode* node);
+	GPromSol(const size_t id,size_t pos,GResNode* node);
 
 	friend class GEngineXML;
 };
