@@ -50,8 +50,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GConceptNode::GConceptNode(tTokenType type,size_t conceptid,size_t synpos,size_t pos,size_t depth)
-	: RNode<GConceptTree,GConceptNode,false>(), Type(type), ConceptId(conceptid),
+GConceptNode::GConceptNode(GConceptTree* tree,tTokenType type,size_t conceptid,size_t synpos,size_t pos,size_t depth)
+	: RNode<GConceptTree,GConceptNode,false>(), Tree(tree), Type(type), ConceptId(conceptid),
 	  SyntacticPos(synpos), Pos(pos), SyntacticDepth(depth)
 {
 }

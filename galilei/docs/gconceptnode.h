@@ -56,6 +56,11 @@ namespace GALILEI{
 class GConceptNode : R::RNode<GConceptTree,GConceptNode,false>
 {
 	/**
+	 * Tree of the node.
+	 */
+	GConceptTree* Tree;
+
+	/**
 	 * Type of the token corresponding to the node.
 	 */
 	tTokenType Type;
@@ -89,13 +94,14 @@ public:
 
 	/**
 	 * Construct a concept node.
+	 * @param tree           Tree of the node.
 	 * @param type           Type of the token.
 	 * @param conceptid      Identifier of the concept.
 	 * @param synpos         Syntactic position.
 	 * @param pos            Position in the file.
 	 * @param depth          Syntactic depth of the record.
 	 */
-	GConceptNode(tTokenType type,size_t conceptid,size_t synpos,size_t pos,size_t depth);
+	GConceptNode(GConceptTree* tree,tTokenType type,size_t conceptid,size_t synpos,size_t pos,size_t depth);
 
 	/**
 	 * Compare two nodes regarding their depths and positions
@@ -113,6 +119,11 @@ public:
     * @return the type of the token corresponding to the node.
     */
 	tTokenType GetType(void) const {return(Type);}
+
+	/**
+    * @return the tree of the node.
+    */
+	GConceptTree* GetTree(void) const {return(Tree);}
 
 	/**
 	* @return the parent of the node. If null, the node is a top node.

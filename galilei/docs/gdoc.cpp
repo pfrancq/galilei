@@ -352,6 +352,7 @@ void GDoc::Update(GLang* lang,GDescription& desc,GConceptTree& tree)
 	bool NullTree;                          // The tree must not stayed in memory?
 
 	// Look if the document is internal one : Modify the references and indexes
+	GetVectors();  // Make sure the vectors are loaded
 	if(Id!=cNoRef)
 	{
 		// Emit an event that it is about to be updated
@@ -359,7 +360,7 @@ void GDoc::Update(GLang* lang,GDescription& desc,GConceptTree& tree)
 
 		// Look if the index must be modified
 		if(Save&&Session->DoCreateIndex(pDoc))
-			Session->UpdateIndex(pDoc,desc,Id,false);
+			Session->UpdateIndex(pDoc,*this,Id,false);
 	}
 
 	// Assign language

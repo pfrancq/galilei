@@ -70,6 +70,7 @@ void GTopic::Update(GDescription& desc)
 	bool NullDesc;                          // The description must not stayed in memory?
 
 	// Look if the topic is internal one : Modify the references and indexes
+	GetVectors();  // Make sure the vectors are loaded
 	if(Id!=cNoRef)
 	{
 		// Emit an event that it is about to be updated
@@ -77,7 +78,7 @@ void GTopic::Update(GDescription& desc)
 
 		// Look if the index must be modified
 		if(Save&&Session->DoCreateIndex(pTopic))
-			Session->UpdateIndex(pTopic,desc,Id,false);
+			Session->UpdateIndex(pTopic,*this,Id,false);
 	}
 
 	// The description must be saved only for external topics or when a description is already loaded

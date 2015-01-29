@@ -123,6 +123,7 @@ void GCommunity::Update(GDescription& desc)
 	bool NullDesc;                          // The description must not stayed in memory?
 
 	// Look if the community is internal one : Modify the references and indexes
+	GetVectors();  // Make sure the vectors are loaded
 	if(Id!=cNoRef)
 	{
 		// Emit an event that it is about to be updated
@@ -130,7 +131,7 @@ void GCommunity::Update(GDescription& desc)
 
 		// Look if the index must be modified
 		if(Save&&Session->DoCreateIndex(pCommunity))
-			Session->UpdateIndex(pCommunity,desc,Id,false);
+			Session->UpdateIndex(pCommunity,*this,Id,false);
 	}
 
 	// The description must be saved only for external communities or when a description is already loaded

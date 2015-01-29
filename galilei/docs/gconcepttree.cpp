@@ -101,7 +101,7 @@ GConceptNode* GConceptTree::InsertNode(GConceptNode* parent,tTokenType type,size
 	GConceptNode* Node;
 	if(GetNbNodes()>=GetNb())
 	{
-		InsertPtr(Node=new GConceptNode(type,conceptid,synpos,pos,depth));
+		InsertPtr(Node=new GConceptNode(this,type,conceptid,synpos,pos,depth));
 		Node->Index=GetNb()-1;
 	}
 	else
@@ -186,6 +186,7 @@ void GConceptTree::Print(void) const
 	RNodeCursor<GConceptTree,GConceptNode> Children(*this);
 	for(Children.Start();!Children.End();Children.Next())
 		Children()->Print();
+	cout<<endl;
 }
 
 

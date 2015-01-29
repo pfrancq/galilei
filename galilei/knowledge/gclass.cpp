@@ -103,6 +103,7 @@ void GClass::Update(GDescription& desc)
 	bool NullDesc;                          // The description must not stayed in memory?
 
 	// Look if the class is internal one : Modify the references and indexes
+	GetVectors();  // Make sure the vectors are loaded
 	if(Id!=cNoRef)
 	{
 		// Emit an event that it is about to updated
@@ -110,7 +111,7 @@ void GClass::Update(GDescription& desc)
 
 		// Look if the index must be modified
 		if(Save&&Session->DoCreateIndex(pClass))
-			Session->UpdateIndex(pClass,desc,Id,false);
+			Session->UpdateIndex(pClass,*this,Id,false);
 	}
 
 	// The description must be saved only for external classes or when a description is already loaded

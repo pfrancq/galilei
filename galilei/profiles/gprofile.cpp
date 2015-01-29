@@ -266,6 +266,7 @@ void GProfile::Update(GDescription& desc)
 	bool NullDesc;                          // The description must not stayed in memory?
 
 	// Look if the profile is internal one : Modify the references and indexes
+	GetVectors();  // Make sure the vectors are loaded
 	if(Id!=cNoRef)
 	{
 		// Emit an event that it is about to be updated
@@ -273,7 +274,7 @@ void GProfile::Update(GDescription& desc)
 
 		// Look if the index must be modified
 		if(Save&&Session->DoCreateIndex(pProfile))
-			Session->UpdateIndex(pProfile,desc,Id,false);
+			Session->UpdateIndex(pProfile,*this,Id,false);
 	}
 
 	// The description must be saved only for external profiles or when a description is already loaded
