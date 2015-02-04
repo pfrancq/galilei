@@ -201,6 +201,11 @@ public:
 	RCursor<GConcept> GetConcepts(size_t min=0,size_t max=SIZE_MAX) const;
 
 	/**
+    * @return a cursor over the identifier of the documents.
+    */
+	RNumCursor<size_t> GetDocIds(void) const;
+
+	/**
 	 * @return true if a given concept is used in the query.
 	 */
 	bool IsIn(const GConcept& concept) const;

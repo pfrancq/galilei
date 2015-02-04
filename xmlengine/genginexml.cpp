@@ -265,28 +265,30 @@ void GEngineXML::Done(void)
 //------------------------------------------------------------------------------
 void GEngineXML::CreateConfig(void)
 {
+	GEngine::CreateConfig();
 	InsertParam(new RParamValue("NbResults",40,"Number of chunks to retrieve."));
 	InsertParam(new RParamValue("Weight",1.0,"Weight of the engine."));
+	InsertParam(new RParamValue("OnlyDocs",false,"Retrieve only documents?"));
 	InsertParam(RPromLinearCriterion::CreateParam("TfIdf","Tf/Idf Criterion"));
 	InsertParam(RPromLinearCriterion::CreateParam("Type","Type Criterion"));
 	InsertParam(RPromLinearCriterion::CreateParam("Distance","Distance Criterion"));
 	InsertParam(RPromLinearCriterion::CreateParam("Specificity","Specificity Criterion"));
 	InsertParam(RPromLinearCriterion::CreateParam("TfIff","Tf/Iff Criterion"));
-	InsertParam(RPromLinearCriterion::CreateParam("Occurrence","Occurrence Criterion"));
 }
 
 
 //------------------------------------------------------------------------------
 void GEngineXML::ApplyConfig()
 {
+	GEngine::ApplyConfig();
 	NbResults=FindParam<RParamValue>("NbResults")->GetUInt();
 	Weight=FindParam<RParamValue>("Weight")->GetDouble();
+	OnlyDocs=FindParam<RParamValue>("OnlyDocs")->GetBool();
 	TfIdf=FindParam<RParamStruct>("TfIdf");
 	Type=FindParam<RParamStruct>("Type");
 	Distance=FindParam<RParamStruct>("Distance");
 	Specificity=FindParam<RParamStruct>("Specificity");
 	TfIff=FindParam<RParamStruct>("TfIff");
-	Occurrence=FindParam<RParamStruct>("Occurrence");
 }
 
 
@@ -379,9 +381,19 @@ void GEngineXML::Request(GMetaEngine* caller,const RString& query)
 	 if(Debug)
 		Res->Print();
 
+	 if(OnlyDocs)
+		 SelectDocs(caller,Req,Res);
+	 else
+		RankFragments(caller,Req,Res);
+}
+
+
+//------------------------------------------------------------------------------
+void GEngineXML::RankFragments(GMetaEngine* caller,GQuery& req,const GQueryRes* res)
+{
 	// Create a PROMETHEE kernel and a solution for each fragment
-	GProm Prom(this,&Req,Weighting);
-	RCursor<GResNodes> Docs(Res->GetDocs());
+	GProm Prom(this,&req,Weighting);
+	RCursor<GResNodes> Docs(res->GetDocs());
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		RCursor<GResNode> Node(Docs()->GetNodes());
@@ -409,6 +421,32 @@ void GEngineXML::Request(GMetaEngine* caller,const RString& query)
 		caller->AddResult(DocId,Pos,MinNode->GetPos(),MaxNode->GetPos(),Ranking,this);
 	}
 }
+
+
+//------------------------------------------------------------------------------
+void GEngineXML::SelectDocs(GMetaEngine* caller,GQuery& req,const GQueryRes* res)
+{
+	RCursor<GResNodes> Res(res->GetDocs());
+	double Dec(1.0/static_cast<double>(Res.GetNb()+1));
+	double Ranking(1.0);
+	for(Res.Start();!Res.End();Res.Next(),Ranking-=Dec)
+	{
+		// Determine Min and Max
+		size_t Min(cNoRef), Max(0);
+		RCursor<GResNode> Node(Res()->GetNodes());
+		for(Node.Start();!Node.End();Node.Next())
+		{
+			if(Min>Node()->GetNode()->GetPos())
+				Min=Node()->GetNode()->GetPos();
+			if(Max<Node()->GetNode()->GetPos())
+				Max=Node()->GetNode()->GetPos();
+		}
+		cout<<Min<<" "<<Max<<endl;
+
+		caller->AddResult(Res()->GetDocId(),Min,Min,Max,Ranking,this);
+	}
+}
+
 
 
 //------------------------------------------------------------------------------

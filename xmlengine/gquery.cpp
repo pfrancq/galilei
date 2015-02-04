@@ -259,12 +259,12 @@ void GQuery::FindOccurrences(GConcept* concept)
 		Results.Push(new GQueryRes());
 		return;
 	}
-	cout<<concept->GetName()<<endl;
-	
+//	cout<<concept->GetName()<<endl;
+
 	// Find all documents containing the concept
 	DocIds.Clear();
 	Engine->GetSession()->LoadIndex(pDoc,concept,DocIds);
-	cout<<"Documents "<<DocIds.GetNb()<<endl;
+//	cout<<"Documents "<<DocIds.GetNb()<<endl;
 
 	// If no results -> push an empty result
 	if(!DocIds.GetNb())
@@ -610,6 +610,13 @@ const GQueryRes* GQuery::GetResult(void) const
 RCursor<GConcept> GQuery::GetConcepts(size_t min,size_t max) const
 {
 	return(RCursor<GConcept>(Concepts,min,max));
+}
+
+
+//------------------------------------------------------------------------------
+RNumCursor<size_t> GQuery::GetDocIds(void) const
+{
+	return(RNumCursor<size_t>(DocIds));
 }
 
 

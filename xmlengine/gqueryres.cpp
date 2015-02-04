@@ -79,10 +79,11 @@ void GQueryRes::AddDoc(GEngineXML* engine,size_t docid,GConcept* concept)
 	{
 		if(Cur()->GetType()==ttText)
 		{
-			//if(Cur()->GetParent())
+			// If the text has a parent node, its parent must be the root node of the result
+			if(Cur()->GetParent())
 				Occurs->InsertPtr(Cur()->GetParent(),Cur()); // Insert a node and its parent
-			//else
-			//	Occurs->InsertPtr(Cur()); // Insert a node and its children
+			else
+				Occurs->InsertPtr(Cur()); // Insert a node and its children
 		}
 		else
 			Occurs->InsertPtr(Cur()); // Insert a node and its children

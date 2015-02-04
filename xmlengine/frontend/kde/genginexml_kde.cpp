@@ -65,6 +65,7 @@ public:
 		setMainWidget(widget);
 		setButtons(KDialog::Cancel|KDialog::Apply);
 		connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
+		setSizePolicy(QSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum));
 		adjustSize();
 	}
 };
@@ -85,7 +86,6 @@ void About(void)
 	aboutData.addAuthor(ki18n("Jean-Baptiste Valsamis"),ki18n("Contributor"));
 	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
-
 }
 
 
@@ -97,6 +97,7 @@ bool Configure(GPlugIn* fac)
 	// Normal Parameters
 	Dlg.NbResults->setValue(fac->FindParam<RParamValue>("NbResults")->GetInt());
 	Dlg.Weight->setValue(fac->FindParam<RParamValue>("Weight")->GetDouble());
+	Dlg.OnlyDocs->setChecked(fac->FindParam<RParamValue>("OnlyDocs")->GetBool());
 
 	// Tf/Idf
 	Dlg.TfIdfActive->setChecked(fac->FindParam<RParamStruct>("TfIdf")->Get<RParamValue>("Active")->GetBool());
@@ -116,11 +117,11 @@ bool Configure(GPlugIn* fac)
 	Dlg.SpecificityQ->setValue(fac->FindParam<RParamStruct>("Specificity")->Get<RParamValue>("Q")->GetDouble());
 	Dlg.SpecificityWeight->setValue(fac->FindParam<RParamStruct>("Specificity")->Get<RParamValue>("Weight")->GetDouble());
 
-	// Occurrence
-	Dlg.OccurrenceActive->setChecked(fac->FindParam<RParamStruct>("Occurrence")->Get<RParamValue>("Active")->GetBool());
-	Dlg.OccurrenceP->setValue(fac->FindParam<RParamStruct>("Occurrence")->Get<RParamValue>("P")->GetDouble());
-	Dlg.OccurrenceQ->setValue(fac->FindParam<RParamStruct>("Occurrence")->Get<RParamValue>("Q")->GetDouble());
-	Dlg.OccurrenceWeight->setValue(fac->FindParam<RParamStruct>("Occurrence")->Get<RParamValue>("Weight")->GetDouble());
+	// Type
+	Dlg.TypeActive->setChecked(fac->FindParam<RParamStruct>("Type")->Get<RParamValue>("Active")->GetBool());
+	Dlg.TypeP->setValue(fac->FindParam<RParamStruct>("Type")->Get<RParamValue>("P")->GetDouble());
+	Dlg.TypeQ->setValue(fac->FindParam<RParamStruct>("Type")->Get<RParamValue>("Q")->GetDouble());
+	Dlg.TypeWeight->setValue(fac->FindParam<RParamStruct>("Type")->Get<RParamValue>("Weight")->GetDouble());
 
 	// Tf/Ief
 	Dlg.TfIffActive->setChecked(fac->FindParam<RParamStruct>("TfIff")->Get<RParamValue>("Active")->GetBool());
@@ -133,6 +134,7 @@ bool Configure(GPlugIn* fac)
 		// Normal Parameters
 		fac->FindParam<RParamValue>("NbResults")->SetUInt(Dlg.NbResults->value());
 		fac->FindParam<RParamValue>("Weight")->SetDouble(Dlg.Weight->value());
+		fac->FindParam<RParamValue>("OnlyDocs")->SetBool(Dlg.OnlyDocs->isChecked());
 
 		// Tf/Idf
 		fac->FindParam<RParamStruct>("TfIdf")->Get<RParamValue>("Active")->SetBool(Dlg.TfIdfActive->isChecked());
@@ -152,11 +154,11 @@ bool Configure(GPlugIn* fac)
 		fac->FindParam<RParamStruct>("Specificity")->Get<RParamValue>("Q")->SetDouble(Dlg.SpecificityQ->value());
 		fac->FindParam<RParamStruct>("Specificity")->Get<RParamValue>("Weight")->SetDouble(Dlg.SpecificityWeight->value());
 
-		// Occurrence
-		fac->FindParam<RParamStruct>("Occurrence")->Get<RParamValue>("Active")->SetBool(Dlg.OccurrenceActive->isChecked());
-		fac->FindParam<RParamStruct>("Occurrence")->Get<RParamValue>("P")->SetDouble(Dlg.OccurrenceP->value());
-		fac->FindParam<RParamStruct>("Occurrence")->Get<RParamValue>("Q")->SetDouble(Dlg.OccurrenceQ->value());
-		fac->FindParam<RParamStruct>("Occurrence")->Get<RParamValue>("Weight")->SetDouble(Dlg.OccurrenceWeight->value());
+		// Type
+		fac->FindParam<RParamStruct>("Type")->Get<RParamValue>("Active")->SetBool(Dlg.TypeActive->isChecked());
+		fac->FindParam<RParamStruct>("Type")->Get<RParamValue>("P")->SetDouble(Dlg.TypeP->value());
+		fac->FindParam<RParamStruct>("Type")->Get<RParamValue>("Q")->SetDouble(Dlg.TypeQ->value());
+		fac->FindParam<RParamStruct>("Type")->Get<RParamValue>("Weight")->SetDouble(Dlg.TypeWeight->value());
 
 		// Tf/Ief
 		fac->FindParam<RParamStruct>("TfIff")->Get<RParamValue>("Active")->SetBool(Dlg.TfIffActive->isChecked());
