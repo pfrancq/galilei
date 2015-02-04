@@ -54,6 +54,8 @@ using namespace std;
  */
 class QPlugInsList : public QWidget, public Ui_QPlugInsList
 {
+	class QPlugIn;
+	
 	Q_OBJECT
 
 public:
@@ -105,6 +107,11 @@ private:
 	 */
 	RString Cat;
 
+	/**
+	 * Current plug-in selected.
+	 */
+	QPlugIn* CurPlugIn;
+
 public:
 
 	/**
@@ -140,6 +147,30 @@ public:
 	 */
 	void apply(GSession* session);
 
+	/**
+	 * Configure the current plug-on of a list.
+    * @param list           List.
+    */
+	void DoConfigure(QListWidget* list);
+
+	/**
+	 * Show the About of the current plug-on of a list.
+    * @param list           List.
+    */
+	void DoAbout(QListWidget* list);
+
+	/**
+	 * Show the parameters of the current plug-on of a list.
+    * @param list           List.
+    */
+	void DoParams(QListWidget* list);
+
+	/**
+	* Reset current plug-on of a list.
+    * @param list           List.
+    */
+	void DoReset(QListWidget* list);
+
 public slots:
 
 	/**
@@ -153,6 +184,16 @@ public slots:
 	void slotAbout(void);
 
 	/**
+	 * Slot called when the Configure button is pressed.
+	 */
+	void slotConfigure_2(void);
+
+	/**
+	 * Slot called when the About button is pressed.
+	 */
+	void slotAbout_2(void);
+
+	/**
 	 * Slot called when a new plug-in is chosen in the list.
 	 * @param act            New plug-in chosen.
 	 * @param prev           Previous plug-in chosen.
@@ -160,10 +201,23 @@ public slots:
 	void slotChange(QListWidgetItem* act,QListWidgetItem* prev);
 
 	/**
+	 * Slot called when a new plug-in is chosen in the list.
+	 * @param act            New plug-in chosen.
+	 * @param prev           Previous plug-in chosen.
+	 */
+	void slotChange_2(QListWidgetItem* act,QListWidgetItem* prev);
+
+	/**
 	 * Slot called when the Enable property is checked or unchecked.
 	 * @param state          New status of the plug-in.
 	 */
 	void slotEnable(bool state);
+
+	/**
+	 * Slot called when the Enable property is checked or unchecked.
+	 * @param state          New status of the plug-in.
+	 */
+	void slotEnable_2(bool state);
 
 	/**
 	 * Slot called when the Up button is pressed.
@@ -184,6 +238,16 @@ public slots:
 	 * Slot called when the Reset button is pressed.
 	 */
 	void slotReset(void);
+
+	/**
+	 * Slot called when the Params button is pressed.
+	 */
+	void slotParams_2(void);
+
+	/**
+	 * Slot called when the Reset button is pressed.
+	 */
+	void slotReset_2(void);
 };
 
 

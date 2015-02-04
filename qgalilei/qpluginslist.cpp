@@ -74,7 +74,7 @@ using namespace R;
 /**
  * The QPlugIn represents a plug-in in the list.
  */
-class QPlugIn : public QListWidgetItem
+class QPlugInsList::QPlugIn : public QListWidgetItem
 {
 public:
 	GPlugInFactory* PlugIn;          // Plug-in Configuration.
@@ -95,7 +95,7 @@ public:
 
 //------------------------------------------------------------------------------
 QPlugInsList::QPlugInsList(QWidget* parent)
-	: QWidget(parent), Ui_QPlugInsList()
+	: QWidget(parent), Ui_QPlugInsList(), CurPlugIn(0)
 {
 	setupUi(this);
 	connect(Down,SIGNAL(pressed()),this,SLOT(slotDown()));
@@ -115,10 +115,38 @@ void QPlugInsList::init(const RString& mng,bool current,bool enable,bool updown,
 	HasCurrent=current;
 	HasUpDown=updown;
 	Current->setVisible(current);
+	CurrentLabel->setVisible(current);
 	Enable->setVisible(enable);
 	Up->setVisible(updown);
 	Down->setVisible(updown);
 	GPlugInFactory* Fac(GALILEIApp->GetCurrentFactory(mng,list,false));
+
+	if(Type==Engines)
+	{
+		// Initialize Ranking methods
+		def=cur=0;
+		Current_2->insertItem(0,"None");
+
+		cur=0;
+		RCursor<GPlugInFactory> Cur(GALILEIApp->GetFactories("ComputeRank",list));
+		for(Cur.Start(),idx=1;!Cur.End();Cur.Next(),idx++)
+		{
+			str=ToQString(Cur()->GetDesc());
+			str+=" [";
+			str+=ToQString(Cur()->GetLib());
+			str+="]";
+			bool Enabled;
+			Enabled=GALILEIApp->GetConfig()->GetBool("Enable",Cur()->GetMng()->GetName(),Cur()->GetName());
+			cur=new QPlugIn(List_2,Cur(),str,Enabled);
+			Current_2->insertItem(idx,ToQString(Cur()->GetName()));
+			if(!def)
+				def=cur;
+		}
+		if(def)
+			List_2->setCurrentItem(def,QItemSelectionModel::Select);
+	}
+	else
+		Second->setVisible(false);
 
 	// Goes through the plug-ins
 	def=cur=0;
@@ -269,6 +297,39 @@ void QPlugInsList::apply(GSession* session)
 				item->PlugIn->Delete();
 		}
 	}
+	if(Type==Engines)
+	{
+		// Apply the ranking methods
+		for(int i=0;i<List_2->count();i++)
+		{
+			QPlugIn* item=dynamic_cast<QPlugIn*>(List_2->item(i));
+			item->PlugIn->SetLevel(i);
+			GALILEIApp->GetConfig()->SetBool("Enable",item->Enable,item->PlugIn->GetMng()->GetName(),item->PlugIn->GetName());
+			if(item->Enable)
+			{
+				if(!item->WasEnable)
+				{
+					item->PlugIn->Create(session);
+					item->PlugIn->GetPlugIn()->CreateConfig();
+				}
+				item->PlugIn->GetPlugIn()->ApplyConfig();
+			}
+			else
+			{
+				if(item->WasEnable)
+					item->PlugIn->Delete();
+			}
+		}
+
+		// Save all the engine-ranking association
+
+		// Save the current one.
+		if(CurPlugIn)
+		{
+			RString Ranking(FromQString(Current_2->currentText()));
+			CurPlugIn->PlugIn->GetPlugIn()->FindParam<RParamValue>("RankingMethod")->Set(Ranking);
+		}
+	}
 
 	if(HasCurrent)
 	{
@@ -318,28 +379,128 @@ void QPlugInsList::apply(GSession* session)
 
 
 //-----------------------------------------------------------------------------
-void QPlugInsList::slotConfigure(void)
+void QPlugInsList::DoConfigure(QListWidget* list)
 {
-	 if(!List->currentItem()) return;
-	 QPlugIn* f=dynamic_cast<QPlugIn*>(List->currentItem());
+	 if(!list->currentItem()) return;
+	 QPlugIn* f=dynamic_cast<QPlugIn*>(list->currentItem());
 	 if(!f) return;
 	 f->PlugIn->Configure();
 }
 
-
 //-----------------------------------------------------------------------------
-void QPlugInsList::slotAbout(void)
+void QPlugInsList::DoAbout(QListWidget* list)
 {
-	 if(!List->currentItem()) return;
-	 QPlugIn* f=dynamic_cast<QPlugIn*>(List->currentItem());
+	 if(!list->currentItem()) return;
+	 QPlugIn* f=dynamic_cast<QPlugIn*>(list->currentItem());
 	 if(!f) return;
 	 f->PlugIn->About();
 }
 
 
 //-----------------------------------------------------------------------------
+void QPlugInsList::DoParams(QListWidget* list)
+{
+	if(!list->currentItem()) return;
+	QPlugIn* f=dynamic_cast<QPlugIn*>(list->currentItem());
+	if(!f) return;
+	QDialog Dlg(this);
+	Dlg.setWindowTitle(ToQString("Parameters of "+f->PlugIn->GetName()));
+	QVBoxLayout* VerticalLayout = new QVBoxLayout(&Dlg);
+	QTreeWidget* widget(new QTreeWidget(&Dlg));
+	widget->setRootIsDecorated(false);
+	widget->setColumnCount(2);
+	widget->setHeaderLabels(QStringList()<<"Name"<<"Description");
+	widget->header()->setResizeMode(0,QHeaderView::ResizeToContents);
+	widget->header()->setResizeMode(1,QHeaderView::ResizeToContents);
+	RContainer<RString,true,false> Cats(10);
+	f->PlugIn->GetPlugIn()->GetCategories(Cats);
+	Cats.InsertPtr(new RString(RString::Null));
+	RCursor<RString> Cur(Cats);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		QTreeWidgetItem* parent(0);
+		if((*Cur())!=RString::Null)
+			parent=new QTreeWidgetItem(widget,QStringList()<<ToQString(*Cur())<<"Category");
+		RCursor<RParam> Cur2(f->PlugIn->GetPlugIn()->GetParams(*Cur()));
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
+		{
+			QTreeWidgetItem* item(0);
+			if(parent)
+				item=new QTreeWidgetItem(widget,parent);
+			else
+				item=new QTreeWidgetItem(widget);
+			item->setText(0,ToQString(Cur2()->GetName()));
+			item->setText(1,ToQString(Cur2()->GetDescription()));
+		}
+	}
+	VerticalLayout->addWidget(widget);
+//	Dlg.setMainWidget(widget);
+//	Dlg.setButtons(KDialog::Ok);
+	Dlg.resize(sizeHint());
+	Dlg.exec();
+}
+
+
+//-----------------------------------------------------------------------------
+class QReset : public QSessionProgress
+{
+	GPlugIn* PlugIn;
+public:
+	QReset(QGALILEIWin* win,GPlugIn* plugin)
+		: QSessionProgress(win,"Reset Plug-In"), PlugIn(plugin) {}
+	virtual void DoIt(void)
+	{
+	 	setLabelText("Reset the plug-in '"+ToQString(PlugIn->GetName())+"'");
+		PlugIn->Reset();
+	}
+};
+
+
+//-----------------------------------------------------------------------------
+void QPlugInsList::DoReset(QListWidget* list)
+{
+	if(!list->currentItem()) return;
+	QPlugIn* f=dynamic_cast<QPlugIn*>(list->currentItem());
+	if(!f) return;
+	QReset(0,f->PlugIn->GetPlugIn()).run();
+}
+
+
+//-----------------------------------------------------------------------------
+void QPlugInsList::slotConfigure(void)
+{
+	DoConfigure(List);
+}
+
+
+//-----------------------------------------------------------------------------
+void QPlugInsList::slotAbout(void)
+{
+	DoAbout(List);
+}
+
+
+//-----------------------------------------------------------------------------
+void QPlugInsList::slotAbout_2(void)
+{
+	DoAbout(List_2);
+}
+
+
+//-----------------------------------------------------------------------------
+void QPlugInsList::slotConfigure_2(void)
+{
+	DoConfigure(List_2);
+}
+
+
+//-----------------------------------------------------------------------------
 void QPlugInsList::slotChange(QListWidgetItem* act,QListWidgetItem*)
 {
+	if(CurPlugIn)
+	{
+		cout<<"Save Engine"<<endl;
+	}
 	if(!act) return;
 	QPlugIn* f=dynamic_cast<QPlugIn*>(act);
 	if(!f) return;
@@ -348,6 +509,30 @@ void QPlugInsList::slotChange(QListWidgetItem* act,QListWidgetItem*)
 	Enable->setChecked(f->Enable);
 	Params->setEnabled(f->PlugIn->GetPlugIn());
 	Reset->setEnabled(f->PlugIn->GetPlugIn());
+	if((Type==Engines)&&(f->PlugIn->GetPlugIn()))
+	{
+		RString Ranking(f->PlugIn->GetPlugIn()->FindParam<RParamValue>("RankingMethod")->Get());
+		int i=Current_2->findText(ToQString(Ranking));
+		if(i!=-1)
+			Current_2->setCurrentIndex(i);
+		else
+			Current_2->setCurrentIndex(0);
+	}
+	CurPlugIn=f;
+}
+
+
+//-----------------------------------------------------------------------------
+void QPlugInsList::slotChange_2(QListWidgetItem* act,QListWidgetItem*)
+{
+	if(!act) return;
+	QPlugIn* f=dynamic_cast<QPlugIn*>(act);
+	if(!f) return;
+	Configure_2->setEnabled(f->PlugIn->GetPlugIn()&&f->PlugIn->HasConfigure());
+	About_2->setEnabled(f->PlugIn->GetPlugIn()&&f->PlugIn->HasAbout());
+	Enable_2->setChecked(f->Enable);
+	Params_2->setEnabled(f->PlugIn->GetPlugIn());
+	Reset_2->setEnabled(f->PlugIn->GetPlugIn());
 }
 
 
@@ -362,6 +547,20 @@ void QPlugInsList::slotEnable(bool state)
 	About->setEnabled(f->PlugIn->GetPlugIn()&&f->PlugIn->HasAbout());
 	Params->setEnabled(f->PlugIn->GetPlugIn());
 	Reset->setEnabled(f->PlugIn->GetPlugIn());
+}
+
+
+//-----------------------------------------------------------------------------
+void QPlugInsList::slotEnable_2(bool state)
+{
+	if(!List_2->currentItem()) return;
+	QPlugIn* f=dynamic_cast<QPlugIn*>(List_2->currentItem());
+	if(!f) return;
+	f->Enable=state;
+	Configure_2->setEnabled(f->PlugIn->GetPlugIn()&&f->PlugIn->HasConfigure());
+	About_2->setEnabled(f->PlugIn->GetPlugIn()&&f->PlugIn->HasAbout());
+	Params_2->setEnabled(f->PlugIn->GetPlugIn());
+	Reset_2->setEnabled(f->PlugIn->GetPlugIn());
 }
 
 
@@ -394,65 +593,27 @@ void QPlugInsList::slotDown(void)
 //-----------------------------------------------------------------------------
 void QPlugInsList::slotParams(void)
 {
-	if(!List->currentItem()) return;
-	QPlugIn* f=dynamic_cast<QPlugIn*>(List->currentItem());
-	if(!f) return;
-	QDialog Dlg(this);
-	Dlg.setWindowTitle(ToQString("Parameters of "+f->PlugIn->GetName()));
-	QTreeWidget* widget(new QTreeWidget(&Dlg));
-	widget->setRootIsDecorated(false);
-	widget->setColumnCount(2);
-	widget->setHeaderLabels(QStringList()<<"Name"<<"Description");
-	widget->header()->setResizeMode(0,QHeaderView::ResizeToContents);
-	widget->header()->setResizeMode(1,QHeaderView::ResizeToContents);
-	RContainer<RString,true,false> Cats(10);
-	f->PlugIn->GetPlugIn()->GetCategories(Cats);
-	Cats.InsertPtr(new RString(RString::Null));
-	RCursor<RString> Cur(Cats);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		QTreeWidgetItem* parent(0);
-		if((*Cur())!=RString::Null)
-			parent=new QTreeWidgetItem(widget,QStringList()<<ToQString(*Cur())<<"Category");
-		RCursor<RParam> Cur2(f->PlugIn->GetPlugIn()->GetParams(*Cur()));
-		for(Cur2.Start();!Cur2.End();Cur2.Next())
-		{
-			QTreeWidgetItem* item(0);
-			if(parent)
-				item=new QTreeWidgetItem(widget,parent);
-			else
-				item=new QTreeWidgetItem(widget);
-			item->setText(0,ToQString(Cur2()->GetName()));
-			item->setText(1,ToQString(Cur2()->GetDescription()));
-		}
-	}
-//	Dlg.setMainWidget(widget);
-//	Dlg.setButtons(KDialog::Ok);
-	Dlg.resize(sizeHint());
-	Dlg.exec();
+	DoParams(List);
 }
 
-
-//-----------------------------------------------------------------------------
-class QReset : public QSessionProgress
-{
-	GPlugIn* PlugIn;
-public:
-	QReset(QGALILEIWin* win,GPlugIn* plugin)
-		: QSessionProgress(win,"Reset Plug-In"), PlugIn(plugin) {}
-	virtual void DoIt(void)
-	{
-	 	setLabelText("Reset the plug-in '"+ToQString(PlugIn->GetName())+"'");
-		PlugIn->Reset();
-	}
-};
 
 
 //-----------------------------------------------------------------------------
 void QPlugInsList::slotReset(void)
 {
-	if(!List->currentItem()) return;
-	QPlugIn* f=dynamic_cast<QPlugIn*>(List->currentItem());
-	if(!f) return;
-	QReset(0,f->PlugIn->GetPlugIn()).run();
+	DoReset(List);
+}
+
+
+//-----------------------------------------------------------------------------
+void QPlugInsList::slotParams_2(void)
+{
+	DoParams(List_2);
+}
+
+
+//-----------------------------------------------------------------------------
+void QPlugInsList::slotReset_2(void)
+{
+	DoReset(List_2);
 }
