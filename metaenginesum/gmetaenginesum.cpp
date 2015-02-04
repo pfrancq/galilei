@@ -6,7 +6,7 @@
 
 	Meta-engine based on a Weighted Sum - Implementation.
 
-   Copyright 2003-2014 by Pascal Francq.
+   Copyright 2003-2015 by Pascal Francq.
 	Copyright 2003-2004 by Valery Vandaele.
 	Copyright 2003-2008 Université Libre de Bruxelles (ULB).
 
@@ -195,6 +195,7 @@ void GMetaEngineSum::BuildRequests(void)
 		}
 	}
 }
+
 
 //------------------------------------------------------------------------------
 void GMetaEngineSum::CombineKeywords(size_t pos,size_t k)

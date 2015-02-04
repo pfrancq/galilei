@@ -2,13 +2,11 @@
 
 	GALILEI Research Project
 
-	GMetaEngineSum_KDE.cpp
+	GNoRank_KDE.cpp
 
-	Meta-engine based on a Weighted Sum - Implementation (KDE Part).
+	No Ranking Method - Implementation (KDE Part).
 
-   Copyright 2003-2015 by Pascal Francq.
-	Copyright 2003-2004 by Valery Vandaele.
-	Copyright 2003-2008 Université Libre de Bruxelles (ULB).
+   Copyright 2003-2014 by Pascal Francq.
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -31,7 +29,7 @@
 
 //------------------------------------------------------------------------------
 // include files for current project
-#include <gmetaenginesum_kde.h>
+#include <gnorank_kde.h>
 
 
 
@@ -99,37 +97,11 @@ bool Configure(GPlugIn* fac)
 {
 	Config dlg;
 
-	dlg.UseWeight->setChecked(fac->FindParam<RParamValue>("UseWeight")->GetBool());
-	switch(fac->FindParam<RParamValue>("Type")->GetUInt())
-	{
-		case GMetaEngineSum::Single:
-			dlg.Type->setCurrentIndex(0);
-			dlg.changeType(0);
-			break;
-		case GMetaEngineSum::kCombinations:
-			dlg.Type->setCurrentIndex(1);
-			dlg.changeType(1);
-			break;
-	}
-	dlg.PercentValue->setChecked(fac->FindParam<RParamValue>("PercentValue")->GetBool());
-	dlg.kMin->setValue(fac->FindParam<RParamValue>("kMin")->GetUInt());
-	dlg.kMax->setValue(fac->FindParam<RParamValue>("kMax")->GetUInt());
+//	dlg.UseWeight->setChecked(fac->FindParam<RParamValue>("UseWeight")->GetBool());
 
 	if(dlg.exec())
 	{
-		fac->FindParam<RParamValue>("UseWeight")->SetBool(dlg.UseWeight->isChecked());
-		switch(dlg.Type->currentIndex())
-		{
-			case 0:
-				fac->FindParam<RParamValue>("Type")->SetUInt(GMetaEngineSum::Single);
-				break;
-			case 1:
-				fac->FindParam<RParamValue>("Type")->SetUInt(GMetaEngineSum::kCombinations);
-				break;
-		}
-		fac->FindParam<RParamValue>("PercentValue")->SetBool(dlg.PercentValue->isChecked());
-		fac->FindParam<RParamValue>("kMin")->SetUInt(dlg.kMin->value());
-		fac->FindParam<RParamValue>("kMax")->SetUInt(dlg.kMax->value());
+//		fac->FindParam<RParamValue>("UseWeight")->SetBool(dlg.UseWeight->isChecked());
 		return(true);
 	}
 	return(false);

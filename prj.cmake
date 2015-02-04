@@ -33,3 +33,6 @@ ENDIF(disable-kde)
 
 SET(SUB_PROJECT metaenginesum)
 ADD_SUBDIRECTORY(metaenginesum)
+
+SET(SUB_PROJECT norank)
+ADD_SUBDIRECTORY(norank)

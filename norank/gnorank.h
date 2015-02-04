@@ -2,13 +2,11 @@
 
 	GALILEI Research Project
 
-	GMetaEngineSum_KDE.cpp
+	GNoRank.h
 
-	Meta-engine based on a Weighted Sum - Header (KDE Part).
+	No Ranking Method - Header.
 
-   Copyright 2003-2015 by Pascal Francq.
-	Copyright 2003-2004 by Valery Vandaele.
-	Copyright 2003-2008 Université Libre de Bruxelles (ULB).
+   Copyright 2015-2015 by Pascal Francq.
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -25,39 +23,52 @@
 	to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
 	Boston, MA  02111-1307  USA
 
+
 */
 
 
 
 //------------------------------------------------------------------------------
-// include files for GALILEI
-#include <gmetaenginesum.h>
-#include <rqt.h>
-using namespace R;
-using namespace std;
-using namespace GALILEI;
+#ifndef GNoRankH
+#define GNoRankH
 
 
 //-----------------------------------------------------------------------------
-// include files for Qt/KDE
-#include <QtGui/QPushButton>
-#include <kaboutdata.h>
-#include <klocale.h>
-#include <kaboutapplicationdialog.h>
-#include <knuminput.h>
-#include <ui_config.h>
+// include files for GALILEI
+#include <gcomputerank.h>
+using namespace std;
+using namespace GALILEI;
+using namespace R;
 
 
 //------------------------------------------------------------------------------
-class Config : public KDialog, public Ui_Config
+/**
+* The GNoRank class provides a representation for a ranking method that does
+* nothing.
+* @short No Ranking Method.
+*/
+class GNoRank : public GComputeRank
 {
-	Q_OBJECT
-
 public:
-	Config(void);
 
-public slots:
+	/**
+	* Constructor.
+	* @param session         Session.
+	* @param fac             Factory.
+	*/
+	GNoRank(GSession* session,GPlugInFactory* fac);
 
-	void changeType(int index);
+	/**
+	* Create the parameters.
+	*/
+	virtual void CreateConfig(void);
+
+	/**
+	* Configurations were applied from the factory.
+	*/
+	virtual void ApplyConfig(void);
 };
 
+
+//-----------------------------------------------------------------------------
+#endif

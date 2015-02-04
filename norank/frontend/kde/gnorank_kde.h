@@ -2,13 +2,11 @@
 
 	GALILEI Research Project
 
-	GMetaEngineSum_KDE.cpp
+	GNoRank_KDE.cpp
 
-	Meta-engine based on a Weighted Sum - Header (KDE Part).
+	No Ranking Method - Header (KDE Part).
 
-   Copyright 2003-2015 by Pascal Francq.
-	Copyright 2003-2004 by Valery Vandaele.
-	Copyright 2003-2008 Université Libre de Bruxelles (ULB).
+   Copyright 2015-2015 by Pascal Francq.
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -31,7 +29,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gmetaenginesum.h>
+#include <gcomputerank.h>
 #include <rqt.h>
 using namespace R;
 using namespace std;
