@@ -6,6 +6,7 @@ SET(galilei_engines_INST_INCLUDES
 	gsugs.h
 	gcomputesugs.h
 	gcomputetrust.h
+	gcomputerank.h
 )
 
 SET(galilei_engines_TARGET_SOURCES
@@ -16,4 +17,5 @@ SET(galilei_engines_TARGET_SOURCES
 	gsugs.cpp
 	gcomputesugs.cpp
 	gcomputetrust.cpp
+	gcomputerank.cpp
 )

@@ -850,6 +850,8 @@ bool GSession::InsertFdbk(size_t profid,size_t docid,tFdbkType fdbk,R::RDate don
 void GSession::RequestMetaEngine(const R::RString query)
 {
 	GMetaEngine* MetaEngine(GALILEIApp->GetCurrentPlugIn<GMetaEngine>("MetaEngine"));
+	if(!MetaEngine)
+		mThrowGException("No meta-engine selected");
 	MetaEngine->Request(query);
 }
 

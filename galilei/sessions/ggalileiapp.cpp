@@ -156,6 +156,7 @@ GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
 	InsertPtr(new GPlugInManager("Analyzer",GPlugInManager::ptOrdered));
 	InsertPtr(new GPlugInManager("Tokenizer",GPlugInManager::ptSelect));
 	InsertPtr(new GPlugInManager("Filter",GPlugInManager::ptList));
+	InsertPtr(new GPlugInManager("ComputeRank",GPlugInManager::ptList));
 	InsertPtr(new GPlugInManager("Engine",GPlugInManager::ptList));
 	InsertPtr(new GPlugInManager("MetaEngine",GPlugInManager::ptSelect));
 	InsertPtr(new GPlugInManager("CommunityCalc",GPlugInManager::ptSelect));

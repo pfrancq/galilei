@@ -4,7 +4,7 @@
 
 	GMetaEngine.cpp
 
-	Meta Engine for extraction of results from different search engines - Implementation.
+	Meta-Engine - Implementation.
 
    Copyright 2003-2015 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2004 by Valery Vandaele.

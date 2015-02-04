@@ -128,6 +128,7 @@ RString GFilter::GetTextFragment(GDocFragment* fragment)
 			Fragment+=c;
 		}
 	}
+
 	return(Fragment);
 }
 

@@ -505,6 +505,7 @@ class GComputeSugs;
 class GComputeTrust;
 class GEngine;
 class GMetaEngine;
+class GComputeRank;
 
 
 //------------------------------------------------------------------------------
@@ -534,7 +535,6 @@ class GCommunityCalc;
 // forward class declaration - Session Part
 class GObject;
 template<class C,const R::hNotification* hEvents> class GObjects;
-class GBasicSession;
 class GSession;
 class GSlot;
 class GStorage;

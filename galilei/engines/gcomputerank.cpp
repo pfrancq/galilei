@@ -2,13 +2,11 @@
 
 	GALILEI Research Project
 
-	GEngine.cpp
+	GComputeRank.cpp
 
-	Search Engine - Implementation.
+	Compute Document Ranking - Implementation.
 
-	Copyright 2003-2015 by Pascal Francq (pascal@francq.info).
-	Copyright 2003-2004 by Valery Vandaele.
-	Copyright 2003-2008 Université Libre de Bruxelles (ULB).
+	Copyright 2015-2015 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -38,8 +36,6 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gengine.h>
-#include <ggalileiapp.h>
 #include <gcomputerank.h>
 using namespace GALILEI;
 using namespace R;
@@ -49,36 +45,18 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 //
-// class GEngine
+// class GComputeRank
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GEngine::GEngine(GSession* session,GPlugInFactory* fac)
-	: GPlugIn(session,fac), Weight(1.0), Ranking(0)
+GComputeRank::GComputeRank(GSession* session,GPlugInFactory* fac)
+	: GPlugIn(session,fac)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GEngine::ApplyConfig(void)
-{
-	RankingMethod=FindParam<RParamValue>("RankingMethod")->Get();
-	if(!RankingMethod.IsEmpty())
-	{
-		Ranking=GALILEIApp->GetPlugIn<GComputeRank>("ComputeRank",RankingMethod,0);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GEngine::CreateConfig(void)
-{
-	InsertParam(new RParamValue("RankingMethod","None","Name of the ranking method."));
-}
-
-
-//------------------------------------------------------------------------------
-GEngine::~GEngine(void)
+GComputeRank::~GComputeRank(void)
 {
 }

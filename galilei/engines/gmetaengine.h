@@ -4,7 +4,7 @@
 
 	GMetaEngine.h
 
-	Meta Engine for extraction of results from different search engines - Header.
+	Meta-Engine - Header.
 
 	Copyright 2003-2015 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2004 by Valery Vandaele.
@@ -63,7 +63,7 @@ class GMetaEngine : public GPlugIn, R::RDownloadFile
 protected:
 
 	/**
-	* Container of results (instance of class GDocFragment).
+	* All results (instance of class GDocFragment).
 	*/
 	R::RContainer<GDocFragment,true,true> Results;
 

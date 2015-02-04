@@ -4,7 +4,7 @@
 
 	GEngine.h
 
-	Generic Search Engine - Header.
+	Search Engine - Header.
 
 	Copyright 2003-2015 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2004 by Valery Vandaele.
@@ -73,6 +73,16 @@ namespace GALILEI{
 */
 class GEngine : public GPlugIn
 {
+	/**
+	 * Ranking method associated to the engine.
+	 */
+	GComputeRank* Ranking;
+
+	/**
+	 * Name of the ranking method used.
+	 */
+	R::RString RankingMethod;
+
 protected:
 
 	/**
@@ -90,6 +100,11 @@ public:
 	GEngine(GSession* session,GPlugInFactory* fac);
 
 	/**
+	* Configuration parameters were changed (or loaded).
+	*/
+	virtual void ApplyConfig(void);
+
+	/**
 	* Request a query. It is the responsibility of the meta-search engine to
 	* build a syntactically correct query for the particular search engine.
 	* @param caller          Meta-engine calling the engine.
@@ -101,6 +116,11 @@ public:
 	* @return the weight associated to the engine
 	*/
 	double GetWeight(void) const {return(Weight);}
+
+	/**
+	 * Create the configuration (attached to the session).
+	 */
+	virtual void CreateConfig(void);
 
 	/**
 	* Destructor of the search engine.

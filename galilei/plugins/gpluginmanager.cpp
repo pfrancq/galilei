@@ -85,6 +85,10 @@ void GPlugInList::CreateConfig(void)
 		{
 			PlugIn->CreateConfig();
 		}
+		catch(GException& e)
+		{
+			mThrowGException("'"+e.GetMsg()+"' for the plug-in '"+PlugIn->GetName()+"'");
+		}
 		catch(...)
 		{
 			mThrowGException("Problem when creating the configurations of the plug-in '"+PlugIn->GetName()+"'");
@@ -307,6 +311,10 @@ void GPlugInManager::CreateConfig(RConfig* config)
 				{
 					Cur()->CreateConfig();
 				}
+				catch(GException& e)
+				{
+					mThrowGException("'"+e.GetMsg()+"' for the plug-in '"+Cur()->GetName()+"'");
+				}
 				catch(...)
 				{
 					mThrowGException("Problem when creating the configurations of the plug-in '"+Cur()->GetName()+"'");
@@ -369,6 +377,10 @@ void GPlugInManager::ReadConfig(RConfig* config)
 				{
 					PlugIns()->ApplyConfig();
 				}
+				catch(GException& e)
+				{
+					mThrowGException("'"+e.GetMsg()+"' for the plug-in '"+PlugIns()->GetName()+"'");
+				}
 				catch(...)
 				{
 					mThrowGException("Problem when applying the configurations of the plug-in '"+PlugIns()->GetName()+"'");
@@ -384,6 +396,10 @@ void GPlugInManager::ReadConfig(RConfig* config)
 			try
 			{
 				PlugIns()->ApplyConfig();
+			}
+			catch(GException& e)
+			{
+				mThrowGException("'"+e.GetMsg()+"' for the plug-in '"+PlugIns()->GetName()+"'");
 			}
 			catch(...)
 			{

@@ -2,13 +2,11 @@
 
 	GALILEI Research Project
 
-	GEngine.cpp
+	GComputeRank.h
 
-	Search Engine - Implementation.
+	Compute Document Ranking - Header.
 
-	Copyright 2003-2015 by Pascal Francq (pascal@francq.info).
-	Copyright 2003-2004 by Valery Vandaele.
-	Copyright 2003-2008 Université Libre de Bruxelles (ULB).
+	Copyright 2015-2015 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -30,55 +28,55 @@
 
 
 //------------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <stdio.h>
-#include <iostream>
-#include <cstdlib>
+#ifndef GComputeRankH
+#define GComputeRankH
 
 
 //------------------------------------------------------------------------------
-// include files for GALILEI
-#include <gengine.h>
-#include <ggalileiapp.h>
-#include <gcomputerank.h>
-using namespace GALILEI;
-using namespace R;
-using namespace std;
-
+//include file for GALILEI
+#include <gplugin.h>
+#include <gpluginmanager.h>
+#include <gdocfragment.h>
 
 
 //------------------------------------------------------------------------------
-//
-// class GEngine
-//
+namespace GALILEI{
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
-GEngine::GEngine(GSession* session,GPlugInFactory* fac)
-	: GPlugIn(session,fac), Weight(1.0), Ranking(0)
+/**
+* The GComputeRank class provides a representation for a generic computing
+* method to rank a set of documents.
+*
+* See the documentation related to GPlugIn for more general information.
+* @short Generic Ranking Method
+*/
+class GComputeRank : public GPlugIn
 {
-}
+public:
+
+	/**
+	* Construct a ranking method.
+	* @param session         Session.
+	* @param fac             Factory.
+	*/
+	GComputeRank(GSession* session,GPlugInFactory* fac);
+
+	/**
+	* Destructor of the ranking method.
+	*/
+	virtual ~GComputeRank(void);
+};
+
+
+//-------------------------------------------------------------------------------
+#define CREATE_COMPUTERANK_FACTORY(name,desc,plugin)\
+	CREATE_FACTORY(GALILEI::GComputeRank,plugin,"ComputeRank",R::RString::Null,name,desc)
+
+
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
 //------------------------------------------------------------------------------
-void GEngine::ApplyConfig(void)
-{
-	RankingMethod=FindParam<RParamValue>("RankingMethod")->Get();
-	if(!RankingMethod.IsEmpty())
-	{
-		Ranking=GALILEIApp->GetPlugIn<GComputeRank>("ComputeRank",RankingMethod,0);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GEngine::CreateConfig(void)
-{
-	InsertParam(new RParamValue("RankingMethod","None","Name of the ranking method."));
-}
-
-
-//------------------------------------------------------------------------------
-GEngine::~GEngine(void)
-{
-}
+#endif
