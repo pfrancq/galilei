@@ -47,6 +47,7 @@ using namespace R;
 #include <gengine.h>
 #include <gsession.h>
 #include <ggalileiapp.h>
+#include <gdocref.h>
 
 
 
@@ -112,16 +113,6 @@ void GMetaEngineSum::AddResult(size_t docid,size_t pos,size_t first,size_t last,
 
 
 //------------------------------------------------------------------------------
-void GMetaEngineSum::AddResult(const R::RString& uri,const R::RString& title,const R::RString fragment,double ranking,const GEngine* engine)
-{
-	if(UseWeight)
-		ranking*=engine->GetWeight();
-	GMetaEngine::AddResult(uri,title,fragment,ranking,engine);
-
-}
-
-
-//------------------------------------------------------------------------------
 void GMetaEngineSum::Request(const R::RString query)
 {
 	// Initialise
@@ -140,13 +131,18 @@ void GMetaEngineSum::Request(const R::RString query)
 	if(Debug)
 	{
 		// Print the results.
-		R::RCursor<GDocFragment> Doc(GetResults());
+		R::RCursor<GDocRef> Doc(GetResults());
 		for(Doc.Start();!Doc.End();Doc.Next())
 		{
-			cout<<Doc()->GetRanking()<<" URL : "<<Doc()->GetURI()()<<endl;
-			RCursor<GDocRanking> Cur(Doc()->GetRankings());
-			for(Cur.Start();!Cur.End();Cur.Next())
-				cout<<"  "<<Cur()->GetRanking()<<" : "<<Cur()->GetInfo()<<"  ";
+			cout<<Doc()->GetDoc()->GetURI()()<<endl;
+			RCursor<GDocFragment> Frag(Doc()->GetFragments());
+			for(Frag.Start();!Frag.End();Frag.Next())
+			{
+				cout<<"\t"<<Frag()->GetRanking()<<endl;
+				RCursor<GDocFragmentRank> Cur(Frag()->GetRankings());
+				for(Cur.Start();!Cur.End();Cur.Next())
+					cout<<"\t\t"<<Cur()->GetRanking()<<" : "<<Cur()->GetInfo()<<"  ";
+			}
 		}
 	}
 }
@@ -235,14 +231,18 @@ void GMetaEngineSum::RequestEngines(const R::RString& query)
 void GMetaEngineSum::ComputeGlobalRanking(void)
 {
 	// Go trough each document retrieved
-	RCursor<GDocFragment> Doc(GetResults());
+	RCursor<GDocRef> Doc(GetResults());
 	for(Doc.Start();!Doc.End();Doc.Next())
 	{
-		double Rank(0.0);
-		R::RCursor<GDocRanking> Cur(Doc()->GetRankings());
-		for(Cur.Start();!Cur.End();Cur.Next())
-			Rank+=Cur()->GetRanking();
-		SetRanking(Doc(),Rank);
+		RCursor<GDocFragment> Frag(Doc()->GetFragments());
+		for(Frag.Start();!Frag.End();Frag.Next())
+		{
+			double Rank(0.0);
+			R::RCursor<GDocFragmentRank> Cur(Frag()->GetRankings());
+			for(Cur.Start();!Cur.End();Cur.Next())
+				Rank+=Cur()->GetRanking();
+			Frag()->SetRanking(Rank);
+		}
 	}
 
 	// Sort results

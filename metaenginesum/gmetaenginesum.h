@@ -138,20 +138,7 @@ public:
 	*                        (\f$0\leq ranking \leq 1\f$).
 	* @param engine          Engine from which the result come.
 	*/
-	virtual void AddResult(size_t DocId,size_t pos,size_t first,size_t last,double ranking,const GEngine* engine);
-
-	/**
-	* Add a fragment from an unknown document as result to the meta-engine. In
-	* practice, it adds an entry to the container of results.
-	* @param uri             URI of the document.
-	* @param title           Title of the document.
-	* @param fragment        Fragment from the document.
-	* @param ranking         Ranking of the document given by the engine.
-	*                        (\f$0\leq ranking \leq 1\f$).
-	* @param engine          Engine from which the result come.
-	*/
-	virtual void AddResult(const R::RString& uri,const R::RString& title,const R::RString fragment,double ranking,const GEngine* engine);
-
+	virtual void AddResult(size_t docid,size_t pos,size_t first,size_t last,double ranking,const GEngine* engine);
 
 	/**
 	* Send a query to the meta-search engine.
