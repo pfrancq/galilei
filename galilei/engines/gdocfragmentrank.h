@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GSuggestion.h
+	GDocFragmentRank.h
 
-	Suggestion - Header.
+	Ranking of Document Fragment of an Engine - Header.
 
 	Copyright 2008-2015 by Pascal Francq (pascal@francq.info).
 
@@ -31,8 +31,8 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GDocRankingH
-#define GDocRankingH
+#ifndef GDocFragmentRankH
+#define GDocFragmentRankH
 
 
 //-----------------------------------------------------------------------------
@@ -47,13 +47,13 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
- * The GDocRanking class provides a triplet (document,ranking,info) that
+ * The GDocFragmentRank class provides a triplet (document fragment,ranking,info) that
  * represents the ranking of a document in a given situation (search,
  * suggestion, etc.).
  * @author Pascal Francq
- * @short Document Ranking
+ * @short Document Fragment Ranking
  */
-class GDocRanking
+class GDocFragmentRank
 {
 protected:
 
@@ -80,7 +80,7 @@ public:
 	 * @param ranking        Ranking of the document.
 	 * @param info           Information.
 	 */
-	GDocRanking(size_t docid,double ranking=0.0,const R::RString info=R::RString::Null);
+	GDocFragmentRank(size_t docid,double ranking=0.0,const R::RString info=R::RString::Null);
 
 	/**
 	 * @return the identifier of the document.
@@ -124,7 +124,7 @@ public:
 	 * @param ranking        Ranking to compare with.
 	 * @return -1,0 or +1 depending of the comparison.
 	 */
-	int Compare(const GDocRanking& ranking) const;
+	int Compare(const GDocFragmentRank& ranking) const;
 
 	/**
 	 * Compare a ranking with the identifiers of a document.

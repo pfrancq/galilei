@@ -33,6 +33,8 @@
 #include <ggalileiapp.h>
 #include <gdocfragment.h>
 #include <gfilter.h>
+#include <gdoc.h>
+#include <gdocref.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -62,38 +64,24 @@ void GFilter::AddMIME(RString name)
 //------------------------------------------------------------------------------
 RString GFilter::GetTextFragment(GDocFragment* fragment)
 {
-	//cout<<"Extract at "<<fragment->GetPos()<<" in ["<<fragment->GetFirst()<<","<<fragment->GetLast()<<"]"<<endl;
-	RString Fragment;
-	size_t Extract(0);
-	if(fragment->GetLast()==cNoRef)
-		Extract=80;
-	RTextFile File(fragment->GetURI(),"utf-8");
-	File.Open(RIO::Read);
-
-	// Read the head of the fragment
-	File.Seek(fragment->GetPos());
-	while(!File.End())
-	{
-		RChar c(File.GetChar());
-		Fragment+=c;
-		if(Extract)
-			Extract--;
-		else if(c.IsPunct()||c.IsSpace())
-			break;
-	}
-
-	// If not necessary -> skip the rest
-	if(fragment->GetLast()==cNoRef)
-		return(Fragment);
-	Fragment+="\n";
+	//cout<<"Extract at "<<fragment->GetPos()<<" in ["<<fragment->GetBegin()<<","<<fragment->GetEnd()<<"]"<<endl;
 
 	// Look the size to print
-	size_t First(fragment->GetFirst());
-	size_t Last(fragment->GetLast());
-	size_t Size(Last-First+1);
+	size_t Begin(fragment->GetBegin());
+	size_t End(fragment->GetEnd());
+	size_t Size(End-Begin+1);
 
-	// Go the first position
-	File.Seek(First);
+	// Extract maximum 205 characters
+	RString Fragment;
+	Fragment.SetLen(205);
+	Fragment.SetLen(0);
+
+	// Open the file and put it at the beginning of the window position
+	RTextFile File(fragment->GetDoc()->GetDoc()->GetURI(),"utf-8");
+	File.Open(RIO::Read);
+	File.Seek(Begin);
+
+	// Extract the fragment
 	if(Size>200)
 	{
 		// Read the first and the last 100 characters
@@ -105,8 +93,8 @@ RString GFilter::GetTextFragment(GDocFragment* fragment)
 			if(!(--Nb))
 				break;
 		}
-		Fragment+="\n";
-		File.Seek(Last-100);
+		Fragment+="\n...\n";
+		File.Seek(End-100);
 		Nb=100;
 		while(!File.End())
 		{
@@ -115,19 +103,79 @@ RString GFilter::GetTextFragment(GDocFragment* fragment)
 			if(!(--Nb))
 				break;
 		}
-
 	}
 	else
 	{
-		// Print All
+		// Print the whole window
 		while(!File.End())
 		{
 			RChar c(File.GetChar());
-			if((File.GetPos()>Last)&&(c.IsPunct()||c.IsSpace()))
+			if(File.GetPos()>End)
 				break;
 			Fragment+=c;
 		}
 	}
+
+
+//	size_t Extract(0);
+//	if(fragment->GetEnd()==cNoRef)
+//		Extract=80;
+//	RTextFile File(fragment->GetDoc()->GetDoc()->GetURI(),"utf-8");
+//	File.Open(RIO::Read);
+//
+//	// Read the head of the fragment
+//	File.Seek(fragment->GetPos());
+//	while(!File.End())
+//	{
+//		RChar c(File.GetChar());
+//		Fragment+=c;
+//		if(Extract)
+//			Extract--;
+//		else if(c.IsPunct()||c.IsSpace())
+//			break;
+//	}
+//
+//	// If not necessary -> skip the rest
+//	if(fragment->GetEnd()==cNoRef)
+//		return(Fragment);
+//	Fragment+="\n";
+//
+//	// Go the first position
+//	File.Seek(Begin);
+//	if(Size>200)
+//	{
+//		// Read the first and the last 100 characters
+//		size_t Nb(100);
+//		while(!File.End())
+//		{
+//			RChar c(File.GetChar());
+//			Fragment+=c;
+//			if(!(--Nb))
+//				break;
+//		}
+//		Fragment+="\n";
+//		File.Seek(End-100);
+//		Nb=100;
+//		while(!File.End())
+//		{
+//			RChar c(File.GetChar());
+//			Fragment+=c;
+//			if(!(--Nb))
+//				break;
+//		}
+//
+//	}
+//	else
+//	{
+//		// Print All
+//		while(!File.End())
+//		{
+//			RChar c(File.GetChar());
+//			if((File.GetPos()>End)&&(c.IsPunct()||c.IsSpace()))
+//				break;
+//			Fragment+=c;
+//		}
+//	}
 
 	return(Fragment);
 }

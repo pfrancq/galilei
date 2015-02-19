@@ -302,7 +302,7 @@ void GSimulator::ShareDocuments(void)
 		{
 			Sugs.SetAddresseeId(otProfile,Profile()->GetId());
 			Session->GetStorage()->LoadSugs(Sugs);
-			Sugs.ReOrder(GDocRanking::SortOrderRanking);
+			Sugs.ReOrder(GDocFragmentRank::SortOrderRanking);
 
 			RCursor<GSuggestion> Cur(Sugs);
 			for(Cur.Start(),i=NbDocsAssess+1;(!Cur.End())&&(--i);Cur.Next())

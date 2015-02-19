@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GSuggestion.cpp
+	GDocFragmentRank.cpp
 
-	Suggestion - Header.
+	Ranking of Document Fragment of an Engine - Header.
 
 	Copyright 2008-2015 by Pascal Francq (pascal@francq.info).
 
@@ -32,7 +32,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gdocranking.h>
+#include <gdocfragmentrank.h>
 #include <gsession.h>
 #include <gdoc.h>
 using namespace std;
@@ -43,33 +43,33 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 //
-// class GDocRanking
+// class GDocFragmentRank
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GDocRanking::GDocRanking(size_t docid,double ranking,const R::RString info)
+GDocFragmentRank::GDocFragmentRank(size_t docid,double ranking,const R::RString info)
 	: DocId(docid), Ranking(ranking), Info(info)
 {
 }
 
 
 //------------------------------------------------------------------------------
-int GDocRanking::Compare(const GDocRanking& ranking) const
+int GDocFragmentRank::Compare(const GDocFragmentRank& ranking) const
 {
 	return(CompareIds(DocId,ranking.DocId));
 }
 
 
 //------------------------------------------------------------------------------
-int GDocRanking::Compare(size_t docid) const
+int GDocFragmentRank::Compare(size_t docid) const
 {
 	return(CompareIds(DocId,docid));
 }
 
 
 //------------------------------------------------------------------------------
-RURI GDocRanking::GetURI(GSession* session) const
+RURI GDocFragmentRank::GetURI(GSession* session) const
 {
 	GDoc* Doc(session->GetObj(pDoc,DocId));
 	return(Doc->GetURI());
@@ -77,7 +77,7 @@ RURI GDocRanking::GetURI(GSession* session) const
 
 
 //------------------------------------------------------------------------------
-RString GDocRanking::GetName(GSession* session) const
+RString GDocFragmentRank::GetName(GSession* session) const
 {
 	GDoc* Doc(session->GetObj(pDoc,DocId));
 	return(Doc->GetName());
@@ -85,10 +85,10 @@ RString GDocRanking::GetName(GSession* session) const
 
 
 //------------------------------------------------------------------------------
-int GDocRanking::SortOrderRanking(const void* a,const void* b)
+int GDocFragmentRank::SortOrderRanking(const void* a,const void* b)
 {
-	double af=(*((GDocRanking**)(a)))->Ranking;
-	double bf=(*((GDocRanking**)(b)))->Ranking;
+	double af=(*((GDocFragmentRank**)(a)))->Ranking;
+	double bf=(*((GDocFragmentRank**)(b)))->Ranking;
 
 	if(af==bf) return(0);
 	if(af>bf)

@@ -36,6 +36,8 @@
 #include <gsession.h>
 #include <gmetaengine.h>
 #include <gfilter.h>
+#include <gdocfragment.h>
+#include <gdocref.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -56,79 +58,27 @@ GMetaEngine::GMetaEngine(GSession* session,GPlugInFactory* fac)
 
 
 //------------------------------------------------------------------------------
-RString GMetaEngine::GetTextFragment(GDocFragment* fragment)
-{
-	if(!fragment->GetDoc())
-		mThrowGException("Invalid document passed");
-
-	// Find the filter for this document
-	R::RSmartTempFile TmpFile;
-	RURI File;
-	GFilter* Filter(GALILEIApp->FindMIMEType(fragment->GetDoc()));
-
-	// If it is not a local	file -> Download it
-	if(fragment->GetURI().GetScheme()!="file")
-	{
-		File=TmpFile.GetName();
-		Download(fragment->GetDoc()->GetURI(),File);
-	}
-	else
-		File=fragment->GetDoc()->GetURI();
-
-	return(Filter->GetTextFragment(fragment));
-}
-
-
-//------------------------------------------------------------------------------
 void GMetaEngine::AddResult(size_t docid,size_t pos,size_t first,size_t last,double ranking,const GEngine* engine)
 {
 	if((ranking<0)||(ranking>1))
 		mThrowGException("Ranking must be included in [0,1]");
 
+	// Find the document reference
 	GDoc* Doc(Session->GetObj(pDoc,docid));
 	RURI URI(Doc->GetURI());
+	if(!Doc)
+		mThrowGException("Unknown document");
+	GDocRef* Ref(Results.GetInsertPtr(Doc));
 
-	// Test if URI is already there
-	bool Find;
-	size_t idx(Results.GetIndex(GDocFragment::Search(URI,pos,first,last),Find));
-
-	if(Find)
-		Results[idx]->AddRanking(ranking,engine->GetName());
-	else
-		Results.InsertPtrAt(new GDocFragment(this,Doc,pos,first,last,ranking,engine->GetName()),idx,false);
-}
-
-
-//------------------------------------------------------------------------------
-void GMetaEngine::AddResult(const RString& uri,const RString& title,const RString fragment,double ranking,const GEngine* engine)
-{
-	if((ranking<0)||(ranking>1))
-		mThrowGException("Ranking must be included in [0,1]");
-
-	// Test if URI is already there
-	bool Find;
-	size_t idx(Results.GetIndex(GDocFragment::Search(uri,0,0,cNoRef),Find));
-
-	if(Find)
-	{
-		Results[idx]->AddRanking(ranking,engine->GetName());
-	}
-	else
-		Results.InsertPtrAt(new GDocFragment(this,uri,title,fragment,ranking,engine->GetName()),idx,false);
-}
-
-
-//------------------------------------------------------------------------------
-void GMetaEngine::SetRanking(GDocFragment* doc,double ranking)
-{
-	doc->Ranking=ranking;
+	// Insert the fragment
+	Ref->AddFragment(pos,first,last,ranking,engine->GetName());
 }
 
 
 //-----------------------------------------------------------------------------
-R::RCursor<GDocFragment> GMetaEngine::GetResults(void)
+R::RCursor<GDocRef> GMetaEngine::GetResults(void)
 {
-	return(R::RCursor<GDocFragment>(Results));
+	return(R::RCursor<GDocRef>(Results));
 }
 
 

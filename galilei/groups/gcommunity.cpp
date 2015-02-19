@@ -90,7 +90,7 @@ GCommunity::GCommunity(GSession* session,size_t id,size_t blockid,const RString&
 //------------------------------------------------------------------------------
 void GCommunity::GetRelevantDocs(GCommunityDocs& docs)
 {
-	RContainer<GDocRanking,false,true> RelevantDocs(100);       // Container of relevant documents.
+	RContainer<GDocFragmentRank,false,true> RelevantDocs(100);       // Container of relevant documents.
 	docs.SetCommunityId(GetId());
 
 	// Go through the profiles
@@ -110,7 +110,7 @@ void GCommunity::GetRelevantDocs(GCommunityDocs& docs)
 	}
 
 	// Copy all the documents in docs
-	RCursor<GDocRanking> Cur(RelevantDocs);
+	RCursor<GDocFragmentRank> Cur(RelevantDocs);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		docs.InsertPtr(Cur());
 }
@@ -197,7 +197,7 @@ GCommunity::~GCommunity(void)
 
 //------------------------------------------------------------------------------
 GCommunityDocs::GCommunityDocs(size_t size,size_t communityid)
-	: RContainer<GDocRanking,true,false>(size), CommunityId(communityid)
+	: RContainer<GDocFragmentRank,true,false>(size), CommunityId(communityid)
 {
 }
 
@@ -206,5 +206,5 @@ GCommunityDocs::GCommunityDocs(size_t size,size_t communityid)
 void GCommunityDocs::SetCommunityId(size_t communityid)
 {
 	CommunityId=communityid;
-	RContainer<GDocRanking,true,false>::Clear();
+	RContainer<GDocFragmentRank,true,false>::Clear();
 }

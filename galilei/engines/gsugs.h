@@ -35,7 +35,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI Project
-#include <gdocranking.h>
+#include <gdocfragmentrank.h>
 
 
 //-----------------------------------------------------------------------------
@@ -52,7 +52,7 @@ namespace GALILEI{
  * @author Pascal Francq
  * @short Suggestion.
  */
-class GSuggestion : public GDocRanking
+class GSuggestion : public GDocFragmentRank
 {
 	/**
 	 * Date where the suggestion was proposed.

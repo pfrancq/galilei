@@ -1,6 +1,7 @@
 SET(galilei_engines_INST_INCLUDES
-	gdocranking.h
+	gdocref.h
 	gdocfragment.h
+	gdocfragmentrank.h
 	gengine.h
 	gmetaengine.h
 	gsugs.h
@@ -10,8 +11,9 @@ SET(galilei_engines_INST_INCLUDES
 )
 
 SET(galilei_engines_TARGET_SOURCES
-	gdocranking.cpp
+	gdocref.cpp
 	gdocfragment.cpp
+	gdocfragmentrank.cpp
 	gengine.cpp
 	gmetaengine.cpp
 	gsugs.cpp

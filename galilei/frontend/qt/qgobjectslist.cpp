@@ -39,6 +39,7 @@
 #include <gprofile.h>
 #include <guser.h>
 #include <gdoc.h>
+#include <gdocref.h>
 #include <gsubject.h>
 #include <gsession.h>
 #include <gtopic.h>
@@ -73,7 +74,7 @@ public:
 		GDoc* Doc;
 		GTopic* Topic;
 		GProfile* Profile;
-		GDocFragment* DocRetrieved;
+		GDocRef* DocRetrieved;
 		GCommunity* Community;
 		GUser* User;
 		GSubject* Subject;
@@ -206,10 +207,10 @@ public:
 		}
 	}
 
-	QGObject(QTreeWidget* parent,GDocFragment* doc)
-		: QTreeWidgetItem(parent,QStringList()<<ToQString(doc->GetTitle())<<ToQString(doc->GetURI()()))
+	QGObject(QTreeWidget* parent,GDocRef* ref)
+		: QTreeWidgetItem(parent,QStringList()<<ToQString(ref->GetDoc()->GetName())<<ToQString(ref->GetDoc()->GetURI()()))
 	{
-		Obj.DocRetrieved=doc;
+		Obj.DocRetrieved=ref;
 		setIcon(0,QIcon::fromTheme("document"));
 	}
 
@@ -565,7 +566,7 @@ void QGObjectsList::Set(oType type,GProfile* profile)
 		{
 			GSugs Sugs(otProfile,profile->GetId(),40);
 			Session->GetStorage()->LoadSugs(Sugs);
-			Sugs.ReOrder(GDocRanking::SortOrderRanking);
+			Sugs.ReOrder(GDocFragmentRank::SortOrderRanking);
 			RCursor<GSuggestion> Cur(Sugs);
 			for(Cur.Start();!Cur.End();Cur.Next())
 			{
@@ -621,12 +622,16 @@ void QGObjectsList::Set(oType type,GMetaEngine* engine,size_t nbres)
 	QTreeWidget* List(static_cast<Ui_QGObjectsList*>(Ui)->List);
 	List->clear();
 
-	RCursor<GDocFragment> Cur(engine->GetResults());
+	RCursor<GDocRef> Cur(engine->GetResults());
 	size_t i;
 	for(Cur.Start(),i=0;(!Cur.End())&&(i<nbres);Cur.Next(),i++)
 	{
 		QTreeWidgetItem* ptr(new QGObject(List,Cur()));
-		new QTreeWidgetItem(ptr,QStringList()<<ToQString(Cur()->GetFragment())<<"");
+		RCursor<GDocFragment> Cur2(Cur()->GetFragments());
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
+		{
+			new QTreeWidgetItem(ptr,QStringList()<<ToQString(Cur2()->GetFragment())<<"");
+		}
 	}
 	List->resizeColumnToContents(0);
 	List->resizeColumnToContents(1);

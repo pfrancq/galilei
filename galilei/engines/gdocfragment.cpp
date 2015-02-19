@@ -27,9 +27,6 @@
 
 */
 
-#include "gmetaengine.h"
-
-
 
 
 //------------------------------------------------------------------------------
@@ -41,9 +38,12 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
+#include <gmetaengine.h>
 #include <gdocfragment.h>
 #include <gdoc.h>
+#include <gdocref.h>
 #include <gsession.h>
+#include <gfilter.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -52,13 +52,13 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 //
-// class GDocFragmentGDocFragment
+// class GDocFragment::Search
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocFragment::Search::Search(const R::RURI& uri,size_t pos,size_t first,size_t last)
-	: URI(uri), Pos(pos), First(first), Last(last)
+GDocFragment::Search::Search(size_t docid,size_t pos)
+	: DocId(docid), Pos(pos)
 {
 }
 
@@ -71,55 +71,54 @@ GDocFragment::Search::Search(const R::RURI& uri,size_t pos,size_t first,size_t l
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocFragment::GDocFragment(GMetaEngine* owner,GDoc* doc,size_t pos,size_t first,size_t last,double ranking,const R::RString& engine)
-	: Owner(owner), Doc(doc), URI(doc->GetURI()()), Title(doc->GetName()),
-	  Pos(pos), First(first), Last(last), Ranking(0), Rankings(10,5)
+GDocFragment::GDocFragment(GDocRef* doc,size_t pos,size_t begin,size_t end,double ranking,const R::RString& engine)
+	: Doc(doc), Pos(pos), Begin(begin), End(end), Ranking(0), Rankings(10,5)
 {
-	if(!Owner)
-		mThrowGException("No meta-engine assigned to document fragment");
 	if(!Doc)
-		mThrowGException("Invalid document passed");
-	Rankings.InsertPtr(new GDocRanking(Doc->GetId(),ranking,engine));
-}
-
-
-//------------------------------------------------------------------------------
-GDocFragment::GDocFragment(GMetaEngine* owner,const R::RString& uri,const R::RString& title,const RString& fragment,double ranking,const RString& engine)
-	: Owner(owner), Doc(0), URI(uri), Title(title), Fragment(fragment), Pos(0),
-	  First(0), Last(cNoRef), Ranking(0), Rankings(10,5)
-{
-	if(!Owner)
-		mThrowGException("No meta-engine assigned to document fragment");
-	Rankings.InsertPtr(new GDocRanking(0,ranking,engine));
+		mThrowGException("Cannot have a null document reference");
+	if(Begin>End)
+		mThrowGException("Invalid window positions");
+	Rankings.InsertPtr(new GDocFragmentRank(Doc->GetDoc()->GetId(),ranking,engine));
 }
 
 
 //------------------------------------------------------------------------------
 int GDocFragment::Compare(const GDocFragment& d) const
 {
-	return(Compare(Search(d.URI,d.Pos,d.First,d.Last)));
+	int i(CompareIds(Doc->GetDoc()->GetId(),d.Doc->GetDoc()->GetId()));
+	if(!i)
+		return(CompareIds(Pos,d.Pos));
+	return(i);
 }
 
 
 //------------------------------------------------------------------------------
 int GDocFragment::Compare(const Search& search) const
 {
-	// Compare first the URI
-	int i(URI.Compare(search.URI));
-	if(i)
-		return(i);
-
-	// Then compare the position
-	return(CompareIds(Pos,search.Pos));
+	int i(CompareIds(Doc->GetDoc()->GetId(),search.DocId));
+	if(!i)
+		return(CompareIds(Pos,search.Pos));
+	return(i);
 }
 
 
 //------------------------------------------------------------------------------
 R::RString GDocFragment::GetFragment(void)
 {
-	if(Fragment.IsEmpty()&&Doc)
-		Fragment=Owner->GetTextFragment(this);
+	if(Fragment.IsEmpty())
+	{
+		GFilter* Filter(GALILEIApp->FindMIMEType(Doc->GetDoc()));
+		if(Filter)
+			Fragment=Filter->GetTextFragment(this);
+	}
 	return(Fragment);
+}
+
+
+//------------------------------------------------------------------------------
+void GDocFragment::SetRanking(double ranking)
+{
+	Ranking=ranking;
 }
 
 
@@ -127,16 +126,16 @@ R::RString GDocFragment::GetFragment(void)
 void GDocFragment::AddRanking(double ranking,const R::RString engine)
 {
 	if(Doc)
-		Rankings.InsertPtr(new GDocRanking(Doc->GetId(),ranking,engine));
+		Rankings.InsertPtr(new GDocFragmentRank(Doc->GetDoc()->GetId(),ranking,engine));
 	else
-		Rankings.InsertPtr(new GDocRanking(0,ranking,engine));
+		Rankings.InsertPtr(new GDocFragmentRank(0,ranking,engine));
 }
 
 
 //-----------------------------------------------------------------------------
-R::RCursor<GDocRanking> GDocFragment::GetRankings(void) const
+R::RCursor<GDocFragmentRank> GDocFragment::GetRankings(void) const
 {
-	return(R::RCursor<GDocRanking>(Rankings));
+	return(R::RCursor<GDocFragmentRank>(Rankings));
 }
 
 

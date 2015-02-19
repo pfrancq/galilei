@@ -131,7 +131,7 @@ public:
  * The GCommunityDocs class provides a representation for a set of documents
  * assessed as relevant by the members of a community.
  */
-class GCommunityDocs : public R::RContainer<GDocRanking,true,false>
+class GCommunityDocs : public R::RContainer<GDocFragmentRank,true,false>
 {
 	/**
 	 * Identifier of the community.

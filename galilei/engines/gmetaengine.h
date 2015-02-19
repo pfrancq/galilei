@@ -38,7 +38,6 @@
 // include file for GALILEI
 #include <gplugin.h>
 #include <gpluginmanager.h>
-#include <gdocfragment.h>
 
 
 //------------------------------------------------------------------------------
@@ -63,9 +62,9 @@ class GMetaEngine : public GPlugIn, R::RDownloadFile
 protected:
 
 	/**
-	* All results (instance of class GDocFragment).
+	* All results (instance of class GDocRef).
 	*/
-	R::RContainer<GDocFragment,true,true> Results;
+	R::RContainer<GDocRef,true,true> Results;
 
 public:
 
@@ -75,14 +74,6 @@ public:
 	* @param fac             Factory.
 	*/
 	GMetaEngine(GSession* session,GPlugInFactory* fac);
-
-	/**
-	 * Extract a text fragment from a document. In practice, it calls the
-	 * corresponding method of the right filter.
-	 * @param fragment       Fragment to extract.
-    * @return a string containing the text fragment.
-    */
-	R::RString GetTextFragment(GDocFragment* fragment);
 
 	/**
 	* Add a fragment from a known document as result to the meta-engine. In
@@ -98,18 +89,6 @@ public:
 	virtual void AddResult(size_t docid,size_t pos,size_t first,size_t last,double ranking,const GEngine* engine);
 
 	/**
-	* Add a fragment from an unknown document as result to the meta-engine. In
-	* practice, it adds an entry to the container of results.
-	* @param uri             URI of the document.
-	* @param title           Title of the document.
-	* @param fragment        Fragment from the document.
-	* @param ranking         Ranking of the document given by the engine.
-	*                        (\f$0\leq ranking \leq 1\f$).
-	* @param engine          Engine from which the result come.
-	*/
-	virtual void AddResult(const R::RString& uri,const R::RString& title,const R::RString fragment,double ranking,const GEngine* engine);
-
-	/**
 	* Send a query to the meta-search engine. It should:
 	* -# Analyse the query to identify the keywords and (eventually) operators.
 	* -# Call the different engines (or at least the most relevant ones).
@@ -119,16 +98,9 @@ public:
 	virtual void Request(const R::RString query)=0;
 
 	/**
-	* Set the global ranking for a document.
-	* @param doc                   Document retrieved.
-	* @param ranking               Global ranking.
-	*/
-	void SetRanking(GDocFragment* doc,double ranking);
-
-	/**
 	* @return a cursor of the documents retrieved by the meta-search engine.
 	*/
-	virtual R::RCursor<GDocFragment> GetResults(void);
+	virtual R::RCursor<GDocRef> GetResults(void);
 
 	/**
 	 * @return the number of results.

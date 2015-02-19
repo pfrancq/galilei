@@ -2,12 +2,14 @@
 
 	GALILEI Research Project
 
-	GSugs.cpp
+	GDocRef.h
 
-	Suggestions - Implementation.
+	Document Reference - Implemetation.
 
-	Copyright 2005-2015 by Pascal Francq (pascal@francq.info).
-	Copyright 2005-2008 Université Libre de Bruxelles (ULB).
+	Copyright 2008-2015 by Pascal Francq (pascal@francq.info).
+
+	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -30,63 +32,66 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gsugs.h>
+#include <gdocref.h>
 #include <gdoc.h>
+#include <gdocfragment.h>
+using namespace std;
 using namespace R;
 using namespace GALILEI;
-using namespace std;
 
 
 
 //-----------------------------------------------------------------------------
 //
-// class GSuggestion
+// class GDocRef
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GSuggestion::GSuggestion(size_t docid,double ranking,const RDate& proposed,const RString& info)
-	: GDocFragmentRank(docid,ranking,info), Proposed(proposed)
+GDocRef::GDocRef(GDoc* doc)
+	: Doc(doc), Fragments(2,4)
 {
-}
-
-
-
-//-----------------------------------------------------------------------------
-//
-// class GSugs
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-GSugs::GSugs(size_t max)
-	: RContainer<GSuggestion,true,false>(max), Type(otCommunity), Id(0)
-{
+	if(!Doc)
+		mThrowGException("Cannot pass a null document pointer");
 }
 
 
 //-----------------------------------------------------------------------------
-GSugs::GSugs(tObjType type,size_t id,size_t max)
-	: RContainer<GSuggestion,true,false>(max), Type(type), Id(id)
+int GDocRef::Compare(const GDocRef& ref) const
 {
-	if((Type!=otProfile)&&(Type!=otCommunity))
-		mThrowGException("Suggestions only for profiles or groups");
+	return(CompareIds(Doc->GetId(),ref.Doc->GetId()));
 }
 
 
 //-----------------------------------------------------------------------------
-int GSugs::Compare(const GSugs& sugs) const
+int GDocRef::Compare(const GDoc* doc) const
 {
-	if(Type!=sugs.Type)
-		mThrowGException("Suggestions must be from the same type");
-	return(CompareIds(Id,sugs.Id));
+	return(CompareIds(Doc->GetId(),doc->GetId()));
 }
 
 
 //-----------------------------------------------------------------------------
-void GSugs::SetAddresseeId(tObjType type,size_t id)
+void GDocRef::Clear(void)
 {
-	Id=id;
-	Type=type;
-	RContainer<GSuggestion,true,false>::Clear();
+	Fragments.Clear();
+}
+
+
+//-----------------------------------------------------------------------------
+void GDocRef::AddFragment(size_t pos,size_t first,size_t last,double ranking,const R::RString& info)
+{
+	bool Find;
+	size_t idx(Fragments.GetIndex(GDocFragment::Search(Doc->GetId(),pos),Find));
+
+	if(Find)
+		Fragments[idx]->AddRanking(ranking,info);
+	else
+		Fragments.InsertPtrAt(new GDocFragment(this,pos,first,last,ranking,info),idx,false);
+}
+
+
+//-----------------------------------------------------------------------------
+RCursor<GDocFragment> GDocRef::GetFragments(void) const
+{
+	return(RCursor<GDocFragment>(Fragments));
 }

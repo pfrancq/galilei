@@ -86,8 +86,7 @@ public:
 	virtual void Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file)=0;
 
 	/**
-	 * Extract a text fragment from a file with a given URI. This method should
-	 * be re-implemented by filters.
+	 * Extract a text fragment. This method can be re-implemented by filters.
 	 *
 	 * By default, it opens a simple text file in utf-8 and extract the text
 	 * window defined (stopping at the first space or punctuation character).

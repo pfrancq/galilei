@@ -497,8 +497,9 @@ class GConceptTree;
 
 //------------------------------------------------------------------------------
 // forward class declaration - Engines Part
+class GDocRef;
 class GDocFragment;
-class GDocRanking;
+class GDocFragmentRank;
 class GSuggestion;
 class GSugs;
 class GComputeSugs;

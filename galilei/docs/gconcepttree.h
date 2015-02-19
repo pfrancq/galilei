@@ -180,12 +180,31 @@ public:
 	const GConceptNode* GetNode(size_t pos) const {return(Pos.GetPtrAt(pos));}
 
 	/**
+	 * Get the nearest node at a given syntactic position.
+    * @param pos             Syntactic position.
+    * @return a pointer or null if the position is outside the tree.
+    */
+	const GConceptNode* GetNearestNode(size_t pos) const;
+
+	/**
 	 * Find the root node (the most common highest node) of two nodes.
 	 * @param node1          First node.
 	 * @param node2          Second node.
 	 * @return the root node of 0 if both nodes are top nodes.
     */
 	GConceptNode* FindRoot(GConceptNode* node1,GConceptNode* node2) const;
+
+	/**
+	 * Compute the maximal position occupied by a referenced node.
+    * @return a size_t.
+    */
+	size_t GetMaxPos(void) const;
+
+	/**
+	 * Compute the maximal syntactic position occupied by a referenced node.
+    * @return a size_t.
+    */
+	size_t GetMaxSyntacticPos(void) const;
 
 	/**
 	 * Simply print the information of all nodes on the screen;

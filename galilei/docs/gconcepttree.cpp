@@ -181,6 +181,61 @@ GConceptNode* GConceptTree::FindRoot(GConceptNode* node1,GConceptNode* node2) co
 
 
 //------------------------------------------------------------------------------
+const GConceptNode* GConceptTree::GetNearestNode(size_t pos) const
+{
+	const GConceptNode* Find(0);
+	size_t before(pos);
+	size_t after(pos);
+	size_t max(GetMaxSyntacticPos());
+
+	while(true)
+	{
+		if(before!=cNoRef)
+		{
+			Find=Pos.GetPtrAt(before);
+			if(before>0)
+				before--;
+			else
+				before=cNoRef;
+		}
+		if(Find)
+			break;
+		if(after!=cNoRef)
+		{
+			Find=Pos.GetPtrAt(after);
+			if(after<max)
+				after++;
+			else
+				after=cNoRef;
+		}
+		if(Find)
+			break;
+		if((before==cNoRef)&&(after==cNoRef))
+			break;
+	}
+	return(Find);
+}
+
+
+//------------------------------------------------------------------------------
+size_t GConceptTree::GetMaxPos(void) const
+{
+	if(!Pos.GetMaxPos())
+		return(0);
+	return(Pos[Pos.GetMaxPos()]->GetPos());
+}
+
+
+//------------------------------------------------------------------------------
+size_t GConceptTree::GetMaxSyntacticPos(void) const
+{
+	if(!Pos.GetMaxPos())
+		return(0);
+	return(Pos[Pos.GetMaxPos()]->GetSyntacticPos());
+}
+
+
+//------------------------------------------------------------------------------
 void GConceptTree::Print(void) const
 {
 	RNodeCursor<GConceptTree,GConceptNode> Children(*this);
