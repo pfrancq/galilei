@@ -36,6 +36,8 @@
 // include files for R/GALILEI Projects
 #include <rxmlparser.h>
 #include <gdocfragment.h>
+#include <gdoc.h>
+#include <gdocref.h>
 using namespace R;
 using namespace GALILEI;
 using namespace std;
@@ -48,16 +50,15 @@ public:
 	GXMLParser(void) : RXMLParser() {}
 
 	/**
-	 * Extract a text fragment from a file with a given URI. This method should
-	 * be re-implemented by filters.
+	 * Extract a text fragment.
 	 * @param fragment       Fragment to extract.
     * @return a string containing the text fragment.
     */
 	inline R::RString GetFragment(GDocFragment* fragment)
 	{
-		cout<<"Extract at "<<fragment->GetPos()<<" in ["<<fragment->GetFirst()<<","<<fragment->GetLast()<<"]"<<endl;
+		cout<<"Extract at "<<fragment->GetPos()<<" in ["<<fragment->GetBegin()<<","<<fragment->GetEnd()<<"]"<<endl;
 		RString Fragment;
-		RTextFile File(fragment->GetURI(),"utf-8");
+		RTextFile File(fragment->GetDoc()->GetDoc()->GetURI(),"utf-8");
 		File.Open(RIO::Read);
 
 		// Read the head of the fragment
@@ -84,12 +85,12 @@ public:
 		Fragment+="\n";
 
 		// Look the size to print
-		size_t First(fragment->GetFirst());
-		size_t Last(fragment->GetLast());
-		size_t Size(Last-First+1);
+		size_t Begin(fragment->GetBegin());
+		size_t End(fragment->GetEnd());
+		size_t Size(End-Begin+1);
 
 		// Go the first position
-		File.Seek(First);
+		File.Seek(Begin);
 		if(Size>200)
 		{
 			// Read the first and the last 100 characters
@@ -102,7 +103,7 @@ public:
 					break;
 			}
 			Fragment+="\n...........\n";
-			File.Seek(Last-100);
+			File.Seek(End-100);
 			Nb=100;
 			while(!File.End())
 			{
@@ -119,7 +120,7 @@ public:
 			while(!File.End())
 			{
 				RChar c(File.GetChar());
-				if((File.GetPos()>Last)&&(c.IsPunct()||c.IsSpace()))
+				if((File.GetPos()>End)&&(c.IsPunct()||c.IsSpace()))
 					break;
 				Fragment+=c;
 			}
