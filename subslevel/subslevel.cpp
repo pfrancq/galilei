@@ -153,7 +153,7 @@ void SubsLevel::ComputeProfilesConfidence(void)
 		Groups()->GetRelevantDocs(Docs);
 
 		// Go through each document
-		RCursor<GDocRanking> Doc(Docs);
+		RCursor<GDocFragmentRank> Doc(Docs);
 		for(Doc.Start();!Doc.End();Doc.Next())
 		{
 			// Get the feedbacks on the document ordered by date
@@ -193,7 +193,7 @@ void SubsLevel::ComputeDocsConfidence(void)
 		Groups()->GetRelevantDocs(Docs);
 
 		// Go through each document
-		RCursor<GDocRanking> Doc(Docs);
+		RCursor<GDocFragmentRank> Doc(Docs);
 		for(Doc.Start();!Doc.End();Doc.Next())
 		{
 			// Sum the score of each profiles
