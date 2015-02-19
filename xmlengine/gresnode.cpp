@@ -56,16 +56,29 @@ const size_t MaximumSyntacticPos(20);
 
 //------------------------------------------------------------------------------
 GResNode::GResNode(GResNodes* parent,GConceptNode* node)
-	: Parent(parent), Node(node), MinPos(cNoRef), MaxPos(0), Children(20)
+	: Parent(parent), Node(node), MinSyntacticPos(cNoRef), MaxSyntacticPos(0), Children(20)
 {
 /*	if(!Node)
 		mThrowGException("Cannot insert a null node");*/
 	if(Node)
 	{
-		if(Node->GetSyntacticPos()>MaxPos)
-			MaxPos=Node->GetSyntacticPos();
-		if(Node->GetSyntacticPos()<MinPos)
-			MinPos=Node->GetSyntacticPos();
+		size_t Pos(Node->GetSyntacticPos());
+		if(Node->GetType()==ttText)
+		{
+			if(Pos>10)
+				MinSyntacticPos=Pos-5;
+			else
+				MinSyntacticPos=0;
+			if(Pos+10<Node->GetTree()->GetMaxSyntacticPos())
+				MaxSyntacticPos=Node->GetTree()->GetMaxSyntacticPos();
+			else
+				MaxSyntacticPos=Pos+5;
+		}
+		else
+		{
+			MaxSyntacticPos=Pos;
+			MinSyntacticPos=Pos;
+		}
 	}
 }
 
@@ -121,10 +134,10 @@ void GResNode::AddChild(GConceptNode* child)
 	{
 		min=max=child->GetSyntacticPos();
 	}
-	if(max>MaxPos)
-		MaxPos=max;
-	if(min<MinPos)
-		MinPos=min;
+	if(max>MaxSyntacticPos)
+		MaxSyntacticPos=max;
+	if(min<MinSyntacticPos)
+		MinSyntacticPos=min;
 	bool Find;
 	size_t Idx(Children.GetIndex(*child,Find));
 	if(!Find)
@@ -165,9 +178,9 @@ void GResNode::Merge(const GResNode* node)
 		if(Find)
 			continue;
 		Children.InsertPtrAt(Child(),Index,false);
-		if(Child()->GetSyntacticPos()>MaxPos)
-			MaxPos=Child()->GetSyntacticPos();
-		if(Child()->GetSyntacticPos()<MinPos)
-			MinPos=Child()->GetSyntacticPos();
+		if(Child()->GetSyntacticPos()>MaxSyntacticPos)
+			MaxSyntacticPos=Child()->GetSyntacticPos();
+		if(Child()->GetSyntacticPos()<MinSyntacticPos)
+			MinSyntacticPos=Child()->GetSyntacticPos();
 	}
 }

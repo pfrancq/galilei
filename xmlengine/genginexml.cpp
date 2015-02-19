@@ -413,8 +413,8 @@ void GEngineXML::RankFragments(GMetaEngine* caller,GQuery& req,const GQueryRes* 
 		double Ranking((Sol()->GetFi()-Min)/(Max-Min));
 		size_t DocId(Fragment->Node->GetParent()->GetDocId());
 		const GConceptTree* Tree(GetTree(DocId));
-		const GConceptNode* MinNode(Tree->GetNode(Fragment->Node->GetMinPos()));
-		const GConceptNode* MaxNode(Tree->GetNode(Fragment->Node->GetMaxPos()));
+		const GConceptNode* MinNode(Tree->GetNearestNode(Fragment->Node->GetMinSyntacticPos()));
+		const GConceptNode* MaxNode(Tree->GetNearestNode(Fragment->Node->GetMaxSyntacticPos()));
 		size_t Pos(0);
 		if(Fragment->Node->GetNode())
 			Pos=Fragment->Node->GetNode()->GetPos();

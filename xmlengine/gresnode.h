@@ -66,12 +66,12 @@ class GResNode
 	/**
 	 * Minimum syntactic position.
     */
-	size_t MinPos;
+	size_t MinSyntacticPos;
 
 	/**
 	 * Maximum syntactic position.
     */
-	size_t MaxPos;
+	size_t MaxSyntacticPos;
 
 	/**
 	 * Child nodes used by the query to select the node.
@@ -107,12 +107,12 @@ public:
 	/**
 	 * @return the minimum syntactic position.
     */
-	size_t GetMinPos(void) const {return(MinPos);};
+	size_t GetMinSyntacticPos(void) const {return(MinSyntacticPos);};
 
 	/**
 	 * @return the maximum syntactic position.
     */
-	size_t GetMaxPos(void) const {return(MaxPos);};
+	size_t GetMaxSyntacticPos(void) const {return(MaxSyntacticPos);};
 
 	/**
 	 * Add a child node.
