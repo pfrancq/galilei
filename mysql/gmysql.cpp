@@ -1840,7 +1840,7 @@ void GStorageMySQL::SaveDocs(const GCommunityDocs& docs)
 	RQuery Del(Db,"DELETE FROM docsbycommunities WHERE communityid="+Num(docs.GetCommunityId()));
 
 	// Save the new documents
-	RCursor<GDocRanking> Doc(docs);
+	RCursor<GDocFragmentRank> Doc(docs);
 	for(Doc.Start();!Doc.End();Doc.Next())
 		RQuery Ins(Db,"INSERT INTO docsbycommunities(communityid,docid,ranking) VALUES("+
 				Num(docs.GetCommunityId())+","+Num(Doc()->GetDocId())+","+Num(Doc()->GetRanking())+")");
@@ -1852,7 +1852,7 @@ void GStorageMySQL::LoadDocs(GCommunityDocs& docs)
 {
 	RQuery Get(Db,"SELECT docid,ranking FROM docsbycommunities WHERE communityid="+Num(docs.GetCommunityId()));
 	for(Get.Start();!Get.End();Get.Next())
-		docs.InsertPtr(new GDocRanking(Get[0].ToSizeT(),Get[1].ToDouble()));
+		docs.InsertPtr(new GDocFragmentRank(Get[0].ToSizeT(),Get[1].ToDouble()));
 }
 
 
