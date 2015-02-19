@@ -111,7 +111,7 @@ void Sugs::Run(void)
 			// Load the relevant documents for the current community and order it
 			Docs.SetCommunityId(Grps()->GetId());
 			Session->GetStorage()->LoadDocs(Docs);
-			Docs.ReOrder(GDocRanking::SortOrderRanking);
+			Docs.ReOrder(GDocFragmentRank::SortOrderRanking);
 		}
 		else
 		{
@@ -131,7 +131,7 @@ void Sugs::Run(void)
 			if(!UseLevels)
 			{
 				// Go through each document to compute the similarity
-				RCursor<GDocRanking> Doc(Docs);
+				RCursor<GDocFragmentRank> Doc(Docs);
 				for(Doc.Start();!Doc.End();Doc.Next())
 				{
 					double res;
@@ -140,12 +140,12 @@ void Sugs::Run(void)
 				}
 
 				// Order the ranking
-				Docs.ReOrder(GDocRanking::SortOrderRanking);
+				Docs.ReOrder(GDocFragmentRank::SortOrderRanking);
 			}
 
 			// Take the first NbSugs documents not assessed
 			size_t Nb(0);
-			RCursor<GDocRanking> Doc(Docs);
+			RCursor<GDocFragmentRank> Doc(Docs);
 			for(Doc.Start();(!Doc.End())&&(Nb<NbSugs);Doc.Next())
 			{
 				if(Profiles()->GetFdbk(Doc()->GetDocId())) continue;
