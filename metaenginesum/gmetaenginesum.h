@@ -39,8 +39,6 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <gmetaengine.h>
-#include <gengine.h>
-#include <gdocfragment.h>
 using namespace std;
 using namespace GALILEI;
 using namespace R;
@@ -128,23 +126,18 @@ public:
 	virtual void ApplyConfig(void);
 
 	/**
-	* Add a fragment from a known document as result to the meta-engine. In
-	* practice, it adds an entry to the container of results.
-	* @param docid           Identifier of the document.
-	* @param pos             Position to the fragment to extract.
-	* @param first           First concept found.
-	* @param last            Last concept found.
-	* @param ranking         Ranking of the document given by the engine
-	*                        (\f$0\leq ranking \leq 1\f$).
-	* @param engine          Engine from which the result come.
-	*/
-	virtual void AddResult(size_t docid,size_t pos,size_t first,size_t last,double ranking,const GEngine* engine);
+	 * method called each time an engine  add a given document fragment as a
+	 * result. By default, the method does nothing.
+    * @param rank           Document fragment added.
+	 * @param engine         Engine from which the result come.
+    */
+	virtual void FragmentRankAdded(GDocFragmentRank* rank,GEngine* engine);
 
 	/**
 	* Send a query to the meta-search engine.
 	* @param query           Query.
 	*/
-	virtual void Request(const R::RString query);
+	virtual void PerformRequest(const R::RString query);
 
 	/**
 	* Build all the queries based on Keywords depending of the type.
@@ -159,13 +152,6 @@ public:
 	* @param k               The k parameter.
 	*/
 	void CombineKeywords(size_t pos,size_t k);
-
-	/**
-	* Send a query to the different engines.
-	* @param query           Query.
-	*
-	*/
-	void RequestEngines(const R::RString& query);
 
 	/**
 	* This function is used to compute the global ranking

@@ -48,7 +48,8 @@ using namespace R;
 #include <gsession.h>
 #include <ggalileiapp.h>
 #include <gdocref.h>
-
+#include <gdocfragmentranks.h>
+#include <gdocfragmentrank.h>
 
 
 //-----------------------------------------------------------------------------
@@ -104,16 +105,15 @@ void GMetaEngineSum::ApplyConfig(void)
 
 
 //------------------------------------------------------------------------------
-void GMetaEngineSum::AddResult(size_t docid,size_t pos,size_t first,size_t last,double ranking,const GEngine* engine)
+void GMetaEngineSum::FragmentRankAdded(GDocFragmentRank* rank,GEngine* engine)
 {
 	if(UseWeight)
-		ranking*=engine->GetWeight();
-	GMetaEngine::AddResult(docid,pos,first,last,ranking,engine);
+		rank->SetRanking(rank->GetRanking()*engine->GetWeight());
 }
 
 
 //------------------------------------------------------------------------------
-void GMetaEngineSum::Request(const R::RString query)
+void GMetaEngineSum::PerformRequest(const R::RString query)
 {
 	// Initialise
 	Query=query;
@@ -131,18 +131,13 @@ void GMetaEngineSum::Request(const R::RString query)
 	if(Debug)
 	{
 		// Print the results.
-		R::RCursor<GDocRef> Doc(GetResults());
-		for(Doc.Start();!Doc.End();Doc.Next())
+		R::RCursor<GDocFragmentRanks> Ranks(GetRankings());
+		for(Ranks.Start();!Ranks.End();Ranks.Next())
 		{
-			cout<<Doc()->GetDoc()->GetURI()()<<endl;
-			RCursor<GDocFragment> Frag(Doc()->GetFragments());
-			for(Frag.Start();!Frag.End();Frag.Next())
-			{
-				cout<<"\t"<<Frag()->GetRanking()<<endl;
-				RCursor<GDocFragmentRank> Cur(Frag()->GetRankings());
-				for(Cur.Start();!Cur.End();Cur.Next())
-					cout<<"\t\t"<<Cur()->GetRanking()<<" : "<<Cur()->GetInfo()<<"  ";
-			}
+			cout<<Ranks()->GetFragment()->GetDoc()->GetURI()()<<endl;
+			RCursor<GDocFragmentRank> Cur(Ranks()->GetRankings());
+			for(Cur.Start();!Cur.End();Cur.Next())
+				cout<<"\t\t"<<Cur()->GetRanking()<<" : "<<Cur()->GetInfo()<<"  ";
 		}
 	}
 }
@@ -219,30 +214,17 @@ void GMetaEngineSum::CombineKeywords(size_t pos,size_t k)
 
 
 //------------------------------------------------------------------------------
-void GMetaEngineSum::RequestEngines(const R::RString& query)
-{
-	RCastCursor<GPlugIn,GEngine> Cur(GALILEIApp->GetPlugIns<GEngine>("Engine"));
-	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->Request(this,query);
-}
-
-
-//------------------------------------------------------------------------------
 void GMetaEngineSum::ComputeGlobalRanking(void)
 {
-	// Go trough each document retrieved
-	RCursor<GDocRef> Doc(GetResults());
-	for(Doc.Start();!Doc.End();Doc.Next())
+	// Go trough each document fragment retrieved
+	RCursor<GDocFragmentRanks> Ranks(GetRankings());
+	for(Ranks.Start();!Ranks.End();Ranks.Next())
 	{
-		RCursor<GDocFragment> Frag(Doc()->GetFragments());
-		for(Frag.Start();!Frag.End();Frag.Next())
-		{
-			double Rank(0.0);
-			R::RCursor<GDocFragmentRank> Cur(Frag()->GetRankings());
-			for(Cur.Start();!Cur.End();Cur.Next())
-				Rank+=Cur()->GetRanking();
-			Frag()->SetRanking(Rank);
-		}
+		double Rank(0.0);
+		R::RCursor<GDocFragmentRank> Cur(Ranks()->GetRankings());
+		for(Cur.Start();!Cur.End();Cur.Next())
+			Rank+=Cur()->GetRanking();
+		Ranks()->GetFragment()->SetRanking(Rank);
 	}
 
 	// Sort results
