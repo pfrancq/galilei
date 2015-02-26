@@ -74,6 +74,11 @@ namespace GALILEI{
 class GEngine : public GPlugIn
 {
 	/**
+	* All document fragments.
+	*/
+	R::RContainer<GDocFragment,false,false> Results;
+
+	/**
 	 * Ranking method associated to the engine.
 	 */
 	GComputeRank* Ranking;
@@ -105,6 +110,11 @@ public:
 	virtual void ApplyConfig(void);
 
 	/**
+	 * Clear the engine before a new request is send.
+    */
+	virtual void Clear(void);
+
+	/**
 	* Request a query. It is the responsibility of the meta-search engine to
 	* build a syntactically correct query for the particular search engine.
 	* @param caller          Meta-engine calling the engine.
@@ -118,6 +128,32 @@ public:
 	double GetWeight(void) const {return(Weight);}
 
 	/**
+	* Get all the fragments retrieved by documents.
+	* @return a cursor on GDocRef.
+	*/
+	R::RCursor<GDocFragment> GetResults(void);
+
+	/**
+	 * Get the number of document fragments selected by the engine.
+	 * @return the number of document fragments.
+    */
+	size_t GetNbResults(void) const;
+
+	/**
+	 * Get an array of the document fragments selected by the engine.
+    * @param tab            Array that will hold the results.
+    * @return the number of document fragments.
+    */
+	size_t GetTabResults(const GDocFragment** tab) const;
+
+	/**
+	 * Get an array of the document fragments selected by the engine.
+    * @param tab            Array that will hold the results.
+    * @return the number of document fragments.
+    */
+	size_t GetTabResults(GDocFragment** tab);
+
+	/**
 	 * Create the configuration (attached to the session).
 	 */
 	virtual void CreateConfig(void);
@@ -126,6 +162,8 @@ public:
 	* Destructor of the search engine.
 	*/
 	virtual ~GEngine(void);
+
+	friend class GMetaEngine;
 };
 
 

@@ -71,21 +71,32 @@ GDocFragment::Search::Search(size_t docid,size_t pos)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocFragment::GDocFragment(GDocRef* doc,size_t pos,size_t begin,size_t end,double ranking,const R::RString& engine)
-	: Doc(doc), Pos(pos), Begin(begin), End(end), Ranking(0), Rankings(10,5)
+GDocFragment::GDocFragment(GDoc* doc,size_t pos,size_t begin,size_t end,double ranking,const R::RString& info,const R::RDate& proposed)
+	: Doc(doc), Pos(pos), Begin(begin), End(end), Ranking(ranking), Proposed(proposed), Info(info), WholeDoc(false)
 {
 	if(!Doc)
 		mThrowGException("Cannot have a null document reference");
 	if(Begin>End)
 		mThrowGException("Invalid window positions");
-	Rankings.InsertPtr(new GDocFragmentRank(Doc->GetDoc()->GetId(),ranking,engine));
+}
+
+
+//------------------------------------------------------------------------------
+GDocFragment::GDocFragment(GDoc* doc,double ranking,const R::RString& info,const R::RDate& proposed)
+	: Doc(Doc), Pos(0), Begin(0), End(0), Ranking(ranking), Proposed(proposed), Info(info), WholeDoc(true)
+{
+	if(!Doc)
+		mThrowGException("Cannot have a null document reference");
+	End=Doc->GetTree()->GetMaxPos();
+	if(End>100)
+		End=100;
 }
 
 
 //------------------------------------------------------------------------------
 int GDocFragment::Compare(const GDocFragment& d) const
 {
-	int i(CompareIds(Doc->GetDoc()->GetId(),d.Doc->GetDoc()->GetId()));
+	int i(CompareIds(Doc->GetId(),d.Doc->GetId()));
 	if(!i)
 		return(CompareIds(Pos,d.Pos));
 	return(i);
@@ -93,9 +104,24 @@ int GDocFragment::Compare(const GDocFragment& d) const
 
 
 //------------------------------------------------------------------------------
+int GDocFragment::Compare(const GDoc* doc) const
+{
+	int i(CompareIds(Doc->GetId(),doc->GetId()));
+	if(!i)
+	{
+		if(WholeDoc)
+			return(0);
+		return(-1);
+	}
+	else
+		return(i);
+}
+
+
+//------------------------------------------------------------------------------
 int GDocFragment::Compare(const Search& search) const
 {
-	int i(CompareIds(Doc->GetDoc()->GetId(),search.DocId));
+	int i(CompareIds(Doc->GetId(),search.DocId));
 	if(!i)
 		return(CompareIds(Pos,search.Pos));
 	return(i);
@@ -107,7 +133,7 @@ R::RString GDocFragment::GetFragment(void)
 {
 	if(Fragment.IsEmpty())
 	{
-		GFilter* Filter(GALILEIApp->FindMIMEType(Doc->GetDoc()));
+		GFilter* Filter(GALILEIApp->FindMIMEType(Doc));
 		if(Filter)
 			Fragment=Filter->GetTextFragment(this);
 	}
@@ -123,19 +149,16 @@ void GDocFragment::SetRanking(double ranking)
 
 
 //------------------------------------------------------------------------------
-void GDocFragment::AddRanking(double ranking,const R::RString engine)
+int GDocFragment::SortOrderRanking(const void* a,const void* b)
 {
-	if(Doc)
-		Rankings.InsertPtr(new GDocFragmentRank(Doc->GetDoc()->GetId(),ranking,engine));
+	double af=(*((GDocFragment**)(a)))->Ranking;
+	double bf=(*((GDocFragment**)(b)))->Ranking;
+
+	if(af==bf) return(0);
+	if(af>bf)
+		return(-1);
 	else
-		Rankings.InsertPtr(new GDocFragmentRank(0,ranking,engine));
-}
-
-
-//-----------------------------------------------------------------------------
-R::RCursor<GDocFragmentRank> GDocFragment::GetRankings(void) const
-{
-	return(R::RCursor<GDocFragmentRank>(Rankings));
+		return(1);
 }
 
 

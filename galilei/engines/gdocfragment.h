@@ -72,7 +72,7 @@ namespace GALILEI{
 class GDocFragment
 {
 	/*
-	 * Search structure needed to compare to document fragment.
+	 * Structure needed to search for a document fragment.
 	 */
 	struct Search
 	{
@@ -97,7 +97,7 @@ class GDocFragment
 	/**
 	* Reference to the document.
 	*/
-	GDocRef* Doc;
+	GDoc* Doc;
 
 	/**
 	* The fragment.
@@ -125,28 +125,52 @@ class GDocFragment
 	double Ranking;
 
 	/**
-	* Container of all rankings associated to this document fragment.
-	*/
-	R::RContainer<GDocFragmentRank,true,false> Rankings;
+	 * Date where the fragment was proposed.
+	 */
+	R::RDate Proposed;
+
+	/**
+	 * An information about the fragment.
+	 */
+	R::RString Info;
+
+	/**
+	 * Does the fragment correspond to the whole document ?
+    */
+	bool WholeDoc;
 
 public:
 
 	/**
-	* Constructor of a document fragment retrieved.
-	* @param owner           Meta-engine.
+	* Constructor of a document fragment.
 	* @param doc             Document.
 	* @param pos             Position in the document.
 	* @param first           Beginning position of the window.
-	* @param last            End position of the window.
-	* @param engine          Name of the engine that retrieves it.
+	* @param end             End position of the window.
+	* @param ranking         Ranking of the fragment.
+	* @param info            Information.
 	*/
-	GDocFragment(GDocRef* doc,size_t pos,size_t begin,size_t end,double ranking,const R::RString& engine);
+	GDocFragment(GDoc* doc,size_t pos,size_t begin,size_t end,double ranking=0.0,const R::RString& info=R::RString::Null,const R::RDate& proposed=R::RDate::Null);
+
+	/**
+	* Constructor of a document fragment representing the whole document.
+	* @param doc             Document.
+	* @param ranking         Ranking of the fragment.
+	* @param info            Information.
+	*/
+	GDocFragment(GDoc* doc,double ranking=0.0,const R::RString& info=R::RString::Null,const R::RDate& proposed=R::RDate::Null);
 
 	/**
 	* Method to compare document fragments.
 	* @param d               Document retrieved to compare with.
 	*/
 	int Compare(const GDocFragment& d) const;
+
+	/**
+	* Method to compare a document fragment and a document.
+	* @param doc           Document.
+	*/
+	int Compare(const GDoc* d) const;
 
 	/**
 	* Method to compare a document fragment and a document fragment signature.
@@ -159,7 +183,12 @@ public:
 	 * as unknown in the session
 	 * @return the pointer to the document.
 	 */
-	GDocRef* GetDoc(void) const {return(Doc);}
+	GDoc* GetDoc(void) const {return(Doc);}
+
+	/**
+	 * @return the date of the suggestion.
+	 */
+	R::RDate GetProposed(void) const {return(Proposed);}
 
 	/**
 	 * Get the starting position of the fragment.
@@ -186,6 +215,11 @@ public:
 	R::RString GetFragment(void);
 
 	/**
+	 * @return the information associated with a suggestion.
+	 */
+	R::RString GetInfo(void) const {return(Info);}
+
+	/**
 	 * Set the gloabl ranking of the document fragment.
     * @param ranking        Value to assign.
     */
@@ -197,16 +231,13 @@ public:
 	double GetRanking(void) const {return(Ranking);}
 
 	/**
-	* Add new ranking for the current document retrieved.
-	* @param ranking         Ranking
-	* @param engine          Engine
+	* Static function used to order the document fragments by ranking (the
+	* highest first). This function can be used with the RContainer::ReOrder
+	* method.
+	* @param a              Pointer to the first object.
+	* @param b              Pointer to the second object.
 	*/
-	void AddRanking(double ranking,const R::RString engine);
-
-	/**
-	* @return a cursor on the rankings of the document retrieved.
-	*/
-	R::RCursor<GDocFragmentRank> GetRankings(void) const;
+	static int SortOrderRanking(const void* a,const void* b);
 
 	/**
 	* Destruct.

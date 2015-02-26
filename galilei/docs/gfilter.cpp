@@ -77,7 +77,7 @@ RString GFilter::GetTextFragment(GDocFragment* fragment)
 	Fragment.SetLen(0);
 
 	// Open the file and put it at the beginning of the window position
-	RTextFile File(fragment->GetDoc()->GetDoc()->GetURI(),"utf-8");
+	RTextFile File(fragment->GetDoc()->GetURI(),"utf-8");
 	File.Open(RIO::Read);
 	File.Seek(Begin);
 

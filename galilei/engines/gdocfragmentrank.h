@@ -4,7 +4,7 @@
 
 	GDocFragmentRank.h
 
-	Ranking of Document Fragment of an Engine - Header.
+	Document Fragment's Ranking - Header.
 
 	Copyright 2008-2015 by Pascal Francq (pascal@francq.info).
 
@@ -50,17 +50,16 @@ namespace GALILEI{
  * The GDocFragmentRank class provides a triplet (document fragment,ranking,info) that
  * represents the ranking of a document in a given situation (search,
  * suggestion, etc.).
- * @author Pascal Francq
- * @short Document Fragment Ranking
+  * @short Document Fragment's Ranking
  */
 class GDocFragmentRank
 {
 protected:
 
 	/**
-	 * Identifier of the document.
+	 * Document fragment.
 	 */
-	size_t DocId;
+	GDocFragment* Fragment;
 
 	/**
 	 * Ranking of the document.
@@ -76,30 +75,33 @@ public:
 
 	/**
 	 * Create a document ranking.
-	 * @param docid          Identifier of the document.
+	 * @param fragment       Document fragment.
 	 * @param ranking        Ranking of the document.
 	 * @param info           Information.
 	 */
-	GDocFragmentRank(size_t docid,double ranking=0.0,const R::RString info=R::RString::Null);
+	GDocFragmentRank(GDocFragment* fragment,double ranking=0.0,const R::RString info=R::RString::Null);
 
 	/**
-	 * @return the identifier of the document.
+	 * Compare two rankings by using first the fragment and then the information.
+	 * @param ranking        Ranking to compare with.
+	 * @return -1,0 or +1 depending of the comparison.
 	 */
-	size_t GetDocId(void) const {return(DocId);}
+	int Compare(const GDocFragmentRank& ranking) const;
 
 	/**
-	 * Get the URI of the document by using its identifier.
-    * @param session        Session.
-    * @return the document URI.
-    */
-	R::RURI GetURI(GSession* session) const;
+	 * Compare a ranking with an information.
+	 * @param info           Information to compare with.
+	 * @return -1,0 or +1 depending of the comparison.
+	 * @warning This method works only to search for a ranking in a container
+	 * that contains only ranking related to the same document fragment.
+	 */
+	int Compare(const R::RString& info) const;
 
 	/**
-	 * Get the name of the document by using its identifier.
-    * @param session        Session.
-    * @return the document name.
-    */
-	R::RString GetName(GSession* session) const;
+	 * Get the document fragment.
+	 * @return a pointer to a GDocFragment.
+	 */
+	GDocFragment* GetFragment(void) const {return(Fragment);}
 
 	/**
 	 * @return the ranking of the document.
@@ -118,24 +120,8 @@ public:
 	void SetRanking(double ranking) {Ranking=ranking;}
 
 	/**
-	 * Compare two rankings by using the identifiers of the corresponding
-	 * documents, i.e. two rankings are supposed to be the same they are both
-	 * related to the same document.
-	 * @param ranking        Ranking to compare with.
-	 * @return -1,0 or +1 depending of the comparison.
-	 */
-	int Compare(const GDocFragmentRank& ranking) const;
-
-	/**
-	 * Compare a ranking with the identifiers of a document.
-	 * @param docid          Identifier of the document.
-	 * @return -1,0 or +1 depending of the comparison.
-	 */
-	int Compare(size_t docid) const;
-
-	/**
-	* Static function used to order the suggestions by ranking (the highest
-	* first). The function can be used with the RContainer::ReOrder method.
+	* Static function used to order the ranking (the highest first). This
+	* function can be used with the RContainer::ReOrder method.
 	* @param a              Pointer to the first object.
 	* @param b              Pointer to the second object.
 	*/

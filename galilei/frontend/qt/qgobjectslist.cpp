@@ -100,6 +100,13 @@ public:
 		setIcon(0,QIcon::fromTheme("dashboard-show"));
 	}
 
+	QGObject(QTreeWidget* parent,GDoc* doc)
+		: QTreeWidgetItem(parent, QStringList()<<ToQString("["+RString::Number(doc->GetId())+"] "+doc->GetName())<<ToQString(doc->GetURI()())), Type(otDoc)
+	{
+		Obj.Doc=doc;
+		setIcon(0,QIcon::fromTheme("text-xml"));
+	}
+
 	QGObject(QTreeWidgetItem* parent,GDoc* doc)
 		: QTreeWidgetItem(parent, QStringList()<<ToQString("["+RString::Number(doc->GetId())+"] "+doc->GetName())<<ToQString(doc->GetURI()())), Type(otDoc)
 	{
@@ -567,12 +574,10 @@ void QGObjectsList::Set(oType type,GProfile* profile)
 			GSugs Sugs(otProfile,profile->GetId(),40);
 			Session->GetStorage()->LoadSugs(Sugs);
 			Sugs.ReOrder(GDocFragmentRank::SortOrderRanking);
-			RCursor<GSuggestion> Cur(Sugs);
+			RCursor<GDocFragment> Cur(Sugs);
 			for(Cur.Start();!Cur.End();Cur.Next())
 			{
-				GDoc* doc(Session->GetObj(pDoc,Cur()->GetDocId()));
-				if(!doc) continue;
-				new QGObject(List,doc,Cur()->GetInfo(),Cur()->GetRanking(),Cur()->GetProposed());
+				new QGObject(List,Cur()->GetDoc(),Cur()->GetInfo(),Cur()->GetRanking(),Cur()->GetProposed());
 			}
 			break;
 		}
@@ -622,17 +627,17 @@ void QGObjectsList::Set(oType type,GMetaEngine* engine,size_t nbres)
 	QTreeWidget* List(static_cast<Ui_QGObjectsList*>(Ui)->List);
 	List->clear();
 
-	RCursor<GDocRef> Cur(engine->GetResults());
+	RCursor<GDocFragment> Cur(engine->GetResults());
 	size_t i;
 	for(Cur.Start(),i=0;(!Cur.End())&&(i<nbres);Cur.Next(),i++)
 	{
-		QTreeWidgetItem* ptr(new QGObject(List,Cur()));
-		RCursor<GDocFragment> Cur2(Cur()->GetFragments());
-		for(Cur2.Start();!Cur2.End();Cur2.Next())
-		{
-			new QTreeWidgetItem(ptr,QStringList()<<ToQString(Cur2()->GetFragment())<<"");
-		}
+		QTreeWidgetItem* ptr(new QGObject(List,Cur()->GetDoc()));
+		QTreeWidgetItem* Item(new QTreeWidgetItem(ptr));
+		QString Text(PrintExtract(Cur()->GetFragment()));
+		Item->setText(0,Text);
+		Item->setToolTip(0,Text);
 	}
+
 	List->resizeColumnToContents(0);
 	List->resizeColumnToContents(1);
 }
@@ -761,6 +766,32 @@ void QGObjectsList::FindNext(const QString& what,bool desc)
 		}
 	}
 	delete it;
+}
+
+
+//-----------------------------------------------------------------------------
+QString QGObjectsList::PrintExtract(const R::RString& extract)
+{
+	bool PrintedChar(false);
+	QString Ret;
+	RCharCursor Cur(extract);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		if(Cur().IsSpace())
+		{
+			if(PrintedChar)
+			{
+				PrintedChar=false;
+				Ret+=" ";
+			}
+		}
+		else
+		{
+			PrintedChar=true;
+			Ret+=QChar(Cur().Unicode());
+		}
+	}
+	return(Ret);
 }
 
 

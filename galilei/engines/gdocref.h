@@ -101,11 +101,11 @@ public:
 	 * @param pos            Position to the fragment to extract.
 	 * @param first          First concept found.
 	 * @param last           Last concept found.
-	 * @param ranking        Ranking of the document given by the engine
-	 *                       (\f$0\leq ranking \leq 1\f$).
-	 * @param info           Information about how the fragment was computed.
+	 * @param exist          Set by the method to specify if the fragment already
+	 *                       exists (true) or was created (false).
+	 * @return a pointer to a GDocFragment.
     */
-	void AddFragment(size_t pos,size_t first,size_t last,double ranking,const R::RString& info);
+	GDocFragment* AddFragment(size_t pos,size_t first,size_t last,bool& exist);
 
 	/**
 	 * Get all the fragments.

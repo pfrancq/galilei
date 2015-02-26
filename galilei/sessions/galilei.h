@@ -500,7 +500,7 @@ class GConceptTree;
 class GDocRef;
 class GDocFragment;
 class GDocFragmentRank;
-class GSuggestion;
+class GDocFragmentRanks;
 class GSugs;
 class GComputeSugs;
 class GComputeTrust;

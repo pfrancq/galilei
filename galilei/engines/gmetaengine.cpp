@@ -37,6 +37,8 @@
 #include <gmetaengine.h>
 #include <gfilter.h>
 #include <gdocfragment.h>
+#include <gdocfragmentrank.h>
+#include <gdocfragmentranks.h>
 #include <gdocref.h>
 using namespace GALILEI;
 using namespace R;
@@ -52,33 +54,101 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GMetaEngine::GMetaEngine(GSession* session,GPlugInFactory* fac)
-	: GPlugIn(session,fac), RDownloadFile(), Results(200)
+	: GPlugIn(session,fac), RDownloadFile(), ResultsByDocs(200), Results(200), Rankings(200)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GMetaEngine::AddResult(size_t docid,size_t pos,size_t first,size_t last,double ranking,const GEngine* engine)
+void GMetaEngine::AddResult(GDoc* doc,size_t pos,size_t first,size_t last,double ranking,GEngine* engine)
 {
-	if((ranking<0)||(ranking>1))
+	if(!doc)
+		mThrowGException("Unknown document");
+	 if((ranking<0)||(ranking>1))
 		mThrowGException("Ranking must be included in [0,1]");
 
+	// Insert the fragment
+	bool Exist;
+	GDocRef* Ref(ResultsByDocs.GetInsertPtr(doc));
+	GDocFragment* Fragment(Ref->AddFragment(pos,first,last,Exist));
+	if(!Exist)
+		engine->Results.InsertPtr(Fragment);
+
+	// Insert a ranking for that fragment
+	GDocFragmentRanks* Ranks(Rankings.GetInsertPtr(Fragment));
+	GDocFragmentRank* Rank(Ranks->AddRanking(ranking,engine->GetName()));
+	FragmentRankAdded(Rank,engine);
+}
+
+
+//------------------------------------------------------------------------------
+void GMetaEngine::AddResult(size_t docid,size_t pos,size_t first,size_t last,double ranking,GEngine* engine)
+{
 	// Find the document reference
 	GDoc* Doc(Session->GetObj(pDoc,docid));
-	RURI URI(Doc->GetURI());
-	if(!Doc)
-		mThrowGException("Unknown document");
-	GDocRef* Ref(Results.GetInsertPtr(Doc));
+	AddResult(Doc,pos,first,last,ranking,engine);
+}
 
-	// Insert the fragment
-	Ref->AddFragment(pos,first,last,ranking,engine->GetName());
+
+//------------------------------------------------------------------------------
+void GMetaEngine::Request(const R::RString query)
+{
+	// Clear the previous results
+	ResultsByDocs.Clear();
+	Results.Clear();
+	Rankings.Clear();
+	RCastCursor<GPlugIn,GEngine> Cur(GALILEIApp->GetPlugIns<GEngine>("Engine"));
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->Clear();
+
+	// Perform the request
+	PerformRequest(query);
+
+	// Sort the results by rankings
+	RCursor<GDocRef> Refs(ResultsByDocs);
+	for(Refs.Start();!Refs.End();Refs.Next())
+	{
+		RCursor<GDocFragment> Fragment(Refs()->GetFragments());
+		for(Fragment.Start();!Fragment.End();Fragment.Next())
+		Results.InsertPtr(Fragment());
+	}
+	Rankings.ReOrder(GDocFragment::SortOrderRanking);
+}
+
+
+//------------------------------------------------------------------------------
+void GMetaEngine::FragmentRankAdded(GDocFragmentRank*s,GEngine*)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GMetaEngine::RequestEngines(const R::RString& query)
+{
+	RCastCursor<GPlugIn,GEngine> Cur(GALILEIApp->GetPlugIns<GEngine>("Engine"));
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->Request(this,query);
 }
 
 
 //-----------------------------------------------------------------------------
-R::RCursor<GDocRef> GMetaEngine::GetResults(void)
+R::RCursor<GDocRef> GMetaEngine::GetResultsByDocs(void)
 {
-	return(R::RCursor<GDocRef>(Results));
+	return(R::RCursor<GDocRef>(ResultsByDocs));
+}
+
+
+//-----------------------------------------------------------------------------
+R::RCursor<GDocFragment> GMetaEngine::GetResults(void)
+{
+	return(R::RCursor<GDocFragment>(Results));
+}
+
+
+//-----------------------------------------------------------------------------
+R::RCursor<GDocFragmentRanks> GMetaEngine::GetRankings(void)
+{
+	return(R::RCursor<GDocFragmentRanks>(Rankings));
 }
 
 

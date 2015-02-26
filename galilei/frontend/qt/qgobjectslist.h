@@ -190,6 +190,15 @@ public:
 	 */
 	void FindNext(const QString& what,bool desc);
 
+private:
+
+	/**
+	 * Function that transform an extract in a string that can be printed.
+    * @param extract        Extract to print.
+    * @return a QString.
+    */
+	QString PrintExtract(const R::RString& extract);
+
 	/**
 	 * Destruct the list.
 	 * @return

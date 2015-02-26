@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GDocRef.h
+	GDocFragmentRanks.cpp
 
-	Document Reference - Implemetation.
+	Document Fragment's Rankings - Header.
 
 	Copyright 2008-2015 by Pascal Francq (pascal@francq.info).
 
@@ -32,9 +32,11 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gdocref.h>
-#include <gdoc.h>
+#include <gdocfragmentranks.h>
+#include <gdocfragmentrank.h>
 #include <gdocfragment.h>
+#include <gsession.h>
+#include <gdoc.h>
 using namespace std;
 using namespace R;
 using namespace GALILEI;
@@ -43,60 +45,54 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 //
-// class GDocRef
+// class GDocFragmentRanks
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GDocRef::GDocRef(GDoc* doc)
-	: Doc(doc), Fragments(2,4)
+GDocFragmentRanks::GDocFragmentRanks(GDocFragment* fragment)
+	: R::RContainer<GDocFragmentRank,true,true>(10,10), Fragment(fragment)
 {
-	if(!Doc)
-		mThrowGException("Cannot pass a null document pointer");
+ 	if(!Fragment)
+		mThrowGException("Cannot have a null document fragment reference");
 }
 
 
-//-----------------------------------------------------------------------------
-int GDocRef::Compare(const GDocRef& ref) const
+//------------------------------------------------------------------------------
+int GDocFragmentRanks::Compare(const GDocFragmentRanks& fragment) const
 {
-	return(CompareIds(Doc->GetId(),ref.Doc->GetId()));
+	return(Fragment->Compare(*fragment.Fragment));
 }
 
 
-//-----------------------------------------------------------------------------
-int GDocRef::Compare(const GDoc* doc) const
+//------------------------------------------------------------------------------
+int GDocFragmentRanks::Compare(const GDocFragment& fragment) const
 {
-	return(CompareIds(Doc->GetId(),doc->GetId()));
+	return(Fragment->Compare(fragment));
 }
 
 
-//-----------------------------------------------------------------------------
-void GDocRef::Clear(void)
+//------------------------------------------------------------------------------
+GDocFragmentRank* GDocFragmentRanks::AddRanking(double ranking,const R::RString info)
 {
-	Fragments.Clear();
-}
-
-
-//-----------------------------------------------------------------------------
-GDocFragment* GDocRef::AddFragment(size_t pos,size_t first,size_t last,bool& exist)
-{
-	GDocFragment* Fragment;
-
-	size_t idx(Fragments.GetIndex(GDocFragment::Search(Doc->GetId(),pos),exist));
-
-	if(exist)
+	// Verify if the ranking exist for the information
+	GDocFragmentRank* Rank;
+	bool Find;
+	size_t Pos(GetIndex(info,Find));
+	if(Find)
 	{
-		Fragment=Fragments[idx];
+		Rank=(*this)[Pos];
+		Rank->SetRanking(ranking);
 	}
 	else
-		Fragments.InsertPtrAt(Fragment=new GDocFragment(Doc,pos,first,last),idx,false);
+		InsertPtrAt(Rank=new GDocFragmentRank(Fragment,ranking,info),Pos,false);
 
-	return(Fragment);
+	return(Rank);
 }
 
 
 //-----------------------------------------------------------------------------
-RCursor<GDocFragment> GDocRef::GetFragments(void) const
+R::RCursor<GDocFragmentRank> GDocFragmentRanks::GetRankings(void) const
 {
-	return(RCursor<GDocFragment>(Fragments));
+	return(R::RCursor<GDocFragmentRank>(*this));
 }

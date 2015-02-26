@@ -55,7 +55,7 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GEngine::GEngine(GSession* session,GPlugInFactory* fac)
-	: GPlugIn(session,fac), Weight(1.0), Ranking(0)
+	: GPlugIn(session,fac), Weight(1.0), Ranking(0), Results(200)
 {
 }
 
@@ -68,6 +68,41 @@ void GEngine::ApplyConfig(void)
 	{
 		Ranking=GALILEIApp->GetPlugIn<GComputeRank>("ComputeRank",RankingMethod,0);
 	}
+}
+
+
+//------------------------------------------------------------------------------
+void GEngine::Clear(void)
+{
+	Results.Clear();
+}
+
+
+//-----------------------------------------------------------------------------
+R::RCursor<GDocFragment> GEngine::GetResults(void)
+{
+	return(R::RCursor<GDocFragment>(Results));
+}
+
+
+//-----------------------------------------------------------------------------
+size_t GEngine::GetNbResults(void) const
+{
+	return(Results.GetNb());
+}
+
+
+//-----------------------------------------------------------------------------
+size_t GEngine::GetTabResults(const GDocFragment** tab) const
+{
+	return(Results.GetTab(tab));
+}
+
+
+//-----------------------------------------------------------------------------
+size_t GEngine::GetTabResults(GDocFragment** tab)
+{
+	return(Results.GetTab(tab));
 }
 
 

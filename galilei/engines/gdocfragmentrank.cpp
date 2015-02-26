@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GDocFragmentRank.cpp
+	GDocFragmentRanks.cpp
 
-	Ranking of Document Fragment of an Engine - Header.
+	Document Fragment's Ranking - Header.
 
 	Copyright 2008-2015 by Pascal Francq (pascal@francq.info).
 
@@ -31,7 +31,13 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for ANSI C++
+#include <math.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <gdocfragment.h>
 #include <gdocfragmentrank.h>
 #include <gsession.h>
 #include <gdoc.h>
@@ -48,39 +54,28 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GDocFragmentRank::GDocFragmentRank(size_t docid,double ranking,const R::RString info)
-	: DocId(docid), Ranking(ranking), Info(info)
+GDocFragmentRank::GDocFragmentRank(GDocFragment* fragment,double ranking,const R::RString info)
+	: Fragment(fragment), Ranking(ranking), Info(info)
 {
+ 	if(!Fragment)
+		mThrowGException("Cannot have a null document fragment reference");
 }
 
 
 //------------------------------------------------------------------------------
 int GDocFragmentRank::Compare(const GDocFragmentRank& ranking) const
 {
-	return(CompareIds(DocId,ranking.DocId));
+	int Comp(Fragment->Compare(*ranking.Fragment));
+	if(!Comp)
+		return(Comp);
+	return(Info.Compare(ranking.Info));
 }
 
 
 //------------------------------------------------------------------------------
-int GDocFragmentRank::Compare(size_t docid) const
+int GDocFragmentRank::Compare(const R::RString& info) const
 {
-	return(CompareIds(DocId,docid));
-}
-
-
-//------------------------------------------------------------------------------
-RURI GDocFragmentRank::GetURI(GSession* session) const
-{
-	GDoc* Doc(session->GetObj(pDoc,DocId));
-	return(Doc->GetURI());
-}
-
-
-//------------------------------------------------------------------------------
-RString GDocFragmentRank::GetName(GSession* session) const
-{
-	GDoc* Doc(session->GetObj(pDoc,DocId));
-	return(Doc->GetName());
+ 	return(Info.Compare(info));
 }
 
 

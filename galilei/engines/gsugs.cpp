@@ -32,23 +32,10 @@
 // include files for GALILEI
 #include <gsugs.h>
 #include <gdoc.h>
+#include <gdocfragment.h>
 using namespace R;
 using namespace GALILEI;
 using namespace std;
-
-
-
-//-----------------------------------------------------------------------------
-//
-// class GSuggestion
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-GSuggestion::GSuggestion(size_t docid,double ranking,const RDate& proposed,const RString& info)
-	: GDocFragmentRank(docid,ranking,info), Proposed(proposed)
-{
-}
 
 
 
@@ -60,14 +47,14 @@ GSuggestion::GSuggestion(size_t docid,double ranking,const RDate& proposed,const
 
 //-----------------------------------------------------------------------------
 GSugs::GSugs(size_t max)
-	: RContainer<GSuggestion,true,false>(max), Type(otCommunity), Id(0)
+	: RContainer<GDocFragment,true,false>(max), Type(otCommunity), Id(0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
 GSugs::GSugs(tObjType type,size_t id,size_t max)
-	: RContainer<GSuggestion,true,false>(max), Type(type), Id(id)
+	: RContainer<GDocFragment,true,false>(max), Type(type), Id(id)
 {
 	if((Type!=otProfile)&&(Type!=otCommunity))
 		mThrowGException("Suggestions only for profiles or groups");
@@ -88,5 +75,5 @@ void GSugs::SetAddresseeId(tObjType type,size_t id)
 {
 	Id=id;
 	Type=type;
-	RContainer<GSuggestion,true,false>::Clear();
+	RContainer<GDocFragment,true,false>::Clear();
 }
