@@ -1840,10 +1840,10 @@ void GStorageMySQL::SaveDocs(const GCommunityDocs& docs)
 	RQuery Del(Db,"DELETE FROM docsbycommunities WHERE communityid="+Num(docs.GetCommunityId()));
 
 	// Save the new documents
-	RCursor<GDocFragmentRank> Doc(docs);
+	RCursor<GDocFragment> Doc(docs);
 	for(Doc.Start();!Doc.End();Doc.Next())
 		RQuery Ins(Db,"INSERT INTO docsbycommunities(communityid,docid,ranking) VALUES("+
-				Num(docs.GetCommunityId())+","+Num(Doc()->GetDocId())+","+Num(Doc()->GetRanking())+")");
+				Num(docs.GetCommunityId())+","+Num(Doc()->GetDoc()->GetId())+","+Num(Doc()->GetRanking())+")");
 }
 
 
@@ -1852,7 +1852,10 @@ void GStorageMySQL::LoadDocs(GCommunityDocs& docs)
 {
 	RQuery Get(Db,"SELECT docid,ranking FROM docsbycommunities WHERE communityid="+Num(docs.GetCommunityId()));
 	for(Get.Start();!Get.End();Get.Next())
-		docs.InsertPtr(new GDocFragmentRank(Get[0].ToSizeT(),Get[1].ToDouble()));
+	{
+		GDoc* Doc(Session->GetObj(pDoc,Get[0].ToSizeT()));
+		docs.InsertPtr(new GDocFragment(Doc,Get[1].ToDouble()));
+	}
 }
 
 
@@ -2050,9 +2053,9 @@ void GStorageMySQL::SaveSugs(const GSugs& sugs,size_t max)
 	}
 	RQuery Del(Db,"DELETE FROM "+Table+" WHERE "+Id+"="+Num(sugs.GetAddresseeId()));
 	RString InsSql("INSERT INTO "+Table+"("+Id+",docid,ranking,proposed,info) VALUES("+Num(sugs.GetAddresseeId())+",");
-	RCursor<GSuggestion> Cur(sugs,0,max);
+	RCursor<GDocFragment> Cur(sugs,0,max);
 	for(Cur.Start();!Cur.End();Cur.Next())
-		RQuery Ins(Db,InsSql+Num(Cur()->GetDocId())+","+Num(Cur()->GetRanking())+","+RQuery::SQLValue(Cur()->GetProposed())+","+RQuery::SQLValue(Cur()->GetInfo())+")");
+		RQuery Ins(Db,InsSql+Num(Cur()->GetDoc()->GetId())+","+Num(Cur()->GetRanking())+","+RQuery::SQLValue(Cur()->GetProposed())+RQuery::SQLValue(Cur()->GetInfo())+")");
 }
 
 
@@ -2080,7 +2083,10 @@ void GStorageMySQL::LoadSugs(GSugs& sugs)
 	{
 		RQuery Load(Db,"SELECT docid,ranking,proposed,info FROM "+Table+" WHERE "+Id+"="+Num(sugs.GetAddresseeId())+" ORDER BY "+Id+",ranking");
 		for(Load.Start();!Load.End();Load.Next())
-			sugs.InsertPtr(new GSuggestion(Load[0].ToSizeT(),Load[1].ToDouble(),Load[2],Load[3]));
+		{
+			GDoc* Doc(Session->GetObj(pDoc,Load[0].ToSizeT()));
+			sugs.InsertPtr(new GDocFragment(Doc,Load[1].ToDouble(),Load[2],Load[3]));
+		}
 	}
 	catch(RDbException e)
 	{
