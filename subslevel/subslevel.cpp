@@ -153,11 +153,11 @@ void SubsLevel::ComputeProfilesConfidence(void)
 		Groups()->GetRelevantDocs(Docs);
 
 		// Go through each document
-		RCursor<GDocFragmentRank> Doc(Docs);
+		RCursor<GDocFragment> Doc(Docs);
 		for(Doc.Start();!Doc.End();Doc.Next())
 		{
 			// Get the feedbacks on the document ordered by date
-			ComputeOrderedFdbks(Doc()->GetDocId(),Groups());
+			ComputeOrderedFdbks(Doc()->GetDoc()->GetId(),Groups());
 			if(Fdbks.GetNb()<2) continue;
 
 			ProfileScoring* ptr(Scores.GetInsertPtr(Fdbks[0]->ProfileId));
@@ -193,11 +193,11 @@ void SubsLevel::ComputeDocsConfidence(void)
 		Groups()->GetRelevantDocs(Docs);
 
 		// Go through each document
-		RCursor<GDocFragmentRank> Doc(Docs);
+		RCursor<GDocFragment> Doc(Docs);
 		for(Doc.Start();!Doc.End();Doc.Next())
 		{
 			// Sum the score of each profiles
-			ComputeFdbks(Doc()->GetDocId(),Groups());
+			ComputeFdbks(Doc()->GetDoc()->GetId(),Groups());
 			RCursor<ProfileDoc> Cur(Fdbks);
 			for(Cur.Start();!Cur.End();Cur.Next())
 			{
