@@ -131,11 +131,11 @@ void Sugs::Run(void)
 			if(!UseLevels)
 			{
 				// Go through each document to compute the similarity
-				RCursor<GDocFragmentRank> Doc(Docs);
+				RCursor<GDocFragment> Doc(Docs);
 				for(Doc.Start();!Doc.End();Doc.Next())
 				{
 					double res;
-					Sim->Measure(0,Doc()->GetDocId(),Profiles()->GetId(),&res);
+					Sim->Measure(0,Doc()->GetDoc()->GetId(),Profiles()->GetId(),&res);
 					Doc()->SetRanking(res);
 				}
 
@@ -145,11 +145,11 @@ void Sugs::Run(void)
 
 			// Take the first NbSugs documents not assessed
 			size_t Nb(0);
-			RCursor<GDocFragmentRank> Doc(Docs);
+			RCursor<GDocFragment> Doc(Docs);
 			for(Doc.Start();(!Doc.End())&&(Nb<NbSugs);Doc.Next())
 			{
-				if(Profiles()->GetFdbk(Doc()->GetDocId())) continue;
-				TheSugs.InsertPtr(new GSuggestion(Doc()->GetDocId(),Doc()->GetRanking(),RDate::GetToday(),Info));
+				if(Profiles()->GetFdbk(Doc()->GetDoc()->GetId())) continue;
+				TheSugs.InsertPtr(new GDocFragment(Doc()->GetDoc(),Doc()->GetRanking(),RDate::GetToday(),Info));
 				Nb++;
 			}
 
