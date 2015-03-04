@@ -66,7 +66,7 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 KViewUsers::KViewUsers(QGALILEIWin* win)
-	: QMdiSubWindow(), Ui_KViewUsers()
+	: QMdiSubWindow(), Ui_KViewUsers(), Win(win)
 {
 	QWidget* ptr=new QWidget();
 	setupUi(ptr);
