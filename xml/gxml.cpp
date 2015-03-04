@@ -142,8 +142,8 @@ int XMLSchema::Compare(const RString& uri)
 
 //-----------------------------------------------------------------------------
 GXML::GXML(GSession* session,GPlugInFactory* fac)
-	: GFilter(session,fac), GXMLParser(), MetadataTags(50), ExcludeTags(50), Schemas(50),
-	  Tags(30,20)
+	: GFilter(session,fac), GXMLParser(), DetectMetadataTag(false), MetadataTags(50),
+	  ExcludeTags(50), Schemas(50), Tags(30,20)
 {
 	AddMIME("text/xml");
 	AddMIME("xml");
