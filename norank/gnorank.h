@@ -59,6 +59,12 @@ public:
 	GNoRank(GSession* session,GPlugInFactory* fac);
 
 	/**
+	 * Rank a set of document fragments.
+	 * @param engine         Engine which results must be ranked.
+	 */
+	virtual void Rank(GEngine* engine);
+
+	/**
 	* Create the parameters.
 	*/
 	virtual void CreateConfig(void);

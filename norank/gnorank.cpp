@@ -39,7 +39,7 @@ const bool Debug=false;
 
 //------------------------------------------------------------------------------
 //
-// class GMetaEngine
+// class GNoRank
 //
 //------------------------------------------------------------------------------
 
@@ -47,6 +47,13 @@ const bool Debug=false;
 GNoRank::GNoRank(GSession* session,GPlugInFactory* fac)
 	: GComputeRank(session,fac)
 {
+}
+
+
+//------------------------------------------------------------------------------
+void GNoRank::Rank(GEngine*)
+{
+
 }
 
 

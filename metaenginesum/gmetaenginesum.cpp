@@ -113,45 +113,23 @@ void GMetaEngineSum::FragmentRankAdded(GDocFragmentRank* rank,GEngine* engine)
 
 
 //------------------------------------------------------------------------------
-void GMetaEngineSum::PerformRequest(const R::RString query)
+void GMetaEngineSum::RequestEngines(const R::RString& query)
 {
 	// Initialise
 	Query=query;
-	Results.Clear();
 	Keywords.Clear();
 	query.Split(Keywords,' ');
 
-	//if No keywords -> don't search.
-	if(!Keywords.GetNb())
-		return;
-
-	// Does the work.
-	BuildRequests();
-	ComputeGlobalRanking();
-	if(Debug)
-	{
-		// Print the results.
-		R::RCursor<GDocFragmentRanks> Ranks(GetRankings());
-		for(Ranks.Start();!Ranks.End();Ranks.Next())
-		{
-			cout<<Ranks()->GetFragment()->GetDoc()->GetURI()()<<endl;
-			RCursor<GDocFragmentRank> Cur(Ranks()->GetRankings());
-			for(Cur.Start();!Cur.End();Cur.Next())
-				cout<<"\t\t"<<Cur()->GetRanking()<<" : "<<Cur()->GetInfo()<<"  ";
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-void GMetaEngineSum::BuildRequests(void)
-{
+	// if No keywords -> don't search.
 	size_t Nb(Keywords.GetNb());
+	if(!Nb)
+		return;
 
 	switch(Type)
 	{
 		case Single:
 		{
-			RequestEngines(Query);
+			GMetaEngine::RequestEngines(Query);
 			break;
 		}
 		case kCombinations:
@@ -189,13 +167,31 @@ void GMetaEngineSum::BuildRequests(void)
 
 
 //------------------------------------------------------------------------------
+void GMetaEngineSum::PostRequest(void)
+{
+	if(Debug)
+	{
+		// Print the results.
+		R::RCursor<GDocFragmentRanks> Ranks(GetRankings());
+		for(Ranks.Start();!Ranks.End();Ranks.Next())
+		{
+			cout<<Ranks()->GetFragment()->GetDoc()->GetURI()()<<endl;
+			RCursor<GDocFragmentRank> Cur(Ranks()->GetRankings());
+			for(Cur.Start();!Cur.End();Cur.Next())
+				cout<<"\t\t"<<Cur()->GetRanking()<<" : "<<Cur()->GetInfo()<<"  ";
+		}
+	}
+}
+
+
+//------------------------------------------------------------------------------
 void GMetaEngineSum::CombineKeywords(size_t pos,size_t k)
 {
 	if(QueryWords.GetNb()==k)
 	{
 		RString Query;
 		Query.Concat(QueryWords,' ');
-		RequestEngines(Query);
+		GMetaEngine::RequestEngines(Query);
 	}
 	else
 	{
@@ -226,10 +222,6 @@ void GMetaEngineSum::ComputeGlobalRanking(void)
 			Rank+=Cur()->GetRanking();
 		Ranks()->GetFragment()->SetRanking(Rank);
 	}
-
-	// Sort results
-	if(Results.GetNb())
-		Results.ReOrder(sortOrder);
 }
 
 

@@ -137,12 +137,12 @@ public:
 	* Send a query to the meta-search engine.
 	* @param query           Query.
 	*/
-	virtual void PerformRequest(const R::RString query);
+	virtual void RequestEngines(const R::RString& query);
 
 	/**
-	* Build all the queries based on Keywords depending of the type.
-	*/
-	void BuildRequests(void);
+	 * Perform some tasks once the request was treated.
+    */
+	virtual void PostRequest(void);
 
 	/**
 	* A recursive method that combines all the words of the query. In practice,
@@ -158,7 +158,7 @@ public:
 	* for documents extracted from different search engines.
 	* Results are then sort using this global ranking
 	*/
-	void ComputeGlobalRanking(void);
+	virtual void ComputeGlobalRanking(void);
 
 	/**
 	* Function used by "qsort" to sort the results
