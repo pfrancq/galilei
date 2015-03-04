@@ -1,0 +1,5 @@
+IF(KDE4_FOUND)
+    SET(promrank_AVAILABLE_FRONTENDS kde)
+    SET(promrank_kde_DEPENDENCY rcoreqt ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
+    ADD_FRONTEND_SOURCE_FILE(promrank_frontend promrank kde promrank_INCLUDES)
+ENDIF(KDE4_FOUND)

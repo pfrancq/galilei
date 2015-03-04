@@ -30,13 +30,12 @@
 
 
 //------------------------------------------------------------------------------
-// include files for R
+// include files for R/GALILEI
 #include <rqt.h>
+#include <gcomputerank.h>
+using namespace GALILEI;
 using namespace R;
 
-// include files for GALILEI
-#include <gengine.h>
-using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 // include files for KDE/Qt
@@ -47,7 +46,7 @@ using namespace GALILEI;
 #include <kaboutapplicationdialog.h>
 #include <knuminput.h>
 #include <kurlrequester.h>
-#include <ui_genginexml.h>
+#include <ui_gpromrank.h>
 #include <QtGui/qfiledialog.h>
 
 
@@ -58,7 +57,7 @@ class Config : public KDialog, public Ui_Config
 public:
 	Config(void)
 	{
-		setCaption("Configure XML Engine Plug-In");
+		setCaption("Configure Promethee Ranking Plug-In");
 		QWidget* widget=new QWidget(this);
 		setupUi(widget);
 		setMainWidget(widget);
@@ -78,7 +77,7 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData("xmlengine", 0,ki18n("XML Search Engine"), "2.0", ki18n("This is a XML search engine."), KAboutData::License_GPL,
+	KAboutData aboutData("promrank", 0,ki18n("Promethee Ranking"), "2.0", ki18n("This is a Promethee ranking method."), KAboutData::License_GPL,
 					ki18n("(C) 2004-2014 by Pascal Francq\n (C) 2004-2005 by Jean-Baptiste Valsamis\n(C) 2005-2009 by Faïza Abbaci"), KLocalizedString(), "http://www.otlet-institute.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Faiza Abbaci"),ki18n("Contributor"));
@@ -92,11 +91,6 @@ void About(void)
 bool Configure(GPlugIn* fac)
 {
 	Config Dlg;
-
-	// Normal Parameters
-	Dlg.NbResults->setValue(fac->FindParam<RParamValue>("NbResults")->GetInt());
-	Dlg.Weight->setValue(fac->FindParam<RParamValue>("Weight")->GetDouble());
-	Dlg.OnlyDocs->setChecked(fac->FindParam<RParamValue>("OnlyDocs")->GetBool());
 
 	// Tf/Idf
 	Dlg.TfIdfActive->setChecked(fac->FindParam<RParamStruct>("TfIdf")->Get<RParamValue>("Active")->GetBool());
@@ -130,11 +124,6 @@ bool Configure(GPlugIn* fac)
 
 	if(Dlg.exec())
 	{
-		// Normal Parameters
-		fac->FindParam<RParamValue>("NbResults")->SetUInt(Dlg.NbResults->value());
-		fac->FindParam<RParamValue>("Weight")->SetDouble(Dlg.Weight->value());
-		fac->FindParam<RParamValue>("OnlyDocs")->SetBool(Dlg.OnlyDocs->isChecked());
-
 		// Tf/Idf
 		fac->FindParam<RParamStruct>("TfIdf")->Get<RParamValue>("Active")->SetBool(Dlg.TfIdfActive->isChecked());
 		fac->FindParam<RParamStruct>("TfIdf")->Get<RParamValue>("P")->SetDouble(Dlg.TfIdfP->value());

@@ -33,3 +33,5 @@ ENDIF(disable-kde)
 
 SET(SUB_PROJECT xmlengine)
 ADD_SUBDIRECTORY(xmlengine)
+SET(SUB_PROJECT promrank)
+ADD_SUBDIRECTORY(promrank)

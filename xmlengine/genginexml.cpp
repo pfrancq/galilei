@@ -37,7 +37,6 @@
 //-----------------------------------------------------------------------------
 // include files for R/GALILEI Projects
 #include <gsession.h>
-#include <gmetaengine.h>
 #include <rpromcriterion.h>
 #include <gdoc.h>
 #include <gdocanalyze.h>
@@ -353,7 +352,7 @@ void GEngineXML::HandleReInit(const R::RNotification& notification)
 
 
 //------------------------------------------------------------------------------
-void GEngineXML::Request(GMetaEngine* caller,const RString& query)
+void GEngineXML::PerformRequest(const RString& query)
 {
 	Weighting=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Features Evaluation",0);
 	if(!Weighting)
@@ -382,14 +381,14 @@ void GEngineXML::Request(GMetaEngine* caller,const RString& query)
 		Res->Print();
 
 	 if(OnlyDocs)
-		 SelectDocs(caller,Req,Res);
+		 SelectDocs(Req,Res);
 	 else
-		RankFragments(caller,Req,Res);
+		RankFragments(Req,Res);
 }
 
 
 //------------------------------------------------------------------------------
-void GEngineXML::RankFragments(GMetaEngine* caller,GQuery& req,const GQueryRes* res)
+void GEngineXML::RankFragments(GQuery& req,const GQueryRes* res)
 {
 	// Create a PROMETHEE kernel and a solution for each fragment
 	GProm Prom(this,&req,Weighting);
@@ -418,13 +417,13 @@ void GEngineXML::RankFragments(GMetaEngine* caller,GQuery& req,const GQueryRes* 
 		size_t Pos(0);
 		if(Fragment->Node->GetNode())
 			Pos=Fragment->Node->GetNode()->GetPos();
-		caller->AddResult(DocId,Pos,MinNode->GetPos(),MaxNode->GetPos(),Ranking,this);
+		AddResult(DocId,Fragment->Node->GetNode(),Pos,MinNode->GetPos(),MaxNode->GetPos(),Ranking);
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void GEngineXML::SelectDocs(GMetaEngine* caller,GQuery& req,const GQueryRes* res)
+void GEngineXML::SelectDocs(GQuery& req,const GQueryRes* res)
 {
 	RCursor<GResNodes> Res(res->GetDocs());
 	double Dec(1.0/static_cast<double>(Res.GetNb()+1));
@@ -433,17 +432,20 @@ void GEngineXML::SelectDocs(GMetaEngine* caller,GQuery& req,const GQueryRes* res
 	{
 		// Determine Min and Max
 		size_t Min(cNoRef), Max(0);
+		GConceptNode* CNode(0);
 		RCursor<GResNode> Node(Res()->GetNodes());
 		for(Node.Start();!Node.End();Node.Next())
 		{
 			if(Min>Node()->GetNode()->GetPos())
+			{
 				Min=Node()->GetNode()->GetPos();
+				CNode=Node()->GetNode();
+			}
 			if(Max<Node()->GetNode()->GetPos())
 				Max=Node()->GetNode()->GetPos();
 		}
-		cout<<Min<<" "<<Max<<endl;
 
-		caller->AddResult(Res()->GetDocId(),Min,Min,Max,Ranking,this);
+		AddResult(Res()->GetDocId(),CNode,Min,Min,Max,Ranking);
 	}
 }
 

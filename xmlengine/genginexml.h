@@ -196,29 +196,26 @@ public:
 
 	/**
 	* Request a query.
-	* @param caller          Meta-engine calling the engine.
 	* @param query           Query.
 	*/
-	virtual void Request(GMetaEngine* caller,const RString& query);
+	virtual void PerformRequest(const RString& query);
 
 private:
 
 	/**
 	 * Perform the PROMETHEE method to rank the document fragments.
-	 * @param caller         Meta-engine calling the engine.
     * @param req            Query performed.
     * @param res            Fragment selected.
     */
-	void RankFragments(GMetaEngine* caller,GQuery& req,const GQueryRes* res);
+	void RankFragments(GQuery& req,const GQueryRes* res);
 
 	/**
 	 * Perform a simple selection of each document for which at least one
 	 * fragment was selected.
-	 * @param caller         Meta-engine calling the engine.
-    * @param req            Query performed.
+	 * @param req            Query performed.
     * @param res            Fragment selected.
     */
-	void SelectDocs(GMetaEngine* caller,GQuery& req,const GQueryRes* res);
+	void SelectDocs(GQuery& req,const GQueryRes* res);
 
 	/**
 	 * Method used to ordered the blocks by descending order of accesses.
