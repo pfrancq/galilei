@@ -47,7 +47,7 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 /**
 * The GComputeRank class provides a representation for a generic computing
-* method to rank a set of documents.
+* method to rank a set of document fragments.
 *
 * See the documentation related to GPlugIn for more general information.
 * @short Generic Ranking Method
@@ -62,6 +62,12 @@ public:
 	* @param fac             Factory.
 	*/
 	GComputeRank(GSession* session,GPlugInFactory* fac);
+
+	/**
+	 * Rank a set of document fragments.
+	 * @param engine         Engine which results must be ranked.
+	 */
+	virtual void Rank(GEngine* engine)=0;
 
 	/**
 	* Destructor of the ranking method.

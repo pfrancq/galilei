@@ -109,7 +109,12 @@ void GCommunity::GetRelevantDocs(GCommunityDocs& docs)
 			// Insert the document in RelevantDocs
 			GDoc* Doc(Session->GetObj(pDoc,Fdbks()->GetDocId()));
 			if(Doc)
-				RelevantDocs.GetInsertPtr(Doc);
+			{
+				bool Find;
+				size_t idx(RelevantDocs.GetIndex(Doc,Find));
+				if(!Find)
+					RelevantDocs.InsertPtrAt(new GDocFragment(Doc,0),idx,false);
+			}
 		}
 	}
 

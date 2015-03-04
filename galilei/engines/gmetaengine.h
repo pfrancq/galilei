@@ -51,6 +51,21 @@ namespace GALILEI{
 * engine. In practice, it manages a set of results (document fragments) for a
 * given query passed by the user.
 *
+* In practice, a meta-engine does the following thinks
+* -# It calls the method PrepareRequest(const R::RString&). By default, it
+*    clears the old results and call GEngine::Clear(GMetaEngine*) for each
+*    enabled engine.
+* -# It calls the method RequestEngines(const R::RString&). By default, the
+*    method forwards the query passed to each enabled engine. Inheriting classes
+*    may redefine this method to adapt the query to each engine or to select
+*    specific engines. Each time a engine add a fragment as a result, the
+*    method FragmentRankAdded(GDocFragmentRank*,GEngine*) is called.
+* -# It calls the method ComputeGlobalRanking(void) to compute a global ranking.
+*    This method should be overloaded by inheriting classes.
+* -# The results are ranked by ascending ranking.
+* -# It calls the method PostRequest(void). By default, this method does
+*    nothing.
+*
 * It is the role of inheriting classes to ensure that the query submitted to the
 * engines respects their constraints.
 *
@@ -59,8 +74,6 @@ namespace GALILEI{
 */
 class GMetaEngine : public GPlugIn, R::RDownloadFile
 {
-protected:
-
 	/**
 	* All fragments classified by documents.
 	*/
@@ -72,7 +85,7 @@ protected:
 	R::RContainer<GDocFragment,false,false> Results;
 
 	/**
-	 * All the rankins for each document fragments.
+	 * All the rankings for each document fragments.
 	 */
 	R::RContainer<GDocFragmentRanks,true,true> Rankings;
 
@@ -85,10 +98,13 @@ public:
 	*/
 	GMetaEngine(GSession* session,GPlugInFactory* fac);
 
+private:
+
 	/**
 	* Add a fragment from a known document as result to the meta-engine. In
 	* practice, it adds an entry to the container of results.
 	* @param doc             Document.
+	* @param node            Concept node.
 	* @param pos             Position to the fragment to extract.
 	* @param first           First concept found.
 	* @param last            Last concept found.
@@ -96,12 +112,13 @@ public:
 	*                        (\f$0\leq ranking \leq 1\f$).
 	* @param engine          Engine from which the result come.
 	*/
-	void AddResult(GDoc* doc,size_t pos,size_t first,size_t last,double ranking,GEngine* engine);
+	void AddResult(GDoc* doc,GConceptNode* node,size_t pos,size_t first,size_t last,double ranking,GEngine* engine);
 
 	/**
 	* Add a fragment from a known document as result to the meta-engine. In
 	* practice, it adds an entry to the container of results.
 	* @param docid           Identifier of the document.
+	* @param node            Concept node.
 	* @param pos             Position to the fragment to extract.
 	* @param first           First concept found.
 	* @param last            Last concept found.
@@ -109,16 +126,9 @@ public:
 	*                        (\f$0\leq ranking \leq 1\f$).
 	* @param engine          Engine from which the result come.
 	*/
-	void AddResult(size_t docid,size_t pos,size_t first,size_t last,double ranking,GEngine* engine);
+	void AddResult(size_t docid,GConceptNode* node,size_t pos,size_t first,size_t last,double ranking,GEngine* engine);
 
-	/**
-	* Send a query to the meta-search engine. It call GMetaEngine::PerformRequest
-	* and order then all the document fragments.
-	* @param query           Query.
-	*/
-	void Request(const R::RString query);
-
-private:
+protected:
 
 	/**
 	 * method called each time an engine  add a given document fragment as a
@@ -129,24 +139,39 @@ private:
 	virtual void FragmentRankAdded(GDocFragmentRank* rank,GEngine* engine);
 
 	/**
-	* Send a query to the meta-search engine. It should:
-	* -# Analyse the query to identify the keywords and (eventually) operators.
-	* -# Call the different engines (or at least the most relevant ones). The
-	 *   GMetaEngine::RequestEngines can be used.
-	* -# Produce a global ranking of all the documents retrieved by all engines.
+	 * Initialise the query. The containers are cleared and the method
+	 * GEngine::Clear(GMetaEngine*) is called for each enabled engine.
+    * @param query
+    */
+	virtual void PrepareRequest(const R::RString& query);
+
+	/**
+	* Send a query to the engines. By default, it is send to all
+	* enabled engines.
 	* @param query           Query.
 	*/
-	virtual void PerformRequest(const R::RString query)=0;
+	virtual void RequestEngines(const R::RString& query);
+
+	/**
+	* This function is used to compute the global ranking
+	* for documents extracted from different search engines.
+	* Results are then sort using this global ranking
+	*/
+	virtual void ComputeGlobalRanking(void);
+
+	/**
+	 * Perform some tasks once the request was treated.
+    */
+	virtual void PostRequest(void);
 
 public:
 
 	/**
-	* Send a query to the different engines. By default, it is send to all
-	* enabled engines.
+	* Send a query to the meta-search engine. It call GMetaEngine::PerformRequest
+	* and order then all the document fragments.
 	* @param query           Query.
-	*
 	*/
-	virtual void RequestEngines(const R::RString& query);
+	void Request(const R::RString query);
 
 	/**
 	* Get all the fragments retrieved by documents.
@@ -174,6 +199,8 @@ public:
 	* Destructor of the meta-engine.
 	*/
 	virtual ~GMetaEngine(void);
+
+	friend class GEngine;
 };
 
 

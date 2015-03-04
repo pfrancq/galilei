@@ -60,7 +60,7 @@ GMetaEngine::GMetaEngine(GSession* session,GPlugInFactory* fac)
 
 
 //------------------------------------------------------------------------------
-void GMetaEngine::AddResult(GDoc* doc,size_t pos,size_t first,size_t last,double ranking,GEngine* engine)
+void GMetaEngine::AddResult(GDoc* doc,GConceptNode* node,size_t pos,size_t first,size_t last,double ranking,GEngine* engine)
 {
 	if(!doc)
 		mThrowGException("Unknown document");
@@ -70,7 +70,7 @@ void GMetaEngine::AddResult(GDoc* doc,size_t pos,size_t first,size_t last,double
 	// Insert the fragment
 	bool Exist;
 	GDocRef* Ref(ResultsByDocs.GetInsertPtr(doc));
-	GDocFragment* Fragment(Ref->AddFragment(pos,first,last,Exist));
+	GDocFragment* Fragment(Ref->AddFragment(node,pos,first,last,Exist));
 	if(!Exist)
 		engine->Results.InsertPtr(Fragment);
 
@@ -82,37 +82,11 @@ void GMetaEngine::AddResult(GDoc* doc,size_t pos,size_t first,size_t last,double
 
 
 //------------------------------------------------------------------------------
-void GMetaEngine::AddResult(size_t docid,size_t pos,size_t first,size_t last,double ranking,GEngine* engine)
+void GMetaEngine::AddResult(size_t docid,GConceptNode* node,size_t pos,size_t first,size_t last,double ranking,GEngine* engine)
 {
 	// Find the document reference
 	GDoc* Doc(Session->GetObj(pDoc,docid));
-	AddResult(Doc,pos,first,last,ranking,engine);
-}
-
-
-//------------------------------------------------------------------------------
-void GMetaEngine::Request(const R::RString query)
-{
-	// Clear the previous results
-	ResultsByDocs.Clear();
-	Results.Clear();
-	Rankings.Clear();
-	RCastCursor<GPlugIn,GEngine> Cur(GALILEIApp->GetPlugIns<GEngine>("Engine"));
-	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->Clear();
-
-	// Perform the request
-	PerformRequest(query);
-
-	// Sort the results by rankings
-	RCursor<GDocRef> Refs(ResultsByDocs);
-	for(Refs.Start();!Refs.End();Refs.Next())
-	{
-		RCursor<GDocFragment> Fragment(Refs()->GetFragments());
-		for(Fragment.Start();!Fragment.End();Fragment.Next())
-		Results.InsertPtr(Fragment());
-	}
-	Rankings.ReOrder(GDocFragment::SortOrderRanking);
+	AddResult(Doc,node,pos,first,last,ranking,engine);
 }
 
 
@@ -123,11 +97,60 @@ void GMetaEngine::FragmentRankAdded(GDocFragmentRank*s,GEngine*)
 
 
 //------------------------------------------------------------------------------
+void GMetaEngine::PrepareRequest(const R::RString& query)
+{
+	// Clear the previous results
+	ResultsByDocs.Clear();
+	Results.Clear();
+	Rankings.Clear();
+	RCastCursor<GPlugIn,GEngine> Cur(GALILEIApp->GetPlugIns<GEngine>("Engine"));
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->Clear(this);
+}
+
+
+//------------------------------------------------------------------------------
 void GMetaEngine::RequestEngines(const R::RString& query)
 {
 	RCastCursor<GPlugIn,GEngine> Cur(GALILEIApp->GetPlugIns<GEngine>("Engine"));
 	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->Request(this,query);
+		Cur()->Request(query);
+}
+
+
+//------------------------------------------------------------------------------
+void GMetaEngine::ComputeGlobalRanking(void)
+{
+
+}
+
+
+//------------------------------------------------------------------------------
+void GMetaEngine::PostRequest(void)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GMetaEngine::Request(const R::RString query)
+{
+	PrepareRequest(query);
+
+	// Perform the request
+	RequestEngines(query);
+
+	// Compute the global rankings and Sort the results by rankings
+	ComputeGlobalRanking();
+	RCursor<GDocRef> Refs(ResultsByDocs);
+	for(Refs.Start();!Refs.End();Refs.Next())
+	{
+		RCursor<GDocFragment> Fragment(Refs()->GetFragments());
+		for(Fragment.Start();!Fragment.End();Fragment.Next())
+		Results.InsertPtr(Fragment());
+	}
+	Rankings.ReOrder(GDocFragment::SortOrderRanking);
+
+	PostRequest();
 }
 
 

@@ -78,7 +78,7 @@ void GDocRef::Clear(void)
 
 
 //-----------------------------------------------------------------------------
-GDocFragment* GDocRef::AddFragment(size_t pos,size_t first,size_t last,bool& exist)
+GDocFragment* GDocRef::AddFragment(GConceptNode* node,size_t pos,size_t first,size_t last,bool& exist)
 {
 	GDocFragment* Fragment;
 
@@ -89,7 +89,7 @@ GDocFragment* GDocRef::AddFragment(size_t pos,size_t first,size_t last,bool& exi
 		Fragment=Fragments[idx];
 	}
 	else
-		Fragments.InsertPtrAt(Fragment=new GDocFragment(Doc,pos,first,last),idx,false);
+		Fragments.InsertPtrAt(Fragment=new GDocFragment(Doc,node,pos,first,last),idx,false);
 
 	return(Fragment);
 }

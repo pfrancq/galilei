@@ -71,8 +71,8 @@ GDocFragment::Search::Search(size_t docid,size_t pos)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocFragment::GDocFragment(GDoc* doc,size_t pos,size_t begin,size_t end,double ranking,const R::RString& info,const R::RDate& proposed)
-	: Doc(doc), Pos(pos), Begin(begin), End(end), Ranking(ranking), Proposed(proposed), Info(info), WholeDoc(false)
+GDocFragment::GDocFragment(GDoc* doc,GConceptNode* node,size_t pos,size_t begin,size_t end,double ranking,const R::RString& info,const R::RDate& proposed)
+	: Doc(doc), Node(node), Pos(pos), Begin(begin), End(end), Ranking(ranking), Proposed(proposed), Info(info), WholeDoc(false)
 {
 	if(!Doc)
 		mThrowGException("Cannot have a null document reference");
@@ -82,8 +82,8 @@ GDocFragment::GDocFragment(GDoc* doc,size_t pos,size_t begin,size_t end,double r
 
 
 //------------------------------------------------------------------------------
-GDocFragment::GDocFragment(GDoc* doc,double ranking,const R::RString& info,const R::RDate& proposed)
-	: Doc(Doc), Pos(0), Begin(0), End(0), Ranking(ranking), Proposed(proposed), Info(info), WholeDoc(true)
+GDocFragment::GDocFragment(GDoc* doc,GConceptNode* node,double ranking,const R::RString& info,const R::RDate& proposed)
+	: Doc(Doc), Node(node), Pos(0), Begin(0), End(0), Ranking(ranking), Proposed(proposed), Info(info), WholeDoc(true)
 {
 	if(!Doc)
 		mThrowGException("Cannot have a null document reference");

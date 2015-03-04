@@ -39,6 +39,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gengine.h>
+#include <gmetaengine.h>
 #include <ggalileiapp.h>
 #include <gcomputerank.h>
 using namespace GALILEI;
@@ -55,7 +56,7 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GEngine::GEngine(GSession* session,GPlugInFactory* fac)
-	: GPlugIn(session,fac), Weight(1.0), Ranking(0), Results(200)
+	: GPlugIn(session,fac), Weight(1.0), Ranking(0), Results(200), MetaEngine(0)
 {
 }
 
@@ -72,9 +73,36 @@ void GEngine::ApplyConfig(void)
 
 
 //------------------------------------------------------------------------------
-void GEngine::Clear(void)
+void GEngine::Clear(GMetaEngine* metaengine)
 {
 	Results.Clear();
+	MetaEngine=metaengine;
+}
+
+
+//------------------------------------------------------------------------------
+void GEngine::AddResult(GDoc* doc,GConceptNode* node,size_t pos,size_t first,size_t last,double ranking)
+{
+	if(!MetaEngine)
+		mThrowGException("Cannot call this method because no meta-engine valid");
+	MetaEngine->AddResult(doc,node,pos,first,last,ranking,this);
+}
+
+
+//------------------------------------------------------------------------------
+void GEngine::AddResult(size_t docid,GConceptNode* node,size_t pos,size_t first,size_t last,double ranking)
+{
+	if(!MetaEngine)
+		mThrowGException("Cannot call this method because no meta-engine valid");
+ 	MetaEngine->AddResult(docid,node,pos,first,last,ranking,this);
+}
+
+//------------------------------------------------------------------------------
+void GEngine::Request(const R::RString& query)
+{
+	PerformRequest(query);
+	if(Ranking)
+		Ranking->Rank(this);
 }
 
 

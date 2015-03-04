@@ -98,6 +98,7 @@ public:
 
 	/**
 	 * Add a fragment.
+	 * @param node           Concept node.
 	 * @param pos            Position to the fragment to extract.
 	 * @param first          First concept found.
 	 * @param last           Last concept found.
@@ -105,7 +106,7 @@ public:
 	 *                       exists (true) or was created (false).
 	 * @return a pointer to a GDocFragment.
     */
-	GDocFragment* AddFragment(size_t pos,size_t first,size_t last,bool& exist);
+	GDocFragment* AddFragment(GConceptNode* node,size_t pos,size_t first,size_t last,bool& exist);
 
 	/**
 	 * Get all the fragments.

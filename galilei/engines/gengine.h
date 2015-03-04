@@ -55,13 +55,18 @@ namespace GALILEI{
 /**
 * The GEngine class provides a representation for a generic search engine. An
 * engine plug-in may :
-* -# Make a direct search in the actual corpus of the session.
-* -# Call an external engine (for example Google Search) and process the
-*    results.
+* - Make a direct search in the actual corpus of the session.
+* - Call an external engine (for example Google Search), create a document in
+*    the session and process the results.
 *
-* Each time a engine wants to add a results, it must call the AddResult methods
-* of GMetaEngine calling the engine. One of the method adds an document already
-* known by the current session, the other one an unknown document.
+* In practice, a search engine calls:
+* -# It calls the PerformRequest(const R::RString&) method. It is a pure virtual
+*    one that must be written by inheriting classes.
+* -# If a ranking method is associated to the engine, it is used once the query
+*    is treated with the GComputeRank::Rank(GEngine*) method.
+ *
+* Each time a engine wants to add a results, it must call the AddResult methods.
+*
 * @warning The ranking, \f$ranking\f$, associated by a given search engine must
 * respect the constraint: \f$0\leq ranking \leq 1\f$. Otherwise, an exception
 * is generated. This constraint ensures that each engine normalizes its
@@ -88,6 +93,11 @@ class GEngine : public GPlugIn
 	 */
 	R::RString RankingMethod;
 
+	/**
+	 * Meta engine that calls the engine.
+	 */
+	GMetaEngine* MetaEngine;
+
 protected:
 
 	/**
@@ -110,17 +120,63 @@ public:
 	virtual void ApplyConfig(void);
 
 	/**
-	 * Clear the engine before a new request is send.
+	 * Clear the engine before a new request is send. By default, the results are
+	 * cleared and the MetaEngine variable is set.
+	 * @param metaengine     Meta-engine that will query the engine.
     */
-	virtual void Clear(void);
+	virtual void Clear(GMetaEngine* metaengine);
 
 	/**
-	* Request a query. It is the responsibility of the meta-search engine to
-	* build a syntactically correct query for the particular search engine.
-	* @param caller          Meta-engine calling the engine.
+	* Add a fragment from a known document as result to the meta-engine. In
+	* practice, it adds an entry to the container of results.
+	* @param doc             Document.
+	* @param node            Concept node.
+	* @param pos             Position to the fragment to extract.
+	* @param first           First concept found.
+	* @param last            Last concept found.
+	* @param ranking         Ranking of the document given by the engine
+	*                        (\f$0\leq ranking \leq 1\f$).
+	* @param engine          Engine from which the result come.
+	*/
+	void AddResult(GDoc* doc,GConceptNode* node,size_t pos,size_t first,size_t last,double ranking=0.0);
+
+	/**
+	* Add a fragment from a known document as result to the meta-engine. In
+	* practice, it adds an entry to the container of results.
+	* @param docid           Identifier of the document.
+	* @param node            Concept node.
+	* @param pos             Position to the fragment to extract.
+	* @param first           First concept found.
+	* @param last            Last concept found.
+	* @param ranking         Ranking of the document given by the engine
+	*                        (\f$0\leq ranking \leq 1\f$).
+	* @param engine          Engine from which the result come.
+	*/
+	void AddResult(size_t docid,GConceptNode* node,size_t pos,size_t first,size_t last,double ranking=0.0);
+
+private:
+
+	/**
+	* Request a query.
 	* @param query           Query.
 	*/
-	virtual void Request(GMetaEngine* caller,const R::RString& query)=0;
+	virtual void PerformRequest(const R::RString& query)=0;
+
+public:
+
+	/**
+	 * Treat a request. It is the responsibility of the meta-search engine to
+	* build a syntactically correct query for the particular search engine.
+	 * @param query          Query.
+    */
+	void Request(const R::RString& query);
+
+	/**
+	 * Get the meta-engine that calls the engine (may be null if no meta-engine
+	 * is runned).
+    * @return a pointer to a GMetaEngine.
+    */
+	GMetaEngine* GetMetaEngine(void) const {return(MetaEngine);}
 
 	/**
 	* @return the weight associated to the engine

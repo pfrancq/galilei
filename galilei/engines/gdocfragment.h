@@ -100,6 +100,11 @@ class GDocFragment
 	GDoc* Doc;
 
 	/**
+	 * Concept node.
+	 */
+	GConceptNode* Node;
+
+	/**
 	* The fragment.
 	*/
 	R::RString Fragment;
@@ -144,21 +149,23 @@ public:
 	/**
 	* Constructor of a document fragment.
 	* @param doc             Document.
+	* @param node            Concept node.
 	* @param pos             Position in the document.
 	* @param first           Beginning position of the window.
 	* @param end             End position of the window.
 	* @param ranking         Ranking of the fragment.
 	* @param info            Information.
 	*/
-	GDocFragment(GDoc* doc,size_t pos,size_t begin,size_t end,double ranking=0.0,const R::RString& info=R::RString::Null,const R::RDate& proposed=R::RDate::Null);
+	GDocFragment(GDoc* doc,GConceptNode* node,size_t pos,size_t begin,size_t end,double ranking=0.0,const R::RString& info=R::RString::Null,const R::RDate& proposed=R::RDate::Null);
 
 	/**
 	* Constructor of a document fragment representing the whole document.
 	* @param doc             Document.
+	* @param node            Concept node.
 	* @param ranking         Ranking of the fragment.
 	* @param info            Information.
 	*/
-	GDocFragment(GDoc* doc,double ranking=0.0,const R::RString& info=R::RString::Null,const R::RDate& proposed=R::RDate::Null);
+	GDocFragment(GDoc* doc,GConceptNode* node,double ranking=0.0,const R::RString& info=R::RString::Null,const R::RDate& proposed=R::RDate::Null);
 
 	/**
 	* Method to compare document fragments.
@@ -184,6 +191,14 @@ public:
 	 * @return the pointer to the document.
 	 */
 	GDoc* GetDoc(void) const {return(Doc);}
+
+	/**
+	* Get the concept node corresponding to the fragment.
+	* @return a pointer to a GConceptNode
+	* @warning The pointer may be null if the fragment corresponds to the whole
+	* document or if the structure trees are not built during the analysis.
+	*/
+	GConceptNode* GetNode(void) const {return(Node);}
 
 	/**
 	 * @return the date of the suggestion.
