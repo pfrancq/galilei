@@ -149,7 +149,7 @@ void Sugs::Run(void)
 			for(Doc.Start();(!Doc.End())&&(Nb<NbSugs);Doc.Next())
 			{
 				if(Profiles()->GetFdbk(Doc()->GetDoc()->GetId())) continue;
-				TheSugs.InsertPtr(new GDocFragment(Doc()->GetDoc(),Doc()->GetRanking(),RDate::GetToday(),Info));
+				TheSugs.InsertPtr(new GDocFragment(Doc()->GetDoc(),0,Doc()->GetRanking(),RDate::GetToday(),Info));
 				Nb++;
 			}
 
