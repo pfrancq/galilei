@@ -39,4 +39,3 @@ FOREACH(file ${galilei_frontend_qt_Qt_INCLUDES})
    QT4_WRAP_CPP(galilei_frontend_qt_UIFILE ${REALFILE})
 ENDFOREACH(file ${galilei_frontend_qt_Qt_INCLUDES})
 
-#KDE4_ADD_KCFG_FILES(roptimization_frontend_kde_TARGET_SOURCES )

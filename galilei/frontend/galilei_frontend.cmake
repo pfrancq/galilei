@@ -1,5 +1,5 @@
 IF(QT4_FOUND)
     SET(galilei_AVAILABLE_FRONTENDS qt)
-    SET(galilei_kde_DEPENDENCY rcoreqt ${QT_LIBRARIES} )
+    SET(galilei_qt_DEPENDENCY rcoreqt ${QT_LIBRARIES} )
     ADD_FRONTEND_SOURCE_FILE(galilei_frontend galilei qt galilei_INCLUDES)
 ENDIF(QT4_FOUND)

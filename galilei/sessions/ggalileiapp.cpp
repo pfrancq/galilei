@@ -380,6 +380,11 @@ void GGALILEIApp::FindPlugins(const RString dir,RContainer<RString,true,false>& 
 			dlgs.InsertPtr(new RString(Path+Name));
 			continue;
 		}
+		if(Name.FindStr("qt.so",-1)!=-1)
+		{
+			dlgs.InsertPtr(new RString(Path+Name));
+			continue;
+		}
 
 		// Must be the main plug-in
 		plugins.InsertPtr(new RString(Path+Name));
