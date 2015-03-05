@@ -1,55 +1,56 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>Config</class>
- <widget class="QWidget" name="Config" >
-  <property name="geometry" >
+ <widget class="QWidget" name="Config">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>389</width>
-    <height>269</height>
+    <height>332</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" >
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QTabWidget" name="tabWidget2" >
-     <property name="currentIndex" >
+    <widget class="QTabWidget" name="tabWidget2">
+     <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="tab" >
-      <attribute name="title" >
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
        <string>General</string>
       </attribute>
-      <layout class="QVBoxLayout" >
+      <layout class="QVBoxLayout">
        <item>
-        <widget class="QGroupBox" name="groupBox1" >
-         <property name="title" >
+        <widget class="QGroupBox" name="groupBox1">
+         <property name="title">
           <string>Connection Parameters</string>
          </property>
-         <layout class="QVBoxLayout" name="_2" >
+         <layout class="QVBoxLayout" name="_2">
           <item>
-           <layout class="QHBoxLayout" name="_3" >
+           <layout class="QHBoxLayout" name="_3">
             <item>
-             <widget class="QLabel" name="lblHost" >
-              <property name="text" >
+             <widget class="QLabel" name="lblHost">
+              <property name="text">
                <string>Host:</string>
               </property>
-              <property name="wordWrap" >
+              <property name="wordWrap">
                <bool>false</bool>
               </property>
              </widget>
             </item>
             <item>
-             <spacer name="spacer1" >
-              <property name="orientation" >
+             <spacer name="spacer1">
+              <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
-              <property name="sizeType" >
+              <property name="sizeType">
                <enum>QSizePolicy::Expanding</enum>
               </property>
-              <property name="sizeHint" stdset="0" >
+              <property name="sizeHint" stdset="0">
                <size>
                 <width>130</width>
                 <height>20</height>
@@ -58,14 +59,14 @@
              </spacer>
             </item>
             <item>
-             <widget class="QLineEdit" name="txtHost" >
-              <property name="sizePolicy" >
-               <sizepolicy vsizetype="Fixed" hsizetype="Minimum" >
+             <widget class="QLineEdit" name="txtHost">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
-              <property name="echoMode" >
+              <property name="echoMode">
                <enum>QLineEdit::Normal</enum>
               </property>
              </widget>
@@ -73,26 +74,26 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="_4" >
+           <layout class="QHBoxLayout" name="_4">
             <item>
-             <widget class="QLabel" name="lblLogin_3" >
-              <property name="text" >
+             <widget class="QLabel" name="lblLogin_3">
+              <property name="text">
                <string>Login:</string>
               </property>
-              <property name="wordWrap" >
+              <property name="wordWrap">
                <bool>false</bool>
               </property>
              </widget>
             </item>
             <item>
-             <spacer name="spacer1_3_2" >
-              <property name="orientation" >
+             <spacer name="spacer1_3_2">
+              <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
-              <property name="sizeType" >
+              <property name="sizeType">
                <enum>QSizePolicy::Expanding</enum>
               </property>
-              <property name="sizeHint" stdset="0" >
+              <property name="sizeHint" stdset="0">
                <size>
                 <width>90</width>
                 <height>20</height>
@@ -101,9 +102,9 @@
              </spacer>
             </item>
             <item>
-             <widget class="QLineEdit" name="txtLogin" >
-              <property name="sizePolicy" >
-               <sizepolicy vsizetype="Fixed" hsizetype="Minimum" >
+             <widget class="QLineEdit" name="txtLogin">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -113,26 +114,26 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="_5" >
+           <layout class="QHBoxLayout" name="_5">
             <item>
-             <widget class="QLabel" name="lblLogin_2_2" >
-              <property name="text" >
+             <widget class="QLabel" name="lblLogin_2_2">
+              <property name="text">
                <string>Password:</string>
               </property>
-              <property name="wordWrap" >
+              <property name="wordWrap">
                <bool>false</bool>
               </property>
              </widget>
             </item>
             <item>
-             <spacer name="spacer1_4_2" >
-              <property name="orientation" >
+             <spacer name="spacer1_4_2">
+              <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
-              <property name="sizeType" >
+              <property name="sizeType">
                <enum>QSizePolicy::Expanding</enum>
               </property>
-              <property name="sizeHint" stdset="0" >
+              <property name="sizeHint" stdset="0">
                <size>
                 <width>80</width>
                 <height>20</height>
@@ -141,14 +142,14 @@
              </spacer>
             </item>
             <item>
-             <widget class="QLineEdit" name="txtPwd" >
-              <property name="sizePolicy" >
-               <sizepolicy vsizetype="Fixed" hsizetype="Minimum" >
+             <widget class="QLineEdit" name="txtPwd">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
-              <property name="echoMode" >
+              <property name="echoMode">
                <enum>QLineEdit::Password</enum>
               </property>
              </widget>
@@ -156,26 +157,26 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="_6" >
+           <layout class="QHBoxLayout" name="_6">
             <item>
-             <widget class="QLabel" name="lblDb_2" >
-              <property name="text" >
+             <widget class="QLabel" name="lblDb_2">
+              <property name="text">
                <string>Database:</string>
               </property>
-              <property name="wordWrap" >
+              <property name="wordWrap">
                <bool>false</bool>
               </property>
              </widget>
             </item>
             <item>
-             <spacer name="spacer1_2_2" >
-              <property name="orientation" >
+             <spacer name="spacer1_2_2">
+              <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
-              <property name="sizeType" >
+              <property name="sizeType">
                <enum>QSizePolicy::Expanding</enum>
               </property>
-              <property name="sizeHint" stdset="0" >
+              <property name="sizeHint" stdset="0">
                <size>
                 <width>90</width>
                 <height>20</height>
@@ -184,9 +185,9 @@
              </spacer>
             </item>
             <item>
-             <widget class="QLineEdit" name="txtDb" >
-              <property name="sizePolicy" >
-               <sizepolicy vsizetype="Fixed" hsizetype="Minimum" >
+             <widget class="QLineEdit" name="txtDb">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -196,26 +197,26 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="_7" >
+           <layout class="QHBoxLayout" name="_7">
             <item>
-             <widget class="QLabel" name="textLabel1_2" >
-              <property name="text" >
+             <widget class="QLabel" name="textLabel1_2">
+              <property name="text">
                <string>Encoding</string>
               </property>
-              <property name="wordWrap" >
+              <property name="wordWrap">
                <bool>false</bool>
               </property>
              </widget>
             </item>
             <item>
-             <spacer name="spacer6_2" >
-              <property name="orientation" >
+             <spacer name="spacer6_2">
+              <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
-              <property name="sizeType" >
+              <property name="sizeType">
                <enum>QSizePolicy::Expanding</enum>
               </property>
-              <property name="sizeHint" stdset="0" >
+              <property name="sizeHint" stdset="0">
                <size>
                 <width>20</width>
                 <height>20</height>
@@ -224,14 +225,14 @@
              </spacer>
             </item>
             <item>
-             <widget class="QComboBox" name="cbEncoding" >
+             <widget class="QComboBox" name="cbEncoding">
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>latin1</string>
                </property>
               </item>
               <item>
-               <property name="text" >
+               <property name="text">
                 <string>utf8</string>
                </property>
               </item>
@@ -244,36 +245,49 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_2" >
-      <attribute name="title" >
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
        <string>Filtering</string>
       </attribute>
-      <layout class="QVBoxLayout" name="_9" >
+      <layout class="QVBoxLayout" name="_9">
        <item>
-        <widget class="QCheckBox" name="Filtering" >
-         <property name="text" >
+        <widget class="QCheckBox" name="Filtering">
+         <property name="text">
           <string>Active Filtering</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="Modified" >
-         <property name="text" >
+        <widget class="QCheckBox" name="Modified">
+         <property name="text">
           <string>Only Modified Objects</string>
          </property>
-         <property name="shortcut" >
+         <property name="shortcut">
           <string/>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox1_2" >
-         <property name="title" >
+        <widget class="QGroupBox" name="groupBox1_2">
+         <property name="title">
           <string>Only Objects Having a Date</string>
          </property>
-         <layout class="QVBoxLayout" name="_10" >
+         <layout class="QVBoxLayout" name="_10">
           <item>
-           <widget class="KDatePicker" name="Filter" />
+           <widget class="QDateEdit" name="Filter"/>
+          </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </widget>
@@ -282,15 +296,15 @@
      </widget>
     </widget>
    </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>KDatePicker</class>
-   <extends>QFrame</extends>
-   <header>kdatepicker.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

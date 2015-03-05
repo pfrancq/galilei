@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GMySQL_KDE.cpp
+	GMySQL_Qt.cpp
 
-	Storage Manager using a MySQL Database (KDE Part)- Implementation.
+	Storage Manager using a MySQL Database (Qt Part)- Implementation.
 
-	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2015 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2004 by Julien Lamoral.
 	Copyright 2001-2004 by Valery Vandaele.
 	Copyright 2001-2004 by David Wartel.
@@ -34,6 +34,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <rqt.h>
+#include <qraboutdialog.h>
 using namespace R;
 
 
@@ -44,25 +45,22 @@ using namespace GALILEI;
 
 
 //------------------------------------------------------------------------------
-// include files for KDE/Qt
-#include <kaboutdata.h>
-#include <kaboutapplicationdialog.h>
-#include <KDE/KLocale>
+// include files for Qt
+#include <QtGui/QDialog>
 #include <ui_config.h>
 
 
 //------------------------------------------------------------------------------
-class Config : public KDialog, public Ui_Config
+class Config : public QDialog, public Ui_Config
 {
 public:
 	Config(void)
 	{
-		setCaption("Configure MySQl Plug-In");
+		setWindowTitle("Configure MySQl Plug-In");
 		QWidget* widget=new QWidget(this);
 		setupUi(widget);
-		setMainWidget(widget);
-		setButtons(KDialog::Cancel|KDialog::Apply);
-		connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
+		connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
+		connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 		adjustSize();
 	}
 };
@@ -70,28 +68,28 @@ public:
 
 
 //------------------------------------------------------------------------------
-extern "C" {
+//extern "C" {
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-void About(void)
+extern "C" void About(void)
 {
-	KAboutData aboutData("mysql", 0, ki18n("MySQL"),
-		"1.0",ki18n("This is a storage based on MySQL database."), KAboutData::License_GPL,
-		ki18n("(C) 2001-2014 by Pascal Francq\n(C) 2001-2004 by Julien Lamoral, Valery Vandaele and David Wartel\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
-		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Julien Lamoral"),ki18n("Developer"));
-	aboutData.addAuthor(ki18n("Valery Vandaele"),ki18n("Developer"));
-	aboutData.addAuthor(ki18n("David Wartel"),ki18n("Developer"));
-	KAboutApplicationDialog dlg(&aboutData);
+	QRAboutDialog dlg("MySQL","1.0");
+	dlg.setDescription("This is a storage based on MySQL database.");
+	dlg.setCopyright(QWidget::trUtf8("(C) 2001-2008 by the Université Libre de Bruxelles (ULB)<br/>(C) 2010-2015 by the Paul Otlet Institute"));
+	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
+	dlg.setLicense(QRAboutDialog::License_GPL);
+	dlg.addAuthor(QWidget::trUtf8("Pascal Francq"),QWidget::trUtf8("Maintainer"), "pascal@francq.info");
+	dlg.addAuthor(QWidget::trUtf8("Julien Lamoral"),QWidget::trUtf8("Developer"));
+	dlg.addAuthor(QWidget::trUtf8("Valery Vandaele"),QWidget::trUtf8("Developer"));
+	dlg.addAuthor(QWidget::trUtf8("David Wartel"),QWidget::trUtf8("Developer"));
 	dlg.exec();
 }
 
 
 //------------------------------------------------------------------------------
-bool Configure(GPlugIn* fac)
+extern "C" bool Configure(GPlugIn* fac)
 {
 	Config dlg;
 
@@ -121,5 +119,5 @@ bool Configure(GPlugIn* fac)
 }
 
 //------------------------------------------------------------------------------
-}     // End of extern
+//}     // End of extern
 //------------------------------------------------------------------------------
