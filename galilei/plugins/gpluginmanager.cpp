@@ -236,14 +236,10 @@ void GPlugInManager::Load(const R::RString& dll,void* handle,void* handleDlg)
 	error=dlerror();
 	if(!error)
 		Factory->SetAbout(about);
-	else
-		std::cerr<<error<<std::endl;
 	void* configdll= dlsym(handleDlg,"Configure");
 	error=dlerror();
 	if(!error)
 		Factory->SetConfig(configdll);
-	else
-		std::cerr<<error<<std::endl;
 }
 
 

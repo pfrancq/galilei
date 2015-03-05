@@ -463,6 +463,19 @@ void GGALILEIApp::Load(const R::RContainer<R::RString,true,false>& dirs,bool dlg
 					}
 				}
 			}
+			if(Dlg.IsEmpty())
+			{
+				RString search=Short.Mid(0,Short.GetLen()-3)+"qt.so";
+				RCursor<RString> Cur3(Dlgs);
+				for(Cur3.Start();!Cur3.End();Cur3.Next())
+				{
+					if(Cur3()->FindStr(search,-1)!=-1)
+					{
+						Dlg=(*Cur3());
+						break;
+					}
+				}
+			}
 		}
 		void* handleDlg=dlopen(Dlg.ToLatin1(),RTLD_NOW);
 
