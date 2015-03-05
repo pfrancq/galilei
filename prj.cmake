@@ -30,5 +30,6 @@ ELSE(disable-qt)
 	ENDIF(QT4_FOUND)
 ENDIF(disable-qt)
 
+
 SET(SUB_PROJECT gmysql)
 ADD_SUBDIRECTORY(mysql)
