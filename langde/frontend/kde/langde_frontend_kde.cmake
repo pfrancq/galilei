@@ -1,3 +1,0 @@
-SET(langde_frontend_kde_TARGET_SOURCES langde_kde.cpp)
-
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

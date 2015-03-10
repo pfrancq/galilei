@@ -1,3 +1,0 @@
-SET(langsv_frontend_kde_TARGET_SOURCES langsv_kde.cpp)
-
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
