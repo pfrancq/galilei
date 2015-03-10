@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	LogEntropy_KDE.cpp
+	LogEntropy_Qt.cpp
 
-	Log Entropy Feature Weighting Method (KDE Part) - Implementation.
+	Log Entropy Feature Weighting Method (Qt Part) - Implementation.
 
 	Copyright 2013-2014 by Pascal Francq (pascal@francq.info).
 
@@ -27,44 +27,24 @@
 
 
 
-//-----------------------------------------------------------------------------
-// include files for Qt/KDE
-#include <kaboutdata.h>
-#include <kaboutapplicationdialog.h>
-#include <KDE/KLocale>
-
-
 //------------------------------------------------------------------------------
 // include files for R/GALILEI
 #include <rqt.h>
+#include <qraboutdialog.h>
 #include <gmeasure.h>
 using namespace R;
 using namespace GALILEI;
-using namespace std;
-
-
 
 
 
 //------------------------------------------------------------------------------
-//
-extern "C" {
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-void About(void)
+extern "C"void About(void)
 {
-	KAboutData aboutData( "logentropy", 0, ki18n("Log Entropy"),
-		"1.0", ki18n("Log/Entropy Weighting Methods for the Features"), KAboutData::License_GPL,
-		ki18n("(C) 2013-2014 by Pascal Francq"),
-		KLocalizedString(), "http://www.otlet-institute.org", "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
-	KAboutApplicationDialog dlg(&aboutData);
+	QRAboutDialog dlg("Log Entropy","1.0");
+	dlg.setDescription("Log/Entropy Weighting Methods for the Features.");
+	dlg.setCopyright(QWidget::trUtf8("(C) 2001-2008 by the Université Libre de Bruxelles (ULB)<br/>(C) 2010-2015 by the Paul Otlet Institute"));
+	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
+	dlg.setLicense(QRAboutDialog::License_GPL);
+	dlg.addAuthor(QWidget::trUtf8("Pascal Francq"),QWidget::trUtf8("Maintainer"), "pascal@francq.info");
 	dlg.exec();
 }
-
-
-//------------------------------------------------------------------------------
-}     // end of extern
-//------------------------------------------------------------------------------
