@@ -28,39 +28,25 @@
 
 
 
-//-----------------------------------------------------------------------------
-// include files for Qt/KDE
-#include <kaboutdata.h>
-#include <kaboutapplicationdialog.h>
-#include <KDE/KLocale>
-
-
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gmeasure.h>
+#include <rqt.h>
+#include <qraboutdialog.h>
+using namespace R;
 using namespace GALILEI;
 using namespace std;
 
 
 //------------------------------------------------------------------------------
-//
-extern "C" {
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-void About(void)
+extern "C" void About(void)
 {
-	KAboutData aboutData("CommunitiesEval",0, ki18n("Communities Evaluation"),
-		"1.0", ki18n("Compute the recall, the precision and the adjusted Rand index for the communities computed"), KAboutData::License_GPL,
-		ki18n("(C) 2003-2014 by Pascal Francq\n(C) 2003-2008 by the Université Libre de Bruxelles (ULB)"),
-		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
-	KAboutApplicationDialog dlg(&aboutData);
+	QRAboutDialog dlg("Communities Evaluation","1.0");
+	dlg.setDescription("Compute the recall, the precision and the adjusted Rand index for the communitiess computed.");
+	dlg.setCopyright(QWidget::trUtf8("(C) 2003-2008 by the Université Libre de Bruxelles (ULB)<br/>(C) 2010-2015 by the Paul Otlet Institute"));
+	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
+	dlg.setLicense(QRAboutDialog::License_GPL);
+	dlg.addAuthor(QWidget::trUtf8("Pascal Francq"),QWidget::trUtf8("Maintainer"), "pascal@francq.info");
 	dlg.exec();
+
 }
-
-
-//------------------------------------------------------------------------------
-}     // end of extern
-//------------------------------------------------------------------------------
