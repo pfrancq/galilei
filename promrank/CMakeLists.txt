@@ -1,6 +1,5 @@
 PROJECT(promrank)
 INCLUDE_DIRECTORIES(.)
-ADD_DEFINITIONS(${QT_DEFINITIONS})
 
 SET(SRC
 	gpromrank.cpp
@@ -19,13 +18,13 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 IF(WIN32)
     ADD_LIBRARY(promrank SHARED ${SRC})
     ADD_SOURCE_FILE(promrank frontend xmlengine_INCLUDES)
-    ADD_FRONTEND(xmlengine SHARED 2 2 2.0.0 lib "r/galilei" xmlengine_INCLUDES)
+    ADD_FRONTEND(promrank SHARED 2 2 2.0.0 lib "r/galilei" promrank_INCLUDES)
     SET_TARGET_PROPERTIES(promrank PROPERTIES LINK_FLAGS "/NODEFAULTLIB:MSVCRTD;MSVCRT;LIBCMT;LIBCMTD")
-    TARGET_LINK_LIBRARIES(promrank galilei roptimization rmath rcore ${QT_LIBRARIES})
+    TARGET_LINK_LIBRARIES(promrank galilei roptimization rmath rcore)
 ELSE(WIN32)
     ADD_LIBRARY(promrank SHARED ${SRC})
     ADD_SOURCE_FILE(promrank frontend xmlengine_INCLUDES)
-    ADD_FRONTEND(promrank SHARED 2 2 2.0.0 lib "r/galilei" xmlengine_INCLUDES)
-    TARGET_LINK_LIBRARIES(promrank galilei roptimization rcore rmath dl ${QT_LIBRARIES})
+    ADD_FRONTEND(promrank SHARED 2 2 2.0.0 lib "r/galilei" promrank_INCLUDES)
+    TARGET_LINK_LIBRARIES(promrank galilei roptimization rcore rmath dl)
 ENDIF(WIN32)
 

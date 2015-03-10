@@ -30,40 +30,32 @@
 
 
 //------------------------------------------------------------------------------
-// include files for R
+// include files for R/GALILEI
 #include <rqt.h>
+#include <gcomputerank.h>
+#include <qraboutdialog.h>
+using namespace GALILEI;
 using namespace R;
 
-// include files for GALILEI
-#include <gengine.h>
-using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 // include files for KDE/Qt
-#include <QtGui/QColorGroup>
-#include <kaboutdata.h>
-#include <kaboutapplicationdialog.h>
-#include <KDE/KLocale>
-#include <kaboutapplicationdialog.h>
-#include <knuminput.h>
-#include <kurlrequester.h>
-#include <ui_genginexml.h>
-#include <QtGui/qfiledialog.h>
+#include <QtGui/QDialog>
+#include <ui_gpromrank.h>
 
 
 
 //------------------------------------------------------------------------------
-class Config : public KDialog, public Ui_Config
+class Config : public QDialog, public Ui_Config
 {
 public:
 	Config(void)
 	{
-		setCaption("Configure XML Engine Plug-In");
+		setWindowTitle("Configure Promethee Ranking Plug-In");
 		QWidget* widget=new QWidget(this);
 		setupUi(widget);
-		setMainWidget(widget);
-		setButtons(KDialog::Cancel|KDialog::Apply);
-		connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
+		connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
+		connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 		setSizePolicy(QSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum));
 		adjustSize();
 	}
@@ -78,12 +70,14 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData("xmlengine", 0,ki18n("XML Search Engine"), "2.0", ki18n("This is a XML search engine."), KAboutData::License_GPL,
-					ki18n("(C) 2004-2014 by Pascal Francq\n (C) 2004-2005 by Jean-Baptiste Valsamis\n(C) 2005-2009 by Faïza Abbaci"), KLocalizedString(), "http://www.otlet-institute.org", "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Faiza Abbaci"),ki18n("Contributor"));
-	aboutData.addAuthor(ki18n("Jean-Baptiste Valsamis"),ki18n("Contributor"));
-	KAboutApplicationDialog dlg(&aboutData);
+	QRAboutDialog dlg("Promethee Ranking","2.0");
+	dlg.setDescription("This is a Promethee ranking method.");
+	dlg.setCopyright(QWidget::trUtf8("(C) 2004-2008 by the Université Libre de Bruxelles (ULB)<br/>(C) 2010-2015 by the Paul Otlet Institute"));
+	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
+	dlg.setLicense(QRAboutDialog::License_GPL);
+	dlg.addAuthor(QWidget::trUtf8("Pascal Francq"),QWidget::trUtf8("Maintainer"), "pascal@francq.info");
+	dlg.addAuthor(QWidget::trUtf8("Faiza Abbaci"),QWidget::trUtf8("Contributor"));
+	dlg.addAuthor(QWidget::trUtf8("Jean-Baptiste Valsamis"),QWidget::trUtf8("Contributor"));
 	dlg.exec();
 }
 
@@ -92,11 +86,6 @@ void About(void)
 bool Configure(GPlugIn* fac)
 {
 	Config Dlg;
-
-	// Normal Parameters
-	Dlg.NbResults->setValue(fac->FindParam<RParamValue>("NbResults")->GetInt());
-	Dlg.Weight->setValue(fac->FindParam<RParamValue>("Weight")->GetDouble());
-	Dlg.OnlyDocs->setChecked(fac->FindParam<RParamValue>("OnlyDocs")->GetBool());
 
 	// Tf/Idf
 	Dlg.TfIdfActive->setChecked(fac->FindParam<RParamStruct>("TfIdf")->Get<RParamValue>("Active")->GetBool());
@@ -130,11 +119,6 @@ bool Configure(GPlugIn* fac)
 
 	if(Dlg.exec())
 	{
-		// Normal Parameters
-		fac->FindParam<RParamValue>("NbResults")->SetUInt(Dlg.NbResults->value());
-		fac->FindParam<RParamValue>("Weight")->SetDouble(Dlg.Weight->value());
-		fac->FindParam<RParamValue>("OnlyDocs")->SetBool(Dlg.OnlyDocs->isChecked());
-
 		// Tf/Idf
 		fac->FindParam<RParamStruct>("TfIdf")->Get<RParamValue>("Active")->SetBool(Dlg.TfIdfActive->isChecked());
 		fac->FindParam<RParamStruct>("TfIdf")->Get<RParamValue>("P")->SetDouble(Dlg.TfIdfP->value());

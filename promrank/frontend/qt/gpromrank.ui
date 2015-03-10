@@ -124,7 +124,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KDoubleNumInput" name="TfIdfP"/>
+         <widget class="QDoubleSpinBox" name="TfIdfP"/>
         </item>
         <item>
          <spacer name="verticalSpacer_9">
@@ -143,7 +143,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KDoubleNumInput" name="DistanceP"/>
+         <widget class="QDoubleSpinBox" name="DistanceP"/>
         </item>
        </layout>
       </item>
@@ -176,7 +176,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KDoubleNumInput" name="TfIdfQ"/>
+         <widget class="QDoubleSpinBox" name="TfIdfQ"/>
         </item>
         <item>
          <spacer name="verticalSpacer_13">
@@ -195,7 +195,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KDoubleNumInput" name="DistanceQ"/>
+         <widget class="QDoubleSpinBox" name="DistanceQ"/>
         </item>
        </layout>
       </item>
@@ -228,7 +228,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KDoubleNumInput" name="TfIdfWeight"/>
+         <widget class="QDoubleSpinBox" name="TfIdfWeight"/>
         </item>
         <item>
          <spacer name="verticalSpacer_17">
@@ -247,7 +247,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KDoubleNumInput" name="DistanceWeight"/>
+         <widget class="QDoubleSpinBox" name="DistanceWeight"/>
         </item>
        </layout>
       </item>
@@ -372,7 +372,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KDoubleNumInput" name="SpecificityP"/>
+         <widget class="QDoubleSpinBox" name="SpecificityP"/>
         </item>
         <item>
          <spacer name="verticalSpacer_29">
@@ -391,7 +391,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KDoubleNumInput" name="TypeP"/>
+         <widget class="QDoubleSpinBox" name="TypeP"/>
         </item>
         <item>
          <spacer name="verticalSpacer_30">
@@ -410,7 +410,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KDoubleNumInput" name="TfIffP"/>
+         <widget class="QDoubleSpinBox" name="TfIffP"/>
         </item>
        </layout>
       </item>
@@ -443,7 +443,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KDoubleNumInput" name="SpecificityQ"/>
+         <widget class="QDoubleSpinBox" name="SpecificityQ"/>
         </item>
         <item>
          <spacer name="verticalSpacer_34">
@@ -462,7 +462,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KDoubleNumInput" name="TypeQ"/>
+         <widget class="QDoubleSpinBox" name="TypeQ"/>
         </item>
         <item>
          <spacer name="verticalSpacer_35">
@@ -481,7 +481,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KDoubleNumInput" name="TfIffQ"/>
+         <widget class="QDoubleSpinBox" name="TfIffQ"/>
         </item>
        </layout>
       </item>
@@ -514,7 +514,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KDoubleNumInput" name="SpecificityWeight"/>
+         <widget class="QDoubleSpinBox" name="SpecificityWeight"/>
         </item>
         <item>
          <spacer name="verticalSpacer_39">
@@ -533,7 +533,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KDoubleNumInput" name="TypeWeight"/>
+         <widget class="QDoubleSpinBox" name="TypeWeight"/>
         </item>
         <item>
          <spacer name="verticalSpacer_40">
@@ -552,23 +552,23 @@
          </spacer>
         </item>
         <item>
-         <widget class="KDoubleNumInput" name="TfIffWeight"/>
+         <widget class="QDoubleSpinBox" name="TfIffWeight"/>
         </item>
        </layout>
       </item>
      </layout>
     </widget>
    </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <customwidgets>
-  <customwidget>
-   <class>KDoubleNumInput</class>
-   <extends>QWidget</extends>
-   <header>knuminput.h</header>
-  </customwidget>
- </customwidgets>
  <includes>
   <include location="local">knuminput.h</include>
   <include location="local">knuminput.h</include>
