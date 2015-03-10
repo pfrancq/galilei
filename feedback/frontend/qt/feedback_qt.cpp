@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	Feedback_KDE.cpp
+	Feedback_Qt.cpp
 
-	Feedback-based Profile Computing Method (KDE part) - Implementation.
+	Feedback-based Profile Computing Method (Qt part) - Implementation.
 
 	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 Université Libre de Bruxelles (ULB).
@@ -29,57 +29,52 @@
 
 
 //------------------------------------------------------------------------------
-// include files for GALILEI
+// include files for R/GALILEI
+#include <rqt.h>
+#include <qraboutdialog.h>
 #include <gprofilecalc.h>
-using namespace GALILEI;
 using namespace R;
+using namespace GALILEI;
+
 
 
 //-----------------------------------------------------------------------------
-// include files for KDE
-#include <kaboutdata.h>
-#include <kaboutapplicationdialog.h>
-#include <KDE/KLocale>
+// include files for Qt
+#include <QtGui/QDialog>
 #include <ui_config.h>
 
 
+
 //------------------------------------------------------------------------------
-class Config : public KDialog, public Ui_Config
+class Config : public QDialog, public Ui_Config
 {
 public:
 	Config(void)
 	{
-		setCaption("Configure Feedback Plug-In");
+		setWindowTitle("Configure Feedback Plug-In");
 		QWidget* widget=new QWidget(this);
 		setupUi(widget);
-		setMainWidget(widget);
-		setButtons(KDialog::Cancel|KDialog::Apply);
-		connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
-		adjustSize();
+		connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
+		connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 	}
 };
 
 
-
 //------------------------------------------------------------------------------
-extern "C" {
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-void About(void)
+extern "C" void About(void)
 {
-	KAboutData aboutData( "feedback", 0, ki18n("Feedback Profile Computing Method "),
-		"1.1",ki18n("This is the Feedback Profile Computing Method for GALILEI."), KAboutData::License_GPL,
-		ki18n("(C) 2001-2014 by Pascal Francq\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
-		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
-	KAboutApplicationDialog dlg(&aboutData);
+	QRAboutDialog dlg("Feedback Profile Computing Method","1.0");
+	dlg.setDescription("This is the Feedback Profile Computing Method for GALILEI.");
+	dlg.setCopyright(QWidget::trUtf8("(C) 2010-2015 by the Paul Otlet Institute"));
+	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
+	dlg.setLicense(QRAboutDialog::License_GPL);
+	dlg.addAuthor(QWidget::trUtf8("Pascal Francq"),QWidget::trUtf8("Maintainer"), "pascal@francq.info");
 	dlg.exec();
 }
 
 
 //------------------------------------------------------------------------------
-bool Configure(GPlugIn* fac)
+extern "C" bool Configure(GPlugIn* fac)
 {
  	Config dlg;
 
@@ -104,8 +99,3 @@ bool Configure(GPlugIn* fac)
  	}
 	return(false);
 }
-
-
-//------------------------------------------------------------------------------
-}     // end of extern
-//------------------------------------------------------------------------------

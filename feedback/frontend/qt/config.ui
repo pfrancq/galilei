@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>291</width>
-    <height>252</height>
+    <width>317</width>
+    <height>352</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -49,7 +49,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KDoubleNumInput" name="RelFactor">
+         <widget class="QDoubleSpinBox" name="RelFactor">
           <property name="toolTip">
            <string>Specify the relevant factor.</string>
           </property>
@@ -101,7 +101,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KDoubleNumInput" name="FuzzyFactor">
+         <widget class="QDoubleSpinBox" name="FuzzyFactor">
           <property name="toolTip">
            <string>Specify the fuzzy relevant factor.</string>
           </property>
@@ -153,7 +153,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KDoubleNumInput" name="IrrelFactor">
+         <widget class="QDoubleSpinBox" name="IrrelFactor">
           <property name="toolTip">
            <string>Specify the irrelevant factor.</string>
           </property>
@@ -215,7 +215,7 @@
          </widget>
         </item>
         <item>
-         <widget class="KDoubleNumInput" name="Alpha">
+         <widget class="QDoubleSpinBox" name="Alpha">
           <property name="toolTip">
            <string>Specify the alpha factor.</string>
           </property>
@@ -279,14 +279,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KIntNumInput" name="LMax">
-          <property name="toolTip">
-           <string>Maximum number of relevant concepts.</string>
-          </property>
-          <property name="whatsThis">
-           <string>Specify the maximum number of relevant concepts used for the vectors of the description.</string>
-          </property>
-         </widget>
+         <widget class="QSpinBox" name="LMax"/>
         </item>
        </layout>
       </item>
@@ -325,34 +318,22 @@
          </spacer>
         </item>
         <item>
-         <widget class="KIntNumInput" name="LMin">
-          <property name="toolTip">
-           <string>Maximum number of irrelevant concepts.</string>
-          </property>
-          <property name="whatsThis">
-           <string>Specify the maximum number of irrelevant concepts used for each vector of the description.</string>
-          </property>
-         </widget>
+         <widget class="QSpinBox" name="LMin"/>
         </item>
        </layout>
       </item>
      </layout>
     </widget>
    </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>KDoubleNumInput</class>
-   <extends>QWidget</extends>
-   <header>knuminput.h</header>
-  </customwidget>
-  <customwidget>
-   <class>KIntNumInput</class>
-   <extends>QWidget</extends>
-   <header>knuminput.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections>
   <connection>
