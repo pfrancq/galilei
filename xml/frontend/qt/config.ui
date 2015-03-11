@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>393</width>
-    <height>560</height>
+    <height>670</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -91,11 +91,7 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="KListWidget" name="MetadataTags">
-          <property name="toolTip">
-           <string>List of tags to be considered as metadata tags.</string>
-          </property>
-         </widget>
+         <widget class="QListWidget" name="MetadataTags"/>
         </item>
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -159,17 +155,7 @@
             </widget>
            </item>
            <item>
-            <widget class="KIntNumInput" name="MetadataMaxTerms">
-             <property name="toolTip">
-              <string>Maximum number of words content in a tag to be detected as a metadata tags.</string>
-             </property>
-             <property name="minValue" stdset="0">
-              <number>0</number>
-             </property>
-             <property name="maxValue" stdset="0">
-              <number>50</number>
-             </property>
-            </widget>
+            <widget class="QSpinBox" name="MetadataMaxTerms"/>
            </item>
            <item>
             <spacer name="spacer12">
@@ -202,17 +188,7 @@
             </widget>
            </item>
            <item>
-            <widget class="KIntNumInput" name="MetadataMaxDepth">
-             <property name="toolTip">
-              <string>Maximum depth of a tag to be detected as metadata.</string>
-             </property>
-             <property name="minValue" stdset="0">
-              <number>0</number>
-             </property>
-             <property name="maxValue" stdset="0">
-              <number>30</number>
-             </property>
-            </widget>
+            <widget class="QSpinBox" name="MetadataMaxDepth"/>
            </item>
            <item>
             <spacer name="spacer13">
@@ -245,11 +221,7 @@
             </widget>
            </item>
            <item>
-            <widget class="KIntNumInput" name="MetadataMaxOccurs">
-             <property name="toolTip">
-              <string>Maximum number of occurrences of tag to be detected as a metadata tag.</string>
-             </property>
-            </widget>
+            <widget class="QSpinBox" name="MetadataMaxOccurs"/>
            </item>
            <item>
             <spacer name="spacer15">
@@ -284,11 +256,7 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
-         <widget class="KListWidget" name="ExcludeTags">
-          <property name="toolTip">
-           <string>List of tags to be considered as metadata tags.</string>
-          </property>
-         </widget>
+         <widget class="QListWidget" name="ExcludeTags"/>
         </item>
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -345,22 +313,17 @@
      </property>
     </widget>
    </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
- <customwidgets>
-  <customwidget>
-   <class>KListWidget</class>
-   <extends>QListWidget</extends>
-   <header>klistwidget.h</header>
-  </customwidget>
-  <customwidget>
-   <class>KIntNumInput</class>
-   <extends>QWidget</extends>
-   <header>knuminput.h</header>
-  </customwidget>
- </customwidgets>
  <includes>
   <include location="local">knuminput.h</include>
   <include location="local">knuminput.h</include>

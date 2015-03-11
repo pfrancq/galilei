@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>248</width>
-    <height>29</height>
+    <height>70</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,6 +36,13 @@
      </property>
      <property name="text">
       <string>Detect the HTML document divisions.</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>

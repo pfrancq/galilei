@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	PS_KDE.cpp
+	PS_Qt.cpp
 
-	A PostScript filter (KDE Part) - Implementation.
+	A PostScript filter (Qt Part) - Implementation.
 
 	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
@@ -31,34 +31,19 @@
 
 
 //------------------------------------------------------------------------------
-// include files for GALILEI
+// include files for R/GALILEI
+#include <rqt.h>
+#include <qraboutdialog.h>
 #include <gfilter.h>
+using namespace R;
 using namespace GALILEI;
 
 
-//-----------------------------------------------------------------------------
-// include files for KDE
-#include <kaboutdata.h>
-#include <kaboutapplicationdialog.h>
-#include <KDE/KLocale>
-
-
 
 //------------------------------------------------------------------------------
-extern "C" {
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-void About(void)
+extern "C" void About(void)
 {
-	KAboutData aboutData( "ps", 0, ki18n("PostScript Filter"),
-		"1.0", ki18n("This is the PostScript filter for GALILEI. It is based on the pstotext program."),KAboutData::License_GPL,
-		ki18n("(C) 2003-2014 by Pascal Francq\n(C) 2003-2008 by the Université Libre de Bruxelles (ULB)\n(C) 1995-1998 by Digital Equipment Corporation"),
-		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Paul McJones"),ki18n("pstotext author"), "mcjones@pa.dec.com");
-	aboutData.addAuthor(ki18n("Andrew Birrell"),ki18n("pstotext author"), "birrell@pa.dec.com");
-	aboutData.setLicenseText(ki18n("GRANT.  Subject to the provisions contained herein, Digital Equipment\n"
+/*	setLicenseText(ki18n("GRANT.  Subject to the provisions contained herein, Digital Equipment\n"
 		"Corporation (\"Digital\") hereby grants you a non-exclusive license to\n"
 		"use its accompanying proprietary software product and associated\n"
 		"documentation (\"Software\") free of charge pursuant to the terms and\n"
@@ -142,12 +127,14 @@ void About(void)
 		"FAR 52 227-19 when applicable, or in subparagraph (c) (1) (ii) of the\n"
 		"Rights in Technical Data and Computer Software clause at DFARS\n"
 		"252.227-7013, and in similar clauses in the NASA FAR Supplement.\n"
-		"Contractor/manufacturer is Digital Equipment Corporation."));
-	KAboutApplicationDialog dlg(&aboutData);
+		"Contractor/manufacturer is Digital Equipment Corporation."));*/
+	QRAboutDialog dlg("PostScript Filter","1.0");
+	dlg.setDescription("This is the PostScript filter for GALILEI. It is based on the pstotext program..");
+	dlg.setCopyright(QWidget::trUtf8("(C) 2001-2008 by the Université Libre de Bruxelles (ULB)<br/>(C) 2010-2015 by the Paul Otlet Institute"));
+	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
+	dlg.setLicense(QRAboutDialog::License_GPL);
+	dlg.addAuthor(QWidget::trUtf8("Pascal Francq"),QWidget::trUtf8("Maintainer"), "pascal@francq.info");
+	dlg.addAuthor(QWidget::trUtf8("Paul McJones"),QWidget::trUtf8("pstotext author"), "mcjones@pa.dec.com");
+	dlg.addAuthor(QWidget::trUtf8("Andrew Birrell"),QWidget::trUtf8("pstotext author"), "birrell@pa.dec.com");
 	dlg.exec();
 }
-
-
-//------------------------------------------------------------------------------
-}     // end of extern
-//------------------------------------------------------------------------------

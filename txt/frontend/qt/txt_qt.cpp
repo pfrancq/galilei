@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GTextAnalyse_KDE.h
+	TXT_Qt.cpp
 
-	Analyze a document (KDE Part) - Header.
+	Filter for text Files (Qt Part) - Implementation.
 
-	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
+	Copyright 2001 by Valery Vandaele.
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -29,51 +29,24 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GTextAnalyse_KDEH
-#define GTextAnalyse_KDEH
-
-
-//------------------------------------------------------------------------------
-// include files for R
+// include files for R/GALILEI
 #include <rqt.h>
+#include <qraboutdialog.h>
+#include <gfilter.h>
 using namespace R;
-using namespace std;
-
-
-//------------------------------------------------------------------------------
-// include files for GALILEI
-#include <gdocanalyze.h>
 using namespace GALILEI;
 
 
-//-----------------------------------------------------------------------------
-// include files for KDE/Qt
-#include <kaboutdata.h>
-#include <kaboutapplicationdialog.h>
-#include <KDE/KLocale>
-#include "ui_config.h"
-#include <QtGui/QInputDialog>
-
 
 //------------------------------------------------------------------------------
-class Config : public KDialog, public Ui_Config
+extern "C" void About(void)
 {
-	Q_OBJECT
-
-public:
-
-	 Config(void);
-
-public slots:
-
-	void clickedMetadata(void);
-	void addMetadataTag(void);
-	void removeMetadataTag(void);
-	void addExcludeTag(void);
-	void removeExcludeTag(void);
-	void importFile(void);
-};
-
-
-//------------------------------------------------------------------------------
-#endif
+	QRAboutDialog dlg("Raw Text Filter","1.0");
+	dlg.setDescription("This is the raw text filter for GALILEI.");
+	dlg.setCopyright(QWidget::trUtf8("(C) 2001-2008 by the Université Libre de Bruxelles (ULB)<br/>(C) 2010-2015 by the Paul Otlet Institute"));
+	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
+	dlg.setLicense(QRAboutDialog::License_GPL);
+	dlg.addAuthor(QWidget::trUtf8("Pascal Francq"),QWidget::trUtf8("Maintainer"), "pascal@francq.info");
+	dlg.addAuthor(QWidget::trUtf8("Valéry Vandaele"),QWidget::trUtf8("Contributor"));
+	dlg.exec();
+}

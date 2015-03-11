@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	TXT_KDE.cpp
+	GXML_Qt.h
 
-	Filter for text Files (KDE Part) - Implementation.
+	XML Filter (Qt Part) - Header.
 
-	Copyright 2001 by Valery Vandaele.
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -29,37 +29,35 @@
 
 
 //------------------------------------------------------------------------------
-// include files for GALILEI
-#include <gfilter.h>
-using namespace GALILEI;
-
-
-//-----------------------------------------------------------------------------
-// include files for KDE
-#include <kaboutdata.h>
-#include <kaboutapplicationdialog.h>
-#include <KDE/KLocale>
-
+#ifndef GXML_QtH
+#define GXML_QtH
 
 
 //------------------------------------------------------------------------------
-extern "C" {
-//------------------------------------------------------------------------------
+// include files for Qt
+#include <QtGui/QDialog>
+#include <ui_config.h>
+
 
 //------------------------------------------------------------------------------
-void About(void)
+class Config : public QDialog, public Ui_Config
 {
-	KAboutData aboutData( "txt", 0, ki18n("TXT Filter"),
-		"1.0", ki18n("This is the text filter for GALILEI."), KAboutData::License_GPL,
-		ki18n("(C) 2001-2014 by Valery Vandaele\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
-		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Valery Vandaele"),ki18n("Contributor"));
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
-	KAboutApplicationDialog dlg(&aboutData);
-	dlg.exec();
-}
+	Q_OBJECT
+
+public:
+
+	 Config(void);
+
+public slots:
+
+	void clickedMetadata(void);
+	void addMetadataTag(void);
+	void removeMetadataTag(void);
+	void addExcludeTag(void);
+	void removeExcludeTag(void);
+	void importFile(void);
+};
 
 
 //------------------------------------------------------------------------------
-}     // end of extern
-//------------------------------------------------------------------------------
+#endif

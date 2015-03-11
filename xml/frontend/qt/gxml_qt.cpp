@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GTextAnalyse_KDE.cpp
+	GXML_Qt.cpp
 
-	Analyze a document (KDE Part) - Implementation.
+	XML Filter (Qt Part) - Implementation.
 
 	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
@@ -29,19 +29,21 @@
 
 
 //------------------------------------------------------------------------------
-// include files for Qt/KDE
-#include <kfiledialog.h>
-#include <kmessagebox.h>
+// include files for Qt
+#include <QInputDialog>
+#include <QFileDialog>
+#include <QMessageBox>
 
 
 //------------------------------------------------------------------------------
 // include files for R/GALILEI
-#include <gplugin.h>
 #include <rnodecursor.h>
-#include <rqt.h>
-#include <gxml_kde.h>
+#include <gxml_qt.h>
 #include <rxmlstruct.h>
 #include <rxmlfile.h>
+#include <rqt.h>
+#include <qraboutdialog.h>
+#include <gfilter.h>
 using namespace R;
 using namespace std;
 using namespace GALILEI;
@@ -56,14 +58,13 @@ using namespace GALILEI;
 
 //------------------------------------------------------------------------------
 Config::Config(void)
-	: KDialog(), Ui_Config()
+	: QDialog(), Ui_Config()
 {
-	setCaption("Configure XML Analyzer Plug-In");
+	setWindowTitle("Configure XML Analyzer Plug-In");
 	QWidget* widget=new QWidget(this);
 	setupUi(widget);
-	setMainWidget(widget);
-	setButtons(KDialog::Cancel|KDialog::Apply);
-	connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
+	connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
+	connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 	connect(ExtractMetadata,SIGNAL(clicked()),this,SLOT(clickedMetadata()));
 	connect(DetectMetadataTag,SIGNAL(clicked()),this,SLOT(clickedMetadata()));
 	connect(AddMetadataTag,SIGNAL(clicked()),this,SLOT(addMetadataTag()));
@@ -144,7 +145,7 @@ void Config::removeExcludeTag(void)
 //------------------------------------------------------------------------------
 void Config::importFile(void)
 {
-	QString File(KFileDialog::getOpenFileName(KUrl("~"),"*.xml",this,"Choose a XML file that defines tag"));
+	QString File(QFileDialog::getOpenFileName(this,tr("Choose a XML file that defines tag"), "~", tr("*.xml")));
 	if(File.isEmpty())
 		return;
 	try
@@ -185,37 +186,30 @@ void Config::importFile(void)
 	}
 	catch(RException& e)
 	{
-		KMessageBox::error(this,ToQString(e.GetMsg()),"Error");
+		QMessageBox::critical(this,"Error",ToQString(e.GetMsg()));
 	}
 	catch(...)
 	{
-		KMessageBox::error(this,"Problem when parsing the XML file '"+File+"'","Error");
+		QMessageBox::critical(this,"Error","Problem when parsing the XML file '"+File+"'");
 	}
 }
 
 
-
 //------------------------------------------------------------------------------
-extern "C" {
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-void About(void)
+extern "C" void About(void)
 {
-	KAboutData aboutData( "xml", 0, ki18n("XML filter"),
-		"1.0", ki18n("This is the XML filter for GALILEI."), KAboutData::License_GPL,
-		ki18n("(C) 2003-2014 by Pascal Francq\n(C) 2003-2008 by Université Libre de Bruxelles (ULB)"),
-		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
-	aboutData.addCredit(ki18n("Valery Vandaele"),ki18n("Contributor"));
-	KAboutApplicationDialog dlg(&aboutData);
+	QRAboutDialog dlg("XML Filter","1.0");
+	dlg.setDescription("This is the XML filter for GALILEI.");
+	dlg.setCopyright(QWidget::trUtf8("(C) 2001-2008 by the Université Libre de Bruxelles (ULB)<br/>(C) 2010-2015 by the Paul Otlet Institute"));
+	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
+	dlg.setLicense(QRAboutDialog::License_GPL);
+	dlg.addAuthor(QWidget::trUtf8("Pascal Francq"),QWidget::trUtf8("Maintainer"), "pascal@francq.info");
 	dlg.exec();
 }
 
 
 //------------------------------------------------------------------------------
-bool Configure(GPlugIn* fac)
+extern "C" bool Configure(GPlugIn* fac)
 {
 	Config dlg;
 
@@ -283,9 +277,3 @@ bool Configure(GPlugIn* fac)
 	}
 	return(false);
 }
-
-
-//------------------------------------------------------------------------------
-}     // End of extern
-//------------------------------------------------------------------------------
-
