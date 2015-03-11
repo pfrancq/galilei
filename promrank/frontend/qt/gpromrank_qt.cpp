@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GEngineXML_KDE.cpp
+	GPromRank_Qt.cpp
 
-	XML Search Engine (KDE Part) - Implementation.
+	Promethee Ranking Method (Qt Part) - Implementation.
 
 	Copyright 2010-2015 by Pascal Francq (pascal@francq.info).
    Copyright 2004-2005 by Jean-Baptiste Valsamis.
