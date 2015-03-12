@@ -8,7 +8,7 @@
     <x>0</x>
     <y>0</y>
     <width>466</width>
-    <height>497</height>
+    <height>562</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -285,6 +285,13 @@ In practice, the minimum measure is computed as the sum of the average and the p
        </item>
       </layout>
      </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
     </widget>
    </item>
    <item>

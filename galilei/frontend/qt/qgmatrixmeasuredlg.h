@@ -38,7 +38,7 @@
 #include <QtGui/QGroupBox>
 #include <QtGui/QBoxLayout>
 #include <QtGui/QDialog>
-
+class Ui_QGMatrixMeasureDlg;  // forward declaration for Qt
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
@@ -70,7 +70,7 @@ class QGMatrixMeasureDlg : public QDialog
 	/**
 	 * Pointer to the widget created by Qt.
 	 */
-	void* Ui;
+	Ui_QGMatrixMeasureDlg* Ui;
 
 public:
 
