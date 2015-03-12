@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GStringTokenizer_KDE.cpp
+	GStringTokenizer_Qt.cpp
 
-	Classic String Tokenizer - Implementation.
+	Classic String Tokenizer (Qt Part) - Implementation.
 
 	Copyright 2011-2014 by Pascal Francq (pascal@francq.info).
 
@@ -27,67 +27,53 @@
 
 
 
-
 //------------------------------------------------------------------------------
-// include files for GALILEI
-#include <gplugin.h>
+// include files for R/GALILEI
 #include <rqt.h>
+#include <qraboutdialog.h>
+#include <gplugin.h>
 using namespace R;
-using namespace std;
 using namespace GALILEI;
 
 
-//-----------------------------------------------------------------------------
-// include files for KDE
-#include <kaboutdata.h>
-#include <kaboutapplicationdialog.h>
-#include <KDE/KLocale>
-
-
 //------------------------------------------------------------------------------
-// include files for KDE/Qt
-#include <kaboutdata.h>
-#include <kaboutapplicationdialog.h>
-#include <KDE/KLocale>
+// include files for Qt
+#include <QtGui/QDialog>
 #include <ui_config.h>
 
 
 //------------------------------------------------------------------------------
-class Config : public KDialog, public Ui_Config
+class Config : public QDialog, public Ui_Config
 {
 public:
 	Config(void)
 	{
-		setCaption("Configure String Indexer Plug-In");
+		setWindowTitle("Configure String Indexer Plug-In");
 		QWidget* widget=new QWidget(this);
 		setupUi(widget);
-		setMainWidget(widget);
-		setButtons(KDialog::Cancel|KDialog::Apply);
-		connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
+		connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
+		connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 		adjustSize();
 	}
 };
 
 
-//------------------------------------------------------------------------------
-extern "C" {
-//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void About(void)
+extern "C" void About(void)
 {
-	KAboutData aboutData( "txt", 0, ki18n("Classic String Tokenizer"),
-		"1.0", ki18n("This is a classic string tokenizer for GALILEI."), KAboutData::License_GPL,
-		ki18n("(C) 2011-2014 by Paul Otlet Institute"),
-		KLocalizedString(), "http://www.otlet-institute.org", "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
-	KAboutApplicationDialog dlg(&aboutData);
+	QRAboutDialog dlg("Classic String Tokenizer","1.0");
+	dlg.setDescription("This is a classic string tokenizer for GALILEI.");
+	dlg.setCopyright(QWidget::trUtf8("(C) 2011-2015 by the Paul Otlet Institute"));
+	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
+	dlg.setLicense(QRAboutDialog::License_GPL);
+	dlg.addAuthor(QWidget::trUtf8("Pascal Francq"),QWidget::trUtf8("Maintainer"), "pascal@francq.info");
 	dlg.exec();
 }
 
 
 //------------------------------------------------------------------------------
-bool Configure(GPlugIn* fac)
+extern "C" bool Configure(GPlugIn* fac)
 {
 	Config dlg;
 
@@ -112,8 +98,3 @@ bool Configure(GPlugIn* fac)
 	}
 	return(false);
 }
-
-
-//------------------------------------------------------------------------------
-}     // end of extern
-//------------------------------------------------------------------------------

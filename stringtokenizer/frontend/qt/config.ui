@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>379</width>
-    <height>254</height>
+    <width>420</width>
+    <height>350</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -90,6 +90,9 @@
             </widget>
            </item>
            <item>
+            <widget class="QSpinBox" name="MaxConsecutiveOccurs"/>
+           </item>
+           <item>
             <spacer name="spacer6">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
@@ -104,19 +107,6 @@
               </size>
              </property>
             </spacer>
-           </item>
-           <item>
-            <widget class="KIntNumInput" name="MaxConsecutiveOccurs">
-             <property name="toolTip">
-              <string>Maximum number of consecutive occurences of a same letter.</string>
-             </property>
-             <property name="whatsThis">
-              <string>Maximum number of consecutive occurences of a same letter to consider a token as a valid one.</string>
-             </property>
-             <property name="minimum">
-              <number>0</number>
-             </property>
-            </widget>
            </item>
           </layout>
          </item>
@@ -155,17 +145,7 @@
             </spacer>
            </item>
            <item>
-            <widget class="KDoubleNumInput" name="NormalRatio">
-             <property name="toolTip">
-              <string>Minimal letters/characters ration.</string>
-             </property>
-             <property name="whatsThis">
-              <string>Minimal ratio of the number of letters on the total number of characters to consider a token as a valid.</string>
-             </property>
-             <property name="maximum">
-              <double>1.000000000000000</double>
-             </property>
-            </widget>
+            <widget class="QDoubleSpinBox" name="NormalRatio"/>
            </item>
           </layout>
          </item>
@@ -204,17 +184,7 @@
             </spacer>
            </item>
            <item>
-            <widget class="KIntNumInput" name="MaxNonLetter">
-             <property name="toolTip">
-              <string>Maximum number of non-letter characters in a token.</string>
-             </property>
-             <property name="whatsThis">
-              <string>Maximum number of non-letter charavters to consider a token as a valid one.</string>
-             </property>
-             <property name="minimum">
-              <number>0</number>
-             </property>
-            </widget>
+            <widget class="QSpinBox" name="MaxNonLetter"/>
            </item>
           </layout>
          </item>
@@ -224,20 +194,15 @@
      </layout>
     </widget>
    </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>KDoubleNumInput</class>
-   <extends>QWidget</extends>
-   <header>knuminput.h</header>
-  </customwidget>
-  <customwidget>
-   <class>KIntNumInput</class>
-   <extends>QWidget</extends>
-   <header>knuminput.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections>
   <connection>

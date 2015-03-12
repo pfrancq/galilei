@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>330</width>
-    <height>124</height>
+    <width>337</width>
+    <height>196</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -56,14 +56,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KIntNumInput" name="MinSize">
-          <property name="toolTip">
-           <string>Specify the minimum size of tokens.</string>
-          </property>
-          <property name="whatsThis">
-           <string>When a token is contained in the document and its size is lower than this threshold, it is not used for the description.</string>
-          </property>
-         </widget>
+         <widget class="QSpinBox" name="MinSize"/>
         </item>
        </layout>
       </item>
@@ -96,29 +89,22 @@
          </spacer>
         </item>
         <item>
-         <widget class="KIntNumInput" name="MinOccurs">
-          <property name="toolTip">
-           <string>Minimal number of occurrences of the token in the document.</string>
-          </property>
-          <property name="whatsThis">
-           <string>Minimal number of occurrences of the token in the document.</string>
-          </property>
-         </widget>
+         <widget class="QSpinBox" name="MinOccurs"/>
         </item>
        </layout>
       </item>
      </layout>
     </widget>
    </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>KIntNumInput</class>
-   <extends>QWidget</extends>
-   <header>knuminput.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

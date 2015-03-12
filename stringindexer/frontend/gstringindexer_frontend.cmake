@@ -1,6 +1,6 @@
-IF(KDE4_FOUND)
-    SET(gstringindexer_AVAILABLE_FRONTENDS kde)
-    SET(gstringindexer_kde_DEPENDENCY rcoreqt ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
-    ADD_FRONTEND_SOURCE_FILE(gstringindexer_frontend gstringindexer kde gstringindexer_INCLUDES)
-ENDIF(KDE4_FOUND)
+IF(QT4_FOUND)
+    SET(gstringindexer_AVAILABLE_FRONTENDS qt)
+    SET(gstringindexer_qt_DEPENDENCY rcoreqt ${QT_LIBRARIES})
+    ADD_FRONTEND_SOURCE_FILE(gstringindexer_frontend gstringindexer qt gstringindexer_INCLUDES)
+ENDIF(QT4_FOUND)
 
