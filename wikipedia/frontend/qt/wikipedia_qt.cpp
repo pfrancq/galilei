@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	Wikipedia_KDE.cpp
+	Wikipedia_Qt.cpp
 
-	Build a GALILEI database for Wikipedia (KDE Part) - Implementation.
+	Build a GALILEI database for Wikipedia (Qt Part) - Implementation.
 
 	Copyright 2012-2014 by Pascal Francq (pascal@francq.info).
 
@@ -27,59 +27,48 @@
 
 
 
-//------------------------------------------------------------------------------
-// include files for R/GALILEI
-#include <rqt.h>
-#include <gtool.h>
-using namespace GALILEI;
-using namespace R;
-
-
 //-----------------------------------------------------------------------------
-// include files for KDE
-#include <kaboutdata.h>
-#include <kaboutapplicationdialog.h>
-#include <KDE/KLocale>
-#include <ui_config.h>
+// include files for current plug-in
+#include <wikipedia_qt.h>
 
 
 //------------------------------------------------------------------------------
-class Config : public KDialog, public Ui_Config
+Config::Config(void)
 {
-public:
-	Config(void)
-	{
-		setCaption("Configure Wikipedia Plug-In");
-		QWidget* widget=new QWidget(this);
-		setupUi(widget);
-		setMainWidget(widget);
-		setButtons(KDialog::Cancel|KDialog::Apply);
-		connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
-		adjustSize();
-	}
-};
-
+	setWindowTitle("Configure Wikipedia Plug-In");
+	QWidget* widget=new QWidget(this);
+	setupUi(widget);
+	connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
+	connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
+	connect(EditDir,SIGNAL(pressed()),this,SLOT(chooseDir()));
+	adjustSize();
+}
 
 
 //------------------------------------------------------------------------------
-extern "C" {
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-void About(void)
+void Config::chooseDir(void)
 {
-	KAboutData aboutData( "Wikipedia Import", 0, ki18n("Wikipedia Import"),
-		"1.0", ki18n("This plug-in import a Wikipedia dump."), KAboutData::License_GPL,
-		ki18n("(C) 2011-2014 by Pascal Francq"),
-		KLocalizedString(), "http://www.otlet-institute.org", "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
-	KAboutApplicationDialog dlg(&aboutData);
+	QString fileName(QFileDialog::getExistingDirectory(this,"Choose Directory"));
+   if(!fileName.isEmpty())
+		Dir->setText(fileName);
+}
+
+
+//------------------------------------------------------------------------------
+extern "C" void About(void)
+{
+	QRAboutDialog dlg("Wikipedia Import","1.0");
+	dlg.setDescription("This plug-in import a Wikipedia dump.");
+	dlg.setCopyright(QWidget::trUtf8("(C) 2010-2015 by the Paul Otlet Institute"));
+	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
+	dlg.setLicense(QRAboutDialog::License_GPL);
+	dlg.addAuthor(QWidget::trUtf8("Pascal Francq"),QWidget::trUtf8("Maintainer"), "pascal@francq.info");
 	dlg.exec();
 }
 
 
 //------------------------------------------------------------------------------
-bool Configure(GPlugIn* fac)
+extern "C" bool Configure(GPlugIn* fac)
 {
 	Config dlg;
 
@@ -100,8 +89,3 @@ bool Configure(GPlugIn* fac)
 	}
 	return(false);
 }
-
-
-//------------------------------------------------------------------------------
-}     // end of extern
-//------------------------------------------------------------------------------

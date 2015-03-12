@@ -28,36 +28,24 @@
 
 
 //------------------------------------------------------------------------------
-// include files for GALILEI
-#include <gtool.h>
+// include files for R/GALILEI
+#include <rqt.h>
+#include <qraboutdialog.h>
+#include <gplugin.h>
+using namespace R;
 using namespace GALILEI;
 
 
-//-----------------------------------------------------------------------------
-// include files for KDE
-#include <kaboutdata.h>
-#include <kaboutapplicationdialog.h>
-#include <KDE/KLocale>
-
 
 
 //------------------------------------------------------------------------------
-extern "C" {
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-void About(void)
+extern "C" void About(void)
 {
-	KAboutData aboutData( "Wikipedia Dump Parser", 0, ki18n("Wikipedia Dump Parser"),
-		"1.0", ki18n("This plug-in parses a Wikipedia dump."), KAboutData::License_GPL,
-		ki18n("(C) 2011-2014 by Pascal Francq"),
-		KLocalizedString(), "http://www.otlet-institute.org", "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
-	KAboutApplicationDialog dlg(&aboutData);
+	QRAboutDialog dlg("Wikipedia Dump Parser","1.0");
+	dlg.setDescription("This plug-in parses a Wikipedia dump.");
+	dlg.setCopyright(QWidget::trUtf8("(C) 2011-2015 by the Paul Otlet Institute"));
+	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
+	dlg.setLicense(QRAboutDialog::License_GPL);
+	dlg.addAuthor(QWidget::trUtf8("Pascal Francq"),QWidget::trUtf8("Maintainer"), "pascal@francq.info");
 	dlg.exec();
 }
-
-
-//------------------------------------------------------------------------------
-}     // end of extern
-//------------------------------------------------------------------------------

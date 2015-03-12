@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>358</width>
-    <height>194</height>
+    <width>362</width>
+    <height>292</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -52,15 +52,12 @@
          </spacer>
         </item>
         <item>
-         <widget class="KUrlRequester" name="Dir">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Specify the root directory where the dump files can be found.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="whatsThis">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Root directory of the dump files.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="mode">
-           <set>KFile::Directory|KFile::ExistingOnly|KFile::LocalOnly</set>
+         <widget class="QLineEdit" name="Dir"/>
+        </item>
+        <item>
+         <widget class="QToolButton" name="EditDir">
+          <property name="text">
+           <string>...</string>
           </property>
          </widget>
         </item>
@@ -132,17 +129,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KIntNumInput" name="NbArticles">
-          <property name="toolTip">
-           <string>Number of articles to treat. If null, all articles are treated.</string>
-          </property>
-          <property name="whatsThis">
-           <string>Number of articles to treat. If null, all articles are treated.</string>
-          </property>
-          <property name="minimum">
-           <number>0</number>
-          </property>
-         </widget>
+         <widget class="QSpinBox" name="NbArticles"/>
         </item>
        </layout>
       </item>
@@ -169,37 +156,22 @@
          </spacer>
         </item>
         <item>
-         <widget class="KIntNumInput" name="NbContributions">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of contributions to treat. If null, all contributions are treated.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="whatsThis">
-           <string>Number of contributions to treat. If null, all contributions are treated.</string>
-          </property>
-          <property name="minimum">
-           <number>0</number>
-          </property>
-         </widget>
+         <widget class="QSpinBox" name="NbContributions"/>
         </item>
        </layout>
       </item>
      </layout>
     </widget>
    </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>KUrlRequester</class>
-   <extends>QFrame</extends>
-   <header>kurlrequester.h</header>
-  </customwidget>
-  <customwidget>
-   <class>KIntNumInput</class>
-   <extends>QWidget</extends>
-   <header>knuminput.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>
