@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GAConfig_KDE.cpp
+	GAConfig_Qt.cpp
 
-	Generic NNGGA Plug-in (KDE Part) - Implementation.
+	Generic SGGA Plug-in (Qt Part) - Implementation.
 
 	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
@@ -36,7 +36,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 // include files for current plug-in
-#include <nnggaconfig_kde.h>
+#include <sggaconfig_qt.h>
 
 
 
@@ -49,12 +49,11 @@ using namespace R;
 //------------------------------------------------------------------------------
 GAConfigDlg::GAConfigDlg(void)
 {
-	setCaption("Configure NNGGA Plug-In");
+	setWindowTitle("Configure SGGA Plug-In");
 	QWidget* widget=new QWidget(this);
 	setupUi(widget);
-	setMainWidget(widget);
-	setButtons(KDialog::Cancel|KDialog::Apply);
-	connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
+	connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
+	connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 	adjustSize();
 }
 
@@ -68,9 +67,15 @@ bool GAConfigDlg::Configure(GPlugIn* fac)
 	Step->setChecked(fac->FindParam<RParamValue>("Step")->GetBool());
 	StepGen->setValue(fac->FindParam<RParamValue>("Step Gen")->GetInt());
 	StepGen->setEnabled(fac->FindParam<RParamValue>("Step")->GetBool());
+	MaxKMeans->setValue(fac->FindParam<RParamValue>("Max kMeans")->GetInt());
+	NbDivChromo->setValue(fac->FindParam<RParamValue>("NbDivChromos")->GetInt());
 	MinAgreement->setValue(fac->FindParam<RParamValue>("Min Agreement")->GetDouble());
+	Convergence->setValue(fac->FindParam<RParamValue>("Convergence")->GetDouble());
 	MinDisagreement->setValue(fac->FindParam<RParamValue>("Min Disagreement")->GetDouble());
 	Incremental->setChecked(fac->FindParam<RParamValue>("Incremental")->GetBool());
+	LocalOptimisation->setChecked(fac->FindParam<RParamValue>("LocalOptimisation")->GetBool());
+	Optimisation->setChecked(fac->FindParam<RParamValue>("Optimisation")->GetBool());
+	GroupOptimization->setEnabled(Optimisation->isChecked());
 	InternalRandom->setChecked(fac->FindParam<RParamValue>("InternalRandom")->GetBool());
 	Seed->setEnabled(!fac->FindParam<RParamValue>("InternalRandom")->GetBool());
 	Seed->setValue(fac->FindParam<RParamValue>("Seed")->GetInt());
@@ -86,17 +91,23 @@ bool GAConfigDlg::Configure(GPlugIn* fac)
 	Cout->setChecked(fac->FindParam<RParamValue>("Cout")->GetBool());
 	NbMinObjs->setText(QString::number(fac->FindParam<RParamValue>("NbMinObjs")->GetULong()));
 	NbMaxObjs->setText(QString::number(fac->FindParam<RParamValue>("NbMaxObjs")->GetULong()));
+	AllMinSim->setChecked(fac->FindParam<RParamValue>("AllMinSim")->GetBool());
 
 	// Execute and if 'OK' -> Apply changes
 	if(exec())
 	{
 		fac->FindParam<RParamValue>("Population Size")->SetUInt(PopSize->value());
 		fac->FindParam<RParamValue>("Max Gen")->SetUInt(MaxGen->value());
+		fac->FindParam<RParamValue>("Max kMeans")->SetUInt(MaxKMeans->value());
+		fac->FindParam<RParamValue>("Convergence")->SetDouble(Convergence->value());
+		fac->FindParam<RParamValue>("NbDivChromos")->SetUInt(NbDivChromo->value());
 		fac->FindParam<RParamValue>("Step")->SetBool(Step->isChecked());
 		fac->FindParam<RParamValue>("Step Gen")->SetUInt(StepGen->value());
 		fac->FindParam<RParamValue>("Min Agreement")->SetDouble(MinAgreement->value());
 		fac->FindParam<RParamValue>("Min Disagreement")->SetDouble(MinDisagreement->value());
 		fac->FindParam<RParamValue>("Incremental")->SetBool(Incremental->isChecked());
+		fac->FindParam<RParamValue>("LocalOptimisation")->SetBool(LocalOptimisation->isChecked());
+		fac->FindParam<RParamValue>("Optimisation")->SetBool(Optimisation->isChecked());
 		fac->FindParam<RParamValue>("InternalRandom")->SetBool(InternalRandom->isChecked());
 		fac->FindParam<RParamValue>("Seed")->SetUInt(Seed->value());
 		fac->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("P")->SetDouble(SimP->value());
@@ -111,6 +122,7 @@ bool GAConfigDlg::Configure(GPlugIn* fac)
 		fac->FindParam<RParamValue>("Cout")->SetBool(Cout->isChecked());
 		fac->FindParam<RParamValue>("NbMinObjs")->SetUInt(NbMinObjs->text().toULong());
 		fac->FindParam<RParamValue>("NbMaxObjs")->SetUInt(NbMaxObjs->text().toULong());
+		fac->FindParam<RParamValue>("AllMinSim")->SetBool(AllMinSim->isChecked());
 		return(true);
  	}
 

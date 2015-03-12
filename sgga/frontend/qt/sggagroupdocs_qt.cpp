@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	NNGGAGroupDocs_KDE.cpp
+	SGGAGroupDocs_Qt.cpp
 
-	NNGGA Plug-in for Documents (KDE Part) - Implementation.
+	SGGA Plug-in for Documents (Qt Part) - Implementation.
 
 	Copyright 2008-2014 by Pascal Francq (pascal@francq.info).
 
@@ -29,49 +29,34 @@
 
 //------------------------------------------------------------------------------
 // include files for R/GALILEI Project
-#include <ggroupdocs.h>
-using namespace GALILEI;
-
-
-//-----------------------------------------------------------------------------
-// include files for KDE
-#include <kaboutdata.h>
-#include <kaboutapplicationdialog.h>
-#include <KDE/KLocale>
+#include <rqt.h>
+#include <qraboutdialog.h>
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
 // include files for current plug-in
-#include <nnggaconfig_kde.h>
+#include <sggaconfig_qt.h>
 
 
 
 //------------------------------------------------------------------------------
-extern "C" {
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-void About(void)
+extern "C" void About(void)
 {
-	KAboutData aboutData("nngga_docs", 0, ki18n("NNGGA Plug-in for Documents"),
-		"1.0", ki18n("This is a genetic algorithm to cluster documents."),KAboutData::License_GPL,
-		ki18n("(C) 2008-2014 by Pascal Francq"),
-		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
-	KAboutApplicationDialog dlg(&aboutData);
+	QRAboutDialog dlg("SGGA Plug-in for Documents","1.0");
+	dlg.setDescription("This is a genetic algorithm to cluster documents.");
+	dlg.setCopyright(QWidget::trUtf8("(C) 2001-2008 by the Université Libre de Bruxelles (ULB)<br/>(C) 2010-2015 by the Paul Otlet Institute"));
+	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
+	dlg.setLicense(QRAboutDialog::License_GPL);
+	dlg.addAuthor(QWidget::trUtf8("Pascal Francq"),QWidget::trUtf8("Maintainer"), "pascal@francq.info");
 	dlg.exec();
 }
 
 
 //------------------------------------------------------------------------------
-bool Configure(GPlugIn* fac)
+extern "C" bool Configure(GPlugIn* fac)
 {
 	GAConfigDlg dlg;
 	return(dlg.Configure(fac));
 }
-
-
-//------------------------------------------------------------------------------
-}     // end of extern
-//------------------------------------------------------------------------------
 

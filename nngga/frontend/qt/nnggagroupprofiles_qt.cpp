@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GAConfig_KDE.cpp
+	NNGGAGroupProfiles_KDE.cpp
 
-	Generic NNGGA Plug-in (KDE Part) - Header.
+	NNGGA Plug-in for Profiles (KDE Part) - Implementation.
 
 	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
@@ -27,22 +27,36 @@
 */
 
 
+
 //------------------------------------------------------------------------------
-// include files for R
-#include <gplugin.h>
+// include files for R/GALILEI Project
+#include <rqt.h>
+#include <qraboutdialog.h>
 using namespace R;
-using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
 // include files for current plug-in
-#include <ui_config.h>
+#include <nnggaconfig_qt.h>
+
 
 
 //------------------------------------------------------------------------------
-class GAConfigDlg : public KDialog, public Ui_Config
+extern "C" void About(void)
 {
-public:
-	GAConfigDlg(void);
-	bool Configure(GPlugIn* fac);
-};
+	QRAboutDialog dlg("NNGGA Plug-in for Profiles","1.0");
+	dlg.setDescription("This is a genetic algorithm to cluster profiles.");
+	dlg.setCopyright(QWidget::trUtf8("(C) 2001-2008 by the Université Libre de Bruxelles (ULB)<br/>(C) 2010-2015 by the Paul Otlet Institute"));
+	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
+	dlg.setLicense(QRAboutDialog::License_GPL);
+	dlg.addAuthor(QWidget::trUtf8("Pascal Francq"),QWidget::trUtf8("Maintainer"), "pascal@francq.info");
+	dlg.exec();
+}
+
+
+//------------------------------------------------------------------------------
+extern "C" bool Configure(GPlugIn* fac)
+{
+	GAConfigDlg dlg;
+	return(dlg.Configure(fac));
+}

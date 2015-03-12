@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GAConfig_KDE.cpp
+	GAConfig_Qt.cpp
 
-	Generic SGGA Plug-in (KDE Part) - Header.
+	Generic SGGA Plug-in (Qt Part) - Header.
 
 	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
@@ -34,12 +34,13 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-// include files for current plug-in
+// include files for Qt
+#include <QtGui/QDialog>
 #include <ui_config.h>
 
 
 //------------------------------------------------------------------------------
-class GAConfigDlg : public KDialog, public Ui_Config
+class GAConfigDlg : public QDialog, public Ui_Config
 {
 public:
 	GAConfigDlg(void);
