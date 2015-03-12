@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>350</width>
-    <height>257</height>
+    <width>355</width>
+    <height>318</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -49,7 +49,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KIntSpinBox" name="PopSize"/>
+         <widget class="QSpinBox" name="PopSize"/>
         </item>
        </layout>
       </item>
@@ -121,11 +121,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KIntSpinBox" name="MaxGen">
-          <property name="maximum">
-           <number>99999</number>
-          </property>
-         </widget>
+         <widget class="QSpinBox" name="MaxGen"/>
         </item>
        </layout>
       </item>
@@ -165,7 +161,7 @@
             </spacer>
            </item>
            <item>
-            <widget class="KIntNumInput" name="NumInfos"/>
+            <widget class="QSpinBox" name="NumInfos"/>
            </item>
           </layout>
          </item>
@@ -175,20 +171,15 @@
      </layout>
     </widget>
    </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>KIntSpinBox</class>
-   <extends>QSpinBox</extends>
-   <header>knuminput.h</header>
-  </customwidget>
-  <customwidget>
-   <class>KIntNumInput</class>
-   <extends>QWidget</extends>
-   <header>knuminput.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

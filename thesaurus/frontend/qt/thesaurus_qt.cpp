@@ -29,58 +29,51 @@
 
 //------------------------------------------------------------------------------
 // include files for R/GALILEI
-#include <gplugin.h>
 #include <rqt.h>
+#include <qraboutdialog.h>
+#include <gplugin.h>
 using namespace R;
 using namespace GALILEI;
 
 
-//-----------------------------------------------------------------------------
-// include files for KDE/Qt
-#include <kaboutdata.h>
-#include <kaboutapplicationdialog.h>
-#include <KDE/KLocale>
+//------------------------------------------------------------------------------
+// include files for Qt
+#include <QtGui/QDialog>
 #include <ui_config.h>
 
 
 
 //------------------------------------------------------------------------------
-class Config : public KDialog, public Ui_Config
+class Config : public QDialog, public Ui_Config
 {
 public:
 	Config(void)
 	{
-		setCaption("Configure Theasurus Creation");
+		setWindowTitle("Configure Theasurus Creation");
 		QWidget* widget=new QWidget(this);
 		setupUi(widget);
-		setMainWidget(widget);
-		setButtons(KDialog::Cancel|KDialog::Apply);
-		connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
+		connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
+		connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 		adjustSize();
 	}
 };
 
 
-
 //------------------------------------------------------------------------------
-extern "C" {
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-void About(void)
+extern "C" void About(void)
 {
-	KAboutData aboutData("thesaurus", 0, ki18n("Thesaurus Creation"),
-		"1.0", ki18n("This plug-in computes a thesaurus based on the topic."), KAboutData::License_GPL,
-		ki18n("(C) 2008-2014 by Pascal Francq"),
-		KLocalizedString(), "http://www.otlet-institute.org", "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
-	KAboutApplicationDialog dlg(&aboutData);
+	QRAboutDialog dlg("Thesaurus Creation","1.0");
+	dlg.setDescription("This plug-in computes a thesaurus based on the topic.");
+	dlg.setCopyright(QWidget::trUtf8("(C) 2010-2015 by the Paul Otlet Institute"));
+	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
+	dlg.setLicense(QRAboutDialog::License_GPL);
+	dlg.addAuthor(QWidget::trUtf8("Pascal Francq"),QWidget::trUtf8("Maintainer"), "pascal@francq.info");
 	dlg.exec();
 }
 
 
- //------------------------------------------------------------------------------
-bool Configure(GPlugIn* fac)
+//------------------------------------------------------------------------------
+extern "C" bool Configure(GPlugIn* fac)
 {
  	Config dlg;
 
@@ -107,8 +100,3 @@ bool Configure(GPlugIn* fac)
 	}
 	return(false);
 }
-
-
- //------------------------------------------------------------------------------
- }
- //------------------------------------------------------------------------------
