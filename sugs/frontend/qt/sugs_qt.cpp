@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	Sugs_KDE.cpp
+	Sugs_Qt.cpp
 
-	Create suggestions (KDE Part) - Implementation.
+	Create suggestions (Qt Part) - Implementation.
 
 	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
@@ -29,57 +29,51 @@
 
 
 //------------------------------------------------------------------------------
-// include files for GALILEI
-#include <gcomputesugs.h>
-using namespace GALILEI;
+// include files for R/GALILEI
+#include <rqt.h>
+#include <qraboutdialog.h>
+#include <gplugin.h>
 using namespace R;
+using namespace GALILEI;
 
 
-//-----------------------------------------------------------------------------
-// include files for KDE
-#include <kaboutdata.h>
-#include <kaboutapplicationdialog.h>
-#include <KDE/KLocale>
+//------------------------------------------------------------------------------
+// include files for Qt
+#include <QtGui/QDialog>
 #include <ui_config.h>
 
 
 //------------------------------------------------------------------------------
-class Config : public KDialog, public Ui_Config
+class Config : public QDialog, public Ui_Config
 {
 public:
 	Config(void)
 	{
-		setCaption("Configure Suggestions Plug-In");
+		setWindowTitle("Configure Suggestions Plug-In");
 		QWidget* widget=new QWidget(this);
 		setupUi(widget);
-		setMainWidget(widget);
-		setButtons(KDialog::Cancel|KDialog::Apply);
-		connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
+		connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
+		connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 		adjustSize();
 	}
 };
 
 
-
 //------------------------------------------------------------------------------
-extern "C" {
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-void About(void)
+extern "C" void About(void)
 {
-	KAboutData aboutData( "sugs", 0, ki18n("Suggestions"),
-		"1.0", ki18n("This plugin computes an orderd list of relevant documents for each profile."), KAboutData::License_GPL,
-		ki18n("(C) 2003-2014 by Pascal Francq\n(C) 2003-2008 by Université Libre de Bruxelles (ULB)"),
-		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
-	KAboutApplicationDialog dlg(&aboutData);
+	QRAboutDialog dlg("Suggestions","1.0");
+	dlg.setDescription("This plugin computes an orderd list of relevant documents for each profile.");
+	dlg.setCopyright(QWidget::trUtf8("(C) 2010-2015 by the Paul Otlet Institute"));
+	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
+	dlg.setLicense(QRAboutDialog::License_GPL);
+	dlg.addAuthor(QWidget::trUtf8("Pascal Francq"),QWidget::trUtf8("Maintainer"), "pascal@francq.info");
 	dlg.exec();
 }
 
 
 //------------------------------------------------------------------------------
-bool Configure(GPlugIn* fac)
+extern "C" bool Configure(GPlugIn* fac)
 {
 	Config dlg;
 
@@ -93,8 +87,3 @@ bool Configure(GPlugIn* fac)
 	}
 	return(false);
 }
-
-
-//------------------------------------------------------------------------------
- }
- //------------------------------------------------------------------------------
