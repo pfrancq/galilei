@@ -38,6 +38,7 @@
 #include <qgobjectslist.h>
 #include <gmetaengine.h>
 #include <gtool.h>
+#include <qraboutdialog.h>
 
 
 //-----------------------------------------------------------------------------
@@ -931,18 +932,24 @@ void QGALILEIWin::configSession(void)
 //-----------------------------------------------------------------------------
 void QGALILEIWin::about(void)
 {
-	QMessageBox::about(this,"QGALILEI","<b>Qt GALILEI Center</b><br/>"
-		"Pascal Francq (Project Manager)<br/>"
-		"Faiza Gaultier (Past Researcher)<br/>"
-		"Nicolas Kumps (Past Researcher)<br/>"
-		"Marjorie Paternostre (Past Researcher)<br/>"
-		 +QWidget::trUtf8("Stéphane Rideau (Past Researcher)<br/>")+
-		 "Sarah Rolfo (Past Researcher)<br/>"
-		+QWidget::trUtf8("Xavier Sacré (CMake Support)<br/>")+
-		"Marco Saerens (Scientific Advisor)<br/>"
-		"Jean-Baptiste Valsamis (Past Researcher)<br/>"
-		"Valery Vandaele (Past Researcher)<br/>"
-		"David Wartel (Past Researcher)");
+	QRAboutDialog dlg("QGALILEI","1.0");
+	dlg.setDescription("Qt-based GALILEI frontend.");
+	dlg.setCopyright(QWidget::trUtf8("(C) 2001-2008 by the Université Libre de Bruxelles (ULB)<br/>(C) 2010-2015 by the Paul Otlet Institute"));
+	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
+	dlg.setLicense(QRAboutDialog::License_GPL);
+	dlg.addAuthor(QWidget::trUtf8("Pascal Francq"),QWidget::trUtf8("Maintainer"), "pascal@francq.info");
+	dlg.addAuthor(QWidget::trUtf8("Faiza Gaultier"),QWidget::trUtf8("Past Researcher"));
+	dlg.addAuthor(QWidget::trUtf8("Julien Lamoral"),QWidget::trUtf8("Past Researcher"));
+	dlg.addAuthor(QWidget::trUtf8("Nicolas Kumps"),QWidget::trUtf8("Past Researcher"));
+	dlg.addAuthor(QWidget::trUtf8("Marjorie Paternostre"),QWidget::trUtf8("Past Researcher"));
+	dlg.addAuthor(QWidget::trUtf8("Stéphane Rideau"),QWidget::trUtf8("Past Researcher"));
+	dlg.addAuthor(QWidget::trUtf8("Sarah Rolfo"),QWidget::trUtf8("Past Researcher"));
+	dlg.addAuthor(QWidget::trUtf8("Xavier Sacré"),QWidget::trUtf8("CMake Support"));
+	dlg.addAuthor(QWidget::trUtf8("Marco Saerens"),QWidget::trUtf8("(Scientific Adviso"));
+	dlg.addAuthor(QWidget::trUtf8("Jean-Baptiste Valsamis"),QWidget::trUtf8("Past Researcher"));
+	dlg.addAuthor(QWidget::trUtf8("Valéry Vandaele"),QWidget::trUtf8("Past Researcher"));
+	dlg.addAuthor(QWidget::trUtf8("David Wartel"),QWidget::trUtf8("Past Researcher"));
+	dlg.exec();
 }
 
 
