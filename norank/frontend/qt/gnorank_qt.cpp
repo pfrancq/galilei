@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GNoRank_KDE.cpp
+	GNoRank_Qt.cpp
 
-	No Ranking Method - Implementation (KDE Part).
+	No Ranking Method - Implementation (Qt Part).
 
    Copyright 2003-2014 by Pascal Francq.
 
@@ -29,7 +29,7 @@
 
 //------------------------------------------------------------------------------
 // include files for current project
-#include <gnorank_kde.h>
+#include <gnorank_qt.h>
 
 
 
@@ -42,13 +42,12 @@
 //------------------------------------------------------------------------------
 Config::Config(void)
 {
-	setCaption("Configure MetaEngine Plug-In");
+	setWindowTitle("Configure No Ranking Plug-In");
 	QWidget* widget=new QWidget(this);
 	setupUi(widget);
-	setMainWidget(widget);
-	setButtons(KDialog::Cancel|KDialog::Apply);
+	connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
+	connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 	connect(Type,SIGNAL(currentIndexChanged(int)),this,SLOT(changeType(int)));
-	connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
 	adjustSize();
 }
 
@@ -72,28 +71,21 @@ void Config::changeType(int index)
 }
 
 
-
 //------------------------------------------------------------------------------
-extern "C" {
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-void About(void)
+extern "C" void About(void)
 {
-	KAboutData aboutData("metaengine", 0, ki18n("Meta Engine"),
-		"1.0", ki18n("This is a meta engine."), KAboutData::License_GPL,
-		ki18n("(C) 2003-2014 by Pascal Francq\n(C)2003-2004 by Valery Vandaele\n(C) 2003-2008 by Université Libre de Bruxelles\n"),
-		KLocalizedString(), "http://www.otlet-institute.org", "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Valery Vandaele"),ki18n("Contributor") );
-	KAboutApplicationDialog dlg(&aboutData);
+	QRAboutDialog dlg("No Ranking","1.0");
+	dlg.setDescription("This plug-in provides a dummy ranking method that does nothing.");
+	dlg.setCopyright(QWidget::trUtf8("(C) 2010-2015 by the Paul Otlet Institute"));
+	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
+	dlg.setLicense(QRAboutDialog::License_GPL);
+	dlg.addAuthor(QWidget::trUtf8("Pascal Francq"),QWidget::trUtf8("Maintainer"), "pascal@francq.info");
 	dlg.exec();
 }
 
 
 //------------------------------------------------------------------------------
-bool Configure(GPlugIn* fac)
+extern "C" bool Configure(GPlugIn* fac)
 {
 	Config dlg;
 
@@ -106,8 +98,3 @@ bool Configure(GPlugIn* fac)
 	}
 	return(false);
 }
-
-
-//------------------------------------------------------------------------------
-}     // End of extern
-//------------------------------------------------------------------------------

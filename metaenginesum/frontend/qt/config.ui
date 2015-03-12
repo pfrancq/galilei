@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>357</width>
-    <height>160</height>
+    <width>400</width>
+    <height>236</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -100,20 +100,7 @@ p, li { white-space: pre-wrap; }
          </widget>
         </item>
         <item>
-         <widget class="KIntSpinBox" name="kMin">
-          <property name="toolTip">
-           <string>Minimum number of keywords for a query</string>
-          </property>
-          <property name="specialValueText">
-           <string/>
-          </property>
-          <property name="maximum">
-           <number>100</number>
-          </property>
-          <property name="maxValue" stdset="0">
-           <number>100</number>
-          </property>
-         </widget>
+         <widget class="QSpinBox" name="kMin"/>
         </item>
         <item>
          <spacer name="spacer5">
@@ -142,20 +129,7 @@ p, li { white-space: pre-wrap; }
          </widget>
         </item>
         <item>
-         <widget class="KIntSpinBox" name="kMax">
-          <property name="toolTip">
-           <string>Maximum number of keywords for a query</string>
-          </property>
-          <property name="maximum">
-           <number>100</number>
-          </property>
-          <property name="maxValue" stdset="0">
-           <number>100</number>
-          </property>
-          <property name="lineStep" stdset="0">
-           <number>1</number>
-          </property>
-         </widget>
+         <widget class="QSpinBox" name="kMax"/>
         </item>
         <item>
          <spacer name="horizontalSpacer">
@@ -188,15 +162,15 @@ p, li { white-space: pre-wrap; }
      </layout>
     </widget>
    </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>KIntSpinBox</class>
-   <extends>QSpinBox</extends>
-   <header>knuminput.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

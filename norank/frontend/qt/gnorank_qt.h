@@ -2,13 +2,11 @@
 
 	GALILEI Research Project
 
-	GMetaEngineSum_KDE.cpp
+	GNoRank_Qt.cpp
 
-	Meta-engine based on a Weighted Sum - Header (KDE Part).
+	No Ranking Method - Header (Qt Part).
 
-   Copyright 2003-2015 by Pascal Francq.
-	Copyright 2003-2004 by Valery Vandaele.
-	Copyright 2003-2008 Université Libre de Bruxelles (ULB).
+   Copyright 2015-2015 by Pascal Francq.
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -30,26 +28,22 @@
 
 
 //------------------------------------------------------------------------------
-// include files for GALILEI
-#include <gmetaenginesum.h>
+// include files for R/GALILEI
 #include <rqt.h>
+#include <qraboutdialog.h>
+#include <gplugin.h>
 using namespace R;
-using namespace std;
 using namespace GALILEI;
 
 
-//-----------------------------------------------------------------------------
-// include files for Qt/KDE
-#include <QtGui/QPushButton>
-#include <kaboutdata.h>
-#include <klocale.h>
-#include <kaboutapplicationdialog.h>
-#include <knuminput.h>
+//------------------------------------------------------------------------------
+// include files for Qt
+#include <QtGui/QDialog>
 #include <ui_config.h>
 
 
 //------------------------------------------------------------------------------
-class Config : public KDialog, public Ui_Config
+class Config : public QDialog, public Ui_Config
 {
 	Q_OBJECT
 
