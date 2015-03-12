@@ -10,25 +10,24 @@ PROJECT(statsims CXX)
 R_LOAD_DEPENDENCY("R" "R_LIB" "r")
 R_LOAD_DEPENDENCY("GALILEI" "GALILEI_LIB" "galilei")
 
-#LINK_DIRECTORIES(${EXTRA_LIB_DIRECTORY})
+OPTION(disable-qt "Disable QT4 support" OFF)
 
-OPTION(disable-kde "Disable KDE 4 support" OFF)
 
-#search for kde4
-IF(disable-kde)
-	MESSAGE(STATUS "KDE4 support disabled")
-ELSE(disable-kde)
-	FIND_PACKAGE(KDE4 REQUIRED)
-	FIND_PACKAGE(Qt4)
-	IF(KDE4_FOUND)
-	    INCLUDE (KDE4Defaults)
-		ADD_DEFINITIONS(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
-		INCLUDE_DIRECTORIES( ${KDE4_INCLUDE_DIR} ${QT_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
-		MESSAGE(STATUS "KDE4 support enabled.")
-	ELSE(KDE4_FOUND)
-		MESSAGE(FATAL_ERROR "KDE4 can't be found as requested")
-	ENDIF(KDE4_FOUND)
-ENDIF(disable-kde)
+#--------------------------------
+#search for Qt4
+IF(disable-qt)
+	MESSAGE(STATUS "Qt4 support disabled")
+ELSE(disable-qt)
+	FIND_PACKAGE(Qt4 REQUIRED)
+	IF(QT4_FOUND)
+		ADD_DEFINITIONS(${QT_DEFINITIONS})
+		INCLUDE(${QT_USE_FILE})
+		INCLUDE_DIRECTORIES( ${QT_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+		MESSAGE(STATUS "Qt4 support enabled.")
+	ELSE(QT4_FOUND)
+		MESSAGE(FATAL_ERROR "QT4 can't be found as requested")
+	ENDIF(QT4_FOUND)
+ENDIF(disable-qt)
 
 
 SET(SUB_PROJECT statsims)

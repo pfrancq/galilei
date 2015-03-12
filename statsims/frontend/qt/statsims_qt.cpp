@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	StatSims_KDE.cpp
+	StatSims_Qt.cpp
 
-	Similarity Statistics (KDE Part) - Implementation.
+	Similarity Statistics (Qt Part) - Implementation.
 
 	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
@@ -28,65 +28,70 @@
 
 
 
-//------------------------------------------------------------------------------
-// include files for R
-#include <rqt.h>
-using namespace R;
-
-
-//------------------------------------------------------------------------------
-// include files for GALILEI
-#include <gplugin.h>
-using namespace GALILEI;
-
-
 //-----------------------------------------------------------------------------
-// include files for KDE/Qt
-#include <kaboutdata.h>
-#include <kaboutapplicationdialog.h>
-#include <KDE/KLocale>
-#include <ui_config.h>
+// include files for current plug-in
+#include <statsims_qt.h>
 
 
 //------------------------------------------------------------------------------
-class Config : public KDialog, public Ui_Config
+Config::Config(void)
 {
-public:
-	Config(void)
-	{
-		setCaption("Configure Statistics Plug-In");
-		QWidget* widget=new QWidget(this);
-		setupUi(widget);
-		setMainWidget(widget);
-		setButtons(KDialog::Cancel|KDialog::Apply);
-		connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
-		adjustSize();
-	}
-};
-
+	setWindowTitle("Configure Statistics Plug-In");
+	QWidget* widget=new QWidget(this);
+	setupUi(widget);
+	connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
+	connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
+	connect(EditResults,SIGNAL(pressed()),this,SLOT(chooseResults()));
+	connect(EditDocsSims,SIGNAL(pressed()),this,SLOT(chooseDocsSims()));
+	connect(EditDocsIncs,SIGNAL(pressed()),this,SLOT(chooseDocsIncs()));
+	adjustSize();
+}
 
 
 //------------------------------------------------------------------------------
-extern "C" {
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-void About(void)
+void Config::chooseResults(void)
 {
-	KAboutData aboutData( "statssims", 0, ki18n("Similarity Statistics"),
-		"1.0", ki18n("This statistic computes several measures based on the similarities."), KAboutData::License_GPL,
-		ki18n("(C) 2003-2014 by Pascal Francq\n(C) 2003-2004 by Valery Vandaele\n(C) 2003-2008 by the Université Libre de Bruxelles (ULB)"),
-		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Valery Vandaele"),ki18n("Past Researcher"));
-	aboutData.addCredit(ki18n("Julien Lamoral"),ki18n("Past researcher"));
-	KAboutApplicationDialog dlg(&aboutData);
+	QString fileName(QFileDialog::getSaveFileName(this,"Choose Output File"));
+   if(!fileName.isEmpty())
+		Results->setText(fileName);
+}
+
+
+//------------------------------------------------------------------------------
+void Config::chooseDocsSims(void)
+{
+	QString fileName(QFileDialog::getSaveFileName(this,"Choose Document Similarities"));
+   if(!fileName.isEmpty())
+		DocsSims->setText(fileName);
+}
+
+
+//------------------------------------------------------------------------------
+void Config::chooseDocsIncs(void)
+{
+	QString fileName(QFileDialog::getSaveFileName(this,"Choose Document Inclusions"));
+   if(!fileName.isEmpty())
+		DocsIncs->setText(fileName);
+}
+
+
+//------------------------------------------------------------------------------
+extern "C" void About(void)
+{
+	QRAboutDialog dlg("Similarity Statistics","1.0");
+	dlg.setDescription("This statistic computes several measures based on the similarities.");
+	dlg.setCopyright(QWidget::trUtf8("(C) 2003-2008 by the Université Libre de Bruxelles<br/>(C) 2010-2015 by the Paul Otlet Institute"));
+	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
+	dlg.setLicense(QRAboutDialog::License_GPL);
+	dlg.addAuthor(QWidget::trUtf8("Pascal Francq"),QWidget::trUtf8("Maintainer"), "pascal@francq.info");
+	dlg.addAuthor(QWidget::trUtf8("Julien Lamoral"),QWidget::trUtf8("Contributor"));
+	dlg.addAuthor(QWidget::trUtf8("Valéry Vandaele"),QWidget::trUtf8("Contributor"));
 	dlg.exec();
 }
 
 
 //------------------------------------------------------------------------------
-bool Configure(GPlugIn* fac)
+extern "C" bool Configure(GPlugIn* fac)
 {
  	Config dlg;
 
@@ -96,12 +101,12 @@ bool Configure(GPlugIn* fac)
 	dlg.Profiles->setChecked(fac->FindParam<RParamValue>("Profiles")->GetBool());
 	dlg.SameDocProf->setChecked(fac->FindParam<RParamValue>("SameDocProf")->GetBool());
 	dlg.GroupProf->setChecked(fac->FindParam<RParamValue>("GroupProf")->GetBool());
-	dlg.Results->setUrl(ToQString(fac->FindParam<RParamValue>("Results")->Get()));
+	dlg.Results->setText(ToQString(fac->FindParam<RParamValue>("Results")->Get()));
 	dlg.ExportDocsSims->setChecked(fac->FindParam<RParamValue>("ExportDocsSims")->GetBool());
-	dlg.DocsSims->setUrl(ToQString(fac->FindParam<RParamValue>("DocsSims")->Get()));
+	dlg.DocsSims->setText(ToQString(fac->FindParam<RParamValue>("DocsSims")->Get()));
 	dlg.DocsSims->setEnabled(dlg.ExportDocsSims->isChecked());
 	dlg.ExportDocsIncs->setChecked(fac->FindParam<RParamValue>("ExportDocsIncs")->GetBool());
-	dlg.DocsIncs->setUrl(ToQString(fac->FindParam<RParamValue>("DocsIncs")->Get()));
+	dlg.DocsIncs->setText(ToQString(fac->FindParam<RParamValue>("DocsIncs")->Get()));
 	dlg.DocsIncs->setEnabled(dlg.ExportDocsIncs->isChecked());
 	dlg.MeasureType->setCurrentIndex(dlg.MeasureType->findText(ToQString(fac->FindParam<RParamValue>("MeasureType")->Get())));
 	if(dlg.exec())
@@ -112,18 +117,13 @@ bool Configure(GPlugIn* fac)
 		fac->FindParam<RParamValue>("Profiles")->SetBool(dlg.Profiles->isChecked());
 		fac->FindParam<RParamValue>("SameDocProf")->SetBool(dlg.SameDocProf->isChecked());
 		fac->FindParam<RParamValue>("GroupProf")->SetBool(dlg.GroupProf->isChecked());
-		fac->FindParam<RParamValue>("Results")->Set(FromQString(dlg.Results->url().url()));
+		fac->FindParam<RParamValue>("Results")->Set(FromQString(dlg.Results->text()));
 		fac->FindParam<RParamValue>("ExportDocsSims")->SetBool(dlg.ExportDocsSims->isChecked());
-		fac->FindParam<RParamValue>("DocsSims")->Set(FromQString(dlg.DocsSims->url().url()));
+		fac->FindParam<RParamValue>("DocsSims")->Set(FromQString(dlg.DocsSims->text()));
 		fac->FindParam<RParamValue>("ExportDocsIncs")->SetBool(dlg.ExportDocsIncs->isChecked());
-		fac->FindParam<RParamValue>("DocsIncs")->Set(FromQString(dlg.DocsIncs->url().url()));
+		fac->FindParam<RParamValue>("DocsIncs")->Set(FromQString(dlg.DocsIncs->text()));
 		fac->FindParam<RParamValue>("MeasureType")->Set(FromQString(dlg.MeasureType->currentText()));
 		return(true);
  	}
 	return(false);
 }
-
-
-//------------------------------------------------------------------------------
-}     // end of extern
-//------------------------------------------------------------------------------
