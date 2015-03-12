@@ -28,46 +28,38 @@
 
 
 
-//-----------------------------------------------------------------------------
-// include files for KDE
-#include <kaboutdata.h>
-#include <kaboutapplicationdialog.h>
-#include <KDE/KLocale>
+//------------------------------------------------------------------------------
+// include files for R/GALILEI
+#include <rqt.h>
+#include <qraboutdialog.h>
+#include <gplugin.h>
+using namespace R;
+using namespace GALILEI;
 
 
 //------------------------------------------------------------------------------
-// include files for GALILEI
-#include "genericsims_kde.h"
+// include files for current plug-in
+#include <genericsims_qt.h>
 
 
 
 //------------------------------------------------------------------------------
-extern "C" {
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-void About(void)
+extern "C" void About(void)
 {
-	KAboutData aboutData( "profilesgroupssims", 0, ki18n("Profiles/communities Similarities"),
-		"1.0", ki18n("Method to compute the similarities between communities and profiles"), KAboutData::License_GPL,
-		ki18n("(C) 2005-2014 by Pascal Francq\n(C) 2005-2008 by the Université Libre de Bruxelles (ULB)"),
-		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
-	KAboutApplicationDialog dlg(&aboutData);
+	QRAboutDialog dlg("Profiles/Communities Similarities","1.0");
+	dlg.setDescription("Method used to compute the similarities using the tensor space model between communities and profiles.");
+	dlg.setCopyright(QWidget::trUtf8("(C) 2003-2008 by the Université Libre de Bruxelles (ULB)<br/>(C) 2010-2015 by the Paul Otlet Institute"));
+	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
+	dlg.setLicense(QRAboutDialog::License_GPL);
+	dlg.addAuthor(QWidget::trUtf8("Pascal Francq"),QWidget::trUtf8("Maintainer"), "pascal@francq.info");
 	dlg.exec();
 }
 
 
 
 //------------------------------------------------------------------------------
-bool Configure(GPlugIn* fac)
+extern "C" bool Configure(GPlugIn* fac)
 {
 	GGenericSimsDlg dlg("Similarities between profiles and communities");
 	return(dlg.Configure(fac));
 }
-
-
-
-//------------------------------------------------------------------------------
-}     // end of extren
-//------------------------------------------------------------------------------

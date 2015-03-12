@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	DocsDisagree_KDE.cpp
+	ProfilesDisagree_KDE.cpp
 
-	Disagreement between documents (KDE Part) - Implementation.
+	Disagreement between profiles (KDE Part) - Implementation.
 
 	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
@@ -28,24 +28,20 @@
 
 
 
-//-----------------------------------------------------------------------------
-// include files for Qt/KDE
-#include <QtGui/QLabel>
-#include <QtGui/QGroupBox>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QSpinBox>
-#include <kaboutdata.h>
-#include <kaboutapplicationdialog.h>
-#include <KDE/KLocale>
+//------------------------------------------------------------------------------
+// include files for R/GALILEI
+#include <rqt.h>
+#include <qraboutdialog.h>
+#include <gplugin.h>
+#include <qgmatrixmeasuredlg.h>
+using namespace R;
+using namespace GALILEI;
 
 
 //------------------------------------------------------------------------------
-// include files for GALILEI
-#include <qgmatrixmeasuredlg.h>
-#include <gmeasure.h>
-using namespace GALILEI;
-using namespace R;
-using namespace std;
+// include files for Qt
+#include <QSpinBox>
+#include <QLabel>
 
 
 
@@ -58,11 +54,11 @@ using namespace std;
 //-----------------------------------------------------------------------------
 class MyDlg : public QGMatrixMeasureDlg
 {
-	QSpinBox* MinProfiles;
+	QSpinBox* MinDocs;
 
 public:
 
-	MyDlg(void) : QGMatrixMeasureDlg("Disagreement ratios between documents") {}
+	MyDlg(void) : QGMatrixMeasureDlg("Disagreement ratios between profiles") {}
 	virtual void Panel(void);
 	virtual void Init(GPlugIn* fac);
 	virtual void Done(GPlugIn* fac);
@@ -74,60 +70,48 @@ void MyDlg::Panel(void)
 {
     QHBoxLayout* layout = new QHBoxLayout();
     QLabel* text = new QLabel(GetMeasureSpecific());
-    text->setText("Minimum common profiles");
+    text->setText("Minimum common documents");
     layout->addWidget(text);
     layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
-   	MinProfiles = new QSpinBox(GetMeasureSpecific());
-    layout->addWidget(MinProfiles);
+   	MinDocs = new QSpinBox(GetMeasureSpecific());
+    layout->addWidget(MinDocs);
 	GetMeasureSpecificLayout()->addLayout(layout);
 }
-
 
 
 //-----------------------------------------------------------------------------
 void MyDlg::Init(GPlugIn* fac)
 {
 	QGMatrixMeasureDlg::Init(fac);
-	MinProfiles->setValue(fac->FindParam<RParamValue>("MinProfiles")->GetInt());
+	MinDocs->setValue(fac->FindParam<RParamValue>("MinDocs")->GetInt());
 }
 
 
 //-----------------------------------------------------------------------------
 void MyDlg::Done(GPlugIn* fac)
 {
-	fac->FindParam<RParamValue>("MinProfiles")->SetUInt(MinProfiles->value());
+	fac->FindParam<RParamValue>("MinDocs")->SetUInt(MinDocs->value());
 	QGMatrixMeasureDlg::Done(fac);
 }
 
 
-
 //------------------------------------------------------------------------------
-//
-extern "C" {
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-void About(void)
+extern "C" void About(void)
 {
-	KAboutData aboutData( "docsdisagree",0, ki18n("Count Method"),
-		"1.0", ki18n("The count method is used to computed the disagreement ratios between the documents."), KAboutData::License_GPL,
-		ki18n("(C) 2003-2014 by Pascal Francq\n(C) 2003-2008 by the Université Libre de Bruxelles (ULB)"),
-		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
-	KAboutApplicationDialog dlg(&aboutData);
+	QRAboutDialog dlg("Count Method","1.0");
+	dlg.setDescription("The count method is used to computed the disagreement ratios between the profiles.");
+	dlg.setCopyright(QWidget::trUtf8("(C) 2003-2008 by the Université Libre de Bruxelles (ULB)<br/>(C) 2010-2015 by the Paul Otlet Institute"));
+	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
+	dlg.setLicense(QRAboutDialog::License_GPL);
+	dlg.addAuthor(QWidget::trUtf8("Pascal Francq"),QWidget::trUtf8("Maintainer"), "pascal@francq.info");
 	dlg.exec();
+
 }
 
 
 //------------------------------------------------------------------------------
-bool Configure(GPlugIn* fac)
+extern "C" bool Configure(GPlugIn* fac)
 {
 	MyDlg dlg;
 	return(dlg.Configure(fac));
 }
-
-
-//------------------------------------------------------------------------------
-}     // end of extren
-//------------------------------------------------------------------------------

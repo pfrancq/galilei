@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	ChoquetEstimation_KDE.cpp
+	ChoquetEstimation_Qt.cpp
 
-	Estimation of the parameters of the Choquet Intregral (KDE Part) - Implementation.
+	Estimation of the parameters of the Choquet Intregral (Qt Part) - Implementation.
 
 	Copyright 2013-2014 by Pascal Francq (pascal@francq.info).
 
@@ -29,35 +29,21 @@
 //------------------------------------------------------------------------------
 // include files for R/GALILEI
 #include <rqt.h>
+#include <qraboutdialog.h>
 #include <gplugin.h>
 using namespace R;
 using namespace GALILEI;
 
 
-//-----------------------------------------------------------------------------
-// include files for KDE
-#include <kaboutdata.h>
-#include <kaboutapplicationdialog.h>
-#include <KDE/KLocale>
-
 
 //------------------------------------------------------------------------------
-extern "C" {
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-void About(void)
+extern "C" void About(void)
 {
-	KAboutData aboutData("Choquet Integral Estimation", 0, ki18n("ChoquetEstimation"),
-		"1.0", ki18n("Evaluate the parameters of the choquet Integral"), KAboutData::License_GPL,
-		ki18n("(C) 2013 by Pascal Francq"),
-		KLocalizedString(), "http://www.otlet-institute.org", "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
-	KAboutApplicationDialog dlg(&aboutData);
+	QRAboutDialog dlg("Choquet Integral Estimation","1.0");
+	dlg.setDescription("Evaluate the parameters of the choquet Integral.");
+	dlg.setCopyright(QWidget::trUtf8("(C) 2013-2015 by the Paul Otlet Institute"));
+	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
+	dlg.setLicense(QRAboutDialog::License_GPL);
+	dlg.addAuthor(QWidget::trUtf8("Pascal Francq"),QWidget::trUtf8("Maintainer"), "pascal@francq.info");
 	dlg.exec();
 }
-
-
-//------------------------------------------------------------------------------
-}     // end of extern
-//------------------------------------------------------------------------------

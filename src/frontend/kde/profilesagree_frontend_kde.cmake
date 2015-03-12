@@ -1,3 +1,0 @@
-SET(profilesagree_frontend_kde_TARGET_SOURCES profilesagree_kde.cpp)
-
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

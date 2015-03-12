@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GenericSims_KDE.h
+	GenericSims_Qt.h
 
-	Generic Tensor Space Model Similarity Measure (KDE Part) - Implementation.
+	Generic Tensor Space Model Similarity Measure (Qt Part) - Implementation.
 
 	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2003 by Valery Vandaele.
@@ -30,16 +30,16 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GGenericSims_KDEH
-#define GGenericSims_KDEH
+#ifndef GGenericSims_QtH
+#define GGenericSims_QtH
 
 
 //------------------------------------------------------------------------------
 // include files for Qt/KDE
-#include <QtGui/QComboBox>
+/*#include <QtGui/QComboBox>
 #include <QtGui/QGroupBox>
 #include <QtGui/QCheckBox>
-#include <knuminput.h>
+#include <knuminput.h>*/
 
 
 //------------------------------------------------------------------------------
@@ -85,7 +85,7 @@ public:
     * @param row            The row in the grid.
     * @param col            The column in the grid.
     */
-	void AddCapacity(KDoubleNumInput* &cap,const char* str,QGridLayout* grid,int row,int col);
+	void AddCapacity(QDoubleSpinBox* &cap,const char* str,QGridLayout* grid,int row,int col);
 
    /**
     * Construct the panel with the parameters of the tensor space model

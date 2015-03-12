@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	ProfilesDisagree_KDE.cpp
+	ProfilesAgree_KDE.cpp
 
-	Disagreement between profiles (KDE Part) - Implementation.
+	Agreement between profiles (KDE Part) - Implementation.
 
 	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
@@ -28,24 +28,20 @@
 
 
 
-//-----------------------------------------------------------------------------
-// include files for Qt/KDE
-#include <QtGui/QLabel>
-#include <QtGui/QGroupBox>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QSpinBox>
-#include <kaboutdata.h>
-#include <kaboutapplicationdialog.h>
-#include <KDE/KLocale>
+//------------------------------------------------------------------------------
+// include files for R/GALILEI
+#include <rqt.h>
+#include <qraboutdialog.h>
+#include <gplugin.h>
+#include <qgmatrixmeasuredlg.h>
+using namespace R;
+using namespace GALILEI;
 
 
 //------------------------------------------------------------------------------
-// include files for GALILEI
-#include <qgmatrixmeasuredlg.h>
-#include <gmeasure.h>
-using namespace GALILEI;
-using namespace R;
-using namespace std;
+// include files for Qt
+#include <QSpinBox>
+#include <QLabel>
 
 
 
@@ -62,7 +58,7 @@ class MyDlg : public QGMatrixMeasureDlg
 
 public:
 
-	MyDlg(void) : QGMatrixMeasureDlg("Disagreement ratios between profiles") {}
+	MyDlg(void) : QGMatrixMeasureDlg("Agreement ratios between profiles") {}
 	virtual void Panel(void);
 	virtual void Init(GPlugIn* fac);
 	virtual void Done(GPlugIn* fac);
@@ -99,34 +95,24 @@ void MyDlg::Done(GPlugIn* fac)
 }
 
 
-
 //------------------------------------------------------------------------------
-//
-extern "C" {
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-void About(void)
+extern "C" void About(void)
 {
-	KAboutData aboutData( "profilesdisagree", 0, ki18n("Count Method"),
-		"1.0", ki18n("The count method is used to compute the disagreement ratios between profiles."), KAboutData::License_GPL,
-		ki18n("(C) 2003-2014 by Pascal Francq\n(C) 2003-2008 by the Université Libre de Bruxelles (ULB)"),
-		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
-	KAboutApplicationDialog dlg(&aboutData);
+	QRAboutDialog dlg("Count Method","1.0");
+	dlg.setDescription("The count method is used to computed the agreement ratios between the profiles.");
+	dlg.setCopyright(QWidget::trUtf8("(C) 2003-2008 by the Université Libre de Bruxelles (ULB)<br/>(C) 2010-2015 by the Paul Otlet Institute"));
+	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
+	dlg.setLicense(QRAboutDialog::License_GPL);
+	dlg.addAuthor(QWidget::trUtf8("Pascal Francq"),QWidget::trUtf8("Maintainer"), "pascal@francq.info");
 	dlg.exec();
+
 }
 
 
+
 //------------------------------------------------------------------------------
-bool Configure(GPlugIn* fac)
+extern "C" bool Configure(GPlugIn* fac)
 {
 	MyDlg dlg;
 	return(dlg.Configure(fac));
 }
-
-
-//------------------------------------------------------------------------------
-}     // end of extren
-//------------------------------------------------------------------------------

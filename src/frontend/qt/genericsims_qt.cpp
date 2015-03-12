@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GenericSims_KDE.cpp
+	GenericSims_Qt.cpp
 
-	Generic Tensor Space Model Similarity Measure (KDE Part) - Implementation.
+	Generic Tensor Space Model Similarity Measure (Qt Part) - Implementation.
 
 	Copyright 2003-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2003 by Valery Vandaele.
@@ -40,7 +40,7 @@
 #include <QtGui/QLayout>
 #include <QtGui/QToolTip>
 #include <QtGui/QWhatsThis>
-#include <kmessagebox.h>
+#include <QMessageBox>
 
 
 //------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include "genericsims_kde.h"
+#include <genericsims_qt.h>
 #include <gmeasure.h>
 
 
@@ -70,13 +70,13 @@ GGenericSimsDlg::GGenericSimsDlg(const QString& title)
 
 
 //-----------------------------------------------------------------------------
-void GGenericSimsDlg::AddCapacity(KDoubleNumInput* &cap,const char* str,QGridLayout* grid,int row,int col)
+void GGenericSimsDlg::AddCapacity(QDoubleSpinBox* &cap,const char* str,QGridLayout* grid,int row,int col)
 {
 	QHBoxLayout* layout = new QHBoxLayout();
 	QLabel* text = new QLabel(GetMeasureSpecific());
    text->setText(str);
    layout->addWidget(text);
-	cap = new KDoubleNumInput(GetMeasureSpecific());
+	cap = new QDoubleSpinBox(GetMeasureSpecific());
 	cap->setSpecialValueText(str);
    layout->addWidget(cap);
    grid->addItem(layout,row,col);
@@ -154,7 +154,7 @@ bool GGenericSimsDlg::IsDlgOK(void)
 		Sum+=SemanticLink->value();
 		if(fabs(Sum-1.0)>=0.0000000001)
 		{
-			KMessageBox::error(this,"When the 2-Additive Choquet Integral is used, the sum of the weights should 1 and not "+QString::number(Sum));
+			QMessageBox::critical(this,"Error in Weights","When the 2-Additive Choquet Integral is used, the sum of the weights should 1 and not "+QString::number(Sum));
 			return(false);
 		}
 	}
