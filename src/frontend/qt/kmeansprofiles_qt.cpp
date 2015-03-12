@@ -28,56 +28,46 @@
 
 
 //------------------------------------------------------------------------------
-// include files for R/GALILEI Project
+// include files for R/GALILEI
 #include <rqt.h>
+#include <qraboutdialog.h>
 #include <gplugin.h>
-using namespace GALILEI;
 using namespace R;
-using namespace std;
+using namespace GALILEI;
 
 
-//-----------------------------------------------------------------------------
-// include files for Qt/KDE
-#include <kaboutdata.h>
-#include <kaboutapplicationdialog.h>
-#include <kdialog.h>
-#include <KDE/KLocale>
-
-
-//-----------------------------------------------------------------------------
-// include files for current project
+//------------------------------------------------------------------------------
+// include files for Qt
+#include <QtGui/QDialog>
 #include <ui_config.h>
 
 
-//------------------------------------------------------------------------------
-extern "C" {
-//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void About(void)
+extern "C" void About(void)
 {
-	KAboutData aboutData("kmeans_profiles", 0, ki18n("k-Means Plug-in for Profiles"),
-		"1.0", ki18n("This is a set of k-Means algorithms to cluster profiles."),KAboutData::License_GPL,
-		ki18n("(C) 2010-2014 by Pascal Francq"),
-		KLocalizedString(), "http://www.otlet-institute.org", "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
-	KAboutApplicationDialog dlg(&aboutData);
+	QRAboutDialog dlg("k-Means Plug-in for Profiles","1.0");
+	dlg.setDescription("This is a set of k-Means algorithms to cluster profiles.");
+	dlg.setCopyright(QWidget::trUtf8("(C) 2001-2008 by the Université Libre de Bruxelles (ULB)<br/>(C) 2010-2015 by the Paul Otlet Institute"));
+	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
+	dlg.setLicense(QRAboutDialog::License_GPL);
+	dlg.addAuthor(QWidget::trUtf8("Pascal Francq"),QWidget::trUtf8("Maintainer"), "pascal@francq.info");
 	dlg.exec();
+
 }
 
 
 //------------------------------------------------------------------------------
-bool Configure(GPlugIn* fac)
+extern "C" bool Configure(GPlugIn* fac)
 {
 	// Create the dialog box
-	KDialog Dlg;
-	Dlg.setCaption("kMeans Configure");
+	QDialog Dlg;
+	Dlg.setWindowTitle("k-Means Configure");
 	Ui_Config Ui;
 	QWidget* widget(new QWidget(&Dlg));
 	Ui.setupUi(widget);
-	Dlg.setMainWidget(widget);
-	Dlg.setButtons(KDialog::Cancel|KDialog::Apply);
-	QObject::connect(&Dlg,SIGNAL(applyClicked()),&Dlg,SLOT(accept()));
+	QObject::connect(Ui.buttonBox,SIGNAL(accepted()),&Dlg,SLOT(accept()));
+	QObject::connect(Ui.buttonBox,SIGNAL(rejected()),&Dlg,SLOT(reject()));
 
 	// Run it
 	Ui.NbClusters->setValue(fac->FindParam<RParamValue>("NbClusters")->GetInt());
@@ -109,9 +99,3 @@ bool Configure(GPlugIn* fac)
 	}
 	return(false);
 }
-
-
-//------------------------------------------------------------------------------
-}     // end of extern
-//------------------------------------------------------------------------------
-

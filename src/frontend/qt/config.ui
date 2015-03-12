@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>369</width>
-    <height>537</height>
+    <height>606</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -129,11 +129,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KIntSpinBox" name="Seed">
-          <property name="maxValue" stdset="0">
-           <number>35000</number>
-          </property>
-         </widget>
+         <widget class="QSpinBox" name="Seed"/>
         </item>
        </layout>
       </item>
@@ -181,17 +177,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KDoubleNumInput" name="Convergence">
-          <property name="toolTip">
-           <string>Set the ratio of convergence to stop the iterations of the k-Means.</string>
-          </property>
-          <property name="whatsThis">
-           <string>The GVCA uses a k-Means as an optimisation operator. The ratio of convergence between two iterations of this k-Means can be fixed.</string>
-          </property>
-          <property name="decimals">
-           <number>6</number>
-          </property>
-         </widget>
+         <widget class="QDoubleSpinBox" name="Convergence"/>
         </item>
        </layout>
       </item>
@@ -224,7 +210,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KIntNumInput" name="NbClusters"/>
+         <widget class="QSpinBox" name="NbClusters"/>
         </item>
        </layout>
       </item>
@@ -263,14 +249,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KIntNumInput" name="MaxKMeans">
-          <property name="toolTip">
-           <string>Set the maximum number of iterations of the k-Means.</string>
-          </property>
-          <property name="whatsThis">
-           <string>The GVCA uses a k-Means as an optimisation operator. The maximum number of steps can be fixed.</string>
-          </property>
-         </widget>
+         <widget class="QSpinBox" name="MaxKMeans"/>
         </item>
        </layout>
       </item>
@@ -325,56 +304,22 @@
          </spacer>
         </item>
         <item>
-         <widget class="KDoubleNumInput" name="Alpha">
-          <property name="toolTip">
-           <string>Set the ratio of convergence to stop the iterations of the k-Means.</string>
-          </property>
-          <property name="whatsThis">
-           <string>The GVCA uses a k-Means as an optimisation operator. The ratio of convergence between two iterations of this k-Means can be fixed.</string>
-          </property>
-         </widget>
+         <widget class="QDoubleSpinBox" name="Alpha"/>
         </item>
        </layout>
       </item>
      </layout>
     </widget>
    </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>KDoubleNumInput</class>
-   <extends>QWidget</extends>
-   <header>knuminput.h</header>
-  </customwidget>
-  <customwidget>
-   <class>KIntSpinBox</class>
-   <extends>QSpinBox</extends>
-   <header>knuminput.h</header>
-  </customwidget>
-  <customwidget>
-   <class>KIntNumInput</class>
-   <extends>QWidget</extends>
-   <header>knuminput.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
- <connections>
-  <connection>
-   <sender>InternalRandom</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>Seed</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>72</x>
-     <y>201</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>356</x>
-     <y>248</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
