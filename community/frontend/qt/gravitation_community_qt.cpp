@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	Gravitation_Community_KDE.cpp
+	Gravitation_Community_Qt.cpp
 
-	Community Description Computing Method (KDE Part) - Implementation.
+	Community Description Computing Method (Qt Part) - Implementation.
 
 	Copyright 2002-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2002-2008 by the Université Libre de Bruxelles (ULB).
@@ -29,58 +29,52 @@
 
 
 //------------------------------------------------------------------------------
-// include files for GALILEI
-#include <gcommunitycalc.h>
+// include files for R/GALILEI
 #include <rqt.h>
-using namespace GALILEI;
+#include <qraboutdialog.h>
+#include <gplugin.h>
 using namespace R;
-
-
-//-----------------------------------------------------------------------------
-// include files for KDE
-#include <kaboutdata.h>
-#include <kaboutapplicationdialog.h>
-#include <KDE/KLocale>
-#include <ui_config.h>
+using namespace GALILEI;
 
 
 //------------------------------------------------------------------------------
-class Config : public KDialog, public Ui_Config
+// include files for Qt
+#include <QtGui/QDialog>
+#include <ui_config.h>
+
+
+
+//------------------------------------------------------------------------------
+class Config : public QDialog, public Ui_Config
 {
 public:
 	Config(void)
 	{
-		setCaption("Configure E-mail Plug-In");
+		setWindowTitle("Configure E-mail Plug-In");
 		QWidget* widget=new QWidget(this);
 		setupUi(widget);
-		setMainWidget(widget);
-		setButtons(KDialog::Cancel|KDialog::Apply);
-		connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
+		connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
+		connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 		adjustSize();
 	}
 };
 
 
-
 //------------------------------------------------------------------------------
-extern "C" {
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-void About(void)
+extern "C" void About(void)
 {
-	KAboutData aboutData( "gravitation_communities", 0, ki18n("Gravitation Method for Communities"),
-		"1.0", ki18n("Community Description Computing Method."), KAboutData::License_GPL,
-		ki18n("(C) 2002-2014 by Pascal Francq\n(C) 2002-2008 by the Université Libre de Bruxelles (ULB)"),
-		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
-	KAboutApplicationDialog dlg(&aboutData);
+	QRAboutDialog dlg("Gravitation Method for Communities","1.0");
+	dlg.setDescription("Community Description Computing Method.");
+	dlg.setCopyright(QWidget::trUtf8("(C) 2001-2008 by the Université Libre de Bruxelles (ULB)<br/>(C) 2010-2015 by the Paul Otlet Institute"));
+	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
+	dlg.setLicense(QRAboutDialog::License_GPL);
+	dlg.addAuthor(QWidget::trUtf8("Pascal Francq"),QWidget::trUtf8("Maintainer"), "pascal@francq.info");
 	dlg.exec();
 }
 
 
 //------------------------------------------------------------------------------
-bool Configure(GPlugIn* fac)
+extern "C" bool Configure(GPlugIn* fac)
 {
  	Config dlg;
 
@@ -100,8 +94,3 @@ bool Configure(GPlugIn* fac)
  	}
 	return(false);
 }
-
-
-//------------------------------------------------------------------------------
-}     // end of extren
-//------------------------------------------------------------------------------

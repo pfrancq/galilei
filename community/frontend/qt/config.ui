@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>245</width>
-    <height>164</height>
+    <width>274</width>
+    <height>248</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -75,14 +75,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="KIntNumInput" name="LMax">
-          <property name="toolTip">
-           <string>Maximum number of relevant concepts.</string>
-          </property>
-          <property name="whatsThis">
-           <string>Specify the maximum number of relevant concepts used for the vectors of the description.</string>
-          </property>
-         </widget>
+         <widget class="QSpinBox" name="LMax"/>
         </item>
        </layout>
       </item>
@@ -105,6 +98,9 @@
          </widget>
         </item>
         <item>
+         <widget class="QSpinBox" name="LMin"/>
+        </item>
+        <item>
          <spacer name="spacer2bis">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -120,30 +116,20 @@
           </property>
          </spacer>
         </item>
-        <item>
-         <widget class="KIntNumInput" name="LMin">
-          <property name="toolTip">
-           <string>Maximum number of irrelevant concepts.</string>
-          </property>
-          <property name="whatsThis">
-           <string>Specify the maximum number of irrelevant concepts used for each vector of the description.</string>
-          </property>
-         </widget>
-        </item>
        </layout>
       </item>
      </layout>
     </widget>
    </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>KIntNumInput</class>
-   <extends>QWidget</extends>
-   <header>knuminput.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>
