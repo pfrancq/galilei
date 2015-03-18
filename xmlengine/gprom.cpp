@@ -48,9 +48,7 @@
 // include files for current project
 #include <gprom.h>
 #include <genginexml.h>
-#include <gresnode.h>
 #include <gconceptnode.h>
-#include <gresnodes.h>
 #include <gquery.h>
 
 
@@ -62,7 +60,7 @@
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GPromSol::GPromSol(const size_t id,size_t pos,GResNode* node)
+GPromSol::GPromSol(const size_t id,size_t pos,GDocFragment* node)
 	: RPromSol(id,RString::Number(pos),5), Node(node)
 {
 /*	if(!Node)
@@ -154,7 +152,7 @@ GProm::GProm(GEngineXML* engine,GQuery* query,GMeasure* weighting)
 
 
 //-----------------------------------------------------------------------------
-void GProm::Add(GResNode* node)
+void GProm::Add(GDocFragment* node)
 {
 	// Create the solution
 	GPromSol* Sol;
@@ -189,10 +187,10 @@ RCursor<RPromSol> GProm::Compute(void)
 
 
 //-----------------------------------------------------------------------------
-double GProm::ComputeTfIdf(GResNode* node)
+double GProm::ComputeTfIdf(GDocFragment* node)
 {
 	// If exist -> return the result
-	size_t docid(node->GetParent()->GetDocId());
+	size_t docid(node->GetDoc()->GetId());
 	cDocTfIdf* TfIdf(TfIdfs.GetPtr(docid));
 	if(TfIdf)
 		return(TfIdf->TfIdf);
@@ -242,7 +240,7 @@ void GProm::CollectOccurs(GConceptNode* node)
 }
 
 //-----------------------------------------------------------------------------
-double GProm::ComputeTfIff(GResNode* node)
+double GProm::ComputeTfIff(GDocFragment* node)
 {
 	// If it has no children -> The whole fragment that match the query
 	if(!node->GetNbChildren())
@@ -276,7 +274,7 @@ double GProm::ComputeTfIff(GResNode* node)
 
 
 //-----------------------------------------------------------------------------
-double GProm::ComputeSpecificity(GResNode* node)
+double GProm::ComputeSpecificity(GDocFragment* node)
 {
 	// Spec(e)=1/|e| -> |e| number of child nodes
 	size_t Nb(0);
@@ -288,7 +286,7 @@ double GProm::ComputeSpecificity(GResNode* node)
 
 
 //-----------------------------------------------------------------------------
-double GProm::ComputeDistance(GResNode* node)
+double GProm::ComputeDistance(GDocFragment* node)
 {
 	// If less than two keywords -> distance is null
 	if(Query->GetNbConcepts()<2)
@@ -344,7 +342,7 @@ double GProm::ComputeDistance(GResNode* node)
 
 
 //-----------------------------------------------------------------------------
-double GProm::ComputeType(GResNode* node)
+double GProm::ComputeType(GDocFragment* node)
 {
 	double Ret;
 	if(!node->GetNode())

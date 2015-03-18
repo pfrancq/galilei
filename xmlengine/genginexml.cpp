@@ -48,7 +48,6 @@
 // include files for current project
 #include <genginexml.h>
 #include <gquery.h>
-#include <gqueryres.h>
 #include <gprom.h>
 
 
@@ -273,6 +272,8 @@ void GEngineXML::CreateConfig(void)
 	InsertParam(RPromLinearCriterion::CreateParam("Distance","Distance Criterion"));
 	InsertParam(RPromLinearCriterion::CreateParam("Specificity","Specificity Criterion"));
 	InsertParam(RPromLinearCriterion::CreateParam("TfIff","Tf/Iff Criterion"));
+	InsertParam(new RParamValue("BeginWindowPos",30,"Beginning synaptic position of a window (<=0)."));
+	InsertParam(new RParamValue("EndWindowPos",30,"Ending synaptic position of a window (>=0)."));
 }
 
 
@@ -288,6 +289,8 @@ void GEngineXML::ApplyConfig()
 	Distance=FindParam<RParamStruct>("Distance");
 	Specificity=FindParam<RParamStruct>("Specificity");
 	TfIff=FindParam<RParamStruct>("TfIff");
+	BeginWindowPos=FindParam<RParamValue>("BeginWindowPos")->GetUInt();
+	EndWindowPos=FindParam<RParamValue>("EndWindowPos")->GetUInt();
 }
 
 
@@ -392,12 +395,12 @@ void GEngineXML::RankFragments(GQuery& req,const GQueryRes* res)
 {
 	// Create a PROMETHEE kernel and a solution for each fragment
 	GProm Prom(this,&req,Weighting);
-	RCursor<GResNodes> Docs(res->GetDocs());
+	RCursor<GDocRef> Docs(res->GetDocs());
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
-		RCursor<GResNode> Node(Docs()->GetNodes());
-		for(Node.Start();!Node.End();Node.Next())
-			Prom.Add(Node());
+		RCursor<GDocFragment> Fragment(Docs()->GetFragments());
+		for(Fragment.Start();!Fragment.End();Fragment.Next())
+			Prom.Add(Fragment());
 	}
 
 	// Perform a PROMETHEE ranking on each document fragment and insert them in
@@ -410,14 +413,20 @@ void GEngineXML::RankFragments(GQuery& req,const GQueryRes* res)
 	{
 		GPromSol* Fragment(dynamic_cast<GPromSol*>(Sol()));
 		double Ranking((Sol()->GetFi()-Min)/(Max-Min));
-		size_t DocId(Fragment->Node->GetParent()->GetDocId());
+/*		size_t DocId(Fragment->Node->GetDoc()->GetId());
 		const GConceptTree* Tree(GetTree(DocId));
-		const GConceptNode* MinNode(Tree->GetNearestNode(Fragment->Node->GetMinSyntacticPos()));
-		const GConceptNode* MaxNode(Tree->GetNearestNode(Fragment->Node->GetMaxSyntacticPos()));
+		const GConceptNode* MinNode(Tree->GetNearestNode(Fragment->Node->GetBegin()));
+		const GConceptNode* MaxNode(Tree->GetNearestNode(Fragment->Node->GetEnd()));
 		size_t Pos(0);
 		if(Fragment->Node->GetNode())
 			Pos=Fragment->Node->GetNode()->GetPos();
-		AddResult(DocId,Fragment->Node->GetNode(),Pos,MinNode->GetPos(),MaxNode->GetPos(),Ranking);
+		AddResult(DocId,Fragment->Node->GetNode(),Pos,MinNode->GetPos(),MaxNode->GetPos(),Ranking);*/
+		AddResult(Fragment->Node->GetDoc(),
+					 Fragment->Node->GetNode(),
+					 Fragment->Node->GetPos(),
+					 Fragment->Node->GetBegin(),
+					 Fragment->Node->GetEnd(),
+					 Ranking);
 	}
 }
 
@@ -425,27 +434,23 @@ void GEngineXML::RankFragments(GQuery& req,const GQueryRes* res)
 //------------------------------------------------------------------------------
 void GEngineXML::SelectDocs(GQuery& req,const GQueryRes* res)
 {
-	RCursor<GResNodes> Res(res->GetDocs());
+	RCursor<GDocRef> Res(res->GetDocs());
 	double Dec(1.0/static_cast<double>(Res.GetNb()+1));
 	double Ranking(1.0);
 	for(Res.Start();!Res.End();Res.Next(),Ranking-=Dec)
 	{
 		// Determine Min and Max
 		size_t Min(cNoRef), Max(0);
-		GConceptNode* CNode(0);
-		RCursor<GResNode> Node(Res()->GetNodes());
-		for(Node.Start();!Node.End();Node.Next())
+		RCursor<GDocFragment> Fragment(Res()->GetFragments());
+		for(Fragment.Start();!Fragment.End();Fragment.Next())
 		{
-			if(Min>Node()->GetNode()->GetPos())
-			{
-				Min=Node()->GetNode()->GetPos();
-				CNode=Node()->GetNode();
-			}
-			if(Max<Node()->GetNode()->GetPos())
-				Max=Node()->GetNode()->GetPos();
+			if(Min>Fragment()->GetBegin())
+				Min=Fragment()->GetBegin();
+			if(Max<Fragment()->GetEnd())
+				Max=Fragment()->GetEnd();
 		}
 
-		AddResult(Res()->GetDocId(),CNode,Min,Min,Max,Ranking);
+		AddResult(Res()->GetDoc()->GetId(),Fragment()->GetNode(),Min,Min,Max,Ranking);
 	}
 }
 
@@ -669,4 +674,4 @@ double GEngineXML::GetIff(size_t conceptid,size_t parentid)
 
 
 //------------------------------------------------------------------------------
-CREATE_ENGINE_FACTORY("XML Search Engine","XML Search Engine",GEngineXML)
+CREATE_ENGINE_FACTORY("Simple Document Fragment Selection Engine","Simple Document Fragment Selection Engine",GEngineXML)

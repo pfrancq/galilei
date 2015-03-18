@@ -78,7 +78,7 @@ class GQuery : public RTree<GQuery,GQueryNode,true>
 	RContainer<GConcept,false,false> Concepts;
 
 	/**
-	 * Temporary container of document identifiers.
+	 * Temporary container of document.
     */
 	RNumContainer<size_t,true> DocIds;
 
@@ -153,7 +153,7 @@ private:
 	 * @param right          Right operand.
 	 * @param res            Result.
     */
-	void ApplyOperator(tQueryOperator op,GResNodes* left,GResNodes* right,GResNodes* res);
+	void ApplyOperator(tQueryOperator op,GDocRef* left,GDocRef* right,GDocRef* res);
 
 	/**
 	 * Apply a given operator. In practice, it takes the two most results on the

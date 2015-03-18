@@ -37,7 +37,7 @@
 //------------------------------------------------------------------------------
 // include files for R/GALILEI Projects
 #include <galilei.h>
-#include <gresnodes.h>
+#include <gdocref.h>
 #include <gquerynode.h>
 using namespace R;
 using namespace GALILEI;
@@ -50,7 +50,7 @@ using namespace std;
  * corresponding to a given query (or a part of it).
  * @short Query Result.
  */
-class GQueryRes : RContainer<GResNodes,true,true>
+class GQueryRes : RContainer<GDocRef,true,true>
 {
 public :
 
@@ -69,15 +69,16 @@ public :
 	 * Add a document to the list containing to a concept. In practice, all the
 	 * occurrences of the concept are also added.
 	 * @param engine         Engine launching the search.
-    * @param docid          Identifier of the document to add.
+    * @param doc            Document to add.
 	 * @param concept        Concept associated to a document.
     */
-	void AddDoc(GEngineXML* engine,size_t docid,GConcept* concept);
+	void AddDoc(GEngineXML* engine,GDoc* doc,GConcept* concept);
 
 	/**
 	 * Insert a list of concept nodes corresponding to a document.
+	 * @param doc            Document to add.
 	 */
-	void InsertDoc(GResNodes* nodes);
+	void InsertDoc(GDocRef* doc);
 
 	/**
 	 * Compare two query results.
@@ -93,12 +94,12 @@ public :
 	/**
 	 * @return a list of concept nodes corresponding to a given query.
 	 */
-	RCursor<GResNodes> GetDocs(void) const;
+	RCursor<GDocRef> GetDocs(void) const;
 
 	/**
 	 * @return the number of results.
 	 */
-	size_t GetNb(void) const {return(RContainer<GResNodes,true,true>::GetNb());}
+	size_t GetNb(void) const {return(RContainer<GDocRef,true,true>::GetNb());}
 
 	/**
 	 * Reduce the node sets.

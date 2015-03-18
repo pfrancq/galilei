@@ -40,6 +40,7 @@
 #include <rpromsol.h>
 #include <rpromcriterion.h>
 #include <galilei.h>
+#include <gdocfragment.h>
 using namespace std;
 using namespace R;
 using namespace GALILEI;
@@ -48,7 +49,6 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 // forward declaration
 class GEngineXML;
-class GResNode;
 class GQuery;
 
 
@@ -58,7 +58,7 @@ class GPromSol : public RPromSol
 	/**
 	 * Fragment to rank.
 	 */
-	GResNode* Node;
+	GDocFragment* Node;
 
 public:
 
@@ -68,7 +68,7 @@ public:
 	 * @param pos            Position of the node.
     * @param node           Node.
     */
-	GPromSol(const size_t id,size_t pos,GResNode* node);
+	GPromSol(const size_t id,size_t pos,GDocFragment* node);
 
 	friend class GEngineXML;
 };
@@ -143,7 +143,7 @@ public:
 	/**
 	 * Add a node (document fragment) to the PROMETHEE kernel.
 	 */
-	void Add(GResNode* node);
+	void Add(GDocFragment* node);
 
 	/**
 	 * @return the number of solutions managed by the kernel.
@@ -174,7 +174,7 @@ private:
     * @param node           Fragment.
     * @return the idf factor.
     */
-	double ComputeTfIdf(GResNode* node);
+	double ComputeTfIdf(GDocFragment* node);
 
 	/**
 	 * Collect the occurrences of all concepts appearing in a node (and all its
@@ -189,7 +189,7 @@ private:
     * @param node           Fragment.
     * @return the iff factor.
     */
-	double ComputeTfIff(GResNode* node);
+	double ComputeTfIff(GDocFragment* node);
 
 	/**
 	 * Compute the specificity of a given node. Normally, it is defined as the
@@ -198,7 +198,7 @@ private:
     * @param node           Fragment.
     * @return the specificity factor.
     */
-	double ComputeSpecificity(GResNode* node);
+	double ComputeSpecificity(GDocFragment* node);
 
 	/**
 	 * Compute the average distance between all pairs of keywords of the querying
@@ -208,7 +208,7 @@ private:
     * @param node           Fragment.
     * @return the distance factor.
     */
-	double ComputeDistance(GResNode* node);
+	double ComputeDistance(GDocFragment* node);
 
 	/**
 	 * Compute the importance of a given fragment depending of the type of its
@@ -216,7 +216,7 @@ private:
     * @param node           Fragment.
     * @return the type factor.
     */
-	double ComputeType(GResNode* node);
+	double ComputeType(GDocFragment* node);
 
 public:
 

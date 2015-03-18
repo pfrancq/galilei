@@ -70,8 +70,8 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	QRAboutDialog dlg("XML Search Engine","2.0");
-	dlg.setDescription("This is a XML search engine.");
+	QRAboutDialog dlg("Simple Document Fragment Selection Engine","2.0");
+	dlg.setDescription("This is a simple plug-in that selects a set of document fragments corresponding to a query.");
 	dlg.setCopyright(QWidget::trUtf8("(C) 2004-2008 by the Université Libre de Bruxelles (ULB)<br/>(C) 2010-2015 by the Paul Otlet Institute"));
 	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
 	dlg.setLicense(QRAboutDialog::License_GPL);
@@ -90,6 +90,8 @@ bool Configure(GPlugIn* fac)
 	// Normal Parameters
 	Dlg.NbResults->setValue(fac->FindParam<RParamValue>("NbResults")->GetInt());
 	Dlg.Weight->setValue(fac->FindParam<RParamValue>("Weight")->GetDouble());
+	Dlg.BeginWindowPos->setValue(fac->FindParam<RParamValue>("BeginWindowPos")->GetUInt());
+	Dlg.EndWindowPos->setValue(fac->FindParam<RParamValue>("EndWindowPos")->GetUInt());
 	Dlg.OnlyDocs->setChecked(fac->FindParam<RParamValue>("OnlyDocs")->GetBool());
 
 	// Tf/Idf
@@ -127,6 +129,8 @@ bool Configure(GPlugIn* fac)
 		// Normal Parameters
 		fac->FindParam<RParamValue>("NbResults")->SetUInt(Dlg.NbResults->value());
 		fac->FindParam<RParamValue>("Weight")->SetDouble(Dlg.Weight->value());
+		fac->FindParam<RParamValue>("BeginWindowPos")->SetUInt(Dlg.BeginWindowPos->value());
+		fac->FindParam<RParamValue>("EndWindowPos")->SetUInt(Dlg.EndWindowPos->value());
 		fac->FindParam<RParamValue>("OnlyDocs")->SetBool(Dlg.OnlyDocs->isChecked());
 
 		// Tf/Idf

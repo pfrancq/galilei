@@ -5,8 +5,6 @@ SET(SRC
 	genginexml.cpp
 	gquerynode.cpp
 	gquery.cpp
-	gresnode.cpp
-	gresnodes.cpp
 	gqueryres.cpp
 	gprom.cpp
 )

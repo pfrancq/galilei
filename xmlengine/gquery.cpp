@@ -34,13 +34,13 @@
 #include <gconcept.h>
 #include <gsession.h>
 #include <rnodecursor.h>
+#include <gdocref.h>
 
 
 //------------------------------------------------------------------------------
 // include files for current project
 #include <gquery.h>
 #include <genginexml.h>
-#include <gresnodes.h>
 
 
 
@@ -277,7 +277,11 @@ void GQuery::FindOccurrences(GConcept* concept)
 	GQueryRes* Res(new GQueryRes(DocIds.GetNb()));
 	RNumCursor<size_t> Cur(DocIds);
 	for(Cur.Start();!Cur.End();Cur.Next())
-		Res->AddDoc(Engine,Cur(),concept);
+	{
+		GDoc* Doc(Engine->GetSession()->GetObj(pDoc,Cur()));
+		if(Doc)
+			Res->AddDoc(Engine,Doc,concept);
+	}
 
 	// Reduce the result and push it
 	Res->Reduce();
@@ -286,32 +290,16 @@ void GQuery::FindOccurrences(GConcept* concept)
 
 
 //------------------------------------------------------------------------------
-void GQuery::ApplyOperator(tQueryOperator op,GResNodes* left,GResNodes* right,GResNodes* res)
+void GQuery::ApplyOperator(tQueryOperator op,GDocRef* left,GDocRef* right,GDocRef* res)
 {
 	// If simple presence -> copy all nodes
 	if(op==toOR)
 	{
 		// Add the concept nodes of left not in res
-		RCursor<GResNode> Node(left->GetNodes());
-		for(Node.Start();!Node.End();Node.Next())
-		{
-			bool Find;
-			size_t Idx(res->GetIndex(*Node(),Find));
-			if(!Find)
-				res->InsertPtrAt(Node(),Idx);
-			// else sum the distances.
-		}
+		res->CopyFragments(left);
 
 		// OR -> Add the concept nodes of right not in res
-		Node=right->GetNodes();
-		for(Node.Start();!Node.End();Node.Next())
-		{
-			bool Find;
-			size_t Idx(res->GetIndex(*Node(),Find));
-			if(!Find)
-				res->InsertPtrAt(Node(),Idx);
-			// else sum the distances.
-		}
+		res->CopyFragments(right);
 
 		// Reduce the result
 		res->Reduce(false);
@@ -319,32 +307,33 @@ void GQuery::ApplyOperator(tQueryOperator op,GResNodes* left,GResNodes* right,GR
 	}
 	else if(op==toAND)
 	{
-		if((res->GetNbNodes())||(left->GetDocId()!=right->GetDocId()))
+		if((res->GetNbFragments())||(left->GetDoc()->GetId()!=right->GetDoc()->GetId()))
 			mThrowGException("Big Problem");
 
 		// Tree of both nodes
-		const GConceptTree* Tree(Engine->GetTree(left->GetDocId()));
+		const GConceptTree* Tree(Engine->GetTree(left->GetDoc()->GetId()));
 
 		// For each pair of nodes of both query -> find the most top node containing both
-		RCursor<GResNode> Node(left->GetNodes());
-		RCursor<GResNode> Node2(right->GetNodes());
-		for(Node.Start();!Node.End();Node.Next())
+		RCursor<GDocFragment> Fragment(left->GetFragments());
+		RCursor<GDocFragment> Fragment2(right->GetFragments());
+		for(Fragment.Start();!Fragment.End();Fragment.Next())
 		{
-			for(Node2.Start();!Node2.End();Node2.Next())
+			for(Fragment2.Start();!Fragment2.End();Fragment2.Next())
 			{
 				// Find the root of both nodes
-				GConceptNode* Root(Tree->FindRoot(Node()->GetNode(),Node2()->GetNode()));
+				GConceptNode* Root(Tree->FindRoot(Fragment()->GetNode(),Fragment2()->GetNode()));
 				if(!Root)
 					continue;
 
 				// Create a new fragment
-				GResNode* Res(res->InsertPtr(Root,false));
+				bool Exist;
+				GDocFragment* Res(res->AddFragment(Root,Root->GetPos(),Root->GetSyntacticPos(),Root->GetSyntacticPos(),false,Exist));
 
 				// Copy both children of Node() and Node2() in Res
-				RCursor<GConceptNode> Cur(Node()->GetChildren());
+				RCursor<GConceptNode> Cur(Fragment()->GetChildren());
 				for(Cur.Start();!Cur.End();Cur.Next())
 					Res->AddChild(Cur());
-				RCursor<GConceptNode> Cur2(Node2()->GetChildren());
+				RCursor<GConceptNode> Cur2(Fragment2()->GetChildren());
 				for(Cur2.Start();!Cur2.End();Cur2.Next())
 					Res->AddChild(Cur2());
 			}
@@ -356,57 +345,34 @@ void GQuery::ApplyOperator(tQueryOperator op,GResNodes* left,GResNodes* right,GR
 	}
 
 	// If not OR -> Compare each pair of occurrences
-	RCursor<GResNode> Left(left->GetNodes());
+	RCursor<GDocFragment> Left(left->GetFragments());
 	for(Left.Start();!Left.End();Left.Next())
 	{
+		bool Find;
 		switch(op)
 		{
 			case toSIB:
 				// Left() is OK if they a sibling node in Right() exists
 				if(right->FindSibling(Left()))
-				{
-					bool Find;
-					size_t Idx(res->GetIndex(*Left(),Find));
-					if(!Find)
-						res->InsertPtrAt(Left(),Idx);
-					// else sum the distances.
-				}
+					res->CopyFragment(Left(),Find);
 				break;
 
 			case toNSIB:
 				// Left() is OK if they a sibling node in Right() doesn't exist
 				if(!right->FindSibling(Left()))
-				{
-					bool Find;
-					size_t Idx(res->GetIndex(*Left(),Find));
-					if(!Find)
-						res->InsertPtrAt(Left(),Idx);
-					// else sum the distances.
-				}
+					res->CopyFragment(Left(),Find);
 				break;
 
 			case toINC:
 				// Left() is OK if they a child node in Right() exist
 				if(right->FindChild(Left()))
-				{
-					bool Find;
-					size_t Idx(res->GetIndex(*Left(),Find));
-					if(!Find)
-						res->InsertPtrAt(Left(),Idx);
-					// else sum the distances.
-				}
+					res->CopyFragment(Left(),Find);
 				break;
 
 			case toNINC:
 				// Left() is OK if they a child node in Right() doesn't exist
 				if(!right->FindChild(Left()))
-				{
-					bool Find;
-					size_t Idx(res->GetIndex(*Left(),Find));
-					if(!Find)
-						res->InsertPtrAt(Left(),Idx);
-					// else sum the distances.
-				}
+					res->CopyFragment(Left(),Find);
 				break;
 
 			default:
@@ -433,14 +399,14 @@ void GQuery::ApplyOperator(tQueryOperator op)
 	Results.Push(Res);
 
 	// Parse the two operands
-	RCursor<GResNodes> Left(LeftOperand->GetDocs());
-	RCursor<GResNodes> Right(RightOperand->GetDocs());
+	RCursor<GDocRef> Left(LeftOperand->GetDocs());
+	RCursor<GDocRef> Right(RightOperand->GetDocs());
 	for(Left.Start(),Right.Start();(!Left.End()&&(!Right.End()));)
 	{
-		if(Left()->GetDocId()==Right()->GetDocId())
+		if(Left()->GetDoc()->GetId()==Right()->GetDoc()->GetId())
 		{
 			// It is the same document -> Merge the two lists
-			GResNodes* New(new GResNodes(Left()->GetDocId()));
+			GDocRef* New(new GDocRef(Left()->GetDoc()));
 
 			// If NAND: Since the second list is not empty -> nothing to do
 			if(op!=toNAND)
@@ -448,7 +414,7 @@ void GQuery::ApplyOperator(tQueryOperator op)
 				ApplyOperator(op,Left(),Right(),New);
 
 				// Add the results if not empty
-				if(New->GetNbNodes())
+				if(New->GetNbFragments())
 					Res->InsertDoc(New);
 				else
 					delete New;
@@ -462,8 +428,8 @@ void GQuery::ApplyOperator(tQueryOperator op)
 		else
 		{
 			// Look for the operand with the minimum document identifier
-			RCursor<GResNodes>* Min;
-			if(Left()->GetDocId()>Right()->GetDocId())
+			RCursor<GDocRef>* Min;
+			if(Left()->GetDoc()->GetId()>Right()->GetDoc()->GetId())
 				Min=&Right;
 			else
 				Min=&Left;
@@ -475,7 +441,7 @@ void GQuery::ApplyOperator(tQueryOperator op)
 					if(Min==&Right)
 						break;
 				case toOR:
-					Res->InsertDoc(new GResNodes(*(*Min)()));
+					Res->InsertDoc(new GDocRef(*(*Min)()));
 					break;
 				default:
 					break;
@@ -486,7 +452,7 @@ void GQuery::ApplyOperator(tQueryOperator op)
 		}
 	}
 
-	RCursor<GResNodes>* Finish;
+	RCursor<GDocRef>* Finish;
 	if(Left.End())
 			Finish=&Right;
 		else
@@ -500,7 +466,7 @@ void GQuery::ApplyOperator(tQueryOperator op)
 				if(Finish==&Right)
 					break;
 			case toOR:
-				Res->InsertDoc(new GResNodes(*(*Finish)()));
+				Res->InsertDoc(new GDocRef(*(*Finish)()));
 				break;
 			default:
 				break;

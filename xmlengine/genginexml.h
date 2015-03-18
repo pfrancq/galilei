@@ -122,6 +122,16 @@ class GEngineXML : public RObject, public GEngine
 	bool SaveIffs;
 
 	/**
+	 * Beginning synaptic position of a window (<=0).
+	 */
+	int BeginWindowPos;
+
+	/**
+	 * Ending synaptic position of a window (>=0).
+	 */
+	int EndWindowPos;
+
+	/**
 	 * Temporary identifiers.
 	 */
 	RContainer<cRef,true,false> TmpRefs;
@@ -199,6 +209,16 @@ public:
 	* @param query           Query.
 	*/
 	virtual void PerformRequest(const RString& query);
+
+	/**
+	 * Get the beginning synaptic position of a window (<=0).
+	 */
+	size_t GetBeginWindowPos(void) const {return(BeginWindowPos);}
+
+	/**
+	 * Get the ending synaptic position of a window (>=0).
+	 */
+	size_t GetEndWindowPos(void) const {return(EndWindowPos);}
 
 private:
 
