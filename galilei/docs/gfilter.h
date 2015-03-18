@@ -89,7 +89,7 @@ public:
 	 * Extract a text fragment. This method can be re-implemented by filters.
 	 *
 	 * By default, it opens a simple text file in utf-8 and extract the text
-	 * window defined (stopping at the first space or punctuation character).
+	 * window defined.
 	 * @param fragment       Fragment to extract.
     * @return a string containing the text fragment.
     */

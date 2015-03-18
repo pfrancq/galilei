@@ -82,100 +82,13 @@ RString GFilter::GetTextFragment(GDocFragment* fragment)
 	File.Seek(Begin);
 
 	// Extract the fragment
-	if(Size>200)
+	while(!File.End())
 	{
-		// Read the first and the last 100 characters
-		size_t Nb(100);
-		while(!File.End())
-		{
-			RChar c(File.GetChar());
-			Fragment+=c;
-			if(!(--Nb))
-				break;
-		}
-		Fragment+="\n...\n";
-		File.Seek(End-100);
-		Nb=100;
-		while(!File.End())
-		{
-			RChar c(File.GetChar());
-			Fragment+=c;
-			if(!(--Nb))
-				break;
-		}
+		RChar c(File.GetChar());
+		if(File.GetPos()>End)
+			break;
+		Fragment+=c;
 	}
-	else
-	{
-		// Print the whole window
-		while(!File.End())
-		{
-			RChar c(File.GetChar());
-			if(File.GetPos()>End)
-				break;
-			Fragment+=c;
-		}
-	}
-
-
-//	size_t Extract(0);
-//	if(fragment->GetEnd()==cNoRef)
-//		Extract=80;
-//	RTextFile File(fragment->GetDoc()->GetDoc()->GetURI(),"utf-8");
-//	File.Open(RIO::Read);
-//
-//	// Read the head of the fragment
-//	File.Seek(fragment->GetPos());
-//	while(!File.End())
-//	{
-//		RChar c(File.GetChar());
-//		Fragment+=c;
-//		if(Extract)
-//			Extract--;
-//		else if(c.IsPunct()||c.IsSpace())
-//			break;
-//	}
-//
-//	// If not necessary -> skip the rest
-//	if(fragment->GetEnd()==cNoRef)
-//		return(Fragment);
-//	Fragment+="\n";
-//
-//	// Go the first position
-//	File.Seek(Begin);
-//	if(Size>200)
-//	{
-//		// Read the first and the last 100 characters
-//		size_t Nb(100);
-//		while(!File.End())
-//		{
-//			RChar c(File.GetChar());
-//			Fragment+=c;
-//			if(!(--Nb))
-//				break;
-//		}
-//		Fragment+="\n";
-//		File.Seek(End-100);
-//		Nb=100;
-//		while(!File.End())
-//		{
-//			RChar c(File.GetChar());
-//			Fragment+=c;
-//			if(!(--Nb))
-//				break;
-//		}
-//
-//	}
-//	else
-//	{
-//		// Print All
-//		while(!File.End())
-//		{
-//			RChar c(File.GetChar());
-//			if((File.GetPos()>End)&&(c.IsPunct()||c.IsSpace()))
-//				break;
-//			Fragment+=c;
-//		}
-//	}
 
 	return(Fragment);
 }

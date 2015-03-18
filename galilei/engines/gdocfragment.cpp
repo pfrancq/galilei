@@ -72,18 +72,18 @@ GDocFragment::Search::Search(size_t docid,size_t pos)
 
 //------------------------------------------------------------------------------
 GDocFragment::GDocFragment(GDoc* doc,GConceptNode* node,size_t pos,size_t begin,size_t end,double ranking,const R::RString& info,const R::RDate& proposed)
-	: Doc(doc), Node(node), Pos(pos), Begin(begin), End(end), Ranking(ranking), Proposed(proposed), Info(info), WholeDoc(false)
+	: Doc(doc), Node(node), Pos(pos), Begin(begin), End(end), Ranking(ranking), Proposed(proposed), Info(info), WholeDoc(false), Children(5,5)
 {
 	if(!Doc)
 		mThrowGException("Cannot have a null document reference");
 	if(Begin>End)
-		mThrowGException("Invalid window positions");
+		mThrowGException("Invalid window positions "+RString::Number(Begin)+">"+RString::Number(End));
 }
 
 
 //------------------------------------------------------------------------------
 GDocFragment::GDocFragment(GDoc* doc,GConceptNode* node,double ranking,const R::RString& info,const R::RDate& proposed)
-	: Doc(Doc), Node(node), Pos(0), Begin(0), End(0), Ranking(ranking), Proposed(proposed), Info(info), WholeDoc(true)
+	: Doc(Doc), Node(node), Pos(0), Begin(0), End(0), Ranking(ranking), Proposed(proposed), Info(info), WholeDoc(true), Children(5,5)
 {
 	if(!Doc)
 		mThrowGException("Cannot have a null document reference");
@@ -129,6 +129,13 @@ int GDocFragment::Compare(const Search& search) const
 
 
 //------------------------------------------------------------------------------
+R::RCursor<GConceptNode> GDocFragment::GetChildren(void) const
+{
+	return(RCursor<GConceptNode>(Children));
+}
+
+
+//------------------------------------------------------------------------------
 R::RString GDocFragment::GetFragment(void)
 {
 	if(Fragment.IsEmpty())
@@ -145,6 +152,72 @@ R::RString GDocFragment::GetFragment(void)
 void GDocFragment::SetRanking(double ranking)
 {
 	Ranking=ranking;
+}
+
+
+//------------------------------------------------------------------------------
+void GDocFragment::AddChild(GConceptNode* child)
+{
+	// compute the extract to associate to that node
+	size_t max(0), min(0);
+	if(child->GetType()==ttText)
+	{
+		min=child->GetSyntacticPos();
+		max=child->GetSyntacticPos();
+	}
+	else
+	{
+		min=max=child->GetSyntacticPos();
+	}
+	if(max>End)
+		End=max;
+	if(min<Begin)
+		Begin=min;
+	bool Find;
+	size_t Idx(Children.GetIndex(*child,Find));
+	if(!Find)
+		Children.InsertPtrAt(child,Idx,false);
+}
+
+
+//------------------------------------------------------------------------------
+bool GDocFragment::Overlap(const GDocFragment* fragment) const
+{
+	if(Node!= fragment->Node)
+		return(false);
+	RCursor<GConceptNode> Child(Children);
+	RCursor<GConceptNode> Child2( fragment->Children);
+	for(Child.Start();!Child.End();Child.Next())
+	{
+		size_t Pos(Child()->GetSyntacticPos());
+		for(Child2.Start();!Child2.End();Child2.Next())
+		{
+			size_t Pos2(Child2()->GetSyntacticPos());
+			if(((Pos<Pos2)&&(Pos+Begin<Pos2))||((Pos2<Pos)&&(Pos2+End<Pos)))
+				return(false);
+		}
+	}
+	return(true);
+}
+
+
+//------------------------------------------------------------------------------
+void GDocFragment::Merge(const GDocFragment*  fragment)
+{
+	// Merge the two node lists
+	RCursor<GConceptNode> Child(fragment->Children);
+	for(Child.Start();!Child.End();Child.Next())
+	{
+		bool Find;
+		size_t Index(Children.GetIndex(*Child(),Find));
+		if(Find)
+			continue;
+		Children.InsertPtrAt(Child(),Index,false);
+		if(Child()->GetSyntacticPos()>End)
+			End=Child()->GetSyntacticPos();
+		if(Child()->GetSyntacticPos()<Begin)
+			Begin=Child()->GetSyntacticPos();
+	}
 }
 
 

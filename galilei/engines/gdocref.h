@@ -98,22 +98,107 @@ public:
 
 	/**
 	 * Add a fragment.
-	 * @param node           Concept node.
-	 * @param pos            Position to the fragment to extract.
-	 * @param first          First concept found.
-	 * @param last           Last concept found.
+	 * @param node           Concept node associated to the fragment.
+	 * @param pos            Position of the concept node that identifies the
+	 *                       fragment.
+	 * @param begin          Beginning of the fragment.
+	 * @param ending         Ending of the fragment.
+	 * @param children       Must all the children be considered as selecting the
+	 *                       fragment (true) or not (false).
 	 * @param exist          Set by the method to specify if the fragment already
 	 *                       exists (true) or was created (false).
 	 * @return a pointer to a GDocFragment.
     */
-	GDocFragment* AddFragment(GConceptNode* node,size_t pos,size_t first,size_t last,bool& exist);
+	GDocFragment* AddFragment(GConceptNode* node,size_t pos,size_t begin,size_t end,bool children,bool& exist);
+
+	/**
+	 * Add a fragment related to a given node. The fragment is limited to the
+	 * concept node.
+	 * @param node           Concept node associated to the fragment.
+	 * @return a pointer to a GDocFragment.
+    */
+	GDocFragment* AddFragment(GConceptNode* node);
+
+	/**
+	 * Add a fragment selected by a child node.
+	 * @param node           Concept node associated to the fragment.
+	 * @oaram child          Child concept node use to select the concept node.
+	 * @param pos            Position of the concept node that identifies the
+	 *                       fragment.
+	 * @param begin          Beginning of the fragment.
+	 * @param ending         Ending of the fragment.
+	 * @param children       Must all the children be considered as selecting the
+	 *                       fragment (true) or not (false).
+	 * @param exist          Set by the method to specify if the fragment already
+	 *                       exists (true) or was created (false).
+	 * @return a pointer to a GDocFragment.
+    */
+	GDocFragment* AddFragment(GConceptNode* node,GConceptNode* child,size_t pos,size_t begin,size_t end,bool children,bool& exist);
+
+	/**
+	 * Add a fragment selected by a child node. The fragment is limited to the
+	 * concept node and the child node.
+	 * @param node           Concept node associated to the fragment.
+	 * @oaram child          Child concept node use to select the concept node.
+	 * @return a pointer to a GDocFragment.
+    */
+	GDocFragment* AddFragment(GConceptNode* node,GConceptNode* child);
+
+	/**
+	 * Copy a fragment into the container.
+    * @param tocopy         Fragment to copy.
+	 * @param exist          Set by the method to specify if the fragment already
+	 *                       exists (true) or was created (false).
+    * @return a pointer to a GDocFragment.
+    */
+	GDocFragment* CopyFragment(const GDocFragment* tocopy,bool& exist);
+
+	/**
+	 * Copy a set of fragments into the container.
+    * @param tocopy         Fragments to copy.
+    * @return
+    */
+	void CopyFragments(const GDocRef* tocopy);
+
+	/**
+    * @return the number of fragment.
+    */
+	size_t GetNbFragments(void) const {return(Fragments.GetNb());}
 
 	/**
 	 * Get all the fragments.
     * @return a R::RCursor of GDocFragment.
     */
 	R::RCursor<GDocFragment> GetFragments(void) const;
+
+	/**
+	 * Look if a document fragment has a sibling fragment in the container.
+	 * @param fragment       Fragment to analyse.
+	 * @return true if it is the case.
+	 */
+	bool FindSibling(GDocFragment* fragment) const;
+
+	/**
+	 * Look if a document fragment has a child fragment in the container.
+	 * @param fragment       Fragment to analyse.
+	 * @return true if it is the case.
+	 */
+	bool FindChild(GDocFragment* fragment) const;
+
+	/**
+	 * Reduce the fragments.
+	 * @param force          Force to merge the fragments sharing the same node.
+	 *                       It should be true in the case of an AND operator,
+	 *                       and false in the case of an OR operator.
+    */
+	void Reduce(bool force);
+
+	/**
+	 * Print the information of each fragment.
+	 */
+	void Print(void);
 };
+
 
 }  //-------- End of namespace GALILEI -----------------------------------------
 

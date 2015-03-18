@@ -108,11 +108,13 @@ private:
 	* @param pos             Position to the fragment to extract.
 	* @param first           First concept found.
 	* @param last            Last concept found.
+	* @param children        Must all the children be considered as selecting the
+	*                        fragment (true) or not (false).
 	* @param ranking         Ranking of the document given by the engine
 	*                        (\f$0\leq ranking \leq 1\f$).
 	* @param engine          Engine from which the result come.
 	*/
-	void AddResult(GDoc* doc,GConceptNode* node,size_t pos,size_t first,size_t last,double ranking,GEngine* engine);
+	void AddResult(GDoc* doc,GConceptNode* node,size_t pos,size_t first,size_t last,bool children,double ranking,GEngine* engine);
 
 	/**
 	* Add a fragment from a known document as result to the meta-engine. In
@@ -122,11 +124,13 @@ private:
 	* @param pos             Position to the fragment to extract.
 	* @param first           First concept found.
 	* @param last            Last concept found.
+	* @param children        Must all the children be considered as selecting the
+	*                        fragment (true) or not (false).
 	* @param ranking         Ranking of the document given by the engine
 	*                        (\f$0\leq ranking \leq 1\f$).
 	* @param engine          Engine from which the result come.
 	*/
-	void AddResult(size_t docid,GConceptNode* node,size_t pos,size_t first,size_t last,double ranking,GEngine* engine);
+	void AddResult(size_t docid,GConceptNode* node,size_t pos,size_t first,size_t last,bool children,double ranking,GEngine* engine);
 
 protected:
 

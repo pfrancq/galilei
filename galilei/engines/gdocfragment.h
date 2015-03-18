@@ -60,10 +60,16 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 /**
 * The GDocFragment class provides a representation for a fragment of a document.
-* In practice, a fragment starts at a given position (for example the position
-* of word) and is defined by a window (such as a sentence). What extactly a
-* window is depends from the type of document. Therefore, the GFilter class
-* provides a method that build a string representation of a given fragment.
+* In practice, a fragment is centred at a given position (for example the
+* position of word) and is defined by a window (such as a sentence).
+*
+* What extactly a window is depends from the type of document and the search
+* engine. In particular, the GFilter class provides a method that builds a
+* string representation of a given fragment.
+*
+* A fragment can be associated with a selected concept that defines it (such as
+* a XML tag) and by a list of child concepts that select the main concept. In
+* particular, a fragment can define a whole document.
 *
 * Two document fragments are considered as identical if they are related to the
 * same document and if they start at the same position
@@ -144,6 +150,11 @@ class GDocFragment
     */
 	bool WholeDoc;
 
+	/**
+	 * Child nodes used by the query to select the node.
+    */
+	R::RContainer<GConceptNode,false,false> Children;
+
 public:
 
 	/**
@@ -193,12 +204,22 @@ public:
 	GDoc* GetDoc(void) const {return(Doc);}
 
 	/**
-	* Get the concept node corresponding to the fragment.
+	* Get the selected concept node corresponding to the fragment.
 	* @return a pointer to a GConceptNode
 	* @warning The pointer may be null if the fragment corresponds to the whole
 	* document or if the structure trees are not built during the analysis.
 	*/
 	GConceptNode* GetNode(void) const {return(Node);}
+
+	/**
+    * @return the number of children.
+    */
+	inline size_t GetNbChildren(void) const {return(Children.GetNb());}
+
+	/**
+    * @return a cursor over the children.
+    */
+	R::RCursor<GConceptNode> GetChildren(void) const;
 
 	/**
 	 * @return the date of the suggestion.
@@ -244,6 +265,26 @@ public:
 	* Get the global ranking associated to this document.
 	*/
 	double GetRanking(void) const {return(Ranking);}
+
+	/**
+	 * Add a child node to the document fragment.
+    * @param child          Concept node to add.
+    */
+	void AddChild(GConceptNode* child);
+
+	/**
+	 * Look if two fragments overlaps, i.e. they have children of a common node
+	 * that are not too much remote.
+	 * @param fragment       Fragment to compare with.
+	 * @return true if overlap.
+	 */
+	bool Overlap(const GDocFragment* fragment) const;
+
+	/**
+	 * Merge the children of a fragment.
+    * @param fragment       Fragment to compare with.
+    */
+	void Merge(const GDocFragment* fragment);
 
 	/**
 	* Static function used to order the document fragments by ranking (the

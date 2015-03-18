@@ -180,11 +180,22 @@ public:
 	const GConceptNode* GetNode(size_t pos) const {return(Pos.GetPtrAt(pos));}
 
 	/**
-	 * Get the nearest node at a given syntactic position.
+	 * Get the nearest node at a given syntactic position. In practice, the
+	 * method searches alternatively before and after the given position.
     * @param pos             Syntactic position.
     * @return a pointer or null if the position is outside the tree.
     */
 	const GConceptNode* GetNearestNode(size_t pos) const;
+
+	/**
+	 * Get the nearest node at a given syntactic position.  In practice, the
+	 * method searches the first node after or before the given position.
+    * @param pos             Syntactic position.
+	 * @param after           Search after the position (true) or before it
+	 *                        (false)?
+    * @return a pointer or null if the position is outside the tree.
+    */
+	const GConceptNode* GetNearestNode(size_t pos,bool after) const;
 
 	/**
 	 * Find the root node (the most common highest node) of two nodes.
@@ -193,6 +204,24 @@ public:
 	 * @return the root node of 0 if both nodes are top nodes.
     */
 	GConceptNode* FindRoot(GConceptNode* node1,GConceptNode* node2) const;
+
+	/**
+	 * Find the minimal position centred on a given node and a number of nodes
+	 * before.
+    * @param node           Concept node.
+    * @param nbbefore       Maximum number of concept node before.
+    * @return a position.
+    */
+	size_t GetMinPos(GConceptNode* node,size_t nbbefore) const;
+
+	/**
+	 * Find the maximal position centred on a given node and a number of nodes
+	 * after.
+    * @param node           Concept node.
+    * @param nbafter        Maximum number of concept node after.
+    * @return a position.
+    */
+	size_t GetMaxPos(GConceptNode* node,size_t nbafter) const;
 
 	/**
 	 * Compute the maximal position occupied by a referenced node.

@@ -218,6 +218,63 @@ const GConceptNode* GConceptTree::GetNearestNode(size_t pos) const
 
 
 //------------------------------------------------------------------------------
+const GConceptNode* GConceptTree::GetNearestNode(size_t pos,bool after) const
+{
+	const GConceptNode* Find(0);
+	size_t Max(GetMaxSyntacticPos());
+	while(true)
+	{
+		Find=Pos.GetPtrAt(pos);
+		if(Find)
+			break;
+
+		if(after)
+		{
+			pos++;
+			if(pos>Max)
+				break;
+		}
+		else
+		{
+			if(pos==0)
+				break;
+			pos--;
+		}
+	}
+	return(Find);
+}
+
+
+
+//------------------------------------------------------------------------------
+size_t GConceptTree::GetMinPos(GConceptNode* node,size_t nbbefore) const
+{
+	if(nbbefore>node->GetSyntacticPos())
+		nbbefore=0;
+	else
+		nbbefore=node->GetSyntacticPos()-nbbefore;
+	const GConceptNode* Node(GetNearestNode(nbbefore,false));
+	if(!Node)
+		mThrowGException("Cannot find a valid position");
+	return(Node->GetPos());
+}
+
+
+//------------------------------------------------------------------------------
+size_t GConceptTree::GetMaxPos(GConceptNode* node,size_t nbafter) const
+{
+	nbafter+=node->GetSyntacticPos();
+	size_t Max(GetMaxSyntacticPos());
+	if(nbafter>Max)
+		nbafter=Max;
+	const GConceptNode* Node(GetNearestNode(nbafter,true));
+	if(!Node)
+		mThrowGException("Cannot find a valid position");
+	return(Node->GetPos());
+}
+
+
+//------------------------------------------------------------------------------
 size_t GConceptTree::GetMaxPos(void) const
 {
 	if(!Pos.GetMaxPos())
