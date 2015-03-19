@@ -320,20 +320,56 @@ void GQuery::ApplyOperator(tQueryOperator op,GDocRef* left,GDocRef* right,GDocRe
 		{
 			for(Fragment2.Start();!Fragment2.End();Fragment2.Next())
 			{
-				// Find the root of both nodes
-				GConceptNode* Root(Tree->FindRoot(Fragment()->GetNode(),Fragment2()->GetNode()));
-				if(!Root)
-					continue;
+				GDocFragment* Res;
 
-				// Create a new fragment
-				bool Exist;
-				GDocFragment* Res(res->AddFragment(Root,Root->GetPos(),Root->GetSyntacticPos(),Root->GetSyntacticPos(),false,Exist));
+				// Treat differently the case of flat documents and structured ones
+				if((Fragment()->IsFlat())&&(Fragment2()->IsFlat()))
+				{
+					// No fragment have a parent -> Look if they overlap
+					if(!Fragment()->Overlap(Fragment2()))
+						continue;
+
+					// The position is in the middle of both fragments
+					size_t SyntacticPos;
+					if(Fragment()->GetSyntacticPos()<Fragment2()->GetSyntacticPos())
+						SyntacticPos=Fragment()->GetSyntacticPos()+((Fragment2()->GetSyntacticPos()-Fragment()->GetSyntacticPos())/2);
+					else
+						SyntacticPos=Fragment2()->GetSyntacticPos()+((Fragment()->GetSyntacticPos()-Fragment2()->GetSyntacticPos())/2);
+					const GConceptNode* Node(Tree->GetNearestNode(SyntacticPos));
+
+					// Create a new fragment
+					bool Exist;
+					Res=res->AddFragment(0,
+												Node->GetPos(),
+											   Node->GetSyntacticPos(),
+												Tree->GetMinPos(Node,Engine->GetBeginWindowPos()),
+												Tree->GetMaxPos(Node,Engine->GetEndWindowPos()),
+												false,
+												Exist);
+
+					cout<<endl;
+				}
+				else
+				{
+					// Both fragments must have a concept node
+					if(Fragment()->IsFlat()||Fragment2()->IsFlat())
+						continue;
+
+					// At least one fragment has a parent -> Find the root of both nodes
+					const GConceptNode* Root(Tree->GetRoot(Fragment()->GetNode(),Fragment2()->GetNode()));
+					if(!Root)
+						continue;
+
+					// Create a new fragment
+					bool Exist;
+					Res=res->AddFragment(Root,Root->GetPos(),Root->GetSyntacticPos(),Root->GetPos(),Root->GetPos(),false,Exist);
+				}
 
 				// Copy both children of Node() and Node2() in Res
-				RCursor<GConceptNode> Cur(Fragment()->GetChildren());
+				RCursor<const GConceptNode> Cur(Fragment()->GetChildren());
 				for(Cur.Start();!Cur.End();Cur.Next())
 					Res->AddChild(Cur());
-				RCursor<GConceptNode> Cur2(Fragment2()->GetChildren());
+				RCursor<const GConceptNode> Cur2(Fragment2()->GetChildren());
 				for(Cur2.Start();!Cur2.End();Cur2.Next())
 					Res->AddChild(Cur2());
 			}

@@ -34,13 +34,23 @@
 #ifndef GPromRankH
 #define GPromRankH
 
+
 //-----------------------------------------------------------------------------
-// include files for R/GALILEI Projects
+// include files for R
 #include <robject.h>
-#include <gcomputerank.h>
 using namespace std;
 using namespace R;
+
+
+//-----------------------------------------------------------------------------
+// include files for GALILEI
+#include <gcomputerank.h>
 using namespace GALILEI;
+
+
+//------------------------------------------------------------------------------
+// forward declaration
+class GEngineXML;
 
 
 //------------------------------------------------------------------------------
@@ -51,7 +61,6 @@ using namespace GALILEI;
 */
 class GPromRank : public RObject, public GComputeRank
 {
-	class cTreeRef;
 	class cIff;
 	class cRef;
 
@@ -110,6 +119,11 @@ class GPromRank : public RObject, public GComputeRank
 	 * Weighting method used.
     */
 	GMeasure* Weighting;
+
+	/**
+	 * The XML engine.
+	 */
+	GEngineXML* XMLEngine;
 
 public:
 
@@ -206,6 +220,7 @@ private:
     */
 	void RecomputeRefs(void);
 
+
 public:
 
 	/**
@@ -218,6 +233,8 @@ public:
 	 * @return the iff factor.
 	 */
 	double GetIff(size_t conceptid,size_t parentid);
+
+	friend class GProm;
 };
 
 

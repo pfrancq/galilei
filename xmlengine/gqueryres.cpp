@@ -88,13 +88,9 @@ void GQueryRes::AddDoc(GEngineXML* engine,GDoc* doc,GConcept* concept)
 			{
 				// Add a fragment with the text window
 				bool Exist;
-//				cout<<Cur()->GetConceptId()<<endl;
-//				cout<<"\t"<<Cur()->GetPos()<<endl;
-//				cout<<"\t"<<Cur()->GetSyntacticPos()<<endl;
-//				cout<<"\t"<<Tree->GetMinPos(Cur(),engine->GetBeginWindowPos())<<endl;
-//				cout<<"\t"<<Tree->GetMaxPos(Cur(),engine->GetEndWindowPos())<<endl;
 				Occurs->AddFragment(Cur(),
 										  Cur()->GetPos(),
+										  Cur()->GetSyntacticPos(),
 										  Tree->GetMinPos(Cur(),engine->GetBeginWindowPos()),
 										  Tree->GetMaxPos(Cur(),engine->GetEndWindowPos()),
 										  false,Exist);
@@ -122,9 +118,8 @@ void GQueryRes::Print(void) const
 		cout<<"DocId "<<Docs()->GetDoc()->GetId()<<endl;
 		RCursor<GDocFragment> Fragment(Docs()->GetFragments());
 		for(Fragment.Start();!Fragment.End();Fragment.Next())
-		{
-			cout<<"  "<<Fragment()->GetNode()->GetConceptId()<<","<<Fragment()->GetNode()->GetPos()<<","<<Fragment()->GetNode()->GetSyntacticPos()<<","<<Fragment()->GetNode()->GetSyntacticDepth()<<endl;
-		}
+			Fragment()->Print();
+		cout<<endl;
 	}
 }
 

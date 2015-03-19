@@ -35,48 +35,24 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R/GALILEI Projects
-#include <gpromrank.h>
+// include files for GALILEI
 #include <gsession.h>
-#include <rpromcriterion.h>
 #include <rbinaryfile.h>
 #include <gmeasure.h>
+#include <gengine.h>
+
+
+//-----------------------------------------------------------------------------
+// include files for current project
+#include <gpromrank.h>
+#include <gprom.h>
+#include <genginexml.h>
 
 
 //-----------------------------------------------------------------------------
 // DEBUG Mode
 const bool Debug=false;
 
-
-
-//------------------------------------------------------------------------------
-//
-// class GPromRank::cTreeRef
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-class GPromRank::cTreeRef
-{
-public:
-	GConceptTree* Tree;
-	size_t DocId;
-	size_t NbAccess;
-	bool Use;
-
-	cTreeRef(size_t docid)
-		: Tree(0), DocId(docid), NbAccess(1), Use(true)
-	{
-
-	}
-
-	int Compare(const cTreeRef& tree) const {return(CompareIds(DocId,tree.DocId));}
-	int Compare(size_t docid) const {return(CompareIds(DocId,docid));}
-	~cTreeRef(void)
-	{
-		delete Tree;
-	}
-};
 
 
 
@@ -165,7 +141,8 @@ public:
 //------------------------------------------------------------------------------
 GPromRank::GPromRank(GSession* session,GPlugInFactory* fac)
 	: RObject(fac->GetMng()->GetName()+"|"+fac->GetList()+"|"+fac->GetName()),
-	  GComputeRank(session,fac), TfIdf(0), Distance(0), Specificity(0), TfIff(0),
+	  GComputeRank(session,fac),
+	  TfIdf(0), Distance(0), Specificity(0), TfIff(0),
 	  Iffs(10000), IffsDirty(false), TmpRefs(10000)
 {
 	// Document notifications
@@ -173,6 +150,7 @@ GPromRank::GPromRank(GSession* session,GPlugInFactory* fac)
 	InsertObserver(HANDLER(GPromRank::HandleDelDoc),hDocs[oeAboutToBeUpdated]);
 	InsertObserver(HANDLER(GPromRank::HandleDelDoc),hDocs[oeAboutToBeDeleted]);
 	InsertObserver(HANDLER(GPromRank::HandleReInit),hReInit,session);
+
 }
 
 
@@ -187,7 +165,7 @@ void GPromRank::Init(void)
 	SaveIffs=false;
 
 	// Look if a binary file exists ?
-	const RURI uri(GALILEIApp->GetIndexDir()+RFile::GetDirSeparator()+Session->GetName()+RFile::GetDirSeparator()+"GEngineXML.bin");
+	const RURI uri(GALILEIApp->GetIndexDir()+RFile::GetDirSeparator()+Session->GetName()+RFile::GetDirSeparator()+"GPromRank.bin");
 	if(!RFile::Exists(uri))
 	{
 		// No -> We may suppose that the Iffs must be recomputed
@@ -235,7 +213,7 @@ void GPromRank::Done(void)
 		return;
 
 	// Save the factors
-	const RURI uri(GALILEIApp->GetIndexDir()+RFile::GetDirSeparator()+Session->GetName()+RFile::GetDirSeparator()+"GEngineXML.bin");
+	const RURI uri(GALILEIApp->GetIndexDir()+RFile::GetDirSeparator()+Session->GetName()+RFile::GetDirSeparator()+"GPromRank.bin");
 	RBinaryFile File(uri);
    File.Open(RIO::Create);
 	RCursor<cIff> Cur(Iffs);
@@ -294,7 +272,7 @@ void GPromRank::Reset(void)
 	// Remove the file if the results must be saved
 	if(Session->MustSaveResults())
 	{
-		const RURI uri(GALILEIApp->GetIndexDir()+RFile::GetDirSeparator()+Session->GetName()+RFile::GetDirSeparator()+"GEngineXML.bin");
+		const RURI uri(GALILEIApp->GetIndexDir()+RFile::GetDirSeparator()+Session->GetName()+RFile::GetDirSeparator()+"GPromRank.bin");
 		RFile::RemoveFile(uri);
 	}
 }
@@ -312,9 +290,42 @@ void GPromRank::HandleReInit(const R::RNotification& notification)
 
 
 //------------------------------------------------------------------------------
-void GPromRank::Rank(GEngine*)
+void GPromRank::Rank(GEngine* engine)
 {
+	if(!engine->GetNbResults())
+		return;
 
+	Weighting=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Features Evaluation",0);
+	if(!Weighting)
+		mThrowGException("No plug-in selected for \"Features Evaluation\"");
+
+	XMLEngine=dynamic_cast<GEngineXML*>(engine);
+	if(!XMLEngine)
+		mThrowGException("GPromRank works only with the default selection engine");
+
+	// Recompute References if necessary
+	if(IffsDirty&&TfIff->Get<RParamValue>("Active")->GetBool())
+		RecomputeRefs();
+
+
+	// Create a PROMETHEE kernel and a solution for each fragment
+ 	GProm Prom(this,Weighting);
+	RCursor<GDocFragment> Fragment(engine->GetResults());
+	for(Fragment.Start();!Fragment.End();Fragment.Next())
+		Prom.Add(Fragment());
+
+	// Perform a PROMETHEE ranking on each document fragment and insert them in
+	// the meta-search engine
+	// Make their ranking ranging from [0,1]
+	RCursor<RPromSol> Sol(Prom.Compute());
+	double Min(Prom.GetMinFi());
+	double Max(Prom.GetMaxFi());
+	for(Sol.Start();!Sol.End();Sol.Next())
+	{
+		GDocFragment* Fragment(dynamic_cast<GPromSol*>(Sol())->Fragment);
+		double Ranking((Sol()->GetFi()-Min)/(Max-Min));
+		Fragment->SetRanking(Ranking);
+	}
 }
 
 

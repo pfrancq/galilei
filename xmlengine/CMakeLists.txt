@@ -6,7 +6,6 @@ SET(SRC
 	gquerynode.cpp
 	gquery.cpp
 	gqueryres.cpp
-	gprom.cpp
 )
 
 

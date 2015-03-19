@@ -48,30 +48,30 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 // forward declaration
-class GEngineXML;
-class GQuery;
+class GPromRank;
 
+
+//------------------------------------------------------------------------------
+//
+// class GPromSol
+//
+//------------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 class GPromSol : public RPromSol
 {
-	/**
-	 * Fragment to rank.
-	 */
-	GDocFragment* Node;
-
 public:
 
 	/**
-	 * Constructor.
-    * @param id             Identifier of the solution.
-	 * @param pos            Position of the node.
-    * @param node           Node.
-    */
-	GPromSol(const size_t id,size_t pos,GDocFragment* node);
+	 * Fragment to rank.
+	 */
+	GDocFragment* Fragment;
 
-	friend class GEngineXML;
+	GPromSol(const size_t id,size_t pos,GDocFragment* fragment)
+		: RPromSol(id,RString::Number(pos),5), Fragment(fragment)
+	{}
 };
+
 
 
 //-----------------------------------------------------------------------------
@@ -83,12 +83,7 @@ class GProm : RPromKernel
 	/**
 	* Engine.
 	*/
-	GEngineXML* Engine;
-
-	/**
-	 * Query.
-	 */
-	GQuery* Query;
+	GPromRank* Rank;
 
 	/**
 	* The tf-idf criteria.
@@ -134,11 +129,10 @@ public:
 
 	/**
 	* Constructor.
-	* @param engine          Engine.
-	* @param query           Query.
+	* @param rank            Ranking method.
 	* @param weighting       Weighting method.
 	*/
-	GProm(GEngineXML* engine,GQuery* query,GMeasure* weighting);
+	GProm(GPromRank* rank,GMeasure* weighting);
 
 	/**
 	 * Add a node (document fragment) to the PROMETHEE kernel.
@@ -181,7 +175,7 @@ private:
 	 * child nodes).
     * @param node           Node to scan.
     */
-	void CollectOccurs(GConceptNode* node);
+	void CollectOccurs(const GConceptNode* node);
 
 	/**
 	 * Compute the average iff factor for all keywords of the query contained in
@@ -220,6 +214,9 @@ private:
 
 public:
 
+	/**
+	 * Destructor.
+	 */
 	~GProm(void);
 };
 
