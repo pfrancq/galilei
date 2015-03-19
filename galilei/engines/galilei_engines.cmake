@@ -9,6 +9,8 @@ SET(galilei_engines_INST_INCLUDES
 	gcomputesugs.h
 	gcomputetrust.h
 	gcomputerank.h
+	gsearchquery.h
+	gsearchquerynode.h
 )
 
 SET(galilei_engines_TARGET_SOURCES
@@ -22,4 +24,6 @@ SET(galilei_engines_TARGET_SOURCES
 	gcomputesugs.cpp
 	gcomputetrust.cpp
 	gcomputerank.cpp
+	gsearchquery.cpp
+	gsearchquerynode.cpp
 )

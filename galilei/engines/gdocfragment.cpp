@@ -71,8 +71,8 @@ GDocFragment::Search::Search(size_t docid,size_t pos)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocFragment::GDocFragment(GDoc* doc,GConceptNode* node,size_t pos,size_t begin,size_t end,double ranking,const R::RString& info,const R::RDate& proposed)
-	: Doc(doc), Node(node), Pos(pos), Begin(begin), End(end), Ranking(ranking), Proposed(proposed), Info(info), WholeDoc(false), Children(5,5)
+GDocFragment::GDocFragment(GDoc* doc,const GConceptNode* node,size_t pos,size_t spos,size_t begin,size_t end,double ranking,const R::RString& info,const R::RDate& proposed)
+	: Doc(doc), Node(node), Pos(pos), SyntacticPos(spos), Begin(begin), End(end), Ranking(ranking), Proposed(proposed), Info(info), WholeDoc(false), Children(5,5)
 {
 	if(!Doc)
 		mThrowGException("Cannot have a null document reference");
@@ -82,8 +82,8 @@ GDocFragment::GDocFragment(GDoc* doc,GConceptNode* node,size_t pos,size_t begin,
 
 
 //------------------------------------------------------------------------------
-GDocFragment::GDocFragment(GDoc* doc,GConceptNode* node,double ranking,const R::RString& info,const R::RDate& proposed)
-	: Doc(Doc), Node(node), Pos(0), Begin(0), End(0), Ranking(ranking), Proposed(proposed), Info(info), WholeDoc(true), Children(5,5)
+GDocFragment::GDocFragment(GDoc* doc,const GConceptNode* node,double ranking,const R::RString& info,const R::RDate& proposed)
+	: Doc(Doc), Node(node), Pos(0), SyntacticPos(0), Begin(0), End(0), Ranking(ranking), Proposed(proposed), Info(info), WholeDoc(true), Children(5,5)
 {
 	if(!Doc)
 		mThrowGException("Cannot have a null document reference");
@@ -129,9 +129,25 @@ int GDocFragment::Compare(const Search& search) const
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GConceptNode> GDocFragment::GetChildren(void) const
+bool GDocFragment::IsFlat(void) const
 {
-	return(RCursor<GConceptNode>(Children));
+	if(WholeDoc)
+		return(true);
+
+	if(!Node)
+		return(true);
+
+	if(!Node->GetParent())
+		return(true);
+
+	return(false);
+}
+
+
+//------------------------------------------------------------------------------
+R::RCursor<const GConceptNode> GDocFragment::GetChildren(void) const
+{
+	return(RCursor<const GConceptNode>(Children));
 }
 
 
@@ -156,7 +172,7 @@ void GDocFragment::SetRanking(double ranking)
 
 
 //------------------------------------------------------------------------------
-void GDocFragment::AddChild(GConceptNode* child)
+void GDocFragment::AddChild(const GConceptNode* child)
 {
 	// compute the extract to associate to that node
 	size_t max(0), min(0);
@@ -183,20 +199,29 @@ void GDocFragment::AddChild(GConceptNode* child)
 //------------------------------------------------------------------------------
 bool GDocFragment::Overlap(const GDocFragment* fragment) const
 {
-	if(Node!= fragment->Node)
+ 	// Verify if the two fragments have the same selected node
+	if((Node->GetParent()||fragment->Node->GetParent())&&(Node!=fragment->Node))
 		return(false);
-	RCursor<GConceptNode> Child(Children);
-	RCursor<GConceptNode> Child2( fragment->Children);
-	for(Child.Start();!Child.End();Child.Next())
-	{
-		size_t Pos(Child()->GetSyntacticPos());
-		for(Child2.Start();!Child2.End();Child2.Next())
-		{
-			size_t Pos2(Child2()->GetSyntacticPos());
-			if(((Pos<Pos2)&&(Pos+Begin<Pos2))||((Pos2<Pos)&&(Pos2+End<Pos)))
-				return(false);
-		}
-	}
+
+	// Look if the intervals overlap
+	if((fragment->End<Begin)||(fragment->Begin>End))
+		return(false);
+
+	// Code by Faiza Abbacci to verify if the children of each node are not to
+	// far away. Replace by comparing only the intervals
+//	RCursor<GConceptNode> Child(Children);
+//	RCursor<GConceptNode> Child2( fragment->Children);
+//	for(Child.Start();!Child.End();Child.Next())
+//	{
+//		size_t Pos(Child()->GetSyntacticPos());
+//		for(Child2.Start();!Child2.End();Child2.Next())
+//		{
+//			size_t Pos2(Child2()->GetSyntacticPos());
+//			if(((Pos<Pos2)&&(Pos+Begin<Pos2))||((Pos2<Pos)&&(Pos2+End<Pos)))
+//				return(false);
+//		}
+//	}
+
 	return(true);
 }
 
@@ -205,7 +230,7 @@ bool GDocFragment::Overlap(const GDocFragment* fragment) const
 void GDocFragment::Merge(const GDocFragment*  fragment)
 {
 	// Merge the two node lists
-	RCursor<GConceptNode> Child(fragment->Children);
+	RCursor<const GConceptNode> Child(fragment->Children);
 	for(Child.Start();!Child.End();Child.Next())
 	{
 		bool Find;
@@ -213,11 +238,27 @@ void GDocFragment::Merge(const GDocFragment*  fragment)
 		if(Find)
 			continue;
 		Children.InsertPtrAt(Child(),Index,false);
-		if(Child()->GetSyntacticPos()>End)
-			End=Child()->GetSyntacticPos();
-		if(Child()->GetSyntacticPos()<Begin)
-			Begin=Child()->GetSyntacticPos();
+		if(Child()->GetPos()>End)
+			End=Child()->GetPos();
+		if(Child()->GetPos()<Begin)
+			Begin=Child()->GetPos();
 	}
+}
+
+
+//------------------------------------------------------------------------------
+void GDocFragment::Print(void) const
+{
+	cout<<"Fragment : Doc="<<Doc->GetId()<<" ; Node=";
+	if(Node)
+		cout<<Node->GetConceptId()<<endl;
+	else
+		cout<<"Null"<<endl;
+	cout<<"\t"<<Pos<<" in ["<<Begin<<","<<End<<"]"<<endl<<"\tChildren: ";
+	RCursor<const GConceptNode> Child(Children);
+	for(Child.Start();!Child.End();Child.Next())
+		cout<<Child()->GetConceptId();
+	cout<<endl;
 }
 
 

@@ -85,7 +85,7 @@ void GDocRef::Clear(void)
 
 
 //-----------------------------------------------------------------------------
-GDocFragment* GDocRef::AddFragment(GConceptNode* node,size_t pos,size_t begin,size_t end,bool children,bool& exist)
+GDocFragment* GDocRef::AddFragment(const GConceptNode* node,size_t pos,size_t spos,size_t begin,size_t end,bool children,bool& exist)
 {
 	GDocFragment* Fragment;
 
@@ -96,7 +96,7 @@ GDocFragment* GDocRef::AddFragment(GConceptNode* node,size_t pos,size_t begin,si
 		Fragment=Fragments[idx];
 	}
 	else
-		Fragments.InsertPtrAt(Fragment=new GDocFragment(Doc,node,pos,begin,end),idx,false);
+		Fragments.InsertPtrAt(Fragment=new GDocFragment(Doc,node,pos,spos,begin,end),idx,false);
 
 	if(node&&children)
 	{
@@ -110,24 +110,24 @@ GDocFragment* GDocRef::AddFragment(GConceptNode* node,size_t pos,size_t begin,si
 
 
 //-----------------------------------------------------------------------------
-GDocFragment* GDocRef::AddFragment(GConceptNode* node)
+GDocFragment* GDocRef::AddFragment(const GConceptNode* node)
 {
 	bool Exist;
-	return(AddFragment(node,node->GetPos(),node->GetPos(),node->GetTree()->GetMaxPos(node,1),false,Exist));
+	return(AddFragment(node,node->GetPos(),node->GetSyntacticPos(),node->GetPos(),node->GetTree()->GetMaxPos(node,1),false,Exist));
 }
 
 
 //-----------------------------------------------------------------------------
-GDocFragment* GDocRef::AddFragment(GConceptNode* node,GConceptNode* child,size_t pos,size_t begin,size_t end,bool children,bool& exist)
+GDocFragment* GDocRef::AddFragment(const GConceptNode* node,const GConceptNode* child,size_t pos,size_t spos,size_t begin,size_t end,bool children,bool& exist)
 {
-	GDocFragment* Fragment(AddFragment(node,pos,begin,end,children,exist));
+	GDocFragment* Fragment(AddFragment(node,pos,spos,begin,end,children,exist));
 	Fragment->AddChild(child);
 	return(Fragment);
 }
 
 
 //-----------------------------------------------------------------------------
-GDocFragment* GDocRef::AddFragment(GConceptNode* node,GConceptNode* child)
+GDocFragment* GDocRef::AddFragment(const GConceptNode* node,const GConceptNode* child)
 {
 	bool Exist;
 	size_t Min(node->GetPos());
@@ -136,7 +136,7 @@ GDocFragment* GDocRef::AddFragment(GConceptNode* node,GConceptNode* child)
 	size_t Max(node->GetPos());
 	if(Max<child->GetPos())
 		Max=child->GetPos();
-	return(AddFragment(node,child,node->GetPos(),Min,Max,false,Exist));
+	return(AddFragment(node,child,node->GetPos(),node->GetSyntacticPos(),Min,Max,false,Exist));
 }
 
 
@@ -151,7 +151,13 @@ GDocFragment* GDocRef::CopyFragment(const GDocFragment* tocopy,bool& exist)
 		Fragment=Fragments[idx];
 	}
 	else
-		Fragments.InsertPtrAt(Fragment=new GDocFragment(tocopy->GetDoc(),tocopy->GetNode(),tocopy->GetPos(),tocopy->GetBegin(),tocopy->GetEnd()),idx,false);
+		Fragments.InsertPtrAt(Fragment=new GDocFragment(tocopy->GetDoc(),
+																	   tocopy->GetNode(),
+																	   tocopy->GetPos(),
+																	   tocopy->GetSyntacticPos(),
+																	   tocopy->GetBegin(),
+																	   tocopy->GetEnd()),
+									                           idx,false);
 
 	return(Fragment);
 }
@@ -166,7 +172,13 @@ void GDocRef::CopyFragments(const GDocRef* tocopy)
 		bool Find;
 		size_t idx(Fragments.GetIndex(GDocFragment::Search(Fragment()->GetDoc()->GetId(),Fragment()->GetPos()),Find));
 		if(!Find)
-			Fragments.InsertPtrAt(new GDocFragment(Fragment()->GetDoc(),Fragment()->GetNode(),Fragment()->GetPos(),Fragment()->GetBegin(),Fragment()->GetEnd()),idx,false);
+			Fragments.InsertPtrAt(new GDocFragment(Fragment()->GetDoc(),
+															   Fragment()->GetNode(),
+															   Fragment()->GetPos(),
+																Fragment()->GetSyntacticPos(),
+																Fragment()->GetBegin(),
+															   Fragment()->GetEnd()),
+										                  idx,false);
 	}
 }
 
@@ -263,7 +275,7 @@ void GDocRef::Print(void)
 	for(Fragment.Start();!Fragment.End();Fragment.Next())
 	{
 		cout<<"\t"<<Fragment()->GetNode()->GetSyntacticPos()<<" ("<<Fragment()->GetNode()->GetConceptId()<<")"<<endl;
-		RCursor<GConceptNode> Child(Fragment()->GetChildren());
+		RCursor<const GConceptNode> Child(Fragment()->GetChildren());
 		for(Child.Start();!Child.End();Child.Next())
 			cout<<"\t\t"<<Child()->GetSyntacticPos()<<" ("<<Child()->GetConceptId()<<")"<<endl;
 	}

@@ -50,6 +50,31 @@ using namespace std;
 using namespace GALILEI;
 
 
+//------------------------------------------------------------------------------
+//
+// class Item
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class Item : public QTreeWidgetItem
+{
+public:
+
+ Item(QTreeWidget* parent,const QStringList & strings) : QTreeWidgetItem(parent,strings) {}
+
+
+private:
+
+	bool operator<(const QTreeWidgetItem &other) const
+	{
+		int column(treeWidget()->sortColumn());
+		if(column>2&&column<6)
+			return(text(column).toUInt()<other.text(column).toUInt());
+		return(text(column).toLower()<other.text(column).toLower());
+	}
+};
+
 
 //------------------------------------------------------------------------------
 //
@@ -98,7 +123,7 @@ void QGDocStruct::Display(GSession* session,GConceptNode* node)
 			TokenType="Link";
 			break;
 	}
-	new QTreeWidgetItem(RecsList,QStringList()<<name<<TokenType<<ConceptType<<QString::number(node->GetPos())<<QString::number(node->GetSyntacticPos())<<QString::number(node->GetSyntacticDepth()));
+	new Item(RecsList,QStringList()<<name<<TokenType<<ConceptType<<QString::number(node->GetPos())<<QString::number(node->GetSyntacticPos())<<QString::number(node->GetSyntacticDepth()));
 
 	RNodeCursor<GConceptTree,GConceptNode> Node(node);
 	for(Node.Start();!Node.End();Node.Next())
@@ -115,6 +140,7 @@ void QGDocStruct::Set(GDoc* obj)
 	GSession* Session=obj->GetSession();
 	QTreeWidget* RecsList(static_cast<Ui_QGDocStruct*>(Ui)->RecsList);
 	RecsList->clear();
+	RecsList->setSortingEnabled(false);
 
 	// Show the tree
 	RNodeCursor<GConceptTree,GConceptNode> Node(*obj->GetTree());
@@ -127,6 +153,8 @@ void QGDocStruct::Set(GDoc* obj)
 	RecsList->resizeColumnToContents(2);
 	RecsList->resizeColumnToContents(3);
 	RecsList->resizeColumnToContents(4);
+	RecsList->setSortingEnabled(true);
+	RecsList->sortByColumn(3,Qt::AscendingOrder);
 }
 
 

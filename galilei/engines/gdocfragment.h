@@ -63,7 +63,7 @@ namespace GALILEI{
 * In practice, a fragment is centred at a given position (for example the
 * position of word) and is defined by a window (such as a sentence).
 *
-* What extactly a window is depends from the type of document and the search
+* What exactly a window is depends from the type of document and the search
 * engine. In particular, the GFilter class provides a method that builds a
 * string representation of a given fragment.
 *
@@ -108,7 +108,7 @@ class GDocFragment
 	/**
 	 * Concept node.
 	 */
-	GConceptNode* Node;
+	const GConceptNode* Node;
 
 	/**
 	* The fragment.
@@ -119,6 +119,11 @@ class GDocFragment
 	 * Position of the fragment.
 	 */
 	size_t Pos;
+
+	/**
+	 * Syntactic position of the fragment.
+	 */
+	size_t SyntacticPos;
 
 	/**
 	 * Beginning position of the fragment window.
@@ -153,7 +158,7 @@ class GDocFragment
 	/**
 	 * Child nodes used by the query to select the node.
     */
-	R::RContainer<GConceptNode,false,false> Children;
+	R::RContainer<const GConceptNode,false,false> Children;
 
 public:
 
@@ -161,13 +166,14 @@ public:
 	* Constructor of a document fragment.
 	* @param doc             Document.
 	* @param node            Concept node.
-	* @param pos             Position in the document.
+	* @param pos             Position in the fragment centre.
+	* @param spos            Syntactic position of the fragment centre.
 	* @param first           Beginning position of the window.
 	* @param end             End position of the window.
 	* @param ranking         Ranking of the fragment.
 	* @param info            Information.
 	*/
-	GDocFragment(GDoc* doc,GConceptNode* node,size_t pos,size_t begin,size_t end,double ranking=0.0,const R::RString& info=R::RString::Null,const R::RDate& proposed=R::RDate::Null);
+	GDocFragment(GDoc* doc,const GConceptNode* node,size_t pos,size_t spos,size_t begin,size_t end,double ranking=0.0,const R::RString& info=R::RString::Null,const R::RDate& proposed=R::RDate::Null);
 
 	/**
 	* Constructor of a document fragment representing the whole document.
@@ -176,7 +182,7 @@ public:
 	* @param ranking         Ranking of the fragment.
 	* @param info            Information.
 	*/
-	GDocFragment(GDoc* doc,GConceptNode* node,double ranking=0.0,const R::RString& info=R::RString::Null,const R::RDate& proposed=R::RDate::Null);
+	GDocFragment(GDoc* doc,const GConceptNode* node,double ranking=0.0,const R::RString& info=R::RString::Null,const R::RDate& proposed=R::RDate::Null);
 
 	/**
 	* Method to compare document fragments.
@@ -204,12 +210,22 @@ public:
 	GDoc* GetDoc(void) const {return(Doc);}
 
 	/**
+	 * Look of the document fragment is a flat one. There are several cases where
+	 * it is considered as flat :
+	 * -# It has no selected concept node.
+	 * -# The selected concept node has no parent.
+	 * -# The fragment represents a whole document.
+    * @return true if it is flat or false if not.
+    */
+	bool IsFlat(void) const;
+
+	/**
 	* Get the selected concept node corresponding to the fragment.
 	* @return a pointer to a GConceptNode
 	* @warning The pointer may be null if the fragment corresponds to the whole
 	* document or if the structure trees are not built during the analysis.
 	*/
-	GConceptNode* GetNode(void) const {return(Node);}
+	const GConceptNode* GetNode(void) const {return(Node);}
 
 	/**
     * @return the number of children.
@@ -219,7 +235,7 @@ public:
 	/**
     * @return a cursor over the children.
     */
-	R::RCursor<GConceptNode> GetChildren(void) const;
+	R::RCursor<const GConceptNode> GetChildren(void) const;
 
 	/**
 	 * @return the date of the suggestion.
@@ -227,10 +243,17 @@ public:
 	R::RDate GetProposed(void) const {return(Proposed);}
 
 	/**
-	 * Get the starting position of the fragment.
+	 * Get the position of the fragment centre.
 	 * @return a size_t.
 	 */
 	size_t GetPos(void) const {return(Pos);}
+
+	/**
+	 * Get the syntactic position of the fragment centre.
+	 * @return a size_t.
+	 */
+
+	size_t GetSyntacticPos(void) const {return(SyntacticPos);}
 
 	/**
 	 * Get the beginning of the window fragment.
@@ -267,24 +290,34 @@ public:
 	double GetRanking(void) const {return(Ranking);}
 
 	/**
-	 * Add a child node to the document fragment.
+	 * Add a child node to the document fragment. The interval of the fragment is
+	 * adjusted if necessary in order to contain the child.
     * @param child          Concept node to add.
     */
-	void AddChild(GConceptNode* child);
+	void AddChild(const GConceptNode* child);
 
 	/**
-	 * Look if two fragments overlaps, i.e. they have children of a common node
-	 * that are not too much remote.
+	 * Look if two fragments overlaps. In practice, the method follows different
+	 * steps :
+	 * -# It looks if both fragments have the same selected node or no
+	 *    parent nodes nodes (for flat documents).
+	 * -# It looks if the two intervals overlap.
 	 * @param fragment       Fragment to compare with.
 	 * @return true if overlap.
 	 */
 	bool Overlap(const GDocFragment* fragment) const;
 
 	/**
-	 * Merge the children of a fragment.
+	 * Merge the children of a fragment. The interval of the fragment is adjusted
+	 * if necessary in order to contain all the children.
     * @param fragment       Fragment to compare with.
     */
 	void Merge(const GDocFragment* fragment);
+
+	/**
+	 * Print some information related to the document fragment.
+    */
+	void Print(void) const;
 
 	/**
 	* Static function used to order the document fragments by ranking (the

@@ -152,31 +152,28 @@ RCursor<GConceptNode> GConceptTree::GetNodes(size_t min,size_t max) const
 
 
 //------------------------------------------------------------------------------
-GConceptNode* GConceptTree::FindRoot(GConceptNode* node1,GConceptNode* node2) const
+const GConceptNode* GConceptTree::GetRoot(const GConceptNode* node1,const GConceptNode* node2) const
 {
-	GConceptNode* Node1(node1);
-	GConceptNode* Node2(node2);
-
 	// Put Node1 on the same depth than Node2
-	while(Node1&&(Node1->GetDepth()>Node2->GetDepth()))
-		Node1=Node1->GetParent();
+	while(node1&&(node1->GetDepth()>node2->GetDepth()))
+		node1=node1->GetParent();
 
 	// Put Node2 on the same depth than Node1
 	size_t RefDepth(0);
-	if(Node1)
-		RefDepth=Node1->GetDepth();
-	while(Node2&&(Node2->GetDepth()>RefDepth))
-		Node2=Node2->GetParent();
+	if(node1)
+		RefDepth=node1->GetDepth();
+	while(node2&&(node2->GetDepth()>RefDepth))
+		node2=node2->GetParent();
 
 	// The two nodes are on the same depth
 	// While they are not equal goes higher in the hierarchy
-	while(Node1!=Node2)
+	while(node1!=node2)
 	{
-		Node1=Node1->GetParent();
-		Node2=Node2->GetParent();
+		node1=node1->GetParent();
+		node2=node2->GetParent();
 	}
 
-	return(Node1);
+	return(node1);
 }
 
 
@@ -247,7 +244,7 @@ const GConceptNode* GConceptTree::GetNearestNode(size_t pos,bool after) const
 
 
 //------------------------------------------------------------------------------
-size_t GConceptTree::GetMinPos(GConceptNode* node,size_t nbbefore) const
+size_t GConceptTree::GetMinPos(const GConceptNode* node,size_t nbbefore) const
 {
 	if(nbbefore>node->GetSyntacticPos())
 		nbbefore=0;
@@ -261,7 +258,7 @@ size_t GConceptTree::GetMinPos(GConceptNode* node,size_t nbbefore) const
 
 
 //------------------------------------------------------------------------------
-size_t GConceptTree::GetMaxPos(GConceptNode* node,size_t nbafter) const
+size_t GConceptTree::GetMaxPos(const GConceptNode* node,size_t nbafter) const
 {
 	nbafter+=node->GetSyntacticPos();
 	size_t Max(GetMaxSyntacticPos());

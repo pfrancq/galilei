@@ -507,6 +507,8 @@ class GComputeTrust;
 class GEngine;
 class GMetaEngine;
 class GComputeRank;
+class GSearchQuery;
+class GSearchQueryNode;
 
 
 //------------------------------------------------------------------------------

@@ -101,6 +101,7 @@ public:
 	 * @param node           Concept node associated to the fragment.
 	 * @param pos            Position of the concept node that identifies the
 	 *                       fragment.
+	 * @param spos           Syntactic position of the fragment centre.
 	 * @param begin          Beginning of the fragment.
 	 * @param ending         Ending of the fragment.
 	 * @param children       Must all the children be considered as selecting the
@@ -109,7 +110,7 @@ public:
 	 *                       exists (true) or was created (false).
 	 * @return a pointer to a GDocFragment.
     */
-	GDocFragment* AddFragment(GConceptNode* node,size_t pos,size_t begin,size_t end,bool children,bool& exist);
+	GDocFragment* AddFragment(const GConceptNode* node,size_t pos,size_t spos,size_t begin,size_t end,bool children,bool& exist);
 
 	/**
 	 * Add a fragment related to a given node. The fragment is limited to the
@@ -117,7 +118,7 @@ public:
 	 * @param node           Concept node associated to the fragment.
 	 * @return a pointer to a GDocFragment.
     */
-	GDocFragment* AddFragment(GConceptNode* node);
+	GDocFragment* AddFragment(const GConceptNode* node);
 
 	/**
 	 * Add a fragment selected by a child node.
@@ -125,6 +126,7 @@ public:
 	 * @oaram child          Child concept node use to select the concept node.
 	 * @param pos            Position of the concept node that identifies the
 	 *                       fragment.
+	 * @param spos           Syntactic position of the fragment centre.
 	 * @param begin          Beginning of the fragment.
 	 * @param ending         Ending of the fragment.
 	 * @param children       Must all the children be considered as selecting the
@@ -133,7 +135,7 @@ public:
 	 *                       exists (true) or was created (false).
 	 * @return a pointer to a GDocFragment.
     */
-	GDocFragment* AddFragment(GConceptNode* node,GConceptNode* child,size_t pos,size_t begin,size_t end,bool children,bool& exist);
+	GDocFragment* AddFragment(const GConceptNode* node,const GConceptNode* child,size_t pos,size_t spos,size_t begin,size_t end,bool children,bool& exist);
 
 	/**
 	 * Add a fragment selected by a child node. The fragment is limited to the
@@ -142,7 +144,7 @@ public:
 	 * @oaram child          Child concept node use to select the concept node.
 	 * @return a pointer to a GDocFragment.
     */
-	GDocFragment* AddFragment(GConceptNode* node,GConceptNode* child);
+	GDocFragment* AddFragment(const GConceptNode* node,const GConceptNode* child);
 
 	/**
 	 * Copy a fragment into the container.

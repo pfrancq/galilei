@@ -198,12 +198,13 @@ public:
 	const GConceptNode* GetNearestNode(size_t pos,bool after) const;
 
 	/**
-	 * Find the root node (the most common highest node) of two nodes.
+	 * Find the root node (the most common highest node) of two nodes. If at
+	 * least one of the node doesn't have a parent, no root node can be found.
 	 * @param node1          First node.
 	 * @param node2          Second node.
 	 * @return the root node of 0 if both nodes are top nodes.
     */
-	GConceptNode* FindRoot(GConceptNode* node1,GConceptNode* node2) const;
+	const GConceptNode* GetRoot(const GConceptNode* node1,const GConceptNode* node2) const;
 
 	/**
 	 * Find the minimal position centred on a given node and a number of nodes
@@ -212,7 +213,7 @@ public:
     * @param nbbefore       Maximum number of concept node before.
     * @return a position.
     */
-	size_t GetMinPos(GConceptNode* node,size_t nbbefore) const;
+	size_t GetMinPos(const GConceptNode* node,size_t nbbefore) const;
 
 	/**
 	 * Find the maximal position centred on a given node and a number of nodes
@@ -221,7 +222,7 @@ public:
     * @param nbafter        Maximum number of concept node after.
     * @return a position.
     */
-	size_t GetMaxPos(GConceptNode* node,size_t nbafter) const;
+	size_t GetMaxPos(const GConceptNode* node,size_t nbafter) const;
 
 	/**
 	 * Compute the maximal position occupied by a referenced node.
