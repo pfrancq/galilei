@@ -71,14 +71,9 @@ private:
 	RString Query;
 
 	/**
-	* The set of keywords
-	*/
-	R::RContainer<R::RString,true,false> Keywords;
-
-	/**
 	* The set of words to create the query
 	*/
-	R::RContainer<R::RString,false,false> QueryWords;
+	R::RContainer<RString,false,false> QueryWords;
 
 	/**
 	 * Query type.
@@ -137,7 +132,7 @@ public:
 	* Send a query to the meta-search engine.
 	* @param query           Query.
 	*/
-	virtual void RequestEngines(const R::RString& query);
+	virtual void RequestEngines(GSearchQuery* query);
 
 	/**
 	 * Perform some tasks once the request was treated.
@@ -145,13 +140,20 @@ public:
 	virtual void PostRequest(void);
 
 	/**
+	 * Start the combinations.
+	 * @param query           Query.
+    */
+	void StartCombinations(GSearchQuery* query);
+
+	/**
 	* A recursive method that combines all the words of the query. In practice,
 	* the first call launches a Combination (k n).
 	* @param pos             Position of the last inserted keywords (used by the
 	 *                       recursion).
 	* @param k               The k parameter.
+	* @param query           Query.
 	*/
-	void CombineKeywords(size_t pos,size_t k);
+	void CombineKeywords(GSearchQuery* query,size_t pos,size_t k);
 
 	/**
 	* This function is used to compute the global ranking

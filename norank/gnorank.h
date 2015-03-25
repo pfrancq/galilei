@@ -61,8 +61,9 @@ public:
 	/**
 	 * Rank a set of document fragments.
 	 * @param engine         Engine which results must be ranked.
+	 * @param query          Query.
 	 */
-	virtual void Rank(GEngine* engine);
+	virtual void Rank(GEngine* engine,GSearchQuery* query);
 
 	/**
 	* Create the parameters.

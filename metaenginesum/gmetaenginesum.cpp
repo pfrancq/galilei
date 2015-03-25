@@ -50,6 +50,8 @@ using namespace R;
 #include <gdocref.h>
 #include <gdocfragmentranks.h>
 #include <gdocfragmentrank.h>
+#include <gsearchquery.h>
+
 
 
 //-----------------------------------------------------------------------------
@@ -66,7 +68,7 @@ const bool Debug=false;
 
 //------------------------------------------------------------------------------
 GMetaEngineSum::GMetaEngineSum(GSession* session,GPlugInFactory* fac)
-	:GMetaEngine(session,fac), Keywords(10,5), QueryWords(10,5)
+	:GMetaEngine(session,fac), QueryWords(10,5)
 {
 }
 
@@ -113,55 +115,15 @@ void GMetaEngineSum::FragmentRankAdded(GDocFragmentRank* rank,GEngine* engine)
 
 
 //------------------------------------------------------------------------------
-void GMetaEngineSum::RequestEngines(const R::RString& query)
+void GMetaEngineSum::RequestEngines(GSearchQuery* query)
 {
-	// Initialise
-	Query=query;
-	Keywords.Clear();
-	query.Split(Keywords,' ');
-
-	// if No keywords -> don't search.
-	size_t Nb(Keywords.GetNb());
-	if(!Nb)
-		return;
-
 	switch(Type)
 	{
 		case Single:
-		{
-			GMetaEngine::RequestEngines(Query);
+			GMetaEngine::RequestEngines(query);
 			break;
-		}
 		case kCombinations:
-		{
-			size_t mink,maxk;
-			if(PercentValue)
-			{
-				mink=round(static_cast<double>(Nb)*kMin/100 );
-				maxk=round(static_cast<double>(Nb)*kMax/100 );
-			}
-			else
-			{
-				if(kMin>Nb)
-					mink=Nb;
-				else
-					mink=kMin;
-
-				if(kMax>Nb)
-					maxk=Nb;
-				else
-					maxk=kMax;
-			}
-			if(mink==0)
-				mink=1;
-			if(maxk==0)
-				maxk=1;
-			if(mink>maxk)
-				maxk=mink;
-			for(;mink<=maxk;mink++)
-				CombineKeywords(0,mink);
-			break;
-		}
+			StartCombinations(query);
 	}
 }
 
@@ -185,23 +147,67 @@ void GMetaEngineSum::PostRequest(void)
 
 
 //------------------------------------------------------------------------------
-void GMetaEngineSum::CombineKeywords(size_t pos,size_t k)
+void GMetaEngineSum::StartCombinations(GSearchQuery* query)
+{
+	if(!query->UseOnlyAND())
+		mThrowGException("Query does not contain only AND operators.");
+
+
+	// if No keywords -> don't search for this language.
+	size_t Nb(query->GetNbTokens());
+	if(!Nb)
+		return;
+
+	size_t mink,maxk;
+	if(PercentValue)
+	{
+		mink=round(static_cast<double>(Nb)*kMin/100 );
+		maxk=round(static_cast<double>(Nb)*kMax/100 );
+	}
+	else
+	{
+		if(kMin>Nb)
+			mink=Nb;
+		else
+			mink=kMin;
+
+		if(kMax>Nb)
+			maxk=Nb;
+		else
+			maxk=kMax;
+	}
+	if(mink==0)
+		mink=1;
+	if(maxk==0)
+		maxk=1;
+	if(mink>maxk)
+		maxk=mink;
+	for(;mink<=maxk;mink++)
+		CombineKeywords(query,0,mink);
+}
+
+
+
+//------------------------------------------------------------------------------
+void GMetaEngineSum::CombineKeywords(GSearchQuery* query,size_t pos,size_t k)
 {
 	if(QueryWords.GetNb()==k)
 	{
 		RString Query;
 		Query.Concat(QueryWords,' ');
-		GMetaEngine::RequestEngines(Query);
+		GSearchQuery TheQuery(GetSession(),true);
+		TheQuery.Build(Query);
+		GMetaEngine::RequestEngines(&TheQuery);
 	}
 	else
 	{
-		R::RCursor<RString> cur(Keywords);
+		R::RCursor<RString> cur(query->GetTokens());
 		for(cur.GoTo(pos);!cur.End();cur.Next())
 		{
 			QueryWords.InsertPtr(cur());
-			CombineKeywords(pos+1,k);
+			CombineKeywords(query,pos+1,k);
 			QueryWords.DeletePtr(*cur());
-			if(Keywords.GetNb()-pos-1<k-QueryWords.GetNb())
+			if(query->GetNbTokens()-pos-1<k-QueryWords.GetNb())
 				break;
 			pos++;
 		}
