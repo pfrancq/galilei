@@ -79,25 +79,35 @@ void GQueryRes::AddDoc(GEngineXML* engine,GDoc* doc,GConcept* concept)
 	RCursor<GConceptNode> Cur(Tree->GetNodes(concept));
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		if(Cur()->GetType()==ttText)
+		if(engine->OnlyDocs)
 		{
-			// If the text has a parent node, its parent must be the root node of the result
-			if(Cur()->GetParent())
-				Occurs->AddFragment(Cur()->GetParent(),Cur()); // Insert a node and its parent
-			else
-			{
-				// Add a fragment with the text window
-				bool Exist;
-				Occurs->AddFragment(Cur(),
-										  Cur()->GetPos(),
-										  Cur()->GetSyntacticPos(),
-										  Tree->GetMinPos(Cur(),engine->GetBeginWindowPos()),
-										  Tree->GetMaxPos(Cur(),engine->GetEndWindowPos()),
-										  false,Exist);
-			}
+			// Select the whole document
+			bool Exist;
+			Occurs->AddFragment(doc,Cur(),0,Tree->GetMaxPos(Tree->GetNearestNode(0),engine->EndWindowPos),Exist);
 		}
 		else
-			Occurs->AddFragment(Cur()); // Insert a node and its children
+		{
+			if(Cur()->GetType()==ttText)
+			{
+				bool Exist;
+
+				// If the text has a parent node, its parent must be the root node of the result
+				if(Cur()->GetParent())
+					Occurs->AddFragment(Cur()->GetParent(),Cur(),Exist); // Insert a node and its parent
+				else
+				{
+					// Add a fragment with the text window
+					Occurs->AddFragment(Cur(),
+											  Cur()->GetPos(),
+											  Cur()->GetSyntacticPos(),
+											  Tree->GetMinPos(Cur(),engine->BeginWindowPos),
+											  Tree->GetMaxPos(Cur(),engine->EndWindowPos),
+											  false,Exist);
+				}
+			}
+			else
+				Occurs->AddFragment(Cur()); // Insert a node and its children
+		}
 	}
 }
 

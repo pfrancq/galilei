@@ -38,10 +38,14 @@
 // include files for R/GALILEI Projects
 #include <galilei.h>
 #include <gdocref.h>
-#include <gquerynode.h>
 using namespace R;
 using namespace GALILEI;
 using namespace std;
+
+
+//------------------------------------------------------------------------------
+// forward declaration
+class GEngineXML;
 
 
 //------------------------------------------------------------------------------

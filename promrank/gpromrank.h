@@ -121,9 +121,9 @@ class GPromRank : public RObject, public GComputeRank
 	GMeasure* Weighting;
 
 	/**
-	 * The XML engine.
+	 * Query used to make the search.
 	 */
-	GEngineXML* XMLEngine;
+	GSearchQuery* Query;
 
 public:
 
@@ -181,8 +181,9 @@ public:
 	/**
 	 * Rank a set of document fragments.
 	 * @param engine         Engine which results must be ranked.
+	 * @param query          Query.
 	 */
-	virtual void Rank(GEngine* engine);
+	virtual void Rank(GEngine* engine,GSearchQuery* query);
 
 	/**
 	* Create the parameters.

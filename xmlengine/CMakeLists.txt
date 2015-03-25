@@ -3,8 +3,6 @@ INCLUDE_DIRECTORIES(.)
 
 SET(SRC
 	genginexml.cpp
-	gquerynode.cpp
-	gquery.cpp
 	gqueryres.cpp
 )
 

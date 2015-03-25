@@ -46,7 +46,6 @@
 // include files for current project
 #include <gpromrank.h>
 #include <gprom.h>
-#include <genginexml.h>
 
 
 //-----------------------------------------------------------------------------
@@ -290,7 +289,7 @@ void GPromRank::HandleReInit(const R::RNotification& notification)
 
 
 //------------------------------------------------------------------------------
-void GPromRank::Rank(GEngine* engine)
+void GPromRank::Rank(GEngine* engine,GSearchQuery* query)
 {
 	if(!engine->GetNbResults())
 		return;
@@ -299,9 +298,7 @@ void GPromRank::Rank(GEngine* engine)
 	if(!Weighting)
 		mThrowGException("No plug-in selected for \"Features Evaluation\"");
 
-	XMLEngine=dynamic_cast<GEngineXML*>(engine);
-	if(!XMLEngine)
-		mThrowGException("GPromRank works only with the default selection engine");
+	Query=query;
 
 	// Recompute References if necessary
 	if(IffsDirty&&TfIff->Get<RParamValue>("Active")->GetBool())

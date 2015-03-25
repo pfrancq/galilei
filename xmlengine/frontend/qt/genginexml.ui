@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>510</width>
+    <width>876</width>
     <height>360</height>
    </rect>
   </property>
@@ -124,6 +124,13 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_11">
       <item>
+       <widget class="QCheckBox" name="OnlyDocs">
+        <property name="text">
+         <string>Retrieve only documents?</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QGroupBox" name="groupBox_2">
         <property name="title">
          <string>Interval of a flat text window</string>
@@ -134,7 +141,7 @@
            <item>
             <widget class="QLabel" name="label_2">
              <property name="text">
-              <string>Number of concepts before</string>
+              <string>Number of syntactic postions before a selected concept</string>
              </property>
             </widget>
            </item>
@@ -177,7 +184,7 @@
            <item>
             <widget class="QLabel" name="label_3">
              <property name="text">
-              <string>Number of concepts after</string>
+              <string>Number of syntactic postions after a selected concept</string>
              </property>
             </widget>
            </item>
@@ -210,13 +217,6 @@
           </layout>
          </item>
         </layout>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="OnlyDocs">
-        <property name="text">
-         <string>Retrieve only documents?</string>
-        </property>
        </widget>
       </item>
      </layout>

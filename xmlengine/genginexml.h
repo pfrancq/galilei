@@ -37,7 +37,11 @@
 //-----------------------------------------------------------------------------
 // include files for R/GALILEI Projects
 #include <robject.h>
+#include <rstack.h>
 #include <gengine.h>
+#include <gsearchquery.h>
+#include <gsearchquerynode.h>
+#include <gsearchtoken.h>
 using namespace std;
 using namespace R;
 using namespace GALILEI;
@@ -86,7 +90,17 @@ class GEngineXML : public RObject, public GEngine
 	/**
 	 * The last query executed.
 	 */
-	GQuery* Query;
+	GSearchQuery* Query;
+
+	/**
+	 * Temporary container of document.
+    */
+	RNumContainer<size_t,true> DocIds;
+
+	/**
+	 * FIFO stack of results.
+	 */
+	RStack<GQueryRes,false,true,true> Results;
 
 public:
 
@@ -111,25 +125,48 @@ public:
 	* Request a query.
 	* @param query           Query.
 	*/
-	virtual void PerformRequest(const RString& query);
+	virtual void PerformRequest(GSearchQuery* query);
 
 	/**
-	 * Get the beginning synaptic position of a window (<=0).
-	 */
-	size_t GetBeginWindowPos(void) const {return(BeginWindowPos);}
+	 * Push a list of all occurrences of a given concept. In practice, it
+	 * searches for the highest semantic concept in the document tree :
+	 * - If the concept is a text one, its parent node is used.
+	 * - If the concept is a semantic one (for example a XML tag), it is taken :
+    * @param concept        Concept to search for.
+    */
+	void FindOccurrences(GConcept* concept);
 
 	/**
-	 * Get the ending synaptic position of a window (>=0).
-	 */
-	size_t GetEndWindowPos(void) const {return(EndWindowPos);}
+	 * Apply the operator on two list and fill the results with it.
+	 * @param op             Operator to apply.
+	 * @param left           Left operand.
+	 * @param right          Right operand.
+	 * @param res            Result.
+    */
+	void ApplyOperator(GSearchQueryNode::tOperator op,GDocRef* left,GDocRef* right,GDocRef* res);
 
 	/**
-	 * Get the last query exexuted.
+	 * Apply a given operator. In practice, it takes the two most results on the
+	 * stack as respectively the right and the left operands.
+    * @param op             Operator to apply.
+    */
+	void ApplyOperator(GSearchQueryNode::tOperator op);
+
+	/**
+	 * Adapt the list of results with a current node. in practice, if the node
+	 * corresponds to a concept, a list is filled with all its occurrences and
+	 * pushed if not empty. If it corresponds to an operator, two lists are
+	 * popped and a result is pushed.
+	 * @param node           Node to analyze. If null, the whole query is
+	 *                       performed.
+    */
+	void Perform(GSearchQueryNode* node);
+
+	/**
+	 * Get the last query executed.
     * @return
     */
-	GQuery* GetQuery(void) const {return(Query);}
-
-private:
+//	GQuery* GetQuery(void) const {return(Query);}
 
 	/**
 	 * Method used to ordered the blocks by descending order of accesses.
@@ -137,8 +174,6 @@ private:
 	 * @param b              Pointer to the second block.
 	 */
 	static int sortOrderAccess(const void* a,const void* b);
-
-public:
 
 	/**
 	 * Get a concept tree for a given document. If it is not loaded into memory,
@@ -154,7 +189,7 @@ public:
 	~GEngineXML(void);
 
 
-	friend class GProm;
+	friend class GQueryRes;
 };
 
 

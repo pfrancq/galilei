@@ -47,9 +47,8 @@
 // include files for current project
 #include <gprom.h>
 #include <gpromrank.h>
-#include <genginexml.h>
-#include <gquery.h>
-#include <gquerynode.h>
+#include <gsearchquery.h>
+#include <gsearchquerynode.h>
 
 
 
@@ -197,7 +196,7 @@ double GProm::ComputeTfIdf(GDocFragment* node)
 		{
 			if(fabs(Ref()->GetWeight())>MaxWeight)
 				MaxWeight=fabs(Ref()->GetWeight());
-			if(Rank->XMLEngine->GetQuery()->IsIn(Ref()->GetConcept()))
+			if(Rank->Query->IsIn(Ref()->GetConcept()))
 			{
 				double iffactor;
 				Weighting->Measure(0,Ref()->GetConcept(),otDoc,&iffactor);
@@ -247,7 +246,7 @@ double GProm::ComputeTfIff(GDocFragment* node)
 			Max=Weight;
 
 		// Takes only the concepts of the query in account
-		if(Rank->XMLEngine->GetQuery()->IsIn(Rank->GetSession()->GetObj(pConcept,Occur()->Id)))
+		if(Rank->Query->IsIn(Rank->GetSession()->GetObj(pConcept,Occur()->Id)))
 			Sum+=Weight*Rank->GetIff(Occur()->Id,node->GetNode()->GetConceptId());
 	}
 
@@ -285,20 +284,20 @@ double GProm::ComputeSpecificity(GDocFragment* node)
 double GProm::ComputeDistance(GDocFragment* node)
 {
 	// If less than two keywords -> distance is null
-	if(Rank->XMLEngine->GetQuery()->GetNbConcepts()<2)
+	if(Rank->Query->GetNbConcepts()<2)
 		return(0.0);
 
 	// Compute the average distance
 	RCursor<const GConceptNode> Node(node->GetChildren());   // All child nodes
 	size_t NbPairs(0);                                 // Number of keyword pairs
 	double Sum(0.0);                                   // Sum of distance
-	RCursor<GConcept> Concept(Rank->XMLEngine->GetQuery()->GetConcepts(0,Rank->XMLEngine->GetQuery()->GetNbConcepts()-2));
+	RCursor<GConcept> Concept(Rank->Query->GetConcepts(0,Rank->Query->GetNbConcepts()-2));
 	for(Concept.Start();!Concept.End();Concept.Next())
 	{
 		// Only textual concept
 		if(Concept()->GetType()->GetCategory()!=ccText)
 			continue;
-		RCursor<GConcept> Concept2(Rank->XMLEngine->GetQuery()->GetConcepts(Concept.GetPos()+1));
+		RCursor<GConcept> Concept2(Rank->Query->GetConcepts(Concept.GetPos()+1));
 		for(Concept2.Start();!Concept2.End();Concept2.Next())
 		{
 			// Only textual concept

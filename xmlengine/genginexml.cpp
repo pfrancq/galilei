@@ -42,12 +42,12 @@
 #include <gdocanalyze.h>
 #include <rbinaryfile.h>
 #include <gmeasure.h>
+#include <gqueryres.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for current project
 #include <genginexml.h>
-#include <gquery.h>
 
 
 
@@ -97,8 +97,7 @@ public:
 //------------------------------------------------------------------------------
 GEngineXML::GEngineXML(GSession* session,GPlugInFactory* fac)
 	: RObject(fac->GetMng()->GetName()+"|"+fac->GetList()+"|"+fac->GetName()),
-	  GEngine(session,fac),
-	  NbResults(40), Trees(1000), Query(0)
+	  GEngine(session,fac), NbResults(40), Trees(1000), DocIds(5000), Results(30)
 {
 }
 
@@ -128,68 +127,328 @@ void GEngineXML::ApplyConfig()
 
 
 //------------------------------------------------------------------------------
-void GEngineXML::PerformRequest(const RString& query)
+void GEngineXML::PerformRequest(GSearchQuery* query)
 {
 	// Make all the loaded trees unused
 	RCursor<cTreeRef> Tree(Trees);
 	for(Tree.Start();!Tree.End();Tree.Next())
 		Tree()->Use=false;
 
-	 // Construct the query
-	if(Query)
-	{
-		delete Query;
-		Query=0;
-	}
+	// Retrieve all relevant nodes and get the results
+	Results.Clear();
+	Query=query;
+	Perform(0);
 
-	Query=new GQuery(this,query);
-	if(Debug)
-		Query->Print(0);
-
-	 // Retrieve all relevant nodes and get the results
-	 Query->Perform(0);
-	 const GQueryRes* Res(Query->GetResult());
+	const GQueryRes* Res(Results());
 	 if((!Res)||(!Res->GetNb()))
 		 return;
 	 if(Debug)
 		Res->Print();
 
-	 if(OnlyDocs)
-	 {
-		RCursor<GDocRef> Doc(Res->GetDocs());
-		for(Doc.Start();!Doc.End();Doc.Next())
-		{
-			// Determine Min and Max
-			size_t Min(cNoRef), Max(0);
-			RCursor<GDocFragment> Fragment(Doc()->GetFragments());
-			for(Fragment.Start();!Fragment.End();Fragment.Next())
-			{
-				if(Min>Fragment()->GetBegin())
-					Min=Fragment()->GetBegin();
-				if(Max<Fragment()->GetEnd())
-					Max=Fragment()->GetEnd();
-			}
+	RCursor<GDocRef> Doc(Res->GetDocs());
+	for(Doc.Start();!Doc.End();Doc.Next())
+	{
+		// Determine Min and Max
+		RCursor<GDocFragment> Fragment(Doc()->GetFragments());
+		for(Fragment.Start();!Fragment.End();Fragment.Next())
+			AddResult(Fragment()->GetDoc(),
+					  Fragment()->GetNode(),
+					  Fragment()->GetPos(),
+					  Fragment()->GetSyntacticPos(),
+					  Fragment()->GetBegin(),
+					  Fragment()->GetEnd(),
+					  0.0);
+	}
+}
 
-			AddResult(Doc()->GetDoc()->GetId(),Fragment()->GetNode(),0,0,Min,Max,0.0);
-		}
-	 }
-	 else
-	 {
-		RCursor<GDocRef> Doc(Res->GetDocs());
-		for(Doc.Start();!Doc.End();Doc.Next())
+
+//------------------------------------------------------------------------------
+void GEngineXML::FindOccurrences(GConcept* concept)
+{
+	// If no valid concept -> push an empty result
+	if(!concept)
+	{
+		Results.Push(new GQueryRes());
+		return;
+	}
+
+	// Find all documents containing the concept
+	DocIds.Clear();
+	GetSession()->LoadIndex(pDoc,concept,DocIds);
+//	cout<<"Documents "<<DocIds.GetNb()<<endl;
+
+	// If no results -> push an empty result
+	if(!DocIds.GetNb())
+	{
+		Results.Push(new GQueryRes());
+		return;
+	}
+
+	// Build a GQueryRes, reduce it and push it on the stack
+	GQueryRes* Res(new GQueryRes(DocIds.GetNb()));
+	RNumCursor<size_t> Cur(DocIds);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		GDoc* Doc(GetSession()->GetObj(pDoc,Cur()));
+		if(Doc)
+			Res->AddDoc(this,Doc,concept);
+	}
+
+	// Reduce the result and push it
+	Res->Reduce();
+	Results.Push(Res);
+}
+
+
+//------------------------------------------------------------------------------
+void GEngineXML::ApplyOperator(GSearchQueryNode::tOperator op,GDocRef* left,GDocRef* right,GDocRef* res)
+{
+	// If simple presence -> copy all nodes
+	if(op==GSearchQueryNode::oOR)
+	{
+		// Add the concept nodes of left not in res
+		res->CopyFragments(left);
+
+		// OR -> Add the concept nodes of right not in res
+		res->CopyFragments(right);
+
+		// Reduce the result
+		res->Reduce(false);
+		return;
+	}
+	else if(op==GSearchQueryNode::oAND)
+	{
+		if((res->GetNbFragments())||(left->GetDoc()->GetId()!=right->GetDoc()->GetId()))
+			mThrowGException("Big Problem");
+
+		// Tree of both nodes
+		const GConceptTree* Tree(GetTree(left->GetDoc()->GetId()));
+
+		// For each pair of nodes of both query -> find the most top node containing both
+		RCursor<GDocFragment> Fragment(left->GetFragments());
+		RCursor<GDocFragment> Fragment2(right->GetFragments());
+		for(Fragment.Start();!Fragment.End();Fragment.Next())
 		{
-			// Determine Min and Max
-			RCursor<GDocFragment> Fragment(Doc()->GetFragments());
-			for(Fragment.Start();!Fragment.End();Fragment.Next())
-				AddResult(Fragment()->GetDoc(),
-					 Fragment()->GetNode(),
-					 Fragment()->GetPos(),
-					 Fragment()->GetSyntacticPos(),
-					 Fragment()->GetBegin(),
-					 Fragment()->GetEnd(),
-					 0.0);
+			for(Fragment2.Start();!Fragment2.End();Fragment2.Next())
+			{
+				GDocFragment* Res;
+
+				// Treat differently the case of flat documents and structured ones
+				if((Fragment()->IsFlat())&&(Fragment2()->IsFlat()))
+				{
+					// No fragment have a parent -> Look if they overlap
+					if(!Fragment()->Overlap(Fragment2()))
+						continue;
+
+					// The position is in the middle of both fragments
+					size_t SyntacticPos;
+					if(Fragment()->GetSyntacticPos()<Fragment2()->GetSyntacticPos())
+						SyntacticPos=Fragment()->GetSyntacticPos()+((Fragment2()->GetSyntacticPos()-Fragment()->GetSyntacticPos())/2);
+					else
+						SyntacticPos=Fragment2()->GetSyntacticPos()+((Fragment()->GetSyntacticPos()-Fragment2()->GetSyntacticPos())/2);
+					const GConceptNode* Node(Tree->GetNearestNode(SyntacticPos));
+
+					// Create a new fragment
+					bool Exist;
+					Res=res->AddFragment(0,
+												Node->GetPos(),
+											   Node->GetSyntacticPos(),
+												Tree->GetMinPos(Node,BeginWindowPos),
+												Tree->GetMaxPos(Node,EndWindowPos),
+												false,
+												Exist);
+
+					cout<<endl;
+				}
+				else
+				{
+					// Both fragments must have a concept node
+					if(Fragment()->IsFlat()||Fragment2()->IsFlat())
+						continue;
+
+					// At least one fragment has a parent -> Find the root of both nodes
+					const GConceptNode* Root(Tree->GetRoot(Fragment()->GetNode(),Fragment2()->GetNode()));
+					if(!Root)
+						continue;
+
+					// Create a new fragment
+					bool Exist;
+					Res=res->AddFragment(Root,Root->GetPos(),Root->GetSyntacticPos(),Root->GetPos(),Root->GetPos(),false,Exist);
+				}
+
+				// Copy both children of Node() and Node2() in Res
+				RCursor<const GConceptNode> Cur(Fragment()->GetChildren());
+				for(Cur.Start();!Cur.End();Cur.Next())
+					Res->AddChild(Cur());
+				RCursor<const GConceptNode> Cur2(Fragment2()->GetChildren());
+				for(Cur2.Start();!Cur2.End();Cur2.Next())
+					Res->AddChild(Cur2());
+			}
+		}
+
+		// Reduce the result
+		res->Reduce(true);
+		return;
+	}
+
+	// If not OR -> Compare each pair of occurrences
+	RCursor<GDocFragment> Left(left->GetFragments());
+	for(Left.Start();!Left.End();Left.Next())
+	{
+		bool Find;
+		switch(op)
+		{
+			case GSearchQueryNode::oSIB:
+				// Left() is OK if they a sibling node in Right() exists
+				if(right->FindSibling(Left()))
+					res->CopyFragment(Left(),Find);
+				break;
+
+			case GSearchQueryNode::oNSIB:
+				// Left() is OK if they a sibling node in Right() doesn't exist
+				if(!right->FindSibling(Left()))
+					res->CopyFragment(Left(),Find);
+				break;
+
+			case GSearchQueryNode::oINC:
+				// Left() is OK if they a child node in Right() exist
+				if(right->FindChild(Left()))
+					res->CopyFragment(Left(),Find);
+				break;
+
+			case GSearchQueryNode::oNINC:
+				// Left() is OK if they a child node in Right() doesn't exist
+				if(!right->FindChild(Left()))
+					res->CopyFragment(Left(),Find);
+				break;
+
+			default:
+				break;
 		}
 	}
+
+	// Reduce the result
+	res->Reduce(false);
+}
+
+
+//------------------------------------------------------------------------------
+void GEngineXML::ApplyOperator(GSearchQueryNode::tOperator op)
+{
+	// Pop the two operands from the stack
+	GQueryRes* RightOperand(Results());
+	Results.Pop();
+	GQueryRes* LeftOperand(Results());
+	Results.Pop();
+
+	// Create a result and push it on the stack
+	GQueryRes* Res(new GQueryRes(RightOperand->GetNb()+LeftOperand->GetNb()));
+	Results.Push(Res);
+
+	// Parse the two operands
+	RCursor<GDocRef> Left(LeftOperand->GetDocs());
+	RCursor<GDocRef> Right(RightOperand->GetDocs());
+	for(Left.Start(),Right.Start();(!Left.End()&&(!Right.End()));)
+	{
+		if(Left()->GetDoc()->GetId()==Right()->GetDoc()->GetId())
+		{
+			// It is the same document -> Merge the two lists
+			GDocRef* New(new GDocRef(Left()->GetDoc()));
+
+			// If NAND: Since the second list is not empty -> nothing to do
+			if(op!=GSearchQueryNode::oNAND)
+			{
+				ApplyOperator(op,Left(),Right(),New);
+
+				// Add the results if not empty
+				if(New->GetNbFragments())
+					Res->InsertDoc(New);
+				else
+					delete New;
+			}
+
+
+			// Next element in both lists
+			Left.Next();
+			Right.Next();
+		}
+		else
+		{
+			// Look for the operand with the minimum document identifier
+			RCursor<GDocRef>* Min;
+			if(Left()->GetDoc()->GetId()>Right()->GetDoc()->GetId())
+				Min=&Right;
+			else
+				Min=&Left;
+
+			// If the operand is a OR or NAND -> Add the it
+			switch(op)
+			{
+				case GSearchQueryNode::oNAND:
+					if(Min==&Right)
+						break;
+				case GSearchQueryNode::oOR:
+					Res->InsertDoc(new GDocRef(*(*Min)()));
+					break;
+				default:
+					break;
+			}
+
+			 // Go to the next document.
+			Min->Next();
+		}
+	}
+
+	RCursor<GDocRef>* Finish;
+	if(Left.End())
+			Finish=&Right;
+		else
+			Finish=&Left;
+	for(;!Finish->End();Finish->Next())
+	{
+		// If the operand is a OR or NAND -> Add the it
+		switch(op)
+		{
+			case GSearchQueryNode::oNAND:
+				if(Finish==&Right)
+					break;
+			case GSearchQueryNode::oOR:
+				Res->InsertDoc(new GDocRef(*(*Finish)()));
+				break;
+			default:
+				break;
+		}
+	}
+
+	// Delete the operands
+	delete LeftOperand;
+	delete RightOperand;
+}
+
+
+//------------------------------------------------------------------------------
+void GEngineXML::Perform(GSearchQueryNode* node)
+{
+	if(!node)
+		node=Query->GetTop();
+
+	switch(node->GetType())
+	{
+		case GSearchQueryNode::nToken:
+			FindOccurrences(node->GetToken()->GetConcept());
+			break;
+		case GSearchQueryNode::nOperator:
+			Perform(node->GetFirst()); // Left operand
+			if((node->GetOperator()==GSearchQueryNode::oOR)||(Results()->GetNb()))
+			{
+				Perform(node->GetLast()); // Right operand
+				ApplyOperator(node->GetOperator());
+			}
+			break;
+	}
+
+	if((node==Query->GetTop())&&(Results.GetNb()))
+		Results()->Reduce();
 }
 
 
@@ -259,11 +518,6 @@ const GConceptTree* GEngineXML::GetTree(size_t docid)
 //------------------------------------------------------------------------------
 GEngineXML::~GEngineXML(void)
 {
-	if(Query)
-	{
-		delete Query;
-		Query=0;
-	}
 }
 
 
