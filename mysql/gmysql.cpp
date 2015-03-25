@@ -1854,7 +1854,8 @@ void GStorageMySQL::LoadDocs(GCommunityDocs& docs)
 	for(Get.Start();!Get.End();Get.Next())
 	{
 		GDoc* Doc(Session->GetObj(pDoc,Get[0].ToSizeT()));
-		docs.InsertPtr(new GDocFragment(Doc,0,Get[1].ToDouble()));
+		bool Exist;
+		docs.InsertPtr(new GDocFragment(Doc,0,0,Get[1].ToDouble()));
 	}
 }
 
@@ -2085,7 +2086,7 @@ void GStorageMySQL::LoadSugs(GSugs& sugs)
 		for(Load.Start();!Load.End();Load.Next())
 		{
 			GDoc* Doc(Session->GetObj(pDoc,Load[0].ToSizeT()));
-			sugs.InsertPtr(new GDocFragment(Doc,0,Load[1].ToDouble(),Load[2],Load[3]));
+			sugs.InsertPtr(new GDocFragment(Doc,0,0,Load[1].ToDouble(),Load[2],Load[3]));
 		}
 	}
 	catch(RDbException e)
