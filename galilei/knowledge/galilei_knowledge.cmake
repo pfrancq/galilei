@@ -1,35 +1,35 @@
 SET(galilei_knowledge_INST_INCLUDES
-    gconcepttype.h
-    gconcept.h
-    gconceptlist.h
-    gstatement.h
-    gpredicate.h
-    glang.h
-    gkb.h
-	 gkb.hh
-    gconceptref.h
-    gvector.h
-    gdescription.h
-    gclass.h
-    gclasses.h
-    gdescriptionobject.h
-    gdescriptionobject.hh
-	 gobjectindex.h
+	gconcepttype.h
+	gconcept.h
+	gconceptlist.h
+	gstatement.h
+	gpredicate.h
+	glang.h
+	gkb.h
+	gkb.hh
+	gconceptref.h
+	gvector.h
+	gdescription.h
+	gclass.h
+	gclasses.h
+	gdescriptionobject.h
+	gdescriptionobject.hh
+	gobjectindex.h
 )
 
 
 SET(galilei_knowledge_TARGET_SOURCES
-    gconcepttype.cpp
-    gconcept.cpp
-    gconceptlist.cpp
-    gstatement.cpp
-    gpredicate.cpp
-    gkb.cpp
-    glang.cpp
-    gconceptref.cpp
-    gvector.cpp
-    gdescription.cpp
-    gclass.cpp
-    gclasses.cpp
-	 gobjectindex.cpp
+	gconcepttype.cpp
+	gconcept.cpp
+	gconceptlist.cpp
+	gstatement.cpp
+	gpredicate.cpp
+	gkb.cpp
+	glang.cpp
+	gconceptref.cpp
+	gvector.cpp
+	gdescription.cpp
+	gclass.cpp
+	gclasses.cpp
+	gobjectindex.cpp
 )

@@ -60,12 +60,15 @@ namespace GALILEI{
 *    the session and process the results.
 *
 * In practice, a search engine calls:
-* -# It calls the PerformRequest(const R::RString&) method. It is a pure virtual
+* -# It calls the PerformRequest(GSearchQuery*) method. It is a pure virtual
 *    one that must be written by inheriting classes.
 * -# If a ranking method is associated to the engine, it is used once the query
 *    is treated with the GComputeRank::Rank(GEngine*) method.
  *
 * Each time a engine wants to add a results, it must call the AddResult methods.
+*
+* It is the role of inheriting classes to ensure that the query submitted to the
+* an external search engine respects its constraints.
 *
 * @warning The ranking, \f$ranking\f$, associated by a given search engine must
 * respect the constraint: \f$0\leq ranking \leq 1\f$. Otherwise, an exception
@@ -123,8 +126,9 @@ public:
 	 * Clear the engine before a new request is send. By default, the results are
 	 * cleared and the MetaEngine variable is set.
 	 * @param metaengine     Meta-engine that will query the engine.
+	 * @param query          Query.
     */
-	virtual void Clear(GMetaEngine* metaengine);
+	virtual void Clear(GMetaEngine* metaengine,GSearchQuery* query);
 
 	/**
 	* Add a fragment from a known document as result to the meta-engine. In
@@ -166,7 +170,7 @@ private:
 	* Request a query.
 	* @param query           Query.
 	*/
-	virtual void PerformRequest(const R::RString& query)=0;
+	virtual void PerformRequest(GSearchQuery* query)=0;
 
 public:
 
@@ -175,7 +179,7 @@ public:
 	* build a syntactically correct query for the particular search engine.
 	 * @param query          Query.
     */
-	void Request(const R::RString& query);
+	void Request(GSearchQuery* query);
 
 	/**
 	 * Get the meta-engine that calls the engine (may be null if no meta-engine

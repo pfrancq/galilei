@@ -111,9 +111,9 @@ void GCommunity::GetRelevantDocs(GCommunityDocs& docs)
 			if(Doc)
 			{
 				bool Find;
-				size_t idx(RelevantDocs.GetIndex(Doc,Find));
+				size_t idx(RelevantDocs.GetIndex(GDocFragment::Search(Doc->GetId(),0,true),Find));
 				if(!Find)
-					RelevantDocs.InsertPtrAt(new GDocFragment(Doc,0),idx,false);
+					RelevantDocs.InsertPtrAt(new GDocFragment(Doc,0,0),idx,false);
 			}
 		}
 	}

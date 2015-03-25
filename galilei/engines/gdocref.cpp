@@ -89,7 +89,7 @@ GDocFragment* GDocRef::AddFragment(const GConceptNode* node,size_t pos,size_t sp
 {
 	GDocFragment* Fragment;
 
-	size_t idx(Fragments.GetIndex(GDocFragment::Search(Doc->GetId(),pos),exist));
+	size_t idx(Fragments.GetIndex(GDocFragment::Search(Doc->GetId(),pos,false),exist));
 
 	if(exist)
 	{
@@ -127,16 +127,36 @@ GDocFragment* GDocRef::AddFragment(const GConceptNode* node,const GConceptNode* 
 
 
 //-----------------------------------------------------------------------------
-GDocFragment* GDocRef::AddFragment(const GConceptNode* node,const GConceptNode* child)
+GDocFragment* GDocRef::AddFragment(const GConceptNode* node,const GConceptNode* child,bool& exist)
 {
-	bool Exist;
 	size_t Min(node->GetPos());
 	if(Min>child->GetPos())
 		Min=child->GetPos();
 	size_t Max(node->GetPos());
 	if(Max<child->GetPos())
 		Max=child->GetPos();
-	return(AddFragment(node,child,node->GetPos(),node->GetSyntacticPos(),Min,Max,false,Exist));
+	return(AddFragment(node,child,node->GetPos(),node->GetSyntacticPos(),Min,Max,false,exist));
+}
+
+
+//-----------------------------------------------------------------------------
+GDocFragment* GDocRef::AddFragment(GDoc* doc,const GConceptNode* child,size_t begin,size_t end,bool& exist)
+{
+	GDocFragment* Fragment;
+
+	size_t idx(Fragments.GetIndex(GDocFragment::Search(doc->GetId(),0,true),exist));
+
+	if(exist)
+	{
+		Fragment=Fragments[idx];
+	}
+	else
+		Fragments.InsertPtrAt(Fragment=new GDocFragment(doc,begin,end),idx,false);
+
+	if(child)
+		Fragment->AddChild(child);
+
+	return(Fragment);
 }
 
 
@@ -145,7 +165,7 @@ GDocFragment* GDocRef::CopyFragment(const GDocFragment* tocopy,bool& exist)
 {
 	GDocFragment* Fragment;
 
-	size_t idx(Fragments.GetIndex(GDocFragment::Search(tocopy->GetDoc()->GetId(),tocopy->GetPos()),exist));
+	size_t idx(Fragments.GetIndex(GDocFragment::Search(tocopy->GetDoc()->GetId(),tocopy->GetPos(),tocopy->WholeDoc),exist));
 	if(exist)
 	{
 		Fragment=Fragments[idx];
@@ -170,7 +190,7 @@ void GDocRef::CopyFragments(const GDocRef* tocopy)
 	for(Fragment.Start();!Fragment.End();Fragment.Next())
 	{
 		bool Find;
-		size_t idx(Fragments.GetIndex(GDocFragment::Search(Fragment()->GetDoc()->GetId(),Fragment()->GetPos()),Find));
+		size_t idx(Fragments.GetIndex(GDocFragment::Search(Fragment()->GetDoc()->GetId(),Fragment()->GetPos(),Fragment()->WholeDoc),Find));
 		if(!Find)
 			Fragments.InsertPtrAt(new GDocFragment(Fragment()->GetDoc(),
 															   Fragment()->GetNode(),

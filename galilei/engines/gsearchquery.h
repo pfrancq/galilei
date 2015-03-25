@@ -50,6 +50,7 @@ using namespace std;
 #include <rxmlfile.h>
 #include <glang.h>
 #include <gsearchquerynode.h>
+#include <gsearchtoken.h>
 
 
 //------------------------------------------------------------------------------
@@ -59,11 +60,17 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
- * The GSearchQuery class provides a representation for a structured query, that is a
- * tree of query nodes, where each node is either an operator or a word.
- * @short Structured Query.
+ * The GSearchQuery class provides a representation for a structured query, that
+ * is a tree of query nodes, where each node is either an operator or a
+ * keyword.
+ *
+ * A query can be expanded using the stems as alternatives to the keywords. Let
+ * us suppose the original query "connects & accepting" passed as argument. If
+ * expanded with stems, it query applied will be "(connects | connect) &
+ * (accepting | accept)".
+ * @short Search Query.
  */
-class GSearchQuery : public R::RTree<GSearchQuery,GSearchQueryNode,true>
+class GSearchQuery : protected R::RTree<GSearchQuery,GSearchQueryNode,true>
 {
 	/**
 	 * Session launching the query.
@@ -71,27 +78,59 @@ class GSearchQuery : public R::RTree<GSearchQuery,GSearchQueryNode,true>
 	GSession* Session;
 
 	/**
-	 * Container of concepts.
+	 * Tokens given in the query.
 	 */
-	R::RContainer<GConcept,false,false> Concepts;
+	R::RContainer<R::RString,true,true> Tokens;
+
+	/**
+	 * Container of all concepts.
+	 */
+	R::RContainer<GConcept,false,true> Concepts;
+
+	/**
+	 * AND is the only operator used in the query.
+	 */
+	bool OnlyAND;
+
+	/**
+	 * Should query be expanded with the stems of the keywords ?
+    */
+	bool ExpandStems;
+
+	/**
+	 * Temporary concepts.
+	 */
+	R::RContainer<GConcept,false,true> Stems;
 
 public:
 
 	/**
 	 * Constructor of the query.
 	 * @param session        Session.
-	 * @param query          Query submitted.
+	 * @param expandstems    Define if the query is expanded with the stems of
+	 *                       the keywords.
     */
-	GSearchQuery(GSession* session,const R::RString& query);
+	GSearchQuery(GSession* session,bool expandstems);
 
 	/**
-	 * Set the query. It is analyzes the query in order to create the tree. In
-	 * practice, the query is parsed from left to right.
+	 * Build the query based on a string. Bu default, it is analyzes the string
+	 * in order to create the tree. In practice, the query is parsed from left
+	 * to right.
     * @param query          Query submitted.
     */
-	void Set(const R::RString& query);
+	virtual void Build(const R::RString& query);
 
-private:
+	/**
+	 * Look if only the AND operator is used.
+	 * @return true if it is the case.
+	 */
+	bool UseOnlyAND(void) const {return(OnlyAND);}
+
+	/**
+	 * Get the top node of a query.
+    * @return a pointer to a GSearchQueryNode.
+    */
+	GSearchQueryNode* GetTop(void) {return(R::RTree<GSearchQuery,GSearchQueryNode,true>::GetTop());}
 
 	/**
 	 * Create the nodes appearing in a given string. The method is called
@@ -103,19 +142,45 @@ private:
 	bool CreateToken(GSearchQueryNode* parent,const R::RString& str);
 
 	/**
+	 * Insert a token in the query tree.
+    * @param parent         Parent token.
+    * @param node           Token to add.
+    */
+	void InsertNode(GSearchQueryNode* parent,GSearchQueryNode* node);
+
+	/**
+	 * Create a token and insert it in the query tree. Eventually, if the
+	 * keyword is a keyword, stems are used as alternatives and combine with the
+	 *  OR operator.
+    * @param parent         Parent token.
+    * @param token          String representing the keyword.
+    * @param type           Type of the token
+    * @return a pointer to the node  was inserted in the query tree.
+    */
+	GSearchQueryNode* CreateToken(GSearchQueryNode* parent,const R::RString& token,GSearchToken::tType type);
+
+	/**
 	 * Create a new node corresponding to a string.
-    * @param str            String
-	 * @param define         String contains a type.
+    * @param token          String containing the token.
+	 * @param type           Type of the token.
     * @return a pointer that will be inserted in the query tree.
     */
-	GSearchQueryNode* NewNode(const R::RString& str,bool type);
+	virtual GSearchQueryNode* NewNode(const R::RString& token,GSearchToken::tType type);
+
+	/**
+	 * Create a new node corresponding to a given concept.
+    * @param concept        Concept.
+	 * @param type           Type of the token.
+    * @return a pointer that will be inserted in the query tree.
+    */
+	virtual GSearchQueryNode* NewNode(GConcept* concept,GSearchToken::tType type);
 
 	/**
 	 * Create a new node corresponding to an operator.
     * @param op             Operator.
     * @return a pointer that will be inserted in the query tree.
     */
-	GSearchQueryNode* NewNode(GSearchQueryNode::tOperator op);
+	virtual GSearchQueryNode* NewNode(GSearchQueryNode::tOperator op);
 
 	/**
 	 * Clear a string. In practice, the leading and ending spaces are removed. If
@@ -124,8 +189,6 @@ private:
     * @return the string cleared.
     */
 	R::RString ClearString(const R::RString& str);
-
-public:
 
 	/**
 	 * Print a node to the console. A number of spaces corresponding to its
@@ -136,24 +199,47 @@ public:
 	void Print(GSearchQueryNode* node);
 
 	/**
-	 * Look if a given concept is present in the query.
-	 * @return true if a given concept is used in the query.
+	 * Get the list of tokens.
+	 * @return a R;;RCursor.
 	 */
-	bool IsIn(const GConcept& concept) const;
+	R::RCursor<R::RString> GetTokens(void) const;
 
 	/**
-	 * Get concepts that must be present in the documents.
+    * @return the number of tokens.
+    */
+	size_t GetNbTokens(void) const {return(Tokens.GetNb());}
+
+	/**
+	 * Get the list of concepts used in the query.
 	 * @param min            Minimum position of the elements to iterate.
-	 * @param max            Maximum position of the elements to iterate (included max).
-	 *                       If SZE_MAX, iterate until the end of the container.
+	 * @param max            Maximum position of the elements to iterate
+	 *                       (included max). If SZE_MAX, iterate until the end
+	 *                       of the container.
 	 * @return a R;;RCursor.
 	 */
 	R::RCursor<GConcept> GetConcepts(size_t min=0,size_t max=SIZE_MAX) const;
 
 	/**
+    * @return the number of concepts.
+    */
+	size_t GetNbConcepts(void) const {return(Concepts.GetNb());}
+
+	/**
+	 * Look if a given concept was used to formulate the query.
+	 * @param concept        Concept to search for.
+	 * @return true if the concept was used.
+	 */
+	bool IsIn(GConcept* concept) const;
+
+	/**
 	 * Destructor.
 	 */
 	~GSearchQuery(void);
+
+	friend class GSearchQueryNode;
+	friend class R::RNode<GSearchQuery,GSearchQueryNode,true>;
+	friend class R::RTree<GSearchQuery,GSearchQueryNode,true>;
+	friend class R::RNodeCursor<GSearchQuery,GSearchQueryNode>;
 };
 
 

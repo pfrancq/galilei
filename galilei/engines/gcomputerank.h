@@ -66,8 +66,9 @@ public:
 	/**
 	 * Rank a set of document fragments.
 	 * @param engine         Engine which results must be ranked.
+	 * @param query          Query.
 	 */
-	virtual void Rank(GEngine* engine)=0;
+	virtual void Rank(GEngine* engine,GSearchQuery* query)=0;
 
 	/**
 	* Destructor of the ranking method.

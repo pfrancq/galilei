@@ -73,7 +73,7 @@ void GEngine::ApplyConfig(void)
 
 
 //------------------------------------------------------------------------------
-void GEngine::Clear(GMetaEngine* metaengine)
+void GEngine::Clear(GMetaEngine* metaengine,GSearchQuery*)
 {
 	Results.Clear();
 	MetaEngine=metaengine;
@@ -98,11 +98,11 @@ void GEngine::AddResult(size_t docid,const GConceptNode* node,size_t pos,size_t 
 }
 
 //------------------------------------------------------------------------------
-void GEngine::Request(const R::RString& query)
+void GEngine::Request(GSearchQuery* query)
 {
 	PerformRequest(query);
 	if(Ranking)
-		Ranking->Rank(this);
+		Ranking->Rank(this,query);
 }
 
 

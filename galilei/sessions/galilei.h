@@ -479,6 +479,7 @@ class GDescriptionSet;
 template<class C> class GDescriptionObject;
 class GClass;
 class GClasses;
+class GKeyword;
 
 
 //------------------------------------------------------------------------------

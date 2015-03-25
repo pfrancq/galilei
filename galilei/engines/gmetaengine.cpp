@@ -40,6 +40,7 @@
 #include <gdocfragmentrank.h>
 #include <gdocfragmentranks.h>
 #include <gdocref.h>
+#include <gsearchquery.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -97,7 +98,7 @@ void GMetaEngine::FragmentRankAdded(GDocFragmentRank*s,GEngine*)
 
 
 //------------------------------------------------------------------------------
-void GMetaEngine::PrepareRequest(const R::RString& query)
+void GMetaEngine::PrepareRequest(GSearchQuery* query)
 {
 	// Clear the previous results
 	ResultsByDocs.Clear();
@@ -105,12 +106,12 @@ void GMetaEngine::PrepareRequest(const R::RString& query)
 	Rankings.Clear();
 	RCastCursor<GPlugIn,GEngine> Cur(GALILEIApp->GetPlugIns<GEngine>("Engine"));
 	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->Clear(this);
+		Cur()->Clear(this,query);
 }
 
 
 //------------------------------------------------------------------------------
-void GMetaEngine::RequestEngines(const R::RString& query)
+void GMetaEngine::RequestEngines(GSearchQuery* query)
 {
 	RCastCursor<GPlugIn,GEngine> Cur(GALILEIApp->GetPlugIns<GEngine>("Engine"));
 	for(Cur.Start();!Cur.End();Cur.Next())
@@ -132,7 +133,16 @@ void GMetaEngine::PostRequest(void)
 
 
 //------------------------------------------------------------------------------
-void GMetaEngine::Request(const R::RString query)
+GSearchQuery* GMetaEngine::BuildQuery(const R::RString query)
+{
+	GSearchQuery* Query=new GSearchQuery(Session,true);
+	Query->Build(query);
+	return(Query);
+}
+
+
+//------------------------------------------------------------------------------
+void GMetaEngine::Request(GSearchQuery* query)
 {
 	PrepareRequest(query);
 

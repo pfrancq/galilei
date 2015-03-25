@@ -68,8 +68,9 @@ namespace GALILEI{
 * string representation of a given fragment.
 *
 * A fragment can be associated with a selected concept that defines it (such as
-* a XML tag) and by a list of child concepts that select the main concept. In
-* particular, a fragment can define a whole document.
+* a XML tag) and by a list of child concepts that select the main concept. But a
+* fragment can define a whole document. In this case, the selected concept is
+* null.
 *
 * Two document fragments are considered as identical if they are related to the
 * same document and if they start at the same position
@@ -77,6 +78,8 @@ namespace GALILEI{
 */
 class GDocFragment
 {
+public:
+
 	/*
 	 * Structure needed to search for a document fragment.
 	 */
@@ -93,12 +96,20 @@ class GDocFragment
 		size_t Pos;
 
 		/**
+		 * Is the fragment a whole document.
+       */
+		bool WholeDoc;
+
+		/**
 		* Constructor.
 		* @param docid           Document identifier.
 		* @param pos             Position in the document.
+		* @param wholedoc        Is the fragment a whole document.
 		*/
-		Search(size_t docid,size_t pos);
+		Search(size_t docid,size_t pos,bool wholedoc);
 	};
+
+private:
 
 	/**
 	* Reference to the document.
@@ -168,7 +179,7 @@ public:
 	* @param node            Concept node.
 	* @param pos             Position in the fragment centre.
 	* @param spos            Syntactic position of the fragment centre.
-	* @param first           Beginning position of the window.
+	* @param begin           Beginning position of the window.
 	* @param end             End position of the window.
 	* @param ranking         Ranking of the fragment.
 	* @param info            Information.
@@ -176,25 +187,21 @@ public:
 	GDocFragment(GDoc* doc,const GConceptNode* node,size_t pos,size_t spos,size_t begin,size_t end,double ranking=0.0,const R::RString& info=R::RString::Null,const R::RDate& proposed=R::RDate::Null);
 
 	/**
-	* Constructor of a document fragment representing the whole document.
+	* Constructor of a document fragment representing the whole document. A
+	* window must be specified (but it can be an empty one).
 	* @param doc             Document.
-	* @param node            Concept node.
+	* @param begin           Beginning position of the window.
+	* @param end             End position of the window.
 	* @param ranking         Ranking of the fragment.
 	* @param info            Information.
 	*/
-	GDocFragment(GDoc* doc,const GConceptNode* node,double ranking=0.0,const R::RString& info=R::RString::Null,const R::RDate& proposed=R::RDate::Null);
+	GDocFragment(GDoc* doc,size_t begin,size_t end,double ranking=0.0,const R::RString& info=R::RString::Null,const R::RDate& proposed=R::RDate::Null);
 
 	/**
 	* Method to compare document fragments.
 	* @param d               Document retrieved to compare with.
 	*/
 	int Compare(const GDocFragment& d) const;
-
-	/**
-	* Method to compare a document fragment and a document.
-	* @param doc           Document.
-	*/
-	int Compare(const GDoc* d) const;
 
 	/**
 	* Method to compare a document fragment and a document fragment signature.
@@ -291,7 +298,8 @@ public:
 
 	/**
 	 * Add a child node to the document fragment. The interval of the fragment is
-	 * adjusted if necessary in order to contain the child.
+	 * adjusted if necessary in order to contain the child (except if the
+	 * fragment represents the whole document).
     * @param child          Concept node to add.
     */
 	void AddChild(const GConceptNode* child);
@@ -299,6 +307,7 @@ public:
 	/**
 	 * Look if two fragments overlaps. In practice, the method follows different
 	 * steps :
+	 * -# It looks if at least one fragment represents the whole document.
 	 * -# It looks if both fragments have the same selected node or no
 	 *    parent nodes nodes (for flat documents).
 	 * -# It looks if the two intervals overlap.
@@ -309,7 +318,8 @@ public:
 
 	/**
 	 * Merge the children of a fragment. The interval of the fragment is adjusted
-	 * if necessary in order to contain all the children.
+	 * if necessary in order to contain all the children  (except if the fragment
+	 * represents the whole document).
     * @param fragment       Fragment to compare with.
     */
 	void Merge(const GDocFragment* fragment);

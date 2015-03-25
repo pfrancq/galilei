@@ -158,6 +158,12 @@ public:
 	virtual R::RString GetStemming(const R::RString& kwd)=0;
 
 	/**
+	 * Get the name of the language (aka the plug-in).
+    * @return a R::RString.
+    */
+	R::RString GetName(void) const {return(GPlugIn::GetName());}
+
+	/**
 	* Get the session.
 	* @return Pointer to GSession.
 	*/

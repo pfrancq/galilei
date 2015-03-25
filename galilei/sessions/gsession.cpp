@@ -76,6 +76,7 @@ using namespace R;
 #include <gpredicate.h>
 #include <gstatement.h>
 #include <gclass.h>
+#include <gsearchquery.h>
 using namespace GALILEI;
 using namespace std;
 
@@ -852,7 +853,9 @@ void GSession::RequestMetaEngine(const R::RString query)
 	GMetaEngine* MetaEngine(GALILEIApp->GetCurrentPlugIn<GMetaEngine>("MetaEngine"));
 	if(!MetaEngine)
 		mThrowGException("No meta-engine selected");
-	MetaEngine->Request(query);
+	GSearchQuery* Query(MetaEngine->BuildQuery(query));
+	MetaEngine->Request(Query);
+	delete Query;
 }
 
 

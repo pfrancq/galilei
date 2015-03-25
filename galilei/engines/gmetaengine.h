@@ -52,10 +52,10 @@ namespace GALILEI{
 * given query passed by the user.
 *
 * In practice, a meta-engine does the following thinks
-* -# It calls the method PrepareRequest(const R::RString&). By default, it
-*    clears the old results and call GEngine::Clear(GMetaEngine*) for each
-*    enabled engine.
-* -# It calls the method RequestEngines(const R::RString&). By default, the
+* -# It calls the method PrepareRequest(GSearchQuery*). By default, it
+*    clears the old results and call GEngine::Clear(GMetaEngine*,GSearchQuery*)
+ *   for each enabled engine.
+* -# It calls the method RequestEngines(GSearchQuery*). By default, the
 *    method forwards the query passed to each enabled engine. Inheriting classes
 *    may redefine this method to adapt the query to each engine or to select
 *    specific engines. Each time a engine add a fragment as a result, the
@@ -65,9 +65,6 @@ namespace GALILEI{
 * -# The results are ranked by ascending ranking.
 * -# It calls the method PostRequest(void). By default, this method does
 *    nothing.
-*
-* It is the role of inheriting classes to ensure that the query submitted to the
-* engines respects their constraints.
 *
 * See the documentation related to GPlugIn for more general information.
 * @short Meta-search Engine
@@ -149,14 +146,14 @@ protected:
 	 * GEngine::Clear(GMetaEngine*) is called for each enabled engine.
     * @param query
     */
-	virtual void PrepareRequest(const R::RString& query);
+	virtual void PrepareRequest(GSearchQuery* query);
 
 	/**
 	* Send a query to the engines. By default, it is send to all
 	* enabled engines.
 	* @param query           Query.
 	*/
-	virtual void RequestEngines(const R::RString& query);
+	virtual void RequestEngines(GSearchQuery* query);
 
 	/**
 	* This function is used to compute the global ranking
@@ -173,11 +170,20 @@ protected:
 public:
 
 	/**
+	 * Build a search query. By default, it creates an object of the class
+	 * QSearchQuery and build it. Moreover , the stems are used to expand the
+	 * query.
+    * @param query          String representing the query.
+    * @return a pointer to a QSearchQuery.
+    */
+	virtual GSearchQuery* BuildQuery(const R::RString query);
+
+	/**
 	* Send a query to the meta-search engine. It call GMetaEngine::PerformRequest
 	* and order then all the document fragments.
 	* @param query           Query.
 	*/
-	void Request(const R::RString query);
+	void Request(GSearchQuery* query);
 
 	/**
 	* Get all the fragments retrieved by documents.

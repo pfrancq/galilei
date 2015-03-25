@@ -34,6 +34,8 @@
 #include <ggalileiapp.h>
 #include <gsession.h>
 #include <gsearchquerynode.h>
+#include <gsearchquery.h>
+#include <glang.h>
 using namespace std;
 using namespace R;
 using namespace GALILEI;
@@ -55,24 +57,18 @@ GSearchQueryNode::GSearchQueryNode(tOperator op)
 
 
 //------------------------------------------------------------------------------
-GSearchQueryNode::GSearchQueryNode(GSession* session,const RString& str,bool type)
-	: RNode<GSearchQuery,GSearchQueryNode,true>(), Type(nConcept)
+GSearchQueryNode::GSearchQueryNode(GConcept* concept,GSearchToken::tType type)
+	: RNode<GSearchQuery,GSearchQueryNode,true>(), Type(nToken)
 {
-	if(type)
-	{
-		// Find the right most :
-		int Pos(str.Find(':',-1));
-		RString ConceptType(str.Mid(0,Pos));
-		RString Concept(str.Mid(Pos+1));
-		GConceptType* Type(session->GetObj(pConceptType,ConceptType,false));
-		Value.Concept=session->InsertObj(pConcept,Type,Concept);
-	}
-	else
-	{
-		GLang* Lang(GALILEIApp->GetPlugIn<GLang>("Lang","en"));
-		GConceptType* Terms(session->GetObj(pConceptType,"Terms",false));
-		Value.Concept=session->InsertObj(pConcept,Terms,Lang->GetStemming(str.Trim()));
-	}
+	Value.Token=new GSearchToken(concept,type);
+}
+
+
+//------------------------------------------------------------------------------
+GSearchQueryNode::GSearchQueryNode(GSession* session,const RString& token,GSearchToken::tType type)
+	: RNode<GSearchQuery,GSearchQueryNode,true>(), Type(nToken)
+{
+	Value.Token=new GSearchToken(session,token,type);
 }
 
 
@@ -86,11 +82,11 @@ GSearchQueryNode::tOperator GSearchQueryNode::GetOperator(void) const
 
 
 //------------------------------------------------------------------------------
-GConcept* GSearchQueryNode::GetConcept(void) const
+GSearchToken* GSearchQueryNode::GetToken(void) const
 {
-	if(Type!=nConcept)
-		mThrowGException("Query token is not a concept");
-	return(Value.Concept);
+	if(Type!=nToken)
+		mThrowGException("Query token is not a keyword");
+	return(Value.Token);
 }
 
 
@@ -123,4 +119,12 @@ GSearchQueryNode::tOperator GSearchQueryNode::GetNotOperator(const RChar c)
 	if(c=='.')
 		return(oNSIB);
 	return(oNOP);
+}
+
+
+//------------------------------------------------------------------------------
+GSearchQueryNode::~GSearchQueryNode(void)
+{
+	if(Type==nToken)
+		delete Value.Token;
 }

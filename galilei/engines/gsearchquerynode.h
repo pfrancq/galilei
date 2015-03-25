@@ -37,7 +37,7 @@
 // include files for R/GALILEI Projects
 #include <rnode.h>
 #include <rstring.h>
-#include <galilei.h>
+#include <gsearchtoken.h>
 
 
 //------------------------------------------------------------------------------
@@ -46,34 +46,29 @@ namespace GALILEI{
 
 
 //------------------------------------------------------------------------------
-
-
-
-//------------------------------------------------------------------------------
 /**
- * The GSearchQueryNode class provides a representation of a query node. In practice,
- * it maintains either an operator or a pointer to a concept.
- * @short Query Node
- * @warning Actually, it is supposes that the word submitted is in English and
- * is stemmed.
+ * The GSearchQueryNode class provides a representation of a query node. In
+ * practice, a node is either an operator or a token.
+ * @short Search Query Node
  */
-class GSearchQueryNode : public R::RNode<GSearchQuery,GSearchQueryNode,true>
+class GSearchQueryNode : protected R::RNode<GSearchQuery,GSearchQueryNode,true>
 {
 public:
 
 	/**
 	 * A query is a tree composed from nodes which are either operators or concepts.
-	 * @short Query Token Type.
+	 * @short Query Node Type.
 	 */
 	enum tNode
 	{
-		nOperator,              /** The token is an operator.*/
-		nConcept                /** The token is a concept.*/
+		nOperator,              /** The node is an operator.*/
+		nToken                  /** The node is a token.*/
 	};
 
 	/**
 	 * Several operators can be used in a structured query. Besides the classical
 	 * Boolean operators, some operators allow hierarchical relations.
+	 * @short Query Operator Type.
 	 */
 	enum tOperator
 	{
@@ -81,14 +76,14 @@ public:
 		oNOT,                   /** NOT operator.*/
 		oOR,                    /** OR operator.*/
 		oAND,                   /** AND operator.*/
-		oINC,                   /** INCLUSION operator. "a INC b" supposes that 'b'
-											  is a concept that must appear in a child node of
-											  ones containing 'a'.*/
-		oSIB,                  /** SIBLING operator. "a SIB b" supposes that 'a' and
-											 'b' must appear in the same node.*/
-		oNAND,                 /** NOT AND operator.*/
-		oNINC,                 /** NOT INCLUSION operator.*/
-		oNSIB                  /** NOT SUBLING operator.*/
+		oINC,                   /** INCLUSION operator. "a INC b" supposes that
+										    'b' is a concept that must appear in a child
+										     node of ones containing 'a'.*/
+		oSIB,							/** SIBLING operator. "a SIB b" supposes that 'a'
+										    and 'b' must appear in the same node.*/
+		oNAND,						/** NOT AND operator.*/
+		oNINC,						/** NOT INCLUSION operator.*/
+		oNSIB							/** NOT SUBLING operator.*/
 	};
 
 private:
@@ -109,9 +104,9 @@ private:
 		tOperator Operator;
 
 		/**
-		 * The node corresponds to a concept.
+		 * The node corresponds to a token.
 		 */
-		GConcept* Concept;
+		GSearchToken* Token;
 	}
 	Value;
 
@@ -124,32 +119,63 @@ public :
 	GSearchQueryNode(tOperator op);
 
 	/**
-	 * Construct a concept node.
-    * @param session        Session needed to search for the concept
-	 *                       corresponding to a string.
-    * @param str            String that is a concept.
-	 * @param type           String defines a type.
+	 * Construct a token.
+    * @param session        Session.
+    * @param concept        Concept.
     */
-	GSearchQueryNode(GSession* session,const R::RString& str,bool type);
+	GSearchQueryNode(GConcept* concept,GSearchToken::tType type);
 
 	/**
+	 * Construct a token.
+    * @param session        Session.
+    * @param token          String containing the token.
+	 * @param type           Type of the token.
+    */
+	GSearchQueryNode(GSession* session,const R::RString& token,GSearchToken::tType type);
+
+	/**
+    * @return the first child node. If null, the node has no children.
+    */
+	GSearchQueryNode* GetFirst(void) const {return(R::RNode<GSearchQuery,GSearchQueryNode,true>::GetFirst());}
+
+	/**
+    * @return the last child node. If null, the node has no children.
+    */
+	GSearchQueryNode* GetLast(void) const {return(R::RNode<GSearchQuery,GSearchQueryNode,true>::GetLast());}
+
+	/**
+	 * Get the type of the bode.
     * @return the type of the node.
     */
 	tNode GetType(void) const {return(Type);}
 
 	/**
-    * @return the operator of the node.
+	 * Look if the node is an operator.
+    * @return true if the node is an operator.
+    */
+	bool IsOperator(void) const {return(Type==nOperator);}
+
+	/**
+	 * Look if the node is a token.
+    * @return true if the node is a token.
+    */
+	bool IsToken(void) const {return(Type==nToken);}
+
+	/**
+    * Get the operator.
+	 * @return the operator of the node.
 	 * @exception an exception is generated if the node doesn't contain an
 	 * operator.
     */
 	tOperator GetOperator(void) const;
 
 	/**
-    * @return a pointer to a concept.
+	 * Get the token corresponding to the node.
+    * @return a string.
 	 * @exception an exception is generated if the node doesn't contain a
-	 * concept.
+	 * token.
     */
-	GConcept* GetConcept(void) const;
+	GSearchToken* GetToken(void) const;
 
 	/**
 	 * Look if a character correspond to a given operator.
@@ -166,7 +192,15 @@ public :
 	 */
 	static tOperator GetNotOperator(const R::RChar c);
 
+	/**
+	 * Destructor.
+    */
+	~GSearchQueryNode(void);
+
+	friend class GSearchQuery;
+	friend class R::RNode<GSearchQuery,GSearchQueryNode,true>;
 	friend class R::RTree<GSearchQuery,GSearchQueryNode,true>;
+	friend class R::RNodeCursor<GSearchQuery,GSearchQueryNode>;
 };
 
 

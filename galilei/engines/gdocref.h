@@ -97,13 +97,13 @@ public:
 	void Clear(void);
 
 	/**
-	 * Add a fragment.
+	 * Add a fragment related to a given node.
 	 * @param node           Concept node associated to the fragment.
 	 * @param pos            Position of the concept node that identifies the
 	 *                       fragment.
 	 * @param spos           Syntactic position of the fragment centre.
 	 * @param begin          Beginning of the fragment.
-	 * @param ending         Ending of the fragment.
+	 * @param end            Ending of the fragment.
 	 * @param children       Must all the children be considered as selecting the
 	 *                       fragment (true) or not (false).
 	 * @param exist          Set by the method to specify if the fragment already
@@ -128,7 +128,7 @@ public:
 	 *                       fragment.
 	 * @param spos           Syntactic position of the fragment centre.
 	 * @param begin          Beginning of the fragment.
-	 * @param ending         Ending of the fragment.
+	 * @param end            Ending of the fragment.
 	 * @param children       Must all the children be considered as selecting the
 	 *                       fragment (true) or not (false).
 	 * @param exist          Set by the method to specify if the fragment already
@@ -141,10 +141,24 @@ public:
 	 * Add a fragment selected by a child node. The fragment is limited to the
 	 * concept node and the child node.
 	 * @param node           Concept node associated to the fragment.
-	 * @oaram child          Child concept node use to select the concept node.
+	 * @param child          Child concept node use to select the concept node.
+	 * @param exist          Set by the method to specify if the fragment already
+	 *                       exists (true) or was created (false).
 	 * @return a pointer to a GDocFragment.
     */
-	GDocFragment* AddFragment(const GConceptNode* node,const GConceptNode* child);
+	GDocFragment* AddFragment(const GConceptNode* node,const GConceptNode* child,bool& exist);
+
+	/**
+	 * Add a document that represents the whole document.
+    * @param doc            Document.
+	 * @param child          Child concept node use to select the concept node.
+	 * @param begin          Beginning of the fragment.
+	 * @param end            Ending of the fragment.
+ 	 * @param exist          Set by the method to specify if the fragment already
+	 *                       exists (true) or was created (false).
+    * @return a pointer to a GDocFragment.
+    */
+	GDocFragment* AddFragment(GDoc* doc,const GConceptNode* child,size_t begin,size_t end,bool& exist);
 
 	/**
 	 * Copy a fragment into the container.
