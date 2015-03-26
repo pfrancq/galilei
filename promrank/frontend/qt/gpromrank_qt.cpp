@@ -52,8 +52,7 @@ public:
 	Config(void)
 	{
 		setWindowTitle("Configure Promethee Ranking Plug-In");
-		QWidget* widget=new QWidget(this);
-		setupUi(widget);
+		setupUi(this);
 		connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
 		connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 		setSizePolicy(QSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum));

@@ -225,7 +225,7 @@ void GProm::CollectOccurs(const GConceptNode* node)
 //-----------------------------------------------------------------------------
 double GProm::ComputeTfIff(GDocFragment* node)
 {
-	// If it has no children -> The whole fragment that match the query
+	// If it has no children -> The whole fragment matches the query
 	if(!node->GetNbChildren())
 		return(1000.0);
 	TmpOccurs.Clear(node->GetNbChildren());
@@ -233,6 +233,7 @@ double GProm::ComputeTfIff(GDocFragment* node)
 	// Average of the tf-iff factors of each keyword of the query in the fragment
 
 	// 1. Compute the number of occurrences of each different concept in the fragment
+
 	CollectOccurs(node->GetNode());
 
 	// 2. Compute the average weights multiply by the iff factor of each concept of the query

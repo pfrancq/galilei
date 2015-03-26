@@ -164,7 +164,7 @@ private:
 
 	/**
 	 * Compute the average idf factor for all keywords of the query contained in
-	 * a fragment.
+	 * a document.
     * @param node           Fragment.
     * @return the idf factor.
     */
@@ -195,10 +195,10 @@ private:
 	double ComputeSpecificity(GDocFragment* node);
 
 	/**
-	 * Compute the average distance between all pairs of keywords of the querying
-	 * in the fragment. The distance between two keywords in a fragment is the
-	 * size of the text window including the node corresponding to the fragment
-	 * and all keywords contained.
+	 * Compute the average distance between all pairs of keywords of the query
+	 * and in the fragment. The distance between two keywords in a fragment is
+	 * the size of the text window including the node corresponding to the
+	 * fragment and all keywords contained.
     * @param node           Fragment.
     * @return the distance factor.
     */
