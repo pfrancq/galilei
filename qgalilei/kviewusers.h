@@ -35,6 +35,7 @@
 //-----------------------------------------------------------------------------
 // include files for R/GALILEI
 #include <qgobjectslist.h>
+#include <rconfig.h>
 using namespace R;
 using namespace GALILEI;
 
@@ -54,7 +55,7 @@ class QGALILEIWin;  // forward declaration
 /**
 * The KViewUsers class provides a window to manipulate the users of the system.
 * @author Pascal Francq.
-* @short Users' Window.
+* @short Users Window.
 */
 class KViewUsers : public QMdiSubWindow, public Ui_KViewUsers
 {
@@ -72,6 +73,30 @@ public:
 	* @param win            Main window.
 	*/
 	KViewUsers(QGALILEIWin* win);
+
+	/**
+	 * Create the options in a configuration structure.
+	 * @param config         Configuration structure.
+    */
+	static void createOptions(R::RConfig& config);
+
+	/**
+	 * Read the options of a configuration structure.
+	 * @param config         Configuration structure.
+	 */
+	static void readOptions(R::RConfig& config);
+
+	/**
+	 * Save the options of a configuration structure.
+	* @param config         Configuration structure.
+	 */
+	static void saveOptions(R::RConfig& config);
+
+	/**
+	 * Resize the window.
+    * @param resizeEvent    Event.
+    */
+	virtual void resizeEvent(QResizeEvent* resizeEvent);
 
 public slots:
 

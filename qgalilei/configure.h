@@ -116,14 +116,22 @@ public:
 	void exec(void);
 
 	/**
-	 * Read the options of a configuration file.
-	 */
-	static void readOptions(void);
+	 * Create the options in a configuration structure.
+	 * @param config         Configuration structure.
+    */
+	static void createOptions(RConfig& config);
 
 	/**
-	 * Save the options of a configuration file.
+	 * Read the options of a configuration structure.
+	 * @param config         Configuration structure.
 	 */
-	static void saveOptions(void);
+	static void readOptions(RConfig& config);
+
+	/**
+	 * Save the options of a configuration structure.
+	* @param config         Configuration structure.
+	 */
+	static void saveOptions(RConfig& config);
 
 private:
 

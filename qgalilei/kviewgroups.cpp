@@ -27,11 +27,25 @@
 
 
 
+//-----------------------------------------------------------------------------
+// includes files for Qt
+#include <QResizeEvent>
+
+
 //------------------------------------------------------------------------------
 // include files for current application
 #include <kviewgroups.h>
 #include <qgalileiwin.h>
 #include <kapplication.h>
+
+
+//-----------------------------------------------------------------------------
+// static sizes
+static int CommunityWidth;
+static int CommunityHeight;
+static int TopicWidth;
+static int TopicHeight;
+
 
 
 //-----------------------------------------------------------------------------
@@ -70,6 +84,41 @@ KViewTopics::KViewTopics(QGALILEIWin* win)
 	connect(What,SIGNAL(returnPressed()),this,SLOT(FindNext()));
 	connect(Search,SIGNAL(clicked()),this,SLOT(FindNext()));
 	Objects->Set(Win->getSession(),QGObjectsList::Topics);
+	resize(TopicWidth,TopicHeight);
+}
+
+
+
+//------------------------------------------------------------------------------
+void KViewTopics::createOptions(RConfig& config)
+{
+	config.InsertParam(new RParamValue("KViewTopics::Width",300));
+	config.InsertParam(new RParamValue("KViewTopics::Height",200));
+}
+
+
+//------------------------------------------------------------------------------
+void KViewTopics::readOptions(RConfig& config)
+{
+	TopicWidth=config.GetInt("KViewTopics::Width");
+	TopicHeight=config.GetInt("KViewTopics::Height");
+}
+
+
+//------------------------------------------------------------------------------
+void KViewTopics::saveOptions(RConfig& config)
+{
+	config.SetInt("KViewTopics::Width",TopicWidth);
+	config.SetInt("KViewTopics::Height",TopicHeight);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewTopics::resizeEvent(QResizeEvent* resizeEvent)
+{
+	QMdiSubWindow::resizeEvent(resizeEvent);
+	TopicWidth=resizeEvent->size().width();
+	TopicHeight=resizeEvent->size().height();
 }
 
 
@@ -105,6 +154,40 @@ KViewCommunities::KViewCommunities(QGALILEIWin* win)
 	connect(What,SIGNAL(returnPressed()),this,SLOT(FindNext()));
 	connect(Search,SIGNAL(clicked()),this,SLOT(FindNext()));
 	Objects->Set(Win->getSession(),QGObjectsList::Communities);
+	resize(CommunityWidth,CommunityHeight);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewCommunities::createOptions(RConfig& config)
+{
+	config.InsertParam(new RParamValue("KViewCommunities::Width",300));
+	config.InsertParam(new RParamValue("KViewCommunities::Height",200));
+}
+
+
+//------------------------------------------------------------------------------
+void KViewCommunities::readOptions(RConfig& config)
+{
+	CommunityWidth=config.GetInt("KViewCommunities::Width");
+	CommunityHeight=config.GetInt("KViewCommunities::Height");
+}
+
+
+//------------------------------------------------------------------------------
+void KViewCommunities::saveOptions(RConfig& config)
+{
+	config.SetInt("KViewCommunities::Width",CommunityWidth);
+	config.SetInt("KViewCommunities::Height",CommunityHeight);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewCommunities::resizeEvent(QResizeEvent* resizeEvent)
+{
+	QMdiSubWindow::resizeEvent(resizeEvent);
+	CommunityWidth=resizeEvent->size().width();
+	CommunityHeight=resizeEvent->size().height();
 }
 
 

@@ -2,12 +2,11 @@
 
 	GALILEI Research Project
 
-	KViewDicts.h
+	KViewDocs.h
 
-	Window to show all the dictionaries - Header.
+	Window for manipulating the documents - Header.
 
 	Copyright 2001-2015 by Pascal Francq (pascal@francq.info).
-	Copyright 2001-2004 by David Wartel.
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -30,15 +29,13 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef KViewDictsH
-#define KViewDictsH
-
+#ifndef KViewDocsH
+#define KViewDocsH
 
 //-----------------------------------------------------------------------------
 // include files for R/GALILEI
-#include <rcontainer.h>
-#include <gconcepttype.h>
-#include <gstatement.h>
+#include <qgobjectslist.h>
+#include <rconfig.h>
 using namespace R;
 using namespace GALILEI;
 
@@ -48,46 +45,34 @@ using namespace GALILEI;
 #include <QtGui/QMdiSubWindow>
 
 
-//---------------------------------------------------------------------------
-// include files for current application
-#include <ui_kviewdicts.h>
+//-----------------------------------------------------------------------------
+//include files for current application
+#include <ui_kviewdocs.h>
+class QGALILEIWin;  // forward declaration
 
-
-//---------------------------------------------------------------------------
-// forward declaration
-class QGALILEIWin;
 
 //-----------------------------------------------------------------------------
 /**
-* The KViewDicts class provides a window to list all the dictionaries.
-* @author Pascal Francq
-* @short Dictionaries Window.
+* The KViewDocs class provides a window to manipulate the users of the system.
+* @author Pascal Francq.
+* @short Documents Window.
 */
-class KViewDicts : public QMdiSubWindow, public Ui_KViewDicts
+class KViewDocs : public QMdiSubWindow, public Ui_KViewDocs
 {
 	Q_OBJECT
 
 	/**
-	* Current concept type.
-	*/
-	GConceptType* CurDict;
-
-	/**
-	 * Window.
+	 * Main window.
 	 */
 	QGALILEIWin* Win;
 
 public:
 
 	/**
-	* Constructor for the view
+	* Construct the widget.
+	* @param win            Main window.
 	*/
-	KViewDicts(QGALILEIWin* win);
-
-	/**
-	* Creates the list of dictionaries.
-	*/
-	void create(void);
+	KViewDocs(QGALILEIWin* win);
 
 	/**
 	 * Create the options in a configuration structure.
@@ -113,60 +98,19 @@ public:
     */
 	virtual void resizeEvent(QResizeEvent* resizeEvent);
 
-private:
+public slots:
 
 	/**
-	 * Build a string representing a concept.
-	*/
-	QString BuildConcept(GConcept* concept);
-
-protected slots:
-
-	/**
-	 * Update the window.
+	 * Update the list.
 	 */
 	void update(void);
-
-	/**
-	* A given dictionary was select.
-	* @param item            Item.
-	* @param col             Column.
-	*/
-	void selectDict(QTreeWidgetItem* item,int col);
-
-	/**
-	* a given concept was selected.
-	* @param item            Item.
-	* @param col             Column.
-	*/
-	void selectConcept(QTreeWidgetItem* item,int col);
-
-	/**
-	 * The user want to create a new concept.
-	 */
-	void newConcept(void);
-
-	/**
-	 * The user want to delete the current concept.
-	 */
-	void delConcept(void);
-
-	/**
-	 * The user want to create a new statement.
-	 */
-	void newStatement(void);
-
-	/**
-	 * The user want to delete the current statement.
-	 */
-	void delStatement(void);
 
 public:
 
 	/**
-	* Destruct for the main view.
+	* Destruct the widget.
 	*/
-	~KViewDicts(void);
+	~KViewDocs(void);
 };
 
 

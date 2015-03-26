@@ -49,6 +49,7 @@
 // include files for Qt
 #include <QtGui/QInputDialog>
 #include <QMessageBox>
+#include <QResizeEvent>
 
 
 //-----------------------------------------------------------------------------
@@ -56,6 +57,12 @@
 #include <kviewdicts.h>
 #include <qgalileiwin.h>
 #include <qsessionprogress.h>
+
+
+//-----------------------------------------------------------------------------
+// static sizes
+static int Width;
+static int Height;
 
 
 
@@ -163,6 +170,7 @@ KViewDicts::KViewDicts(QGALILEIWin* win)
 	connect(DelConcept,SIGNAL(pressed()),this,SLOT(delConcept()));
 	connect(NewStatement,SIGNAL(pressed()),this,SLOT(newStatement()));
 	connect(DelStatement,SIGNAL(pressed()),this,SLOT(delStatement()));
+	resize(Width,Height);
 }
 
 
@@ -177,6 +185,39 @@ void KViewDicts::create(void)
 	//connect(&Task,SIGNAL(finish()),this,SLOT(update()));
 	Task.run();
 	update();
+}
+
+
+//------------------------------------------------------------------------------
+void KViewDicts::createOptions(RConfig& config)
+{
+	config.InsertParam(new RParamValue("KViewDicts::Width",400));
+	config.InsertParam(new RParamValue("KViewDicts::Height",300));
+}
+
+
+//------------------------------------------------------------------------------
+void KViewDicts::readOptions(RConfig& config)
+{
+	Width=config.GetInt("KViewDicts::Width");
+	Height=config.GetInt("KViewDicts::Height");
+}
+
+
+//------------------------------------------------------------------------------
+void KViewDicts::saveOptions(RConfig& config)
+{
+	config.SetInt("KViewDicts::Width",Width);
+	config.SetInt("KViewDicts::Height",Height);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewDicts::resizeEvent(QResizeEvent* resizeEvent)
+{
+	QMdiSubWindow::resizeEvent(resizeEvent);
+	Width=resizeEvent->size().width();
+	Height=resizeEvent->size().height();
 }
 
 

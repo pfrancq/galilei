@@ -163,8 +163,7 @@ QCreateDatabase::QCreateDatabase(QGALILEIWin* parent)
 	: QDialog(parent), Ui_QCreateDatabase(), Win(parent)
 {
 	setWindowTitle("Fill Database");
-	QWidget* widget=new QWidget(this);
-	setupUi(widget);
+	setupUi(this);
 }
 
 

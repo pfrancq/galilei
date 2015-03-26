@@ -11,6 +11,7 @@ SET(qgalilei_SOURCES
 	preferences.cpp
 	kviewdicts.cpp
 	kviewdoc.cpp
+	kviewdocs.cpp
 	kviewmetaengine.cpp
 	kviewprg.cpp
 	kprgconsole.cpp
@@ -34,6 +35,7 @@ SET(qgalilei_HEADERS
 	preferences.h
 	kviewdicts.h
 	kviewdoc.h
+	kviewdocs.h
 	kviewmetaengine.h
 	kviewprg.h
 	kprgconsole.h
@@ -56,6 +58,7 @@ SET(qgalilei_FORMS
 	preferences.ui
 	kviewdicts.ui
 	kviewdoc.ui
+	kviewdocs.ui
 	addfdbkdlg.ui
 	kviewmetaengine.ui
 	kviewprg.ui

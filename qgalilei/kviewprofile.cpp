@@ -37,7 +37,8 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for Qt/KDE
+// include files for Qt
+#include <QResizeEvent>
 
 
 //-----------------------------------------------------------------------------
@@ -45,6 +46,12 @@
 #include <kviewprofile.h>
 #include <qsessionprogress.h>
 #include <qgalileiwin.h>
+
+
+//-----------------------------------------------------------------------------
+// static sizes
+static int Width;
+static int Height;
 
 
 
@@ -73,6 +80,40 @@ KViewProfile::KViewProfile(QGALILEIWin* win,GProfile* profile)
 	connect(Win,SIGNAL(profilesChanged()),this,SLOT(updateProfile()));
 	connect(Win,SIGNAL(communitiesChanged()),this,SLOT(updateCommunity()));
 	connect(Community,SIGNAL(Show(GProfile*)),Win,SLOT(showProfile(GProfile*)));
+	resize(Width,Height);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewProfile::createOptions(RConfig& config)
+{
+	config.InsertParam(new RParamValue("KViewProfile::Width",200));
+	config.InsertParam(new RParamValue("KViewProfile::Height",200));
+}
+
+
+//------------------------------------------------------------------------------
+void KViewProfile::readOptions(RConfig& config)
+{
+	Width=config.GetInt("KViewProfile::Width");
+	Height=config.GetInt("KViewProfile::Height");
+}
+
+
+//------------------------------------------------------------------------------
+void KViewProfile::saveOptions(RConfig& config)
+{
+	config.SetInt("KViewProfile::Width",Width);
+	config.SetInt("KViewProfile::Height",Height);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewProfile::resizeEvent(QResizeEvent* resizeEvent)
+{
+	QMdiSubWindow::resizeEvent(resizeEvent);
+	Width=resizeEvent->size().width();
+	Height=resizeEvent->size().height();
 }
 
 

@@ -46,16 +46,22 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-// include files for Qt/KDE
-#include <kprogressdialog.h>
+// include files for Qt
 #include <QtGui/QMessageBox>
 #include <QtGui/QTableWidget>
 #include <QProgressDialog>
+#include <QResizeEvent>
 
 
 //-----------------------------------------------------------------------------
 // application specific includes
 #include <kviewstats.h>
+
+
+//-----------------------------------------------------------------------------
+// static sizes
+static int Width;
+static int Height;
 
 
 
@@ -77,6 +83,7 @@ KViewStats::KViewStats(void)
 	connect(Stats,SIGNAL(currentChanged(int)),this,SLOT(tabChanged(int)));
 	connect(Sorting,SIGNAL(stateChanged(int)),this,SLOT(checkSorting(int)));
 	ComputeStats();
+	resize(Width,Height);
 }
 
 
@@ -193,6 +200,39 @@ void KViewStats::ComputeStats(void)
 	}
 	Dlg.setValue(i);
 	Stats->setCurrentIndex(0);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewStats::createOptions(RConfig& config)
+{
+	config.InsertParam(new RParamValue("KViewStats::Width",200));
+	config.InsertParam(new RParamValue("KViewStats::Height",200));
+}
+
+
+//------------------------------------------------------------------------------
+void KViewStats::readOptions(RConfig& config)
+{
+	Width=config.GetInt("KViewStats::Width");
+	Height=config.GetInt("KViewStats::Height");
+}
+
+
+//------------------------------------------------------------------------------
+void KViewStats::saveOptions(RConfig& config)
+{
+	config.SetInt("KViewStats::Width",Width);
+	config.SetInt("KViewStats::Height",Height);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewStats::resizeEvent(QResizeEvent* resizeEvent)
+{
+	QMdiSubWindow::resizeEvent(resizeEvent);
+	Width=resizeEvent->size().width();
+	Height=resizeEvent->size().height();
 }
 
 

@@ -75,6 +75,7 @@ Preferences::Preferences(QGALILEIWin* win)
 	connect(buttonDel,SIGNAL(pressed()),this,SLOT(slotDelDir()));
 	connect(EditStorage,SIGNAL(pressed()),this,SLOT(editIndexDir()));
 	connect(EditScript,SIGNAL(pressed()),this,SLOT(editScriptDir()));
+	adjustSize();
 }
 
 

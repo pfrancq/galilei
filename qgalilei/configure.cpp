@@ -190,10 +190,10 @@ Configure::Configure(QGALILEIWin* win)
 	: QDialog(win), Ui_Configure(), Types(10), CurType(0), Win(win)
 {
 	setWindowTitle("Preferences");
-	QWidget* widget=new QWidget(this);
-	setupUi(widget);
+	setupUi(this);
 	connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
 	connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
+	adjustSize();
 }
 
 
@@ -236,40 +236,50 @@ void Configure::exec(void)
 
 
 //------------------------------------------------------------------------------
-void Configure::readOptions(void)
+void Configure::createOptions(RConfig& config)
 {
-/*	KConfig Config;
-	KConfigGroup General(&Config,"Configure");
-
-	MainTabIdx=General.readEntry("MainTabIdx",0);
-	PlugInsTabIdx=General.readEntry("PlugInsTabIdx",0);
-	DocsTabIdx=General.readEntry("DocsTabIdx",0);
-	ProfilesTabIdx=General.readEntry("ProfilesTabIdx",0);
-	CommunitiesTabIdx=General.readEntry("CommunitiesTabIdx",0);
-	SearchTabIdx=General.readEntry("SearchTabIdx",0);
-	SimulationTabIdx=General.readEntry("SimulationTabIdx",0);
-	MeasuresCatIdx=General.readEntry("MeasuresCatIdx",0);
-	ToolsCatIdx=General.readEntry("ToolsCatIdx",0);
-	FunctionsCatIdx=General.readEntry("FunctionsCatIdx",0);*/
+	config.InsertParam(new RParamValue("MainTabIdx",0));
+	config.InsertParam(new RParamValue("PlugInsTabIdx",0));
+	config.InsertParam(new RParamValue("DocsTabIdx",0));
+	config.InsertParam(new RParamValue("ProfilesTabIdx",0));
+	config.InsertParam(new RParamValue("CommunitiesTabIdx",0));
+	config.InsertParam(new RParamValue("SearchTabIdx",0));
+	config.InsertParam(new RParamValue("SimulationTabIdx",0));
+	config.InsertParam(new RParamValue("MeasuresCatIdx",0));
+	config.InsertParam(new RParamValue("ToolsCatIdx",0));
+	config.InsertParam(new RParamValue("FunctionsCatIdx",0));
 }
 
 
 //------------------------------------------------------------------------------
-void Configure::saveOptions(void)
+void Configure::readOptions(RConfig& config)
 {
-/*	KConfig Config;
-	KConfigGroup General(&Config,"Configure");
+	MainTabIdx=config.GetInt("MainTabIdx");
+	PlugInsTabIdx=config.GetInt("PlugInsTabIdx");
+	DocsTabIdx=config.GetInt("DocsTabIdx");
+	ProfilesTabIdx=config.GetInt("ProfilesTabIdx");
+	CommunitiesTabIdx=config.GetInt("CommunitiesTabIdx");
+	SearchTabIdx=config.GetInt("SearchTabIdx");
+	SimulationTabIdx=config.GetInt("SimulationTabIdx");
+	MeasuresCatIdx=config.GetInt("MeasuresCatIdx");
+	ToolsCatIdx=config.GetInt("ToolsCatIdx");
+	FunctionsCatIdx=config.GetInt("FunctionsCatIdx");
+}
 
-	General.writeEntry("MainTabIdx",MainTabIdx);
-	General.writeEntry("PlugInsTabIdx",PlugInsTabIdx);
-	General.writeEntry("DocsTabIdx",DocsTabIdx);
-	General.writeEntry("ProfilesTabIdx",ProfilesTabIdx);
-	General.writeEntry("CommunitiesTabIdx",CommunitiesTabIdx);
-	General.writeEntry("SearchTabIdx",SearchTabIdx);
-	General.writeEntry("SimulationTabIdx",SimulationTabIdx);
-	General.writeEntry("MeasuresCatIdx",MeasuresCatIdx);
-	General.writeEntry("ToolsCatIdx",ToolsCatIdx);
-	General.writeEntry("FunctionsCatIdx",FunctionsCatIdx);*/
+
+//------------------------------------------------------------------------------
+void Configure::saveOptions(RConfig& config)
+{
+	config.SetInt("MainTabIdx",MainTabIdx);
+	config.SetInt("PlugInsTabIdx",PlugInsTabIdx);
+	config.SetInt("DocsTabIdx",DocsTabIdx);
+	config.SetInt("ProfilesTabIdx",ProfilesTabIdx);
+	config.SetInt("CommunitiesTabIdx",CommunitiesTabIdx);
+	config.SetInt("SearchTabIdx",SearchTabIdx);
+	config.SetInt("SimulationTabIdx",SimulationTabIdx);
+	config.SetInt("MeasuresCatIdx",MeasuresCatIdx);
+	config.SetInt("ToolsCatIdx",ToolsCatIdx);
+	config.SetInt("FunctionsCatIdx",FunctionsCatIdx);
 }
 
 

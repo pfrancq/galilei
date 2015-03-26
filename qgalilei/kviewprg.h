@@ -34,9 +34,10 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for GALILEI
+// include files for R/GALILEI
 #include <galilei.h>
 #include <gslot.h>
+#include <rconfig.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -87,6 +88,30 @@ public:
 	* @param name           Name of the program.
 	*/
 	KViewPrg(QGALILEIWin* win,const RString& name);
+
+	/**
+	 * Create the options in a configuration structure.
+	 * @param config         Configuration structure.
+    */
+	static void createOptions(R::RConfig& config);
+
+	/**
+	 * Read the options of a configuration structure.
+	 * @param config         Configuration structure.
+	 */
+	static void readOptions(R::RConfig& config);
+
+	/**
+	 * Save the options of a configuration structure.
+	* @param config         Configuration structure.
+	 */
+	static void saveOptions(R::RConfig& config);
+
+	/**
+	 * Resize the window.
+    * @param resizeEvent    Event.
+    */
+	virtual void resizeEvent(QResizeEvent* resizeEvent);
 
 	/**
 	* The treatment for a specific document will begin.

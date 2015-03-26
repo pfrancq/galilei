@@ -28,7 +28,8 @@
 
 
 //-----------------------------------------------------------------------------
-// includes files for Qt/KDE
+// includes files for Qt
+#include <QResizeEvent>
 
 
 //-----------------------------------------------------------------------------
@@ -40,6 +41,14 @@
 // include files for current application
 #include <kviewgroup.h>
 #include <qgalileiwin.h>
+
+
+//-----------------------------------------------------------------------------
+// static sizes
+static int CommunityWidth;
+static int CommunityHeight;
+static int TopicWidth;
+static int TopicHeight;
 
 
 
@@ -72,6 +81,7 @@ template<class cGroup>
 
 
 
+
 //-----------------------------------------------------------------------------
 //
 // class KViewTopic
@@ -87,6 +97,40 @@ KViewTopic::KViewTopic(QGALILEIWin* win,GTopic* topic)
 	connect(Objects,SIGNAL(Show(GDoc*)),Win,SLOT(showDoc(GDoc*)));
 	connect(Win,SIGNAL(topicsChanged()),this,SLOT(update()));
 	update();
+	resize(TopicWidth,TopicHeight);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewTopic::createOptions(RConfig& config)
+{
+	config.InsertParam(new RParamValue("KViewTopic::Width",200));
+	config.InsertParam(new RParamValue("KViewTopic::Height",200));
+}
+
+
+//------------------------------------------------------------------------------
+void KViewTopic::readOptions(RConfig& config)
+{
+	TopicWidth=config.GetInt("KViewTopic::Width");
+	TopicHeight=config.GetInt("KViewTopic::Height");
+}
+
+
+//------------------------------------------------------------------------------
+void KViewTopic::saveOptions(RConfig& config)
+{
+	config.SetInt("KViewTopic::Width",TopicWidth);
+	config.SetInt("KViewTopic::Height",TopicHeight);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewTopic::resizeEvent(QResizeEvent* resizeEvent)
+{
+	QMdiSubWindow::resizeEvent(resizeEvent);
+	TopicWidth=resizeEvent->size().width();
+	TopicHeight=resizeEvent->size().height();
 }
 
 
@@ -113,6 +157,40 @@ KViewCommunity::KViewCommunity(QGALILEIWin* win,GCommunity* community)
 	connect(Objects,SIGNAL(Show(GProfile*)),Win,SLOT(showProfile(GProfile*)));
 	connect(Win,SIGNAL(communitiesChanged()),this,SLOT(update()));
 	update();
+	resize(CommunityWidth,CommunityHeight);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewCommunity::createOptions(RConfig& config)
+{
+	config.InsertParam(new RParamValue("KViewCommunity::Width",200));
+	config.InsertParam(new RParamValue("KViewCommunity::Height",200));
+}
+
+
+//------------------------------------------------------------------------------
+void KViewCommunity::readOptions(RConfig& config)
+{
+	CommunityWidth=config.GetInt("KViewCommunity::Width");
+	CommunityHeight=config.GetInt("KViewCommunity::Height");
+}
+
+
+//------------------------------------------------------------------------------
+void KViewCommunity::saveOptions(RConfig& config)
+{
+	config.SetInt("KViewCommunity::Width",CommunityWidth);
+	config.SetInt("KViewCommunity::Height",CommunityHeight);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewCommunity::resizeEvent(QResizeEvent* resizeEvent)
+{
+	QMdiSubWindow::resizeEvent(resizeEvent);
+	CommunityWidth=resizeEvent->size().width();
+	CommunityHeight=resizeEvent->size().height();
 }
 
 

@@ -44,12 +44,19 @@ using namespace std;
 #include <QtCore/QThread>
 #include <QtGui/QCloseEvent>
 #include <QMessageBox>
+#include <QResizeEvent>
 
 
 //-----------------------------------------------------------------------------
 // application specific includes
 #include <kviewprg.h>
 #include <qgalileiwin.h>
+
+
+//-----------------------------------------------------------------------------
+// static sizes
+static int Width;
+static int Height;
 
 
 
@@ -131,6 +138,40 @@ KViewPrg::KViewPrg(QGALILEIWin* win,const RString& name)
 	setWidget(ptr);
 	setAttribute(Qt::WA_DeleteOnClose);
 	setWindowTitle(ToQString(Name));
+	resize(Width,Height);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewPrg::createOptions(RConfig& config)
+{
+	config.InsertParam(new RParamValue("KViewPrg::Width",200));
+	config.InsertParam(new RParamValue("KViewPrg::Height",200));
+}
+
+
+//------------------------------------------------------------------------------
+void KViewPrg::readOptions(RConfig& config)
+{
+	Width=config.GetInt("KViewPrg::Width");
+	Height=config.GetInt("KViewPrg::Height");
+}
+
+
+//------------------------------------------------------------------------------
+void KViewPrg::saveOptions(RConfig& config)
+{
+	config.SetInt("KViewPrg::Width",Width);
+	config.SetInt("KViewPrg::Height",Height);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewPrg::resizeEvent(QResizeEvent* resizeEvent)
+{
+	QMdiSubWindow::resizeEvent(resizeEvent);
+	Width=resizeEvent->size().width();
+	Height=resizeEvent->size().height();
 }
 
 

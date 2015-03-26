@@ -79,6 +79,30 @@ public:
 	* Construct the widget.
 	*/
 	KViewClasses(QGALILEIWin* win);
+	
+	/**
+	 * Create the options in a configuration structure.
+	 * @param config         Configuration structure.
+    */
+	static void createOptions(R::RConfig& config);
+
+	/**
+	 * Read the options of a configuration structure.
+	 * @param config         Configuration structure.
+	 */
+	static void readOptions(R::RConfig& config);
+
+	/**
+	 * Save the options of a configuration structure.
+	* @param config         Configuration structure.
+	 */
+	static void saveOptions(R::RConfig& config);
+
+	/**
+	 * Resize the window.
+    * @param resizeEvent    Event.
+    */
+	virtual void resizeEvent(QResizeEvent* resizeEvent);
 
 protected:
 

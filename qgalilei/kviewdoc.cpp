@@ -29,9 +29,9 @@
 
 
 //------------------------------------------------------------------------------
-// include files for Qt/KDE
-#include <kmessagebox.h>
-#include <kapplication.h>
+// include files for Qt
+#include <QResizeEvent>
+#include <QMessageBox>
 
 
 //-----------------------------------------------------------------------------
@@ -51,6 +51,11 @@
 #include <rstringbuilder.h>
 
 
+//-----------------------------------------------------------------------------
+// static sizes
+static int Width;
+static int Height;
+
 
 //-----------------------------------------------------------------------------
 //
@@ -62,8 +67,8 @@
 AddFdbkDlg::AddFdbkDlg(GSession* session,QWidget* parent)
 	: QDialog(parent), Ui_AddFdbkDlg(), Session(session), User(0)
 {
-	QWidget* widget=new QWidget(this);
-	setupUi(widget);
+	//QWidget* widget=new QWidget(this);
+	setupUi(this);
 
 	connect(cbUsers,SIGNAL(activated(const QString&)),this,SLOT(slotChangeUser(const QString&)));
 	RCursor<GUser> Users(Session->GetObjs(static_cast<GUser*>(0)));
@@ -138,6 +143,39 @@ KViewDoc::KViewDoc(QGALILEIWin* win,const RURI& file)
 }
 
 
+//------------------------------------------------------------------------------
+void KViewDoc::createOptions(RConfig& config)
+{
+	config.InsertParam(new RParamValue("KViewDoc::Width",200));
+	config.InsertParam(new RParamValue("KViewDoc::Height",200));
+}
+
+
+//------------------------------------------------------------------------------
+void KViewDoc::readOptions(RConfig& config)
+{
+	Width=config.GetInt("KViewDoc::Width");
+	Height=config.GetInt("KViewDoc::Height");
+}
+
+
+//------------------------------------------------------------------------------
+void KViewDoc::saveOptions(RConfig& config)
+{
+	config.SetInt("KViewDoc::Width",Width);
+	config.SetInt("KViewDoc::Height",Height);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewDoc::resizeEvent(QResizeEvent* resizeEvent)
+{
+	QMdiSubWindow::resizeEvent(resizeEvent);
+	Width=resizeEvent->size().width();
+	Height=resizeEvent->size().height();
+}
+
+
 //-----------------------------------------------------------------------------
 void KViewDoc::setUp(void)
 {
@@ -159,6 +197,7 @@ void KViewDoc::setUp(void)
 	Assessments->Set(QGObjectsList::Assessments,Document);
 	connect(AddFeedback,SIGNAL(pressed()),this,SLOT(newFdbk()));
 	connect(Win,SIGNAL(docsChanged()),this,SLOT(update()));
+	resize(Width,Height);
 }
 
 

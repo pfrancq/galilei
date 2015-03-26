@@ -47,14 +47,21 @@ using namespace std;
 
 
 //-----------------------------------------------------------------------------
-// include files for Qt/KDE
+// include files for Qt
 #include <QtGui/QInputDialog>
+#include <QResizeEvent>
 
 
 //-----------------------------------------------------------------------------
 // application specific includes
 #include <kviewusers.h>
 #include <qgalileiwin.h>
+
+
+//-----------------------------------------------------------------------------
+// static sizes
+static int Width;
+static int Height;
 
 
 
@@ -79,6 +86,40 @@ KViewUsers::KViewUsers(QGALILEIWin* win)
 	connect(ModifyProfile,SIGNAL(clicked()),this,SLOT(slotModifyProfile()));
 	connect(List,SIGNAL(Show(GProfile*)),Win,SLOT(showProfile(GProfile*)));
 	List->Set(Win->getSession(),QGObjectsList::Users);
+	resize(Width,Height);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewUsers::createOptions(RConfig& config)
+{
+	config.InsertParam(new RParamValue("KViewUsers::Width",300));
+	config.InsertParam(new RParamValue("KViewUsers::Height",200));
+}
+
+
+//------------------------------------------------------------------------------
+void KViewUsers::readOptions(RConfig& config)
+{
+	Width=config.GetInt("KViewUsers::Width");
+	Height=config.GetInt("KViewUsers::Height");
+}
+
+
+//------------------------------------------------------------------------------
+void KViewUsers::saveOptions(RConfig& config)
+{
+	config.SetInt("KViewUsers::Width",Width);
+	config.SetInt("KViewUsers::Height",Height);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewUsers::resizeEvent(QResizeEvent* resizeEvent)
+{
+	QMdiSubWindow::resizeEvent(resizeEvent);
+	Width=resizeEvent->size().width();
+	Height=resizeEvent->size().height();
 }
 
 

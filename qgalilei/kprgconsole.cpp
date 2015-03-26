@@ -38,12 +38,11 @@ using namespace R;
 // include files for GALILEI
 #include <gsession.h>
 #include <rqt.h>
-using namespace R;
-using namespace GALILEI;
+using namespace R;using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-// includes files for Qt/KDE
+// includes files for Qt
 #include <qvariant.h>
 #include <qpushbutton.h>
 #include <qlabel.h>
@@ -52,12 +51,19 @@ using namespace GALILEI;
 #include <qtooltip.h>
 #include <qwhatsthis.h>
 #include <qevent.h>
+#include <QResizeEvent>
 
 
 //-----------------------------------------------------------------------------
 // include files for current application
 #include <kprgconsole.h>
 #include <qsessionprogress.h>
+
+
+//-----------------------------------------------------------------------------
+// static sizes
+static int Width;
+static int Height;
 
 
 
@@ -78,6 +84,40 @@ KPrgConsole::KPrgConsole(void)
 	setWindowTitle("Console");
 	Prg=new GGALILEIPrg(Results);
 	connect(Results,SIGNAL(EnterCmd(QString)),this,SLOT(RunCmd(QString)));
+	resize(Width,Height);
+}
+
+
+//------------------------------------------------------------------------------
+void KPrgConsole::createOptions(RConfig& config)
+{
+	config.InsertParam(new RParamValue("KPrgConsole::Width",200));
+	config.InsertParam(new RParamValue("KPrgConsole::Height",200));
+}
+
+
+//------------------------------------------------------------------------------
+void KPrgConsole::readOptions(RConfig& config)
+{
+	Width=config.GetInt("KPrgConsole::Width");
+	Height=config.GetInt("KPrgConsole::Height");
+}
+
+
+//------------------------------------------------------------------------------
+void KPrgConsole::saveOptions(RConfig& config)
+{
+	config.SetInt("KPrgConsole::Width",Width);
+	config.SetInt("KPrgConsole::Height",Height);
+}
+
+
+//------------------------------------------------------------------------------
+void KPrgConsole::resizeEvent(QResizeEvent* resizeEvent)
+{
+	QMdiSubWindow::resizeEvent(resizeEvent);
+	Width=resizeEvent->size().width();
+	Height=resizeEvent->size().height();
 }
 
 

@@ -58,6 +58,7 @@
 #include <preferences.h>
 #include <configure.h>
 #include <kviewdoc.h>
+#include <kviewdocs.h>
 #include <kviewmetaengine.h>
 #include <kprgconsole.h>
 #include <kviewprg.h>
@@ -291,7 +292,6 @@ void QGALILEIWin::console(void)
 {
 	KPrgConsole* ptr(new KPrgConsole());
 	Desktop->addSubWindow(ptr);
-	ptr->adjustSize();
 	ptr->show();
 }
 
@@ -304,7 +304,6 @@ void QGALILEIWin::runScript(void)
 		return;
 	KViewPrg* ptr(new KViewPrg(this,FromQString(file)));
 	Desktop->addSubWindow(ptr);
-	ptr->adjustSize();
 	ptr->show();
 }
 
@@ -314,7 +313,6 @@ void QGALILEIWin::statistics(void)
 {
 	KViewStats* ptr(new KViewStats());
 	Desktop->addSubWindow(ptr);
-	ptr->adjustSize();
 	ptr->show();
 }
 
@@ -382,7 +380,6 @@ void QGALILEIWin::showDicts(void)
 {
 	KViewDicts* ptr(new KViewDicts(this));
 	Desktop->addSubWindow(ptr);
-	ptr->adjustSize();
 	ptr->show();
 	ptr->create();
 }
@@ -391,12 +388,8 @@ void QGALILEIWin::showDicts(void)
 //-----------------------------------------------------------------------------
 void QGALILEIWin::showDocs(void)
 {
-	QGObjectsList* ptr(new QGObjectsList());
-	connect(ptr,SIGNAL(Show(GDoc*)),this,SLOT(showDoc(GDoc*)));
-	ptr->setAttribute(Qt::WA_DeleteOnClose);
-	Desktop->addSubWindow(ptr)->setWindowTitle("Documents");
-	ptr->Set(Session,QGObjectsList::Docs);
-	ptr->adjustSize();
+	KViewDocs* ptr(new KViewDocs(this));
+	Desktop->addSubWindow(ptr);
 	ptr->show();
 }
 
@@ -406,7 +399,6 @@ void QGALILEIWin::showDoc(GDoc* doc)
 {
 	KViewDoc* ptr(new KViewDoc(this,doc));
 	Desktop->addSubWindow(ptr);
-	ptr->adjustSize();
 	ptr->show();
 }
 
@@ -539,7 +531,6 @@ void QGALILEIWin::analyzeDoc(void)
 		return;
 	KViewDoc* ptr(new KViewDoc(this,FromQString(file)));
 	Desktop->addSubWindow(ptr);
-	ptr->adjustSize();
 	ptr->show();
 	ptr->AnalyzeDoc();
 }
@@ -550,7 +541,6 @@ void QGALILEIWin::showClasses(void)
 {
 	KViewClasses* ptr(new KViewClasses(this));
 	Desktop->addSubWindow(ptr);
-	ptr->adjustSize();
 	ptr->show();
 }
 
@@ -560,7 +550,6 @@ void QGALILEIWin::showClass(GClass* theclass)
 {
 	KViewClass* ptr(new KViewClass(this,theclass));
 	Desktop->addSubWindow(ptr);
-	ptr->adjustSize();
 	ptr->show();
 }
 
@@ -594,7 +583,6 @@ void QGALILEIWin::showTopics(void)
 {
 	KViewTopics* ptr(new KViewTopics(this));
 	Desktop->addSubWindow(ptr);
-	ptr->adjustSize();
 	ptr->show();
 }
 
@@ -604,7 +592,6 @@ void QGALILEIWin::showTopic(GTopic* topic)
 {
 	KViewTopic* ptr(new KViewTopic(this,topic));
 	Desktop->addSubWindow(ptr);
-	ptr->adjustSize();
 	ptr->show();
 }
 
@@ -625,7 +612,6 @@ void QGALILEIWin::showUsers(void)
 {
 	KViewUsers* ptr(new KViewUsers(this));
 	Desktop->addSubWindow(ptr);
-	ptr->adjustSize();
 	ptr->show();
 }
 
@@ -635,7 +621,6 @@ void QGALILEIWin::showProfile(GProfile* profile)
 {
 	KViewProfile* ptr(new KViewProfile(this,profile));
 	Desktop->addSubWindow(ptr);
-	ptr->adjustSize();
 	ptr->show();
 }
 
@@ -674,7 +659,6 @@ void QGALILEIWin::showCommunities(void)
 {
 	KViewCommunities* ptr(new KViewCommunities(this));
 	Desktop->addSubWindow(ptr);
-	ptr->adjustSize();
 	ptr->show();
 }
 
@@ -684,7 +668,6 @@ void QGALILEIWin::showCommunity(GCommunity* community)
 {
 	KViewCommunity* ptr(new KViewCommunity(this,community));
 	Desktop->addSubWindow(ptr);
-	ptr->adjustSize();
 	ptr->show();
 }
 
@@ -709,7 +692,6 @@ void QGALILEIWin::queryMetaEngine(void)
 	}
 	KViewMetaEngine* ptr(new KViewMetaEngine(this));
 	Desktop->addSubWindow(ptr);
-	ptr->adjustSize();
 	ptr->show();
 }
 
@@ -817,7 +799,6 @@ void QGALILEIWin::compareIdealCommunities(void)
 		QApplication::setOverrideCursor(Qt::WaitCursor);
 		KViewIdealCommunities* ptr(new KViewIdealCommunities(this));
 		Desktop->addSubWindow(ptr);
-		ptr->adjustSize();
 		ptr->show();
 	}
 	catch(GALILEI::GException& e)
@@ -851,7 +832,6 @@ void QGALILEIWin::compareIdealTopics(void)
 		QApplication::setOverrideCursor(Qt::WaitCursor);
 		KViewIdealTopics* ptr(new KViewIdealTopics(this));
 		Desktop->addSubWindow(ptr);
-		ptr->adjustSize();
 		ptr->show();
 		QApplication::setOverrideCursor(Qt::ArrowCursor);
 	}
@@ -886,7 +866,6 @@ void QGALILEIWin::compareIdealClasses(void)
 		QApplication::setOverrideCursor(Qt::WaitCursor);
 		KViewIdealClasses* ptr(new KViewIdealClasses(this));
 		Desktop->addSubWindow(ptr);
-		ptr->adjustSize();
 		ptr->show();
 		QApplication::setOverrideCursor(Qt::ArrowCursor);
 	}

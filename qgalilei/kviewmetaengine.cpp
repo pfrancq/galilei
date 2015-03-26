@@ -44,10 +44,21 @@
 
 
 //-----------------------------------------------------------------------------
+// includes files for Qt
+#include <QResizeEvent>
+
+
+//-----------------------------------------------------------------------------
 // include files for current application
 #include <kviewmetaengine.h>
 #include <qsessionprogress.h>
 #include <qgalileiwin.h>
+
+
+//-----------------------------------------------------------------------------
+// static sizes
+static int Width;
+static int Height;
 
 
 
@@ -88,6 +99,40 @@ KViewMetaEngine::KViewMetaEngine(QGALILEIWin* win)
 	setWindowTitle("Query meta engine");
 	NbRes->setValue(100);
 	connect(Search,SIGNAL(clicked()),this,SLOT(QueryEngine()));
+	resize(Width,Height);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewMetaEngine::createOptions(RConfig& config)
+{
+	config.InsertParam(new RParamValue("KViewMetaEngine::Width",200));
+	config.InsertParam(new RParamValue("KViewMetaEngine::Height",200));
+}
+
+
+//------------------------------------------------------------------------------
+void KViewMetaEngine::readOptions(RConfig& config)
+{
+	Width=config.GetInt("KViewMetaEngine::Width");
+	Height=config.GetInt("KViewMetaEngine::Height");
+}
+
+
+//------------------------------------------------------------------------------
+void KViewMetaEngine::saveOptions(RConfig& config)
+{
+	config.SetInt("KViewMetaEngine::Width",Width);
+	config.SetInt("KViewMetaEngine::Height",Height);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewMetaEngine::resizeEvent(QResizeEvent* resizeEvent)
+{
+	QMdiSubWindow::resizeEvent(resizeEvent);
+	Width=resizeEvent->size().width();
+	Height=resizeEvent->size().height();
 }
 
 

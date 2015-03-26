@@ -33,14 +33,25 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for Qt/KDE
+// include files for Qt
 #include <QtGui/QProgressDialog>
+#include <QResizeEvent>
 
 
 //------------------------------------------------------------------------------
 // include files for current application
 #include <kviewidealgroups.h>
 #include <qgalileiwin.h>
+
+
+//-----------------------------------------------------------------------------
+// static sizes
+static int CommunityWidth;
+static int CommunityHeight;
+static int TopicWidth;
+static int TopicHeight;
+static int ClassWidth;
+static int ClassHeight;
 
 
 
@@ -78,6 +89,40 @@ KViewIdealTopics::KViewIdealTopics(QGALILEIWin* win)
 	connect(Computed,SIGNAL(Show(GDoc*)),Win,SLOT(showDoc(GDoc*)));
 	connect(Win,SIGNAL(topicsChanged()),this,SLOT(update()));
 	update();
+	resize(TopicWidth,TopicHeight);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewIdealTopics::createOptions(RConfig& config)
+{
+	config.InsertParam(new RParamValue("KViewIdealTopics::Width",300));
+	config.InsertParam(new RParamValue("KViewIdealTopics::Height",200));
+}
+
+
+//------------------------------------------------------------------------------
+void KViewIdealTopics::readOptions(RConfig& config)
+{
+	TopicWidth=config.GetInt("KViewIdealTopics::Width");
+	TopicHeight=config.GetInt("KViewIdealTopics::Height");
+}
+
+
+//------------------------------------------------------------------------------
+void KViewIdealTopics::saveOptions(RConfig& config)
+{
+	config.SetInt("KViewIdealTopics::Width",TopicWidth);
+	config.SetInt("KViewIdealTopics::Height",TopicHeight);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewIdealTopics::resizeEvent(QResizeEvent* resizeEvent)
+{
+	QMdiSubWindow::resizeEvent(resizeEvent);
+	TopicWidth=resizeEvent->size().width();
+	TopicHeight=resizeEvent->size().height();
 }
 
 
@@ -120,6 +165,40 @@ KViewIdealCommunities::KViewIdealCommunities(QGALILEIWin* win)
 	connect(Computed,SIGNAL(Show(GProfile*)),Win,SLOT(showProfile(GProfile*)));
 	connect(Win,SIGNAL(communitiesChanged()),this,SLOT(update()));
 	update();
+	resize(CommunityWidth,CommunityHeight);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewIdealCommunities::createOptions(RConfig& config)
+{
+	config.InsertParam(new RParamValue("KViewIdealCommunities::Width",300));
+	config.InsertParam(new RParamValue("KViewIdealCommunities::Height",200));
+}
+
+
+//------------------------------------------------------------------------------
+void KViewIdealCommunities::readOptions(RConfig& config)
+{
+	CommunityWidth=config.GetInt("KViewIdealCommunities::Width");
+	CommunityHeight=config.GetInt("KViewIdealCommunities::Height");
+}
+
+
+//------------------------------------------------------------------------------
+void KViewIdealCommunities::saveOptions(RConfig& config)
+{
+	config.SetInt("KViewIdealCommunities::Width",CommunityWidth);
+	config.SetInt("KViewIdealCommunities::Height",CommunityHeight);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewIdealCommunities::resizeEvent(QResizeEvent* resizeEvent)
+{
+	QMdiSubWindow::resizeEvent(resizeEvent);
+	CommunityWidth=resizeEvent->size().width();
+	CommunityHeight=resizeEvent->size().height();
 }
 
 
@@ -168,6 +247,40 @@ KViewIdealClasses::KViewIdealClasses(QGALILEIWin* win)
 	connect(Computed,SIGNAL(Show(GClass*)),Win,SLOT(showClass(GClass*)));
 	connect(Win,SIGNAL(classesChanged()),this,SLOT(update()));
 	update();
+	resize(ClassWidth,ClassHeight);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewIdealClasses::createOptions(RConfig& config)
+{
+	config.InsertParam(new RParamValue("KViewIdealClasses::Width",300));
+	config.InsertParam(new RParamValue("KViewIdealClasses::Height",200));
+}
+
+
+//------------------------------------------------------------------------------
+void KViewIdealClasses::readOptions(RConfig& config)
+{
+	ClassWidth=config.GetInt("KViewIdealClasses::Width");
+	ClassHeight=config.GetInt("KViewIdealClasses::Height");
+}
+
+
+//------------------------------------------------------------------------------
+void KViewIdealClasses::saveOptions(RConfig& config)
+{
+	config.SetInt("KViewIdealClasses::Width",ClassWidth);
+	config.SetInt("KViewIdealClasses::Height",ClassHeight);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewIdealClasses::resizeEvent(QResizeEvent* resizeEvent)
+{
+	QMdiSubWindow::resizeEvent(resizeEvent);
+	ClassWidth=resizeEvent->size().width();
+	ClassHeight=resizeEvent->size().height();
 }
 
 

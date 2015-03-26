@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>KPrgConsole</class>
- <widget class="QWidget" name="KPrgConsole">
+ <class>KViewDocs</class>
+ <widget class="QWidget" name="KViewDocs">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>812</width>
+    <width>486</width>
     <height>300</height>
    </rect>
   </property>
@@ -15,15 +15,22 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="R::QRConsole" name="Results" native="true"/>
+    <widget class="QGObjectsList" name="List" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>R::QRConsole</class>
+   <class>QGObjectsList</class>
    <extends>QWidget</extends>
-   <header location="global">qrconsole.h</header>
+   <header>qgobjectslist.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

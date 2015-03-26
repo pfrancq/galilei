@@ -48,14 +48,21 @@ using namespace std;
 
 
 //-----------------------------------------------------------------------------
-// include files for Qt/KDE
+// include files for Qt
 #include <QtGui/QInputDialog>
+#include <QResizeEvent>
 
 
 //-----------------------------------------------------------------------------
 // application specific includes
 #include <kviewclasses.h>
 #include <qgalileiwin.h>
+
+
+//-----------------------------------------------------------------------------
+// static sizes
+static int Width;
+static int Height;
 
 
 
@@ -105,6 +112,40 @@ KViewClasses::KViewClasses(QGALILEIWin* win)
 	setWindowTitle("Classes");
 	connect(ShowAll,SIGNAL(stateChanged(int)),this,SLOT(changeDetailsLevel(int)));
 	update();
+	resize(Width,Height);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewClasses::createOptions(RConfig& config)
+{
+	config.InsertParam(new RParamValue("KViewClasses::Width",200));
+	config.InsertParam(new RParamValue("KViewClasses::Height",200));
+}
+
+
+//------------------------------------------------------------------------------
+void KViewClasses::readOptions(RConfig& config)
+{
+	Width=config.GetInt("KViewClasses::Width");
+	Height=config.GetInt("KViewClasses::Height");
+}
+
+
+//------------------------------------------------------------------------------
+void KViewClasses::saveOptions(RConfig& config)
+{
+	config.SetInt("KViewClasses::Width",Width);
+	config.SetInt("KViewClasses::Height",Height);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewClasses::resizeEvent(QResizeEvent* resizeEvent)
+{
+	QMdiSubWindow::resizeEvent(resizeEvent);
+	Width=resizeEvent->size().width();
+	Height=resizeEvent->size().height();
 }
 
 

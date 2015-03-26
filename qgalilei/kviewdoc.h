@@ -95,6 +95,30 @@ public:
 	*/
 	KViewDoc(QGALILEIWin* win,const RURI& file);
 
+	/**
+	 * Create the options in a configuration structure.
+	 * @param config         Configuration structure.
+    */
+	static void createOptions(RConfig& config);
+
+	/**
+	 * Read the options of a configuration structure.
+	 * @param config         Configuration structure.
+	 */
+	static void readOptions(RConfig& config);
+
+	/**
+	 * Save the options of a configuration structure.
+	* @param config         Configuration structure.
+	 */
+	static void saveOptions(RConfig& config);
+
+	/**
+	 * Resize the window.
+    * @param resizeEvent    Event.
+    */
+	virtual void resizeEvent(QResizeEvent* resizeEvent);
+
 private:
 
 	/**

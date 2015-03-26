@@ -200,8 +200,7 @@ QFillDatabase::QFillDatabase(QGALILEIWin* parent)
 	: QDialog(parent), Ui_QFillDatabase(), Win(parent)
 {
 	setWindowTitle("Fill Database");
-	QWidget* widget=new QWidget(this);
-	setupUi(widget);
+	setupUi(this);
 	connect(EditDir,SIGNAL(pressed()),this,SLOT(editDir()));
 }
 

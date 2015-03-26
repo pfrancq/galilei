@@ -2,11 +2,12 @@
 
 	GALILEI Research Project
 
-	KViewClass.cpp
+	KViewDocs.cpp
 
-	Window to manipulate a specific class  - Implementation.
+	Window for manipulating the documents - Implementation.
 
-	Copyright 2008-2015 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2015 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -28,18 +29,30 @@
 
 
 //-----------------------------------------------------------------------------
-// includes files for Qt
+// include files for R
+#include <rqt.h>
+#include <rcursor.h>
+
+
+//-----------------------------------------------------------------------------
+// include files for GALILEI
+#include <gsession.h>
+#include <ggalileiapp.h>
+
+using namespace GALILEI;
+using namespace R;
+using namespace std;
+
+
+//-----------------------------------------------------------------------------
+// include files for Qt
+#include <QtGui/QInputDialog>
 #include <QResizeEvent>
 
 
 //-----------------------------------------------------------------------------
-// include files for R/GALILEI
-#include <rqt.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for current application
-#include <kviewclass.h>
+// application specific includes
+#include <kviewdocs.h>
 #include <qgalileiwin.h>
 
 
@@ -52,52 +65,50 @@ static int Height;
 
 //-----------------------------------------------------------------------------
 //
-// class KViewClass
+// class KViewDocs
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewClass::KViewClass(QGALILEIWin* win,GClass* obj)
-		: QMdiSubWindow(), Ui_KViewClass(), Win(win), Obj(obj)
+KViewDocs::KViewDocs(QGALILEIWin* win)
+	: QMdiSubWindow(), Ui_KViewDocs(), Win(win)
 {
 	QWidget* ptr=new QWidget();
 	setupUi(ptr);
 	setWidget(ptr);
 	setAttribute(Qt::WA_DeleteOnClose);
-	setWindowTitle(ToQString("Class '"+Obj->GetName()+"'"));
-	ObjectsTab->setTabText(1,"Documents");
-	connect(Win,SIGNAL(classesChanged()),this,SLOT(update()));
-	update();
+	setWindowTitle("Documents");
+	List->Set(Win->getSession(),QGObjectsList::Docs);
 	resize(Width,Height);
 }
 
 
 //------------------------------------------------------------------------------
-void KViewClass::createOptions(RConfig& config)
+void KViewDocs::createOptions(RConfig& config)
 {
-	config.InsertParam(new RParamValue("KViewClass::Width",200));
-	config.InsertParam(new RParamValue("KViewClass::Height",200));
+	config.InsertParam(new RParamValue("KViewDocs::Width",300));
+	config.InsertParam(new RParamValue("KViewDocs::Height",200));
 }
 
 
 //------------------------------------------------------------------------------
-void KViewClass::readOptions(RConfig& config)
+void KViewDocs::readOptions(RConfig& config)
 {
-	Width=config.GetInt("KViewClass::Width");
-	Height=config.GetInt("KViewClass::Height");
+	Width=config.GetInt("KViewDocs::Width");
+	Height=config.GetInt("KViewDocs::Height");
 }
 
 
 //------------------------------------------------------------------------------
-void KViewClass::saveOptions(RConfig& config)
+void KViewDocs::saveOptions(RConfig& config)
 {
-	config.SetInt("KViewClass::Width",Width);
-	config.SetInt("KViewClass::Height",Height);
+	config.SetInt("KViewDocs::Width",Width);
+	config.SetInt("KViewDocs::Height",Height);
 }
 
 
 //------------------------------------------------------------------------------
-void KViewClass::resizeEvent(QResizeEvent* resizeEvent)
+void KViewDocs::resizeEvent(QResizeEvent* resizeEvent)
 {
 	QMdiSubWindow::resizeEvent(resizeEvent);
 	Width=resizeEvent->size().width();
@@ -106,8 +117,13 @@ void KViewClass::resizeEvent(QResizeEvent* resizeEvent)
 
 
 //-----------------------------------------------------------------------------
-void KViewClass::update(void)
+void KViewDocs::update(void)
 {
-	Vars->Set(Obj);
-	Desc->Set(Win->getSession(),&(*Obj)());
+	List->Set(Win->getSession(),QGObjectsList::Docs);
+}
+
+
+//-----------------------------------------------------------------------------
+KViewDocs::~KViewDocs(void)
+{
 }
