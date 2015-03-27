@@ -35,9 +35,8 @@
 //------------------------------------------------------------------------------
 Config::Config(void)
 {
-	setWindowTitle("Configure Wikipedia Plug-In");
-	QWidget* widget=new QWidget(this);
-	setupUi(widget);
+	setupUi(this);
+	setWindowTitle("Configure Wikipedia Import");
 	connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
 	connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 	connect(EditDir,SIGNAL(pressed()),this,SLOT(chooseDir()));
