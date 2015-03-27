@@ -497,15 +497,15 @@ void QPlugInsList::slotConfigure_2(void)
 //-----------------------------------------------------------------------------
 void QPlugInsList::slotChange(QListWidgetItem* act,QListWidgetItem*)
 {
-	if(CurPlugIn)
-	{
-		cout<<"Save Engine"<<endl;
-	}
 	if(!act) return;
 	QPlugIn* f=dynamic_cast<QPlugIn*>(act);
 	if(!f) return;
 	Configure->setEnabled(f->PlugIn->GetPlugIn()&&f->PlugIn->HasConfigure());
+	if((!f->PlugIn->GetPlugIn())||(!f->PlugIn->HasConfigure()))
+		Configure->setStyleSheet(QString::fromUtf8("QPushButton:disabled { color: gray }"));
 	About->setEnabled(f->PlugIn->GetPlugIn()&&f->PlugIn->HasAbout());
+	if((!f->PlugIn->GetPlugIn())||(!f->PlugIn->HasAbout()))
+		About->setStyleSheet(QString::fromUtf8("QPushButton:disabled { color: gray }"));
 	Enable->setChecked(f->Enable);
 	Params->setEnabled(f->PlugIn->GetPlugIn());
 	Reset->setEnabled(f->PlugIn->GetPlugIn());
@@ -529,7 +529,11 @@ void QPlugInsList::slotChange_2(QListWidgetItem* act,QListWidgetItem*)
 	QPlugIn* f=dynamic_cast<QPlugIn*>(act);
 	if(!f) return;
 	Configure_2->setEnabled(f->PlugIn->GetPlugIn()&&f->PlugIn->HasConfigure());
+	if((!f->PlugIn->GetPlugIn())||(!f->PlugIn->HasConfigure()))
+		Configure_2->setStyleSheet(QString::fromUtf8("QPushButton:disabled { color: gray }"));
 	About_2->setEnabled(f->PlugIn->GetPlugIn()&&f->PlugIn->HasAbout());
+	if((!f->PlugIn->GetPlugIn())||(!f->PlugIn->HasAbout()))
+		About_2->setStyleSheet(QString::fromUtf8("QPushButton:disabled { color: gray }"));
 	Enable_2->setChecked(f->Enable);
 	Params_2->setEnabled(f->PlugIn->GetPlugIn());
 	Reset_2->setEnabled(f->PlugIn->GetPlugIn());
