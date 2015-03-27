@@ -68,13 +68,13 @@ public:
 //-----------------------------------------------------------------------------
 void MyDlg::Panel(void)
 {
-    QHBoxLayout* layout = new QHBoxLayout();
-    QLabel* text = new QLabel(GetMeasureSpecific());
-    text->setText("Minimum common profiles");
-    layout->addWidget(text);
-    layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
-   	MinProfiles = new QSpinBox(GetMeasureSpecific());
-    layout->addWidget(MinProfiles);
+	QHBoxLayout* layout = new QHBoxLayout();
+	QLabel* text = new QLabel(GetMeasureSpecific());
+	text->setText("Minimum common profiles");
+	layout->addWidget(text);
+	layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
+	MinProfiles = new QSpinBox(GetMeasureSpecific());
+	layout->addWidget(MinProfiles);
 	GetMeasureSpecificLayout()->addLayout(layout);
 }
 

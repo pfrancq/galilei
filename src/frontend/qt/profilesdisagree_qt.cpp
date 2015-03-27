@@ -68,13 +68,13 @@ public:
 //-----------------------------------------------------------------------------
 void MyDlg::Panel(void)
 {
-    QHBoxLayout* layout = new QHBoxLayout();
-    QLabel* text = new QLabel(GetMeasureSpecific());
-    text->setText("Minimum common documents");
-    layout->addWidget(text);
-    layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
-   	MinDocs = new QSpinBox(GetMeasureSpecific());
-    layout->addWidget(MinDocs);
+	QHBoxLayout* layout = new QHBoxLayout();
+	QLabel* text = new QLabel(GetMeasureSpecific());
+	text->setText("Minimum common documents");
+	layout->addWidget(text);
+	layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
+	MinDocs = new QSpinBox(GetMeasureSpecific());
+	layout->addWidget(MinDocs);
 	GetMeasureSpecificLayout()->addLayout(layout);
 }
 

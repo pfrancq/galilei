@@ -47,7 +47,7 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 extern "C" void About(void)
 {
-		QRAboutDialog dlg("Profiles Similarities","1.0");
+	QRAboutDialog dlg("Profiles Similarities","1.0");
 	dlg.setDescription("Method used to compute the similarities using the tensor space model between profiles.");
 	dlg.setCopyright(QWidget::trUtf8("(C) 2003-2008 by the Université Libre de Bruxelles (ULB)<br/>(C) 2010-2015 by the Paul Otlet Institute"));
 	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
