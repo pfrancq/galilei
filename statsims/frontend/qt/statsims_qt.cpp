@@ -36,9 +36,8 @@
 //------------------------------------------------------------------------------
 Config::Config(void)
 {
-	setWindowTitle("Configure Statistics Plug-In");
-	QWidget* widget=new QWidget(this);
-	setupUi(widget);
+	setupUi(this);
+	setWindowTitle("Configure Similarities Statistics");
 	connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
 	connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 	connect(EditResults,SIGNAL(pressed()),this,SLOT(chooseResults()));
