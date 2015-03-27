@@ -51,9 +51,8 @@ class Config : public QDialog, public Ui_Config
 public:
 	Config(void)
 	{
+		setupUi(this);
 		setWindowTitle("Configure HTML Filter");
-		QWidget* widget=new QWidget(this);
-		setupUi(widget);
 		connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
 		connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 		adjustSize();
