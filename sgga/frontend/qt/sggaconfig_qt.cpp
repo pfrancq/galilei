@@ -49,9 +49,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 GAConfigDlg::GAConfigDlg(void)
 {
-	setWindowTitle("Configure SGGA Plug-In");
-	QWidget* widget=new QWidget(this);
-	setupUi(widget);
+	setupUi(this);
+	setWindowTitle("Configure SGGA");
 	connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
 	connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 	adjustSize();

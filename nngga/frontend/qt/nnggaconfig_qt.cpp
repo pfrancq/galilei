@@ -49,9 +49,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 GAConfigDlg::GAConfigDlg(void)
 {
-	setWindowTitle("Configure NNGGA Plug-In");
-	QWidget* widget=new QWidget(this);
-	setupUi(widget);
+	setupUi(this);
+	setWindowTitle("Configure NNGGA");
 	connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
 	connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 	adjustSize();
