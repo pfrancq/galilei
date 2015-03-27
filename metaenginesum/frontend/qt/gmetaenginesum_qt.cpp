@@ -45,9 +45,8 @@
 //------------------------------------------------------------------------------
 Config::Config(void)
 {
-	setWindowTitle("Configure MetaEngine Plug-In");
-	QWidget* widget=new QWidget(this);
-	setupUi(widget);
+	setupUi(this);
+	setWindowTitle("Configure MetaSumEngine");
 	connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
 	connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 	connect(Type,SIGNAL(currentIndexChanged(int)),this,SLOT(changeType(int)));
