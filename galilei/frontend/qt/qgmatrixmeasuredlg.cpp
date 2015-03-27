@@ -59,10 +59,7 @@ using namespace GALILEI;
 QGMatrixMeasureDlg::QGMatrixMeasureDlg(const QString& title)
 	: Ui(new Ui_QGMatrixMeasureDlg())
 {
-	QVBoxLayout* verticalLayout = new QVBoxLayout(this);
-	QWidget* widget=new QWidget(this);
-	verticalLayout->addWidget(widget);
-	Ui->setupUi(widget);
+	Ui->setupUi(this);
 	connect(Ui->buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
 	connect(Ui->buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 	connect(Ui->Type,SIGNAL(currentIndexChanged(int)),this,SLOT(ChangeType(int)));
@@ -79,8 +76,6 @@ QWidget* QGMatrixMeasureDlg::GetMeasureSpecific(void)
 //-----------------------------------------------------------------------------
 QVBoxLayout* QGMatrixMeasureDlg::GetMeasureSpecificLayout(void)
 {
-	//return(dynamic_cast<QBoxLayout*>(static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->MeasureSpecific->layout()));
-	//return(static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->MeasureSpecific->layout());
 	return(Ui->MeasureSpecificLayout);
 }
 
@@ -92,7 +87,6 @@ bool QGMatrixMeasureDlg::Configure(GPlugIn* plugin)
 	Ui->MeasureSpecificLayout->addItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
 	Init(plugin);
 	adjustSize();
-	layout()->setSizeConstraint(QLayout::SetFixedSize);
 	if(QDialog::exec())
 	{
 		Done(plugin);
