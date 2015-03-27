@@ -49,9 +49,8 @@ class Config : public QDialog, public Ui_Config
 public:
 	Config(void)
 	{
-		setWindowTitle("Configure String Indexer Plug-In");
-		QWidget* widget=new QWidget(this);
-		setupUi(widget);
+		setupUi(this);
+		setWindowTitle("Configure String Indexer");
 		connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
 		connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 		adjustSize();
@@ -63,7 +62,7 @@ public:
 extern "C" void About(void)
 {
 	QRAboutDialog dlg("String Indexer","1.0");
-	dlg.setDescription("his analyzer simply index the tokens as textual concepts.");
+	dlg.setDescription("This analyzer simply index the tokens as textual concepts.");
 	dlg.setCopyright(QWidget::trUtf8("(C) 2011-2015 by the Paul Otlet Institute"));
 	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");
 	dlg.setLicense(QRAboutDialog::License_GPL);

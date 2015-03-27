@@ -49,9 +49,8 @@ class Config : public QDialog, public Ui_Config
 public:
 	Config(void)
 	{
-		setWindowTitle("Configure Stopwords Plug-In");
-		QWidget* widget=new QWidget(this);
-		setupUi(widget);
+		setupUi(this);
+		setWindowTitle("Configure Stopwords");
 		connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
 		connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 		adjustSize();

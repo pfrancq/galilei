@@ -48,9 +48,8 @@ class Config : public QDialog, public Ui_Config
 public:
 	Config(void)
 	{
-		setWindowTitle("Configure String Indexer Plug-In");
-		QWidget* widget=new QWidget(this);
-		setupUi(widget);
+		setupUi(this);
+		setWindowTitle("Configure String Tokenizer");
 		connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
 		connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 		adjustSize();
