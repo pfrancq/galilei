@@ -62,10 +62,9 @@ extern "C" bool Configure(GPlugIn* fac)
 {
 	// Create the dialog box
 	QDialog Dlg;
-	Dlg.setWindowTitle("k-Means Configure");
 	Ui_Config Ui;
-	QWidget* widget(new QWidget(&Dlg));
-	Ui.setupUi(widget);
+	Ui.setupUi(&Dlg);
+	Dlg.setWindowTitle("Configure k-Means for Profiles");
 	QObject::connect(Ui.buttonBox,SIGNAL(accepted()),&Dlg,SLOT(accept()));
 	QObject::connect(Ui.buttonBox,SIGNAL(rejected()),&Dlg,SLOT(reject()));
 
