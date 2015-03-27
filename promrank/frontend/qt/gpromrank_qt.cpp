@@ -51,8 +51,8 @@ class Config : public QDialog, public Ui_Config
 public:
 	Config(void)
 	{
-		setWindowTitle("Configure Promethee Ranking Plug-In");
 		setupUi(this);
+		setWindowTitle("Configure Promethee Ranking");
 		connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
 		connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 		setSizePolicy(QSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum));

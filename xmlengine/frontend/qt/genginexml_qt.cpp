@@ -51,8 +51,8 @@ class Config : public QDialog, public Ui_Config
 public:
 	Config(void)
 	{
-		setWindowTitle("Configure XML Engine Plug-In");
 		setupUi(this);
+		setWindowTitle("Configure Document Fragment Selection Engine");
 		connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
 		connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 		adjustSize();
