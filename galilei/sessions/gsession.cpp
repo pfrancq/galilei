@@ -865,11 +865,7 @@ void GSession::RunTool(const RString& name,const RString& list,GSlot* slot,bool 
 	GTool* Tool(GALILEIApp->GetPlugIn<GTool>("Tools",name,list));
 	if((!Tool)&&need)
 		mThrowGException("Tool '"+name+"' does not exist in '"+list+"'");
-	try
-	{
-		Tool->Run(slot);
-	}
-	HANDLEALLEXCEPTIONS(slot,"Error while executing the tool '"+name+"' in '"+list+"': ")
+	Tool->Run(slot);
 }
 
 
