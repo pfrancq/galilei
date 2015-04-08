@@ -99,7 +99,7 @@ static char *make_temp(BUNDLE b)
      should unlink file (and, technically, free pathname). */
   FILE *f;
 
-#if defined(_BSD_SOURCE)   || defined(__APPLE_)
+#if defined(_BSD_SOURCE)   || defined(__APPLE__)
 	static char path[250]="";
 	FILE *sfp;
 	int fd(-1);
