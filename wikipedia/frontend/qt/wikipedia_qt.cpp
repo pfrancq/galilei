@@ -76,6 +76,7 @@ extern "C" bool Configure(GPlugIn* fac)
 	dlg.Dump->setDate(QDate(Dump.GetYear(),Dump.GetMonth(),Dump.GetDay()));
 	dlg.NbArticles->setValue(fac->FindParam<RParamValue>("NbArticles")->GetInt());
 	dlg.NbContributions->setValue(fac->FindParam<RParamValue>("NbContributions")->GetInt());
+	dlg.ForceAnalyze->setChecked(fac->FindParam<RParamValue>("ForceAnalyze")->GetBool());
 	if(dlg.exec())
 	{
 		fac->FindParam<RParamValue>("Dir")->Set(FromQString(dlg.Dir->text()));
@@ -84,6 +85,7 @@ extern "C" bool Configure(GPlugIn* fac)
 		fac->FindParam<RParamValue>("Dump")->Set(Dump);
 		fac->FindParam<RParamValue>("NbArticles")->SetUInt(dlg.NbArticles->value());
 		fac->FindParam<RParamValue>("NbContributions")->SetUInt(dlg.NbContributions->value());
+		fac->FindParam<RParamValue>("ForceAnalyze")->SetBool(dlg.ForceAnalyze->isChecked());
 		return(true);
 	}
 	return(false);

@@ -1,12 +1,13 @@
 /*
 
-	R Project Library
+	Wikipedia Plug-Ins
 
-	Wikipedia.cpp
+	WikiToken.h
 
-	Build a GALILEI database for Wikipedia - Header
+	Wikipedia Content Token - Header.
 
-	Copyright 2012 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -24,6 +25,12 @@
 	Boston, MA  02111-1307  USA
 
 */
+
+
+
+//-----------------------------------------------------------------------------
+#ifndef WikiToken_H
+#define WikiToken_H
 
 
 
@@ -178,3 +185,7 @@ public:
 	 */
 	static WikiTokens* Get(void);
 };
+
+
+//-----------------------------------------------------------------------------
+#endif

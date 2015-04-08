@@ -1,10 +1,10 @@
 /*
 
-	GALILEI Research Project
+	Wikipedia Plug-Ins
 
-	GXML.h
+	WParser.h
 
-	Analyze a document - Header.
+	Parse the Token extracted from Wikipedia - Header.
 
 	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
@@ -29,8 +29,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GXMLH
-#define GXMLH
+#ifndef WParserH
+#define WParserH
 
 
 //------------------------------------------------------------------------------
@@ -44,9 +44,9 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 /**
- * Parser for a Wikipedia notice extracted from a dump file. If not call via
+ * Parser for a Wikipedia article extracted from a dump file. If not call via
  * the Wikipedia Tool, an exception is generated.
- * @short Wikipedia Notice Parser.
+ * @short Wikipedia Article Parser.
  */
 class WParser : public GFilter
 {
@@ -105,7 +105,7 @@ public:
 	void Clear(void);
 
 	/**
-	* Analyze a document with a given URI.
+	* Analyze an article with a given URI.
 	* @param analyzer        Analyzer.
 	* @param doc             Document to analyze.
 	* @param file            File to analyze (eventually a local copy of a

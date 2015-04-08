@@ -1,10 +1,10 @@
 /*
 
-	GALILEI Research Project
+	Wikipedia Plug-Ins
 
-	GXML.cpp
+	WParser.h
 
-	Analyze a document - Implementation.
+	Parse the Token extracted from Wikipedia - Implementation.
 
 	Copyright 2001-2014 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).

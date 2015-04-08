@@ -1,6 +1,6 @@
 /*
 
-	R Project Library
+	Wikipedia Plug-Ins
 
 	Wikipedia.cpp
 
@@ -41,6 +41,7 @@
 //-----------------------------------------------------------------------------
 // include files for current project
 #include <wikipedia.h>
+#include <wikidumparticles.h>
 
 
 //-----------------------------------------------------------------------------
@@ -66,6 +67,7 @@ Wikipedia::Wikipedia(GSession* session,GPlugInFactory* fac)
 		Test->Open(RIO::Create);
 	}
 	Line.SetLen(2048); // Set a buffer size of 2048
+	Content.SetLen(1048576); // Set the buffer size to 1 Mb of words.
 }
 
 
@@ -75,6 +77,7 @@ void Wikipedia::ApplyConfig(void)
 	Dir=FindParam<RParamValue>("Dir")->Get();
 	NbArticles=FindParam<RParamValue>("NbArticles")->GetUInt();
 	NbContributions=FindParam<RParamValue>("NbContributions")->GetUInt();
+	ForceAnalyze=FindParam<RParamValue>("ForceAnalyze")->GetBool();
 	try
 	{
 		Dump.SetDate(FindParam<RParamValue>("Dump")->Get());
@@ -101,75 +104,173 @@ void Wikipedia::Run(GSlot* slot)
 	Slot->StartJob("Import Wikipedia Articles");
 	if(!LangEn)
 		LangEn=GALILEIApp->GetPlugIn<GLang>("Lang","en");
-	NbDocs=NbAnalyzedDocs=NbFdbks=0;
-	AnalyzePages();
-	Slot->StartJob("Import Wikipedia Contributionsd");
-	//AnalyzeLogs();
-	Slot->EndJob(RString::Number(NbDocs)+" documents ("+RString::Number(NbAnalyzedDocs)+" were analyzed) and "+RString::Number(NbFdbks)+" contributions imported.");
+	NbTreatedArticles=NbAnalyzedArticles=NbFdbks=0;
+	if(NbArticles)
+		AnalyzePages();
+	Slot->StartJob("Import Wikipedia Contributions");
+	if(NbContributions)
+		AnalyzeLogs();
+	Slot->EndJob(RString::Number(NbTreatedArticles)+" documents ("+RString::Number(NbAnalyzedArticles)+" were analyzed) and "+RString::Number(NbFdbks)+" contributions imported.");
 }
 
 
 //------------------------------------------------------------------------------
 void Wikipedia::AnalyzePages(void)
 {
+	RChar Cur;
+	RString Cmd;
+	bool ReadCmd(true);
+
 	// Initialization
 	InPage=false;
 	InText=false;
 	NbLines=0;
+	NbTreatedArticles=0;
 
+	// Open the file
+	WikiDumpArticles Test2(this,Dir+RFile::GetDirSeparator()+"enwiki-"+DumpStr+"-pages-articles.xml");
+	Test2.Open();
+	return;
 	RTextFile Articles(Dir+RFile::GetDirSeparator()+"enwiki-"+DumpStr+"-pages-articles.xml","utf-8");
-	//RTextFile Articles("/home/pfrancq/notice.txt","utf-8");
 	Articles.Open(RIO::Read);
 	while(!Articles.End())
 	{
-		Act=Articles.GetPos();
-		Articles.GetLine(Line);
-		NbLines++;
-		off_t Rest(NbLines%5000);
-		if(!Rest)
-		{
-			if(NbLines/1000000000>0)
-				Tmp=RString::Number(NbLines/1000000000)+"T";
-			else if(NbLines/1000000>0)
-				Tmp=RString::Number(NbLines/1000000)+"G";
-			else
-				Tmp=RString::Number(NbLines/1000)+"M";
+		// Read character
+		Cur=Articles.GetChar();
 
-			Slot->StartJob("Import Wikipedia Articles ("+RString::Number(NbDocs)+","+Tmp+")");
-		}
+		// Depends whenever we are in a article or not
 		if(InPage)
 		{
-			AnalyzeInPage();
+			if(ReadCmd)
+			{
+				if(Cur=='>')
+				{
+					// Look if it is the begin of a page
+					if(Cmd=="/page")
+					{
+						InPage=false;
+						if(Debug)
+						 (*Test)<<Content<<std::endl<<std::endl<<std::endl<<std::endl;
+					}
+					else
+						Content+='<'+Cmd+'>';
+					ReadCmd=false;
+				}
+				else
+				{
+					Cmd+=Cur;
+				}
+			}
+			else
+			{
+				if(Cur=='<')
+				{
+					Cmd.Clear();
+					ReadCmd=true;
+				}
+				else
+					Content+=Cur;
+			}
 		}
 		else
 		{
-			if(Line.Begins("<page>",true))
+			if(ReadCmd)
 			{
-				InPage=true;
-				if(!Redirect)
-					NbDocs++;
-				Redirect=false;
-				WikiTokens::Get()->Clear();
-				Id=0;
-				Doc=0;
-				Rest=NbDocs%100;
-				if(!Rest)
+				if(Cur=='>')
 				{
-					if(NbLines/1000000000>0)
-						Tmp=RString::Number(NbLines/1000000000)+"T";
-					else if(NbLines/1000000>0)
-						Tmp=RString::Number(NbLines/1000000)+"G";
-					else
-						Tmp=RString::Number(NbLines/1000)+"M";
-
-					Slot->StartJob("Import Wikipedia Articles ("+RString::Number(NbDocs)+","+Tmp+")");
+					// Look if it is the begin of a page
+					if(Cmd=="page")
+					{
+						InPage=true;
+						Content.Clear();
+						NbTreatedArticles++;
+					}
+					ReadCmd=false;
+				}
+				else
+				{
+					Cmd+=Cur;
+				}
+			}
+			else
+			{
+				if(Cur=='<')
+				{
+					Cmd.Clear();
+					ReadCmd=true;
 				}
 			}
 		}
-		if(NbArticles&&(NbDocs>NbArticles))
+
+
+		// Verify if number of articles are read
+		if(NbArticles&&(NbTreatedArticles>NbArticles))
 			break;
 	}
 }
+
+
+//------------------------------------------------------------------------------
+//void Wikipedia::AnalyzePages(void)
+//{
+//	// Initialization
+//	InPage=false;
+//	InText=false;
+//	NbLines=0;
+//
+//	RTextFile Articles(Dir+RFile::GetDirSeparator()+"enwiki-"+DumpStr+"-pages-articles.xml","utf-8");
+//	//RTextFile Articles("/home/pfrancq/notice.txt","utf-8");
+//	Articles.Open(RIO::Read);
+//	while(!Articles.End())
+//	{
+//		Act=Articles.GetPos();
+//		Articles.GetLine(Line);
+//		NbLines++;
+//		off_t Rest(NbLines%5000);
+//		if(!Rest)
+//		{
+//			if(NbLines/1000000000>0)
+//				Tmp=RString::Number(NbLines/1000000000)+"T";
+//			else if(NbLines/1000000>0)
+//				Tmp=RString::Number(NbLines/1000000)+"G";
+//			else
+//				Tmp=RString::Number(NbLines/1000)+"M";
+//
+//			Slot->StartJob("Import Wikipedia Articles ("+RString::Number(NbTreatedArticles)+","+Tmp+")");
+//		}
+//		if(InPage)
+//		{
+//			AnalyzeInPage();
+//		}
+//		else
+//		{
+//			if(Line.Begins("<page>",true))
+//			{
+//				InPage=true;
+//				if(!Redirect)
+//					NbTreatedArticles++;
+//				Redirect=false;
+//				WikiTokens::Get()->Clear();
+//				Id=0;
+//				Article=0;
+//				Rest=NbTreatedArticles%100;
+//				if(!Rest)
+//				{
+//					if(NbLines/1000000000>0)
+//						Tmp=RString::Number(NbLines/1000000000)+"T";
+//					else if(NbLines/1000000>0)
+//						Tmp=RString::Number(NbLines/1000000)+"G";
+//					else
+//						Tmp=RString::Number(NbLines/1000)+"M";
+//
+//					Slot->StartJob("Import Wikipedia Articles ("+RString::Number(NbTreatedArticles)+","+Tmp+")");
+//				}
+//			}
+//		}
+//		if(NbArticles&&(NbTreatedArticles>NbArticles))
+//			break;
+//	}
+//}
 
 
 //------------------------------------------------------------------------------
@@ -224,9 +325,9 @@ void Wikipedia::AnalyzeInPage(void)
 				WikiTokens::Get()->DeleteLastToken();
 
 			// If necessary -> print the tokens
-			if(Doc&&Debug)
+			if(Article&&Debug)
 			{
-				(*Test)<<Doc->GetURI()()<<endl;
+				(*Test)<<Article->GetURI()()<<endl;
 				RCursor<WikiToken> Cur(WikiTokens::Get()->GetTokens());
 				for(Cur.Start();!Cur.End();Cur.Next())
 				{
@@ -251,10 +352,10 @@ void Wikipedia::AnalyzeInPage(void)
 				}
 			}
 
-			if(Doc->MustCompute())
+			if(Article->MustCompute()||ForceAnalyze)
 			{
-				Session->AnalyzeDoc(Doc);
-				NbDocs++;
+				Session->AnalyzeDoc(Article);
+				NbTreatedArticles++;
 			}
 		}
 		else
@@ -271,12 +372,12 @@ void Wikipedia::AnalyzeInPage(void)
 			Redirect=true;
 		else if(Line.Begins("<title>",true))
 		{
-			ExtractFromTag(Line,DocTitle);
+			ExtractFromTag(Line,ArticleTitle);
 		}
 		else if(Line.Begins("<timestamp>",true))
 		{
 			ExtractFromTag(Line,Tmp);
-			DocUpdated.SetDate(Tmp);
+			ArticleUpdated.SetDate(Tmp);
 		}
 		else if((!Redirect)&&Line.Begins("<text",true)&&(!Line.Ends("</page>",true)))
 		{
@@ -293,7 +394,7 @@ void Wikipedia::AnalyzeInPage(void)
 				Token->Type=WikiToken::Title;
 				Token->Pos=0;
 				Token->SyntacticPos=0;
-				Token->Content=DocTitle;
+				Token->Content=ArticleTitle;
 				Token->Depth=0;
 
 				// Look for the good position
@@ -801,10 +902,10 @@ void Wikipedia::AnalyzeLogs(void)
 				if(Line.Ends("</contributor>",true))
 				{
 					InContributor=false;
-					if(UserId&&Doc)
+					if(UserId&&Article)
 					{
 						GProfile* Profile(GetProfile(UserId,User));
-						Session->InsertFdbk(Profile->GetId(),Doc->GetId(),ftRelevant,DocUpdated);
+						Session->InsertFdbk(Profile->GetId(),Article->GetId(),ftRelevant,ArticleUpdated);
 					}
 					UserId=0;
 				}
@@ -829,13 +930,13 @@ void Wikipedia::AnalyzeLogs(void)
 					ExtractFromTag(Line,Tmp);
 					Id=Tmp.ToSizeT();
 					LookDoc(false);
-					if(Doc)
+					if(Article)
 					  cout<<"Document "<<Id<<endl;
 				}
 				else if(Line.Begins("<timestamp>",true))
 				{
 					ExtractFromTag(Line,Tmp);
-					DocUpdated.SetDate(Tmp);
+					ArticleUpdated.SetDate(Tmp);
 				}
 				else if(Line.Begins("<contributor>",true))
 				{
@@ -848,7 +949,7 @@ void Wikipedia::AnalyzeLogs(void)
 		else if(Line.Begins("<page>",true))
 		{
 			InPage=true;
-			Doc=0;
+			Article=0;
 			Id=0;
 		}
 
@@ -888,33 +989,33 @@ void Wikipedia::ExtractFromTag(const RString& line,RString& text) const
 //------------------------------------------------------------------------------
 void Wikipedia::LookDoc(bool create)
 {
-	Doc=Session->GetObj(pDoc,Id,true,true);
-	if(!Doc)
+	Article=Session->GetObj(pDoc,Id,true,true);
+	if(!Article)
 	{
 		if(!create)
 		{
-			Doc=0;
+			Article=0;
 			return;
 		}
 
 		// Doc must me created
-		RURI URI("http://en.wikipedia.org/wiki/"+WikiToken::GetWikiTitle(DocTitle));
-		Doc=new GDoc(Session,URI,DocTitle,Id,0,0,LangEn,"wikipedia/dump",0,RDate::Null,DocUpdated,RDate::Null);
-		Session->InsertObj(Doc);
+		RURI URI("http://en.wikipedia.org/wiki/"+WikiToken::GetWikiTitle(ArticleTitle));
+		Article=new GDoc(Session,URI,ArticleTitle,Id,0,0,LangEn,"wikipedia/dump",0,RDate::Null,ArticleUpdated,RDate::Null);
+		Session->InsertObj(Article);
 		Status=New;
 	}
 	else
 	{
 		// Doc exist -> Look if updated
-		if((DocUpdated>Doc->GetUpdated())||Doc->MustCompute())
+		if((ArticleUpdated>Article->GetUpdated())||Article->MustCompute())
 		{
 			Status=Update;
-			Doc->SetUpdated(DocUpdated);
+			Article->SetUpdated(ArticleUpdated);
 		}
 		else
 			Status=OK;
 	}
-	WikiTokens::Get()->SetDoc(Doc);
+	WikiTokens::Get()->SetDoc(Article);
 }
 
 
@@ -943,6 +1044,7 @@ void Wikipedia::CreateConfig(void)
 	InsertParam(new RParamValue("Dump",""));
 	InsertParam(new RParamValue("NbArticles",20000,"Number of articles to treat. If null, all articles are treated."));
 	InsertParam(new RParamValue("NbContributions",1000,"Number of contributions to treat. If null, all contributions are treated."));
+	InsertParam(new RParamValue("ForceAnalyze",false,"Must all the articles be analyzed or only the new and the updated ones."));
 }
 
 

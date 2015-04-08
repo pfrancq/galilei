@@ -1,7 +1,7 @@
 PROJECT(wikipedia)
 INCLUDE_DIRECTORIES(.)
 
-SET(SRC wikipedia.cpp)
+SET(SRC wikipedia.cpp wikidumparticles.cpp)
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 

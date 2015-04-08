@@ -1,6 +1,6 @@
 /*
 
-	R Project Library
+	Wikipedia Plug-Ins
 
 	Wikipedia.cpp
 
@@ -75,14 +75,19 @@ class Wikipedia : public GTool
 	RString DumpStr;
 
 	/**
-	 * Number of documents treated.
+	 * Force all Wikipedia articles to be analyzed.
 	 */
-	size_t NbDocs;
+	bool ForceAnalyze;
 
 	/**
-	 * Number of analyzed documents.
+	 * Number of articles treated.
 	 */
-	size_t NbAnalyzedDocs;
+	size_t NbTreatedArticles;
+
+	/**
+	 * Number of analyzed articles.
+	 */
+	size_t NbAnalyzedArticles;
 
 	/**
 	 * Number of feedbacks.
@@ -95,24 +100,24 @@ class Wikipedia : public GTool
 	GSlot* Slot;
 
 	/**
-	 * Document corresponding to the current Wikipedia notice.
+	 * Document corresponding to the current Wikipedia articles.
 	 */
-	GDoc* Doc;
+	GDoc* Article;
 
 	/**
-	 * Status of the document in GALILEI.
+	 * Status of the article in GALILEI.
 	 */
 	enum {New,Update,OK} Status;
 
 	/**
-	 * Title of the document.
+	 * Title of the article.
 	 */
-	RString DocTitle;
+	RString ArticleTitle;
 
 	/**
-	 * Date where the document (notice) was updated in Wikipedia.
+	 * Date where the article was updated in Wikipedia.
 	 */
-	RDate DocUpdated;
+	RDate ArticleUpdated;
 
 	/**
 	 * Pointer to the English language.
@@ -120,7 +125,7 @@ class Wikipedia : public GTool
 	GLang* LangEn;
 
 	/**
-	 * Possible states of a wikipedia page content.
+	 * Possible states of a Wikipedia article content.
 	 */
 	enum tState {sText,sLink,sCite,sRef,sComment,sTable,sDiv,sTag,sExternalLink,sCode};
 
@@ -220,6 +225,11 @@ class Wikipedia : public GTool
 	 */
 	RString Tmp;
 
+	/**
+	 * Content of the current page.
+    */
+	RString Content;
+
 public:
 
 	/**
@@ -228,6 +238,24 @@ public:
     * @param fac            Factory that manages the plug-in.
     */
 	Wikipedia(GSession* session,GPlugInFactory* fac);
+
+	/**
+	 * Get the number of articles to treat.
+	 * @return a size_t
+	 */
+	size_t GetNbArticles(void) const {return(NbArticles);}
+
+	/**
+	 * Must all Wikipedia articles be (re)analyzed ?
+	 * @return true if yes.
+	 */
+	bool MustForceAnalyze(void) const {return(ForceAnalyze);}
+
+	/**
+	 * Get the slot.
+	 * @return a pointer to a GSlot.
+	 */
+	GSlot* GetSlot(void) const {return(Slot);}
 
 	/**
 	* Configurations were applied from the factory.
