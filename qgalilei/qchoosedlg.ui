@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>QChooseList</class>
- <widget class="QWidget" name="QChooseList">
+ <class>QChooseDlg</class>
+ <widget class="QWidget" name="QChooseDlg">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -26,6 +26,13 @@
    </item>
    <item>
     <widget class="QListWidget" name="List"/>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

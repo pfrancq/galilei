@@ -87,6 +87,9 @@ void QGALILEI::CreateConfig(void)
 {
 	GGALILEIApp::CreateConfig();
 	Config.InsertParam(new RParamValue("ScriptPath",""));
+	Config.InsertParam(new RParamValue("LastSession",""));
+	Config.InsertParam(new RParamValue("LastToolCat",""));
+	Config.InsertParam(new RParamValue("LastTool",""));
 	Config.InsertParam(new RParamValue("MainWindowWidth",300));
 	Config.InsertParam(new RParamValue("MainWindowHeight",300));
 	Configure::createOptions(Config);
@@ -116,6 +119,9 @@ void QGALILEI::Init(void)
 {
 	GGALILEIApp::Init();
 	ScriptPath=Config.Get("ScriptPath");
+	LastSession=Config.Get("LastSession");
+	LastToolCat=Config.Get("LastToolCat");
+	LastTool=Config.Get("LastTool");
 	Configure::readOptions(Config);
 	KPrgConsole::readOptions(Config);
 	KViewClass::readOptions(Config);
@@ -157,6 +163,30 @@ void QGALILEI::SetScriptPath(const QString& path)
 
 
 //-----------------------------------------------------------------------------
+void QGALILEI::SetLastSession(const R::RString& last)
+{
+	LastSession=last;
+	Config.Set("LastSession",LastSession);
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEI::SetLastToolCat(const R::RString cat)
+{
+ 	LastToolCat=cat;
+	Config.Set("LastToolCat",LastToolCat);
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEI::SetLastTool(const R::RString tool)
+{
+ 	LastTool=tool;
+	Config.Set("LastTool",LastTool);
+}
+
+
+//-----------------------------------------------------------------------------
 QGALILEI::~QGALILEI(void)
 {
 	Configure::saveOptions(Config);
@@ -186,4 +216,3 @@ QGALILEI::~QGALILEI(void)
 		Main=0;
 	}
 }
-

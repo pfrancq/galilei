@@ -65,6 +65,21 @@ class QGALILEI : /*public QApplication,*/ public GALILEI::GGALILEIApp
 	 */
 	R::RString ScriptPath;
 
+	/**
+	 * The last session connected.
+	 */
+	R::RString LastSession;
+
+	/**
+	 * Last tool category used.
+	 */
+	R::RString LastToolCat;
+
+	/**
+	 * Last tool used.
+	 */
+	R::RString LastTool;
+
 public:
 
 	/**
@@ -101,6 +116,42 @@ public:
     * @param path           Path.
     */
 	void SetScriptPath(const QString& path);
+
+	/**
+	  * Get the name of the last session to which the user was connected.
+     * @return R::RString.
+     */
+	R::RString GetLastSession(void) const {return(LastSession);}
+
+	/**
+	 * Set the last session to which the user was connected.
+    * @param last           Last session.
+    */
+	void SetLastSession(const R::RString& last);
+
+	/**
+	 * Get the name of the last tool category chosen.
+    * @return a R::RString.
+    */
+	R::RString GetLastToolCat(void) const {return(LastToolCat);}
+
+	/**
+	 * Set the last tool category chosen.
+    * @param cat            Category.
+    */
+	void SetLastToolCat(const R::RString cat);
+
+	/**
+	 * Get the name of the last tool chosen.
+    * @return a R::RString.
+    */
+	R::RString GetLastTool(void) const {return(LastTool);}
+
+	/**
+	 * Get the last tool chosen.
+    * @param tool           Tool.
+    */
+	void SetLastTool(const R::RString tool);
 
 	 /**
 	  * Destructor.

@@ -76,16 +76,6 @@ class QGALILEIWin : public QMainWindow, public Ui_QGALILEIWin
 	 */
 	R::RString SessionName;
 
-	/**
-	 * Last tool category used.
-	 */
-	R::RString ToolCat;
-
-	/**
-	 * Last tool used.
-	 */
-	R::RString Tool;
-
 public:
 
 	/**

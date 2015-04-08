@@ -25,6 +25,7 @@ SET(qgalilei_SOURCES
 	kviewprofile.cpp
 	kviewusers.cpp
 	kviewidealgroups.cpp
+	qchoosedlg.cpp
 )
 
 SET(qgalilei_HEADERS
@@ -48,6 +49,7 @@ SET(qgalilei_HEADERS
 	kviewprofile.h
 	kviewusers.h
 	kviewidealgroups.h
+	qchoosedlg.h
 )
 
 
@@ -66,7 +68,7 @@ SET(qgalilei_FORMS
 	kviewstats.ui
 	qfilldatabase.ui
 	qcreatedatabase.ui
-	qchooselist.ui
+	qchoosedlg.ui
 	kviewgroup.ui
 	kviewgroups.ui
 	kviewclasses.ui

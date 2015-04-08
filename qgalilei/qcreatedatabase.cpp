@@ -164,6 +164,8 @@ QCreateDatabase::QCreateDatabase(QGALILEIWin* parent)
 {
 	setWindowTitle("Fill Database");
 	setupUi(this);
+	connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
+   connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 }
 
 

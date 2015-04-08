@@ -65,7 +65,7 @@
 #include <kviewstats.h>
 #include <qcreatedatabase.h>
 #include <qfilldatabase.h>
-#include <ui_qchooselist.h>
+#include <qchoosedlg.h>
 #include <kviewgroup.h>
 #include <kviewgroups.h>
 #include <kviewclasses.h>
@@ -183,7 +183,6 @@ void QGALILEIWin::sessionConnected(void)
 	aConsole->setEnabled(Session);
 	aRunScript->setEnabled(Session);
 	aStatistics->setEnabled(Session);
-	aCreateSession->setEnabled(Session);
 	aImportDocs->setEnabled(Session);
 	aRunTool->setEnabled(Session);
 
@@ -245,12 +244,13 @@ void QGALILEIWin::sessionConnect(void)
 {
 	statusBar()->showMessage(tr("Connecting..."));
    bool ok;
-   SessionName=FromQString(QInputDialog::getText(this,tr("Connect to a session"),tr("Session name:"),QLineEdit::Normal,ToQString(SessionName),&ok));
+   SessionName=FromQString(QInputDialog::getText(this,tr("Connect to a session"),tr("Session name:"),QLineEdit::Normal,ToQString(App->GetLastSession()),&ok));
    if((!ok)||(SessionName.IsEmpty()))
 		return;
 	if(QCreateSession(this,Session,SessionName).run())
 	{
 		sessionConnected();
+		App->SetLastSession(SessionName);
 		statusBar()->showMessage(tr("Connected"));
 	}
 	else
@@ -334,44 +334,19 @@ void QGALILEIWin::importDocs(void)
 //-----------------------------------------------------------------------------
 void QGALILEIWin::runTool(void)
 {
-	GPlugInManager* Manager(GALILEIApp->GetManager("Tools"));
-
 	// Create the dialog box
-	QDialog Choose(this);
-	Ui_QChooseList Ui;
-	QWidget* widget(new QWidget(&Choose));
-	Ui.setupUi(widget);
-
-	// Init the dialog box with the lists
-	Ui.Desc->setText("Choose the tool to run");
-	RCursor<GPlugInList> Lists(Manager->GetPlugInLists());
-	int Row(0),i;
-	for(Lists.Start(),i=0;!Lists.End();Lists.Next(),i++)
-	{
-		if(Lists()->GetName()==ToolCat)
-			Row=i;
-		Ui.List->addItem(ToQString(Lists()->GetName()));
-	}
-	Ui.List->setCurrentRow(Row);
+	QChooseDlg Choose(this);
+	Choose.populateToolCats(App->GetLastToolCat());
 	if(!Choose.exec())
 		return;
-	ToolCat=FromQString(Ui.List->item(Ui.List->currentRow())->text());
+	App->SetLastToolCat(Choose.GetChoice());
 
-	// Init the dialog box with the plug-ins
-	RCastCursor<GPlugIn,GTool> Tools(Manager->GetPlugIns<GTool>(ToolCat));
-	Ui.List->clear();
-	for(Tools.Start(),i=0,Row=0;!Tools.End();Tools.Next(),i++)
-	{
-		if(Tools()->GetName()==Tool)
-			Row=i;
-		Ui.List->addItem(ToQString(Tools()->GetName()));
-	}
-	Ui.List->setCurrentRow(Row);
+	Choose.populateTools(App->GetLastToolCat(),App->GetLastTool());
 	if(!Choose.exec())
 		return;
+	App->SetLastTool(Choose.GetChoice());
 
-	Tool=FromQString(Ui.List->item(Ui.List->currentRow())->text());
-	QRunTool(this,Tool,ToolCat).run();
+	QRunTool(this,App->GetLastTool(),App->GetLastToolCat()).run();
 }
 
 
