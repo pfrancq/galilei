@@ -439,7 +439,7 @@ void GSession::AnalyzeDoc(GDoc* doc,GSlot* rec,bool force)
 	}
 	if(ExternBreak) return;
 
-	DocAnalyze.Analyze(doc);
+	DocAnalyze.Analyze(doc,force);
 }
 
 
