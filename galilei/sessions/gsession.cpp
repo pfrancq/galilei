@@ -430,7 +430,7 @@ void GSession::ReInit(const GCommunity*)
 
 
 //------------------------------------------------------------------------------
-void GSession::AnalyzeDoc(GDoc* doc,GSlot* rec)
+void GSession::AnalyzeDoc(GDoc* doc,GSlot* rec,bool force)
 {
 	if(rec)
 	{

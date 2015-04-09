@@ -451,8 +451,9 @@ public:
 	* Analyze a document.
 	* @param doc             Pointer to the document to analyze.
 	* @param rec             Receiver for the signals.
+	* @param force           Force the analysis of the document?
 	*/
-	void AnalyzeDoc(GDoc* doc,GSlot* rec=0);
+	void AnalyzeDoc(GDoc* doc,GSlot* rec=0,bool force=false);
 
 	/**
 	* Analyze the documents. At the end, all the enabled post-documents methods

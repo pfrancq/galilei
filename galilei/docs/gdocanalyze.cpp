@@ -641,10 +641,10 @@ void GDocAnalyze::Print(GTokenOccur* occur)
 
 
 //------------------------------------------------------------------------------
-void GDocAnalyze::Analyze(GDoc* doc)
+void GDocAnalyze::Analyze(GDoc* doc,bool force)
 {
 	// Verify the the document must be computed
-	if(!doc->MustCompute()) return;
+	if((!doc->MustCompute())&&(!force)) return;
 
 	if(doc->GetId()!=cNoRef)
 		Session->GetLog().WriteLog("Analyze "+doc->GetURI()()+" ("+RString::Number(doc->GetId())+")");

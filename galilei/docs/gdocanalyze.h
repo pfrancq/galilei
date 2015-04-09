@@ -550,8 +550,9 @@ public:
 	/**
 	* Analyze a document.
 	* @param doc             Pointer to the document to analyze.
+	* @param force           Force the analysis of the document?
 	*/
-	void Analyze(GDoc* doc);
+	void Analyze(GDoc* doc,bool force=false);
 
 	/**
 	* Destruct the document analyzer.
