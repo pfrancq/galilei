@@ -44,11 +44,17 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 class Wikipedia;
+class WikiToken;
 
 
 //-----------------------------------------------------------------------------
 class WikiDumpArticles : RXMLParser
 {
+	/**
+	 * Possible states of a Wikipedia article content.
+	 */
+	enum tState {sText,sLink,sCite,sRef,sComment,sTable,sDiv,sTag,sExternalLink,sCode};
+
 	/**
 	 * Is a <page> tag currently treated.
 	 */
@@ -109,6 +115,15 @@ class WikiDumpArticles : RXMLParser
 	 */
 	GLang* LangEn;
 
+	/**
+	 * Syntactic position of the current token.
+	 */
+	size_t CurSyntacticPos;
+
+	/**
+	 */
+	WikiToken* CurSection;
+
 public:
 
 	/**
@@ -150,6 +165,13 @@ private:
 	* @param text          Text processed.
 	*/
 	virtual void Text(const RString& text);
+
+	/**
+	 * Treat the current content of a wiki.
+    */
+	void TreatWiki(void);
+
+	void CreateTitle(RChar* &car);
 };
 
 

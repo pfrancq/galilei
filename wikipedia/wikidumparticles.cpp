@@ -40,6 +40,9 @@
 #include <wikipedia.h>
 
 
+//-----------------------------------------------------------------------------
+// DEBUG Mode
+const bool Debug=true;
 static RTextFile Test2("/home/pfrancq/debug-wiki.txt","utf-8");
 
 
@@ -92,7 +95,7 @@ void WikiDumpArticles::BeginTagParsed(const RString&,const RString& lName,const 
 	{
 		InRevision=true;
 	}
-	else if(InRevision&&(lName=="id"))
+	else if((!InRevision)&&(lName=="id"))
 	{
 		InText=true;
 		Content.Clear();
@@ -130,10 +133,71 @@ void WikiDumpArticles::EndTag(const RString& namespaceURI,const RString& lName,c
 					Article->SetUpdated(Updated);
 			}
 			WikiTokens::Get()->SetDoc(Article);
-			if(Article->MustCompute()||PlugIn->MustForceAnalyze())
-				PlugIn->GetSession()->AnalyzeDoc(Article);
 
-			Test2<<"https://en.wikipedia.org/wiki/"+Title<<endl;
+			TreatWiki();
+
+			// Remove all the last links where an outside Wikipedia
+			size_t ToDel(0);
+			WikiToken* Last(0);
+			RCursor<WikiToken> Del(WikiTokens::Get()->GetTokens());
+			for(Del.StartFromEnd();!Del.Begin();Del.Prev())
+			{
+				if(Del()->Type!=WikiToken::Link)
+				{
+					if(Last)
+						break;
+					Last=Del();
+				}
+				else
+				{
+					// Point to english
+					if(!RChar::StrNCmp(&Del()->Content()[7],"en",2))
+						break;
+
+					// Not wikipedia
+
+					if(RChar::StrNCmp(&Del()->Content()[10],"wikipedia",9)&&RChar::StrNCmp(&Del()->Content()[11],"wikipedia",9))
+						break;
+
+					ToDel+=2;
+					Last=0;
+				}
+			}
+			for(ToDel++;--ToDel;)
+				WikiTokens::Get()->DeleteLastToken();
+
+			// If necessary -> print the tokens
+			if(Article&&Debug)
+			{
+				Test2<<Article->GetURI()()<<endl;
+				RCursor<WikiToken> Cur(WikiTokens::Get()->GetTokens());
+				for(Cur.Start();!Cur.End();Cur.Next())
+				{
+					for(size_t i=Cur()->Depth+2;--i;)
+						Test2<<"\t";
+					switch(Cur()->Type)
+					{
+						case WikiToken::Text:
+							Test2<<"T ";
+							break;
+						case WikiToken::Section:
+							Test2<<"S ";
+							break;
+						case WikiToken::Title:
+							Test2<<"M ";
+							break;
+						case WikiToken::Link:
+							Test2<<"L ";
+							break;
+					}
+					Test2<<Cur()->Depth<<" "<<Cur()->SyntacticPos<<" "<<Cur()->Pos<<"\t"<<Cur()->Content<<endl;
+				}
+				Test2<<endl;
+			}
+
+			if(Article->MustCompute()||PlugIn->MustForceAnalyze())
+				PlugIn->GetSession()->AnalyzeDoc(Article,0,true);
+
 			NbAnalyzedArticles++;
 			if(PlugIn->GetNbArticles()&&(NbAnalyzedArticles>PlugIn->GetNbArticles()))
 				 StopAnalysis();
@@ -144,7 +208,7 @@ void WikiDumpArticles::EndTag(const RString& namespaceURI,const RString& lName,c
 	{
 		InRevision=false;
 	}
-	else if(InRevision&&(lName=="id"))
+	else if((!InRevision)&&(lName=="id"))
 	{
 		InText=false;
 		if(Content.IsEmpty())
@@ -182,4 +246,88 @@ void WikiDumpArticles::Text(const RString& text)
 		else if(InText)
 			Content+=text;
 	}
+}
+
+
+//------------------------------------------------------------------------------
+void WikiDumpArticles::TreatWiki(void)
+{
+	WikiToken* Token;
+	CurSection=0;
+	tState State(sText);  // Suppose we read a text
+	CurSyntacticPos=0;
+
+	RChar* Cur(Content());
+	while(!Cur->IsNull())
+	{
+		switch(State)
+		{
+			case sText:
+			{
+				if(RChar::StrNCmp(Cur,"==",2)==0)
+					CreateTitle(Cur);
+				else
+				{
+					Cur++;
+				}
+				break;
+			}
+
+			default:
+				Cur++;
+				break;
+		}
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void WikiDumpArticles::CreateTitle(RChar* &car)
+{
+	RChar Sec[10];
+
+	// Skip ==
+	car+=2;
+	Sec[0]='=';
+	Sec[1]='=';
+
+	// Compute the depth
+	int Depth(0);
+	while((*car)=='=')
+	{
+		Sec[Depth+2]='=';
+		Depth++;
+		if(Depth>5)
+			break;
+		car++;
+	}
+
+	// If depth > 5 -> not a title
+	if(Depth>5)
+	{
+		// Skip all '='
+		while((!car->IsNull())&&((*car)=='='))
+			car++;
+		return;
+	}
+	else
+		Sec[Depth+2]=0;
+
+	CurSection=WikiTokens::Get()->CreateToken();
+	CurSection->Type=WikiToken::Section;
+	CurSection->Pos=GetPos();
+	CurSection->SyntacticPos=CurSyntacticPos++;
+	CurSection->Depth=Depth;
+
+	// Read the title
+	while(RChar::StrNCmp(car,Sec,CurSection->Depth+2))
+	{
+		CurSection->Content+=(*car);
+		car++;
+	}
+
+	// Skip ==
+	while((!car->IsNull())&&((*car)=='='))
+		car++;
+
 }

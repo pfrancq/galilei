@@ -108,6 +108,7 @@ public:
 
 	friend class Wikipedia;
 	friend class WParser;
+	friend class WikiDumpArticles;
 };
 
 
