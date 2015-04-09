@@ -80,6 +80,7 @@ KViewDocs::KViewDocs(QGALILEIWin* win)
 	setWindowTitle("Documents");
 	List->Set(Win->getSession(),QGObjectsList::Docs);
 	resize(Width,Height);
+	connect(List,SIGNAL(Show(GDoc*)),win,SLOT(showDoc(GDoc*)));
 }
 
 

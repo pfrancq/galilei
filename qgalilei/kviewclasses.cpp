@@ -113,6 +113,7 @@ KViewClasses::KViewClasses(QGALILEIWin* win)
 	connect(ShowAll,SIGNAL(stateChanged(int)),this,SLOT(changeDetailsLevel(int)));
 	update();
 	resize(Width,Height);
+	connect(List,SIGNAL(Show(GClass*)),win,SLOT(showClass(GClass*)));
 }
 
 
