@@ -54,14 +54,14 @@ WikiToken::WikiToken(void)
 	: Depth(0), Pos(0), SyntacticPos(0)
 {
 	Content.SetLen(256);
-	Content.Clear();
+	Content.SetLen(0);
 }
 
 
 //------------------------------------------------------------------------------
 void WikiToken::Clear(void)
 {
-	Content.Clear();
+	Content.SetLen(0);
 	Depth=0;
 	Pos=0;
 	SyntacticPos=0;

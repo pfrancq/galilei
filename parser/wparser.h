@@ -75,11 +75,6 @@ class WParser : public GFilter
     */
 	GConceptType* URI;
 
-	/**
-	 * Pointer to the English language.
-	 */
-	GLang* LangEn;
-
 public:
 
 	/**

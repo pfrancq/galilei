@@ -53,7 +53,7 @@ public:
 	/**
 	 * Type of the token.
 	 */
-	enum tType {Text,Section,Link,Title};
+	enum tType {Text,Section,Link,Title,Name};
 
 private:
 

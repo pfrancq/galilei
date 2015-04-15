@@ -520,7 +520,7 @@ bool Wikipedia::CreateLink(void)
 
 
 //------------------------------------------------------------------------------
-void Wikipedia::TreatWiki()
+void Wikipedia::TreatWiki(void)
 {
 	WikiToken* Token;
 	RChar Code[20];

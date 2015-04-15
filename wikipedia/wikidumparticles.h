@@ -114,15 +114,40 @@ class WikiDumpArticles : RXMLParser
 	 * Pointer to the English language.
 	 */
 	GLang* LangEn;
-
 	/**
 	 * Syntactic position of the current token.
 	 */
 	size_t CurSyntacticPos;
 
 	/**
+	 * Current character.
+	 */
+	RCharCursor Char;
+
+	/**
+	 * Position of the content.
+	 */
+	off_t ContentPos;
+
+	/**
+	 * Current Token.
+	 */
+	WikiToken* Token;
+
+	/**
+	 * Current section (if any).
 	 */
 	WikiToken* CurSection;
+
+	/**
+	 * Temporary strings.
+	 */
+	RContainer<RString,true,false> TmpStrs;
+
+	/**
+	 * Temporary strings.
+	 */
+	RContainer<RString,true,false> TmpStrs2;
 
 public:
 
@@ -171,7 +196,12 @@ private:
     */
 	void TreatWiki(void);
 
-	void CreateTitle(RChar* &car);
+	/**
+	 * Create a title.
+    */
+	void CreateTitle(void);
+
+	void CreateLink(const char* begin,const char* end,tState state);
 };
 
 

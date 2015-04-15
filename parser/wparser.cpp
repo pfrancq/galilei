@@ -63,7 +63,7 @@ const bool Debug=false;
 
 //-----------------------------------------------------------------------------
 WParser::WParser(GSession* session,GPlugInFactory* fac)
-	: GFilter(session,fac), TermsSpace(0), URI(0), LangEn(0)
+	: GFilter(session,fac), TermsSpace(0), URI(0)
 {
 	AddMIME("wikipedia/dump");
 }
@@ -102,8 +102,6 @@ void WParser::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI&)
 		TermsSpace=Session->GetObj(pConceptType,ccText,"Terms","Terms");
 	if(!URI)
 		URI=Session->GetObj(pConceptType,ccLink,"URI","URI");
-	if(!LangEn)
-		LangEn=GALILEIApp->GetPlugIn<GLang>("Lang","en");
 
 	// Initialize the analyze
 	Clear();
@@ -119,6 +117,17 @@ void WParser::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI&)
 					                   Cur()->Pos,
 					                   Cur()->Depth,
 					                   Cur()->SyntacticPos);
+				break;
+			case WikiToken::Name:
+				Analyzer->AddToken(Cur()->Content,
+									 ttText,
+									 0,   // Null concept
+									 2.0,
+									 Analyzer->GetDefaultText(),
+			                   Cur()->Pos,
+			                   Cur()->Depth,
+			                   Cur()->SyntacticPos);
+
 				break;
 			case WikiToken::Section:
 				Analyzer->ExtractDefaultText(Cur()->Content,
