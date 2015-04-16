@@ -164,13 +164,13 @@ void QGDescription::ChangeVector(QTreeWidgetItem* item,int)
 	RConstCursor< GConceptRef> Refs(Choice->Vector->GetRefs());
 	for(Refs.Start();!Refs.End();Refs.Next())
 	{
-			// Create an item
-			GConcept* Concept(Refs()->GetConcept());
-			new Item(Vector,0,QStringList()
-					  <<ToQString(Concept->GetName())
-					  <<ToQString(Concept->GetType()->GetName())
-					  <<QString::number(Refs()->GetWeight())
-					  <<QString::number(Concept->GetId()));
+		// Create an item
+		GConcept* Concept(Refs()->GetConcept());
+		new Item(Vector,0,QStringList()
+				  <<ToQString(Concept->GetName())
+				  <<ToQString(Concept->GetType()->GetName())
+				  <<QString::number(Refs()->GetWeight())
+				  <<QString::number(Concept->GetId()));
 	}
 
 	// Resize the columns

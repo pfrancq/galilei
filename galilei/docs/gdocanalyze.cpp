@@ -69,7 +69,8 @@ bool Debug=false;
 //------------------------------------------------------------------------------
 GDocAnalyze::GDocAnalyze(GSession* session)
 	: RDownloadFile(), Session(session), Description(), Tree(0,20000,2000), Tokenizer(0),
-	  DefaultText(0), DCMI(0), DefaultURI(0), MemoryTokens(500), MemoryOccurs(20000),
+	  DefaultText(0), DCMI(0), DefaultURI(0), DefaultNamedEntity(0),
+	  MemoryTokens(500), MemoryOccurs(20000),
 	  OrderTokens(27,27,50,20), Tokens(500), Occurs(20000), Top(200), Depths(100,50),
 	  SyntacticPos(20)
 {
@@ -150,6 +151,24 @@ GConcept* GDocAnalyze::GetDefaultURI(void)
 	if(!DefaultURI)
 		DefaultURI=Session->InsertObj(pConcept,Session->GetObj(pConceptType,ccLink,"URI","Uniform Resource Identifier"),"*");
 	return(DefaultURI);
+}
+
+
+//------------------------------------------------------------------------------
+GConceptType* GDocAnalyze::GetDefaultNamedEntityType(void)
+{
+	if(!DefaultNamedEntityType)
+		DefaultNamedEntityType=Session->GetObj(pConceptType,ccText,"Named Entities","Named Entities");
+	return(DefaultNamedEntityType);
+}
+
+
+//------------------------------------------------------------------------------
+GConcept* GDocAnalyze::GetDefaultNamedEntity(void)
+{
+	if(!DefaultNamedEntity)
+		DefaultNamedEntity=Session->InsertObj(pConcept,GetDefaultNamedEntityType(),"*");
+	return(DefaultNamedEntity);
 }
 
 
@@ -295,6 +314,38 @@ GTokenOccur* GDocAnalyze::AddToken(const R::RString& token,tTokenType type,GConc
 
 
 //------------------------------------------------------------------------------
+GTokenOccur* GDocAnalyze::AddDefaultNamedEntityToken(const R::RString& token,double weight,size_t pos,size_t depth,size_t spos)
+{
+	// Be sure that all parts starts with a uppercase
+	RString Name;
+	Name.SetLen(token.GetLen());
+	Name.SetLen(0);
+	bool Upper(true);
+	RChar* Car(Name());
+	while(!Car->IsNull())
+	{
+		if(Upper)
+		{
+			while((!Car->IsNull())&&Car->IsSpace())
+				Car++;
+			Name+=RChar::ToUpper(*Car);
+			Upper=false;
+			Car++;
+		}
+		else if(Car->IsSpace())
+		{
+			Upper=true;
+			Name+=" ";
+		}
+		else
+			Name+=(*Car);
+	}
+	GConcept* Concept(Session->InsertObj(pConcept,GetDefaultNamedEntityType(),token));
+	AddToken(token,ttText,Concept,weight,GetDefaultNamedEntity(),pos,depth,spos);
+}
+
+
+//------------------------------------------------------------------------------
 void GDocAnalyze::ExtractText(const R::RString& text,GConcept* metaconcept,size_t pos,size_t depth,size_t spos)
 {
 	ExtractText(text,ttText,1.0,metaconcept,pos,depth,spos);
@@ -345,7 +396,7 @@ void GDocAnalyze::ExtractDCMI(const R::RString& element,const R::RString& value,
 //------------------------------------------------------------------------------
 void GDocAnalyze::ExtractDefaultText(const R::RString& content,size_t pos,size_t depth,size_t spos)
 {
-	ExtractDefaultText(content,ttText,1.0,pos,depth,spos);
+	ExtractDefaultText(content.ToLower(),ttText,1.0,pos,depth,spos);
 }
 
 
@@ -353,7 +404,7 @@ void GDocAnalyze::ExtractDefaultText(const R::RString& content,size_t pos,size_t
 void GDocAnalyze::ExtractDefaultText(const R::RString& content,tTokenType type,double weight,size_t pos,size_t depth,size_t spos)
 {
 	// Find the vector corresponding to the concept
-	ExtractText(content,type,weight,GetDefaultText(),pos,depth,spos);
+	ExtractText(content.ToLower(),type,weight,GetDefaultText(),pos,depth,spos);
 }
 
 

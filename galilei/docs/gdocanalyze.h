@@ -136,6 +136,16 @@ class GDocAnalyze : R::RDownloadFile
 	 */
 	GConcept* DefaultURI;
 
+	/**
+	 * Default type for named entities.
+    */
+	GConceptType* DefaultNamedEntityType;
+
+	/**
+	 * Concepts related to named entities.
+	 */
+	GConcept* DefaultNamedEntity;
+
   	/**
 	 * Memory of tokens.
 	 */
@@ -289,6 +299,16 @@ public:
 	GConcept* GetDefaultURI(void);
 
 	/**
+    * @return the default type for named entities.
+    */
+	GConceptType* GetDefaultNamedEntityType(void);
+
+	/**
+    * @return the meta-concept representing the default named entities.
+    */
+	GConcept* GetDefaultNamedEntity(void);
+
+	/**
 	 * Get the current vector.
 	 * @return a pointer to the current vector.
 	 */
@@ -351,6 +371,21 @@ public:
 	 * @return the occurrence of the token added.
 	 */
 	GTokenOccur* AddToken(const R::RString& token,tTokenType type,GConcept* concept,double weight,GConcept* metaconcept,size_t pos,size_t depth=0,size_t spos=SIZE_MAX);
+
+	/**
+	 * Add a named-entity token and add it to a vector with a meta-concept
+	 * corresponding to named entity. The method verifies that each part starts
+	 * with a character in uppercase and separated by only one space.
+	 * @param token          Token to add. The name must be unique for a given
+	 *                       document whatever its type.
+    * @param weight         Weight associate to the concept.
+	 * @param pos            Position of the concept.
+	 * @param depth          Depth of the concept.
+	 * @param spos           Syntactic position. If SIZE_MAX, the token is
+	 *                       supposed to be next the previous one.
+	 * @return the occurrence of the token added.
+    */
+	GTokenOccur* AddDefaultNamedEntityToken(const R::RString& token,double weight,size_t pos,size_t depth=0,size_t spos=SIZE_MAX);
 
 	/**
 	 * Extract some tokens of a given text, and add them to a vector associated
