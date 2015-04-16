@@ -199,7 +199,7 @@ bool GStringTokenizer::TreatChar(GDocAnalyze* analyzer,const R::RChar& car)
 				AddChar(car);
 				NbNonLetters++;
 
-				// If  they aren't accepted -> not a valid token
+				// If they aren't accepted -> not a valid token
 				if(!ExtractNonLetter)
 					ValidToken=false;
 
@@ -272,7 +272,7 @@ bool GStringTokenizer::TreatChar(GDocAnalyze* analyzer,const R::RChar& car)
 				{
 					if(Debug)
 						cout<<"Add Token *"+Token.ToLower()+"*"<<endl;
-					analyzer->AddToken(Token.ToLower());
+					analyzer->AddToken(Token);
 				}
 				else
 					analyzer->SkipToken();

@@ -69,6 +69,11 @@ class GStringIndexer : public GAnalyzer
 	 */
 	bool ApplyRulesMetadata;
 
+	/**
+	 * List of token to delete.
+	 */
+	R::RContainer<GToken,false,false> ToDelete;
+
 public:
 
 	/**
