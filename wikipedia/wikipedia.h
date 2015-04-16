@@ -70,6 +70,11 @@ class Wikipedia : public GTool
 	size_t NbContributions;
 
 	/**
+	 * Must the external URI be extracted from the wiki?
+	 */
+	bool ExtractExternalURI;
+
+	/**
 	 * String representing the date of the dump.
 	 */
 	RString DumpStr;
@@ -250,6 +255,12 @@ public:
 	 * @return true if yes.
 	 */
 	bool MustForceAnalyze(void) const {return(ForceAnalyze);}
+
+	/**
+	 * Must the external URI be extracted from the wiki?
+	 * @return true if yes.
+	 */
+	bool MustExtractExternalURI(void) const {return(ExtractExternalURI);}
 
 	/**
 	 * Get the slot.

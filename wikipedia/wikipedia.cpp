@@ -78,6 +78,7 @@ void Wikipedia::ApplyConfig(void)
 	NbArticles=FindParam<RParamValue>("NbArticles")->GetUInt();
 	NbContributions=FindParam<RParamValue>("NbContributions")->GetUInt();
 	ForceAnalyze=FindParam<RParamValue>("ForceAnalyze")->GetBool();
+	ExtractExternalURI=FindParam<RParamValue>("ExtractExternalURI")->GetBool();
 	try
 	{
 		Dump.SetDate(FindParam<RParamValue>("Dump")->Get());
@@ -1044,7 +1045,8 @@ void Wikipedia::CreateConfig(void)
 	InsertParam(new RParamValue("Dump",""));
 	InsertParam(new RParamValue("NbArticles",20000,"Number of articles to treat. If null, all articles are treated."));
 	InsertParam(new RParamValue("NbContributions",1000,"Number of contributions to treat. If null, all contributions are treated."));
-	InsertParam(new RParamValue("ForceAnalyze",false,"Must all the articles be analyzed or only the new and the updated ones."));
+	InsertParam(new RParamValue("ForceAnalyze",false,"Must all the articles be analyzed or only the new and the updated ones?"));
+	InsertParam(new RParamValue("ExtractExternalURI",true,"Must the external URI be extracted from the wiki?"));
 }
 
 

@@ -119,11 +119,8 @@ void WParser::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI&)
 					                   Cur()->SyntacticPos);
 				break;
 			case WikiToken::Name:
-				Analyzer->AddToken(Cur()->Content,
-									 ttText,
-									 0,   // Null concept
-									 2.0,
-									 Analyzer->GetDefaultText(),
+				Analyzer->AddDefaultNamedEntityToken(Cur()->Content,
+									 1.0,
 			                   Cur()->Pos,
 			                   Cur()->Depth,
 			                   Cur()->SyntacticPos);

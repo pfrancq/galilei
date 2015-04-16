@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>422</width>
-    <height>304</height>
+    <width>448</width>
+    <height>320</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -101,15 +101,28 @@
     </widget>
    </item>
    <item>
+    <widget class="QCheckBox" name="ForceAnalyze">
+     <property name="text">
+      <string>All articles are analyzed and not only the new and the updated ones.</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QGroupBox" name="groupBox_2">
      <property name="title">
       <string>Filter</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QCheckBox" name="ForceAnalyze">
+       <widget class="QCheckBox" name="ExtractExternalURI">
+        <property name="statusTip">
+         <string>Must the external URI be extracted from the wiki?</string>
+        </property>
+        <property name="whatsThis">
+         <string>Must the external URI be extracted from the wiki?</string>
+        </property>
         <property name="text">
-         <string>All articles are analyzed and not only the new and the updated ones.</string>
+         <string>Extract external URI?</string>
         </property>
        </widget>
       </item>

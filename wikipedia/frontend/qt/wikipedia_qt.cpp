@@ -77,6 +77,7 @@ extern "C" bool Configure(GPlugIn* fac)
 	dlg.NbArticles->setValue(fac->FindParam<RParamValue>("NbArticles")->GetInt());
 	dlg.NbContributions->setValue(fac->FindParam<RParamValue>("NbContributions")->GetInt());
 	dlg.ForceAnalyze->setChecked(fac->FindParam<RParamValue>("ForceAnalyze")->GetBool());
+	dlg.ExtractExternalURI->setChecked(fac->FindParam<RParamValue>("ExtractExternalURI")->GetBool());
 	if(dlg.exec())
 	{
 		fac->FindParam<RParamValue>("Dir")->Set(FromQString(dlg.Dir->text()));
@@ -86,6 +87,7 @@ extern "C" bool Configure(GPlugIn* fac)
 		fac->FindParam<RParamValue>("NbArticles")->SetUInt(dlg.NbArticles->value());
 		fac->FindParam<RParamValue>("NbContributions")->SetUInt(dlg.NbContributions->value());
 		fac->FindParam<RParamValue>("ForceAnalyze")->SetBool(dlg.ForceAnalyze->isChecked());
+		fac->FindParam<RParamValue>("ExtractExternalURI")->SetBool(dlg.ExtractExternalURI->isChecked());
 		return(true);
 	}
 	return(false);
