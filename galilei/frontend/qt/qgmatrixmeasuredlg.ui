@@ -8,7 +8,7 @@
     <x>0</x>
     <y>0</y>
     <width>466</width>
-    <height>562</height>
+    <height>602</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -311,17 +311,6 @@ In practice, the minimum measure is computed as the sum of the average and the p
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
- <includes>
-  <include location="local">knuminput.h</include>
-  <include location="local">knuminput.h</include>
-  <include location="local">knuminput.h</include>
-  <include location="local">knuminput.h</include>
-  <include location="local">knuminput.h</include>
-  <include location="local">knuminput.h</include>
-  <include location="local">kurlrequester.h</include>
-  <include location="local">klineedit.h</include>
-  <include location="local">kpushbutton.h</include>
- </includes>
  <resources/>
  <connections/>
 </ui>

@@ -35,11 +35,6 @@
 #include <dirent.h>
 #include <ctype.h>
 #include <sys/stat.h>
-#ifdef _BSD_SOURCE
-	#include <unistd.h>
-#else
-	#include <io.h>
-#endif
 #include <fcntl.h>
 #include <fnmatch.h>
 using namespace std;
