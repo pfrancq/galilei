@@ -36,7 +36,6 @@
 // include files for current application
 #include <kviewgroups.h>
 #include <qgalileiwin.h>
-#include <kapplication.h>
 
 
 //-----------------------------------------------------------------------------
