@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>248</width>
-    <height>70</height>
+    <width>267</width>
+    <height>80</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -50,28 +50,6 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
- <includes>
-  <include location="local">knuminput.h</include>
-  <include location="local">knuminput.h</include>
-  <include location="local">knuminput.h</include>
-  <include location="local">knuminput.h</include>
-  <include location="local">knuminput.h</include>
-  <include location="local">knuminput.h</include>
-  <include location="local">knuminput.h</include>
-  <include location="local">knuminput.h</include>
-  <include location="local">knuminput.h</include>
-  <include location="local">knuminput.h</include>
-  <include location="local">knuminput.h</include>
-  <include location="local">knuminput.h</include>
-  <include location="local">knuminput.h</include>
-  <include location="local">knuminput.h</include>
-  <include location="local">knuminput.h</include>
-  <include location="local">knuminput.h</include>
-  <include location="local">knuminput.h</include>
-  <include location="local">knuminput.h</include>
-  <include location="local">knuminput.h</include>
-  <include location="local">knuminput.h</include>
- </includes>
  <resources/>
  <connections/>
  <slots>
