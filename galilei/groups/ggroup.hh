@@ -63,24 +63,6 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 //------------------------------------------------------------------------------
 template<class cObj,class cGroup,GALILEI::tObjType type>
-	int GALILEI::GGroup<cObj,cGroup,type>::Compare(const GGroup* grp) const
-{
-	if(!grp)
-		return(1);
-	return(R::CompareIds(Id,grp->Id));
-}
-
-
-//------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
-	int GALILEI::GGroup<cObj,cGroup,type>::Compare(const size_t id) const
-{
-	return(R::CompareIds(Id,id));
-}
-
-
-//------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
 	R::RDate GALILEI::GGroup<cObj,cGroup,type>::GetUpdated(void) const
 {
 	return(Updated);

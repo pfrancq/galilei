@@ -50,11 +50,11 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDoc::GDoc(GSession* session,const RURI& uri,const RString& name,GLang* lang,const RString& mime)
-	: GDescriptionObject<GDoc>(session,cNoRef,0,otDoc,name), URI(uri),
+GDoc::GDoc(GSession* session,const RString& uri,const R::RString& title,const R::RString& desc,GLang* lang,const RString& mime)
+	: GDescriptionObject<GDoc>(session,cNoRef,0,otDoc,uri), Title(title),
 	  Lang(lang),MIMEType(mime), Updated(RDate::GetToday()), Computed(RDate::Null),
 	  Fdbks(0), GroupId(0), Attached(RDate::Null),
-	  StructId(0), Tree(0)
+	  StructId(0), Tree(0), Description(desc)
 {
 	// Verify if the topic exists in memory
 	if(GroupId)
@@ -67,11 +67,11 @@ GDoc::GDoc(GSession* session,const RURI& uri,const RString& name,GLang* lang,con
 
 
 //------------------------------------------------------------------------------
-GDoc::GDoc(GSession* session,const RURI& uri,const RString& name,size_t id,size_t blockid,size_t structid,GLang* lang,const RString& mime,size_t grpid,const RDate& c,const RDate& u,const RDate& a)
-	: GDescriptionObject<GDoc>(session,id,blockid,otDoc,name), URI(uri),
+GDoc::GDoc(GSession* session,const RString& uri,const RString& title,const R::RString& desc,size_t id,size_t blockid,size_t structid,GLang* lang,const RString& mime,size_t grpid,const RDate& c,const RDate& u,const RDate& a)
+	: GDescriptionObject<GDoc>(session,id,blockid,otDoc,uri), Title(title),
 	  Lang(lang),MIMEType(mime), Updated(u), Computed(c),
 	  Fdbks(0), GroupId(grpid), Attached(a),
-	  StructId(structid), Tree(0)
+	  StructId(structid), Tree(0), Description(desc)
 {
 	// Verify if the topic exists in memory
 	mAssert(GroupId!=cNoRef);
@@ -82,13 +82,6 @@ GDoc::GDoc(GSession* session,const RURI& uri,const RString& name,size_t id,size_
 			grp->InsertObj(this);
 	}
 	NotificationCenter.PostNotification<GDoc*>("DocChanged",this);
-}
-
-
-//------------------------------------------------------------------------------
-R::RString GDoc::GetSearchStr(void) const
-{
-	return(URI());
 }
 
 
@@ -105,34 +98,6 @@ bool GDoc::MustCompute(void) const
 int GDoc::Compare(const GDoc& doc) const
 {
 	return(CompareIds(Id,doc.Id));
-}
-
-
-//------------------------------------------------------------------------------
-int GDoc::Compare(const GDoc* doc) const
-{
-	return(CompareIds(Id,doc->Id));
-}
-
-
-//------------------------------------------------------------------------------
-int GDoc::Compare(const size_t id) const
-{
-	return(CompareIds(Id,id));
-}
-
-
-//------------------------------------------------------------------------------
-int GDoc::Compare(const R::RString& name) const
-{
-	return(URI.Compare(name));
-}
-
-
-//------------------------------------------------------------------------------
-int GDoc::Compare(const GLang* lang) const
-{
-	return(Lang->Compare(lang));
 }
 
 
@@ -201,13 +166,6 @@ void GDoc::SetGroup(size_t groupid)
 	GroupId=groupid;
 	if(GroupId)
 		Attached.SetToday();
-}
-
-
-//------------------------------------------------------------------------------
-void GDoc::SetURI(RURI uri)
-{
-	URI=uri;
 }
 
 

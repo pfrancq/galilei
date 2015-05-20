@@ -189,6 +189,10 @@ GTokenOccur* GDocAnalyze::AddToken(const RString& token,tTokenType type,double w
 	if(token==RString::Null)
 		return(0);
 
+	// Verify that the token is not empty
+	if(token.IsEmpty())
+		return(0);
+
 	// Search for the token
 	GToken* Token;
 	size_t Idx1(token.HashIndex(1)), Idx2(token.HashIndex(2));
@@ -254,7 +258,7 @@ GTokenOccur* GDocAnalyze::AddToken(const RString& token,tTokenType type,double w
 		{
 			if(!DepthError)
 			{
-				Session->GetLog().WriteLog(Doc->GetURI()()+": The depths of the tokens '"+token+"' ("+RString::Number(Occur->Depth)+") and '"+Parent->Token->Token+"' ("+RString::Number(Parent->Depth)+") are not synchronized");
+				Session->GetLog().WriteLog(Doc->GetName()+": The depths of the tokens '"+token+"' ("+RString::Number(Occur->Depth)+") and '"+Parent->Token->Token+"' ("+RString::Number(Parent->Depth)+") are not synchronized",true);
 				DepthError=true;
 			}
 		}
@@ -285,6 +289,10 @@ GTokenOccur* GDocAnalyze::AddToken(const R::RString& token,GConcept* metaconcept
 //------------------------------------------------------------------------------
 GTokenOccur* GDocAnalyze::AddToken(const R::RString& token,tTokenType type,GConcept* concept,double weight,GConcept* metaconcept,size_t pos,size_t depth,size_t spos)
 {
+	// Verify that the token is not empty
+	if(token.IsEmpty())
+		return(0);
+
 	// Verify that is not a null concept
 	if(!concept)
 		return(0);
@@ -316,6 +324,10 @@ GTokenOccur* GDocAnalyze::AddToken(const R::RString& token,tTokenType type,GConc
 //------------------------------------------------------------------------------
 GTokenOccur* GDocAnalyze::AddDefaultNamedEntityToken(const R::RString& token,double weight,size_t pos,size_t depth,size_t spos)
 {
+	// Verify that the token is not empty
+	if(token.IsEmpty())
+		return(0);
+
 	// Be sure that all parts starts with a uppercase
 	RString Name;
 	Name.SetLen(token.GetLen());
@@ -355,6 +367,10 @@ void GDocAnalyze::ExtractText(const R::RString& text,GConcept* metaconcept,size_
 //------------------------------------------------------------------------------
 void GDocAnalyze::ExtractText(const R::RString& text,tTokenType type,double weight,GConcept* metaconcept,size_t pos,size_t depth,size_t spos)
 {
+	// Verify that the text is not empty
+	if(text.IsEmpty())
+		return;
+
 	// Get the vector associated with the concept
 	CurVector=Description.GetInsertVector(metaconcept);
 	CurDepth=depth;
@@ -698,7 +714,7 @@ void GDocAnalyze::Analyze(GDoc* doc,bool force)
 	if((!doc->MustCompute())&&(!force)) return;
 
 	if(doc->GetId()!=cNoRef)
-		Session->GetLog().WriteLog("Analyze "+doc->GetURI()()+" ("+RString::Number(doc->GetId())+")");
+		Session->GetLog().WriteLog("Analyze "+doc->GetName()+" ("+RString::Number(doc->GetId())+")",true);
 
 	// Prepare the analyze
 	NbMemoryTokensUsed=0;
@@ -723,13 +739,14 @@ void GDocAnalyze::Analyze(GDoc* doc,bool force)
 	GFilter* Filter(GALILEIApp->FindMIMEType(doc));
 
 	// If it is not a local	file -> Download it
-	if(doc->GetURI().GetScheme()!="file")
+	RURI URI(doc->GetName());
+	if(URI.GetScheme()!="file")
 	{
 		File=TmpFile.GetName();
-		Download(doc->GetURI(),File);
+		Download(URI,File);
 	}
 	else
-		File=doc->GetURI();
+		File=URI;
 
 	// Analyze it with the good filter
 	Filter->Analyze(this,doc,File);

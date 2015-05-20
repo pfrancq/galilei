@@ -64,9 +64,9 @@ namespace GALILEI{
 class GDoc : public GDescriptionObject<GDoc>
 {
 	/**
-	* URI of the document.
+	* Title of the document.
 	*/
-	R::RURI URI;
+	R::RString Title;
 
 	/**
 	* Language of the description.
@@ -113,23 +113,30 @@ class GDoc : public GDescriptionObject<GDoc>
     */
 	GConceptTree* Tree;
 
+	/**
+	 * Description of the document.
+    */
+	R::RString Description;
+
 public:
 
 	/**
 	* Construct a new document.
 	* @param session         Session.
 	* @param uri             URI of the document.
-	* @param name            Name of the document.
+	* @param title           Title of the document.
+	* @param desc            Description of the document.
 	* @param lang            Language of the document.
 	* @param mime            MIME type of the document.
 	*/
-	GDoc(GSession* session,const R::RURI& uri,const R::RString& name,GLang* lang,const R::RString& mime);
+	GDoc(GSession* session,const R::RString& uri,const R::RString& title,const R::RString& desc,GLang* lang,const R::RString& mime);
 
 	/**
 	* Construct a document.
 	* @param session         Session.
 	* @param uri             URI of the document.
-	* @param name            Name of the document.
+	* @param title           Title of the document.
+	* @param desc            Description of the document.
 	* @param id              Identifier of the document.
 	* @param blockid         Identifier of the block for the description.
 	* @param structid        Identifier of the block for the structure.
@@ -140,7 +147,7 @@ public:
 	* @param u               Date of the last updated.
 	* @param a               Date of the last attached.
 	*/
-	GDoc(GSession* session,const R::RURI& uri,const R::RString& name,size_t id,size_t blockid,size_t structid,GLang* lang,const R::RString& mime,size_t grpid,const R::RDate& c,const R::RDate& u,const R::RDate& a);
+	GDoc(GSession* session,const R::RString& uri,const R::RString& title,const R::RString& desc,size_t id,size_t blockid,size_t structid,GLang* lang,const R::RString& mime,size_t grpid,const R::RDate& c,const R::RDate& u,const R::RDate& a);
 
 	/**
     * @return the class name.
@@ -160,51 +167,12 @@ public:
 	static inline tObjType GetType(void) {return(otDoc);}
 
 	/**
-	 * Get a string that represents the object when a search has to be
-	 * performed in the list. For the document, it is the URL.
-	 * @return the string used for searching an object.
-	 */
-	virtual R::RString GetSearchStr(void) const;
-
-	/**
 	* Compare two documents by comparing their identifier.
 	* @see R::RContainer
 	* @param doc             Document.
 	* @return int
 	*/
 	int Compare(const GDoc& doc) const;
-
-	/**
-	* Compare two documents by comparing their identifier.
-	* @see R::RContainer
-	* @param doc             Pointer to the document.
-	* @return int
-	*/
-	int Compare(const GDoc* doc) const;
-
-	/**
-	* Compare the identifier of a documents with a given identifier.
-	* @see R::RContainer
-	* @param id              Identifier.
-	* @return int
-	*/
-	int Compare(const size_t id) const;
-
-	/**
-	* Compare the name of a documents with a given name.
-	* @see R::RContainer
-	* @param name             Name.
-	* @return int
-	*/
-	int Compare(const R::RString& name) const;
-
-	/**
-	* Compare the language of a document with a given language.
-	* @see R::RContainer and GDocs.
-	* @param lang            Pointer to the language.
-	* @return int
-	*/
-	int Compare(const GLang* lang) const;
 
 	/**
 	 * Release the tree.
@@ -224,16 +192,10 @@ public:
 	GConceptTree* GetTree(void) const;
 
 	/**
-	* Get the URI.
-	* @return the URI.
+	* Get the Title.
+	* @return the title.
 	*/
-	R::RURI GetURI(void) const {return(URI);}
-
-	/**
-	* Set the URI.
-	* @param uri             URI to assign.       .
-	*/
-	void SetURI(R::RURI uri);
+	R::RString GetTitle(void) const {return(Title);}
 
 	/**
 	* @return Pointer to the Language.
@@ -263,6 +225,12 @@ public:
 	* @param mime            C String representing the MIME type.
 	*/
 	void SetMIMEType(const R::RString& mime);
+
+	/**
+	* Get the description of the document.
+	* @returns String.
+	*/
+	R::RString GetDescription(void) const {return(Description);}
 
 	/**
 	* Verify if the document must be (re-)computed.

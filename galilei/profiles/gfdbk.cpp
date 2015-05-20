@@ -46,7 +46,7 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GFdbk::GFdbk(size_t docid)
-  : DocId(docid), Fdbk(ftUnknown)
+  : DocId(docid), Fdbk(ftUnknown), Done(RDate::Null)
 {
 }
 

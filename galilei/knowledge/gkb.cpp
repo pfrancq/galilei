@@ -53,8 +53,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GKB::GKB(void)
-	: State(osLatest), Storage(0), SaveResults(true),
+GKB::GKB(GSession* session)
+	: Session(session), State(osLatest), Storage(0), SaveResults(true),
 	  ConceptTypes(20), ConceptTypesByIds(20),
 	  Concepts(50000,10000),
 	  Predicates(30), PredicatesByIds(30), Statements(5000,5000)
@@ -95,7 +95,7 @@ GConceptType* GKB::GetObj(const GConceptType*,tConceptCat cat,const RString& nam
 	}
 	if(!type)
 	{
-		ConceptTypes.InsertPtr(type=new GConceptType(dynamic_cast<GSession*>(this),cat,cNoRef,name,desc,5000));
+		ConceptTypes.InsertPtr(type=new GConceptType(Session,cat,cNoRef,name,desc,5000));
 		Storage->AssignId(type);
 		ConceptTypesByIds.InsertPtrAt(type,type->GetId(),true);
 	}
@@ -126,7 +126,7 @@ void GKB::InsertObj(const GConceptType*,tConceptCat cat,char id,const R::RString
 	if(!Storage)
 		 mThrowGException("Storage is not a valid pointer");
 
-	GConceptType* type=new GConceptType(dynamic_cast<GSession*>(this),cat,id,name,desc,5000);
+	GConceptType* type=new GConceptType(Session,cat,id,name,desc,5000);
 	if(!id)
 		Storage->AssignId(type);
 
@@ -252,7 +252,7 @@ GConcept* GKB::InsertObj(const GConcept*,GConceptType* type,const R::RString& co
 	GConcept* ptr(type->GetObj(pConcept,concept,true));
 	if(!ptr)
 	{
-		ptr=new GConcept(reinterpret_cast<GSession*>(this),concept,type);
+		ptr=new GConcept(Session,concept,type);
 		type->InsertObj(ptr);
 		InDirect=true;
 	}

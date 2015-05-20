@@ -74,9 +74,19 @@ protected:
 	GConceptType* Stop;
 
 	/**
-	* Dictionaries of stems.
+	 * The stopwords must be loaded.
+	 */
+	bool MustLoadStop;
+
+	/**
+	* Dictionaries of terms.
 	*/
 	GConceptType* Dict;
+
+	/**
+	 * The terms must be loaded.
+	 */
+	bool MustLoadDict;
 
 	/**
 	* List of word that must be skipped when there are part of a sequence

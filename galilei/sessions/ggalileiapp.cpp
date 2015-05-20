@@ -244,27 +244,31 @@ GSession* GGALILEIApp::GetSession(const R::RString& name,bool created)
 		for(Cur.Start();!Cur.End();Cur.Next())
 			Cur()->Create(Session);
 		Session->Init();
-		Log.WriteLog("Session '"+name+"' created");
+		Log.WriteLog("Session '"+name+"' created",false);
 
 		// Initialize the storage and load the ontology
 		Storages->InitPlugIns(Session);
-		GStorage* Storage(Storages->GetCurrentPlugIn<GStorage>());
+		GStorage* Storage(Storages->GetCurrentPlugIn<GStorage>(0));
+		if(!Storage)
+			Storage=CreateStorage(Session);
+		if(!Storage)
+			mThrowGException("Cannot create a storage for session '"+name+"'");
 		Session->Storage=Storage;
 		Storage->LoadConceptTypes();
 		Storage->LoadConcepts();
 		Storage->LoadPredicates();
 		Storage->LoadStatements();
-		Log.WriteLog("Storages for session '"+name+"' created");
+		Log.WriteLog("Storages for session '"+name+"' created",false);
 
 		// Initialize the languages
 		Langs->InitPlugIns(Session);
-		Log.WriteLog("Languages for session '"+name+"' created");
+		Log.WriteLog("Languages for session '"+name+"' created",false);
 
 		// Initialize the rest of the plug-ins
 		for(Cur.Start();!Cur.End();Cur.Next())
 			if((Cur()!=Storages)&&(Cur()!=Langs))
 				Cur()->InitPlugIns(Session);
-		Log.WriteLog("Plug-ins connected to session '"+name+"'");
+		Log.WriteLog("Plug-ins connected to session '"+name+"'",false);
 
 		// Return the session
 		Session->State=osLatest;
@@ -475,6 +479,13 @@ void GGALILEIApp::Load(const R::RContainer<R::RString,true,false>& dirs,bool dlg
 
 
 //-----------------------------------------------------------------------------
+GStorage* GGALILEIApp::CreateStorage(GSession*)
+{
+	return(0);
+}
+
+
+//-----------------------------------------------------------------------------
 RCursor<GPlugInManager> GGALILEIApp::GetManagers(void)
 {
 	return(RCursor<GPlugInManager>(*this));
@@ -523,28 +534,28 @@ void GGALILEIApp::RunPrg(GSlot* rec,const RString& filename)
 {
 	try
 	{
-		Log.WriteLog("Running program '"+filename+"'");
+		Log.WriteLog("Running program '"+filename+"'",true);
 		GGALILEIPrg(rec).Run(filename);
-		Log.WriteLog("End program '"+filename+"'");
+		Log.WriteLog("End program '"+filename+"'",true);
 	 }
 	catch(GException& e)
 	{
-		Log.WriteLog(RString("Error: ")+e.GetMsg());
+		Log.WriteLog(RString("Error: ")+e.GetMsg(),true);
 		mThrowGException(RString("Error: ")+e.GetMsg());
 	}
 	catch(RException& e)
 	{
-		Log.WriteLog(RString("Error: ")+e.GetMsg());
+		Log.WriteLog(RString("Error: ")+e.GetMsg(),true);
 		mThrowGException(RString("Error: ")+e.GetMsg());
 	}
 	catch(std::exception& e)
 	{
-		Log.WriteLog(RString("Error: ")+e.what());
+		Log.WriteLog(RString("Error: ")+e.what(),true);
 		mThrowGException(RString("Error: ")+e.what());
 	}
 	catch(...)
 	{
-		Log.WriteLog("Error while processing");
+		Log.WriteLog("Error while processing",false);
 		mThrowGException("Error while processing");
 	}
 }
@@ -562,14 +573,14 @@ GFilter* GGALILEIApp::FindMIMEType(GDoc* doc) const
 		// Goes through all defined MIME types
 		RCursor<GMIMEExt> Cur(Exts);
 		for(Cur.Start();!Cur.End();Cur.Next())
-			if(fnmatch(Cur()->Ext,doc->GetURI()(),0)!=FNM_NOMATCH)
+			if(fnmatch(Cur()->Ext,doc->GetName(),0)!=FNM_NOMATCH)
 			{
 				doc->SetMIMEType(Cur()->Name);
 				break;
 			}
 	}
 	if(doc->GetMIMEType().IsEmpty())
-		mThrowGException("Cannot find MIME type for "+doc->GetURI()());
+		mThrowGException("Cannot find MIME type for "+doc->GetName());
 
 	// If no filter -> Exception
 	GMIMEFilter* ptr=MIMES.GetPtr(doc->GetMIMEType());

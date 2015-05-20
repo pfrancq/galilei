@@ -67,7 +67,7 @@ public:
 
 //------------------------------------------------------------------------------
 GLang::GLang(GSession* session,GPlugInFactory* fac,const RString& lang,const char* code)
-	: RLang(lang,code), GPlugIn(session,fac), Stop(0), Dict(0),
+	: RLang(lang,code), GPlugIn(session,fac), Stop(0), MustLoadStop(true), Dict(0), MustLoadDict(true),
 	  SkipWords(50,20)
 {
 	SkipWords.InsertPtr(new SkipWord("min"));
@@ -144,8 +144,11 @@ void GLang::SkipSequence(const RString& word)
 //------------------------------------------------------------------------------
 GConceptType* GLang::GetDict(void) const
 {
-	if(!Dict)
-		const_cast<GLang*>(this)->Dict=Session->GetObj(pConceptType,GetCode()+RString("Terms"),false);
+	if((!Dict)&&(MustLoadDict))
+	{
+		const_cast<GLang*>(this)->Dict=Session->GetObj(pConceptType,GetCode()+RString("Terms"),true);
+		const_cast<GLang*>(this)->MustLoadDict=false;
+	}
 	return(Dict);
 }
 
@@ -153,8 +156,11 @@ GConceptType* GLang::GetDict(void) const
 //------------------------------------------------------------------------------
 GConceptType* GLang::GetStop(void) const
 {
-	if(!Stop)
-		const_cast<GLang*>(this)->Stop=Session->GetObj(pConceptType,GetCode()+RString("Stopwords"),false);
+	if((!Stop)&&(MustLoadStop))
+	{
+		const_cast<GLang*>(this)->Stop=Session->GetObj(pConceptType,GetCode()+RString("Stopwords"),true);
+		const_cast<GLang*>(this)->MustLoadStop=false;
+	}
 	return(Stop);
 }
 

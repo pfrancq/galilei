@@ -45,8 +45,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GClasses::GClasses(size_t max)
-	: RTree<GClasses,GClass,false>(), GObjects<GClass,hClasses>(max,"Classes",otClass)
+GClasses::GClasses(GSession* session,size_t max)
+	: GKB(session), RTree<GClasses,GClass,false>(), GObjects<GClass,hClasses>(session,max,"Classes",otClass)
 {
 }
 

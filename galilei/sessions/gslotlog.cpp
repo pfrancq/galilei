@@ -58,56 +58,56 @@ GSlotLog::GSlotLog(const RURI& uri)
 //------------------------------------------------------------------------------
 void GSlotLog::NextDoc(const GDoc* doc)
 {
-	WriteLog("Analyze "+doc->GetURI()()+" ("+RString::Number(doc->GetId())+")");
+	WriteLog("Analyze "+doc->GetName()+" ("+RString::Number(doc->GetId())+")",true);
 }
 
 
 //------------------------------------------------------------------------------
 void GSlotLog::NextProfile(const GProfile* prof)
 {
-	WriteLog("Compute "+(prof->GetUser()->GetName()+"/"+prof->GetName())+"("+RString::Number(prof->GetId())+")");
+	WriteLog("Compute "+(prof->GetUser()->GetName()+"/"+prof->GetName())+"("+RString::Number(prof->GetId())+")",true);
 }
 
 
 //------------------------------------------------------------------------------
 void GSlotLog::WriteStr(const RString& str)
 {
-	WriteLog(str.ToLatin1());
+	WriteLog(str,true);
 }
 
 
 //------------------------------------------------------------------------------
 void GSlotLog::StartJob(const R::RString& job)
 {
-	WriteLog(job);
+	WriteLog(job,true);
 }
 
 //------------------------------------------------------------------------------
 void GSlotLog::EndJob(const R::RString& msg)
 {
 	if(msg!=RString::Null)
-		WriteLog(msg);
+		WriteLog(msg,true);
 }
 
 
 //------------------------------------------------------------------------------
 void GSlotLog::Warning(const R::RString& msg)
 {
-	WriteLog("Warning: "+msg);
+	WriteLog("Warning: "+msg,true);
 }
 
 
 //------------------------------------------------------------------------------
 void GSlotLog::Error(const R::RString& msg)
 {
-	WriteLog("Error: "+msg);
+	WriteLog("Error: "+msg,true);
 }
 
 
 //------------------------------------------------------------------------------
 void GSlotLog::Alert(const R::RString& msg)
 {
-	WriteLog("Alert: "+msg);
+	WriteLog("Alert: "+msg,true);
 }
 
 

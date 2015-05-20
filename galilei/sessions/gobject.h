@@ -91,6 +91,30 @@ public:
 	GObject(const GObject* obj);
 
 	/**
+	* Compare method used by R::RContainer.
+	* @param obj             Object to compare with.
+	*/
+	int Compare(const GObject& obj) const;
+
+	/**
+	* Compare method used by R::RContainer.
+	* @param id              Identifier to compare with.
+	*/
+	int Compare(size_t id) const;
+
+	/**
+	* Compare method used by R::RObjectContainer.
+	* @param obj             Object to compare with.
+	*/
+	int Search(const GObject& obj) const;
+
+	/**
+	* Compare method used by R::RContainer.
+	* @param name            Name to compare with.
+	*/
+	int Search(const R::RString& name) const;
+
+	/**
     * @return the class name.
     */
 	virtual R::RCString GetClassName(void) const {return("GObject");}
@@ -123,13 +147,6 @@ public:
 	 * @param id             Identifier.
 	 */
 	void SetId(size_t id);
-
-	/**
-	 * Get a string that represents the object when a search has to be
-	 * performed in the list. By default, it is its name.
-	 * @return the string used for searching an object.
-	 */
-	virtual R::RString GetSearchStr(void) const;
 
 	/**
 	* @return the type of the object.

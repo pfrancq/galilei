@@ -202,6 +202,15 @@ protected:
 	*/
 	void Load(const R::RContainer<R::RString,true,false>& dirs,bool dlg=true);
 
+	/**
+	 * Create a valid storage. The method is call when a session is opened for
+	 * which a current storage doesn't exist. By default, this method does
+	 * nothing.
+	 * @param session        Session for which the stoarge must be created.
+    * @return a valid pointer to a GStorage.
+    */
+	virtual GStorage* CreateStorage(GSession* session);
+
 public:
 
 	/**

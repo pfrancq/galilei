@@ -57,8 +57,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSubjects::GSubjects(void)
-	: RTree<GSubjects,GSubject,true>(), Subjects(0), UsedSubjects(0), UsedDocs(0), DocsStatus(0), DocsSubjects(0),
+GSubjects::GSubjects(GSession* session)
+	: GKB(session), RTree<GSubjects,GSubject,true>(), Subjects(0), UsedSubjects(0), UsedDocs(0), DocsStatus(0), DocsSubjects(0),
 	  ProfilesSubject(0), MustLoad(true), DescType(sdNames)
 {
 }
@@ -293,6 +293,9 @@ RCursor<GDoc> GSubjects::GetUsedObjs(const GDoc*) const
 //------------------------------------------------------------------------------
 bool GSubjects::IsFromParentSubject(const GDoc* doc,const GSubject* subject) const
 {
+	mReturnValIfFail(doc,false);
+	mReturnValIfFail(subject,false);
+
 	const_cast<GSubjects*>(this)->LoadObjs(pSubject);
 
 	// Verify that a parent exist and that it is not the root node
@@ -300,7 +303,7 @@ bool GSubjects::IsFromParentSubject(const GDoc* doc,const GSubject* subject) con
 		return(false);
 
 	for(subject=subject->Parent;!subject;subject=subject->Parent)
-		if(subject->Docs.IsIn(doc))
+		if(subject->Docs.IsIn(*doc))
 			return(true);
 	return(false);
 }
@@ -332,7 +335,7 @@ void GSubjects::InsertObj(GSubject* subject,GDoc* doc)
 
 	// Look if the document must be insert in CategorizedDocs
 	bool Find;
-	size_t Pos(subject->Docs.GetIndex(doc,Find));
+	size_t Pos(subject->Docs.GetIndex(*doc,Find));
 	if(!Find)
 		subject->Docs.InsertPtrAt(doc,Pos,false);
 
@@ -364,7 +367,7 @@ void GSubjects::SetUsed(GDoc* doc,GSubject* subject,bool select)
 	{
 		// The document is selected
 		DocsStatus.Set(true,doc->GetId());
-		size_t Pos(UsedDocs.GetIndex(doc,Find));
+		size_t Pos(UsedDocs.GetIndex(*doc,Find));
 		if(!Find)
 			UsedDocs.InsertPtr(doc);
 
@@ -376,7 +379,7 @@ void GSubjects::SetUsed(GDoc* doc,GSubject* subject,bool select)
 			Attached->InsertPtrAt(subject,Pos,false);
 
 		// Add the document in the subject
-		Pos=subject->UsedDocs.GetIndex(doc,Find);
+		Pos=subject->UsedDocs.GetIndex(*doc,Find);
 		if(!Find)
 		{
 			subject->UsedDocs.InsertPtrAt(doc,Pos,false);
@@ -394,7 +397,7 @@ void GSubjects::SetUsed(GDoc* doc,GSubject* subject,bool select)
 		Attached->DeletePtr(*subject);
 
 		// Remove the document from the subject
-		subject->UsedDocs.DeletePtr(doc);
+		subject->UsedDocs.DeletePtr(*doc);
 
 		// Emit a deselection signal if the document has no subject associated anymore
 		if(Attached->GetNb()==0)

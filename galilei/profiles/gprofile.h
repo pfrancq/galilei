@@ -159,30 +159,6 @@ public:
 	int Compare(const GProfile& profile) const;
 
 	/**
-	* Compare two profiles by comparing their identifier.
-	* @see R::RContainer
-	* @param profile         Profile.
-	* @return int
-	*/
-	int Compare(const GProfile* profile) const;
-
-	/**
-	* Compare a name with the one of a profile.
-	* @see R::RContainer
-	* @param name            Name to compare.
-	* @return int
-	*/
-	int Compare(const R::RString& name) const;
-
-	/**
-	* Compare an identifier of a profile with another one.
-	* @see R::RContainer
-	* @param id              Identifier.
-	* @return int
-	*/
-	int Compare(const size_t id) const;
-
-	/**
 	 * @return the type of the profile.
 	 */
 	tProfileType GetProfileType(void) const {return(Type);}

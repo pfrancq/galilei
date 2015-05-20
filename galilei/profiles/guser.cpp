@@ -61,27 +61,6 @@ int GUser::Compare(const GUser &user) const
 
 
 //------------------------------------------------------------------------------
-int GUser::Compare(const GUser *user) const
-{
-	return(CompareIds(Id,user->Id));
-}
-
-
-//------------------------------------------------------------------------------
-int GUser::Compare(const size_t id) const
-{
-	return(CompareIds(Id,id));
-}
-
-
-//------------------------------------------------------------------------------
-int GUser::Compare(const R::RString& name) const
-{
-	return(GetName().Compare(name));
-}
-
-
-//------------------------------------------------------------------------------
 void GUser::SetId(size_t id)
 {
 	if(id==cNoRef)
@@ -93,7 +72,13 @@ void GUser::SetId(size_t id)
 //------------------------------------------------------------------------------
 GProfile* GUser::GetProfile(const RString& name) const
 {
-	return(GetPtr(name,false));
+	RCursor<GProfile> Profile(*this);
+	for(Profile.Start();!Profile.End();Profile.Next())
+	{
+		if(Profile()->GetName()==name)
+			return(Profile());
+	}
+	return(0);
 }
 
 

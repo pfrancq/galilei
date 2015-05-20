@@ -88,30 +88,6 @@ public:
 	int Compare(const GUser &user) const;
 
 	/**
-	* Compare two users by comparing their identifier.
-	* @see R::RContainer
-	* @param user            Pointer to a user.
-	* @return int
-	*/
-	int Compare(const GUser *user) const;
-
-	/**
-	* Compare the identifier of a user with another one.
-	* @see R::RContainer
-	* @param id              Identifier.
-	* @return int
-	*/
-	int Compare(const size_t id) const;
-
-	/**
-	* Compare the name of a user with another one.
-	* @see R::RContainer
-	* @param name            Name
-	* @return int
-	*/
-	int Compare(const R::RString& name) const;
-
-	/**
 	* Set the identifier.
 	* @param id             Identifier.
 	*/

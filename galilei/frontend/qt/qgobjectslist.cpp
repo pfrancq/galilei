@@ -101,14 +101,14 @@ public:
 	}
 
 	QGObject(QTreeWidget* parent,GDoc* doc)
-		: QTreeWidgetItem(parent, QStringList()<<ToQString("["+RString::Number(doc->GetId())+"] "+doc->GetName())<<ToQString(doc->GetURI()())), Type(otDoc)
+		: QTreeWidgetItem(parent, QStringList()<<ToQString("["+RString::Number(doc->GetId())+"] "+doc->GetTitle())<<ToQString(doc->GetName())), Type(otDoc)
 	{
 		Obj.Doc=doc;
 		setIcon(0,QIcon::fromTheme("text-xml"));
 	}
 
 	QGObject(QTreeWidgetItem* parent,GDoc* doc)
-		: QTreeWidgetItem(parent, QStringList()<<ToQString("["+RString::Number(doc->GetId())+"] "+doc->GetName())<<ToQString(doc->GetURI()())), Type(otDoc)
+		: QTreeWidgetItem(parent, QStringList()<<ToQString("["+RString::Number(doc->GetId())+"] "+doc->GetTitle())<<ToQString(doc->GetName())), Type(otDoc)
 	{
 		Obj.Doc=doc;
 		setIcon(0,QIcon::fromTheme("text-xml"));
@@ -215,7 +215,7 @@ public:
 	}
 
 	QGObject(QTreeWidget* parent,GDocRef* ref)
-		: QTreeWidgetItem(parent,QStringList()<<ToQString(ref->GetDoc()->GetName())<<ToQString(ref->GetDoc()->GetURI()()))
+		: QTreeWidgetItem(parent,QStringList()<<ToQString(ref->GetDoc()->GetTitle())<<ToQString(ref->GetDoc()->GetName()))
 	{
 		Obj.DocRetrieved=ref;
 		setIcon(0,QIcon::fromTheme("document"));

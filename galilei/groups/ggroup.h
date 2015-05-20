@@ -118,22 +118,6 @@ public:
 	int Compare(const GGroup& grp) const;
 
 	/**
-	* Compare two groups by comparing their identifier.
-	* @see R::RContainer
-	* @param grp             Pointer to a group.
-	* @return int
-	*/
-	int Compare(const GGroup* grp) const;
-
-	/**
-	* Compare the identifier of a group with another one.
-	* @see R::RContainer
-	* @param id              Identifier.
-	* @return int
-	*/
-	int Compare(const size_t id) const;
-
-	/**
 	* Get the date of the last update of the objects.
 	* @returns R::RDate.
 	*/

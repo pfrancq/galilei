@@ -118,8 +118,9 @@ protected:
 
 	/**
 	* Construct a tree of subjects.
+	* @param session        Session.
 	*/
-	GSubjects(void);
+	GSubjects(GSession* session);
 
 public:
 

@@ -114,30 +114,6 @@ public:
 	int Compare(const GClass& theclass) const;
 
 	/**
-	* Compare two classes by comparing their identifier.
-	* @see R::RContainer
-	* @param theclass        Class.
-	* @return int
-	*/
-	int Compare(const GClass* theclass) const;
-
-	/**
-	* Compare the identifier of a class with another one.
-	* @see R::RContainer
-	* @param id              Identifier.
-	* @return int
-	*/
-	int Compare(const size_t id) const;
-
-	/**
-	* Compare the name of a class with another one.
-	* @see R::RContainer
-	* @param id              Identifier.
-	* @return int
-	*/
-	int Compare(const R::RString& name) const;
-
-	/**
 	* Get the date of the last analysis of the document.
 	* @return the date.
 	*/

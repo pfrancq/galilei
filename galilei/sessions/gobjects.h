@@ -154,11 +154,12 @@ public:
 
 	/**
 	 * Constructor of a set of stored objects.
+	 * @param session        Session.
 	 * @param size           Initial size of the list.
 	 * @param name           Name of the objects.
 	 * @param type           Type of the objects.
 	 */
-	GObjects(size_t size,const R::RString& name,tObjType type);
+	GObjects(GSession* session,size_t size,const R::RString& name,tObjType type);
 
 	/**
 	* Insert an object.

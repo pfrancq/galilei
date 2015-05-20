@@ -76,27 +76,6 @@ int GClass::Compare(const GClass& theclass) const
 
 
 //------------------------------------------------------------------------------
-int GClass::Compare(const GClass* theclass) const
-{
-	return(R::CompareIds(Id,theclass->Id));
-}
-
-
-//------------------------------------------------------------------------------
-int GClass::Compare(const size_t id) const
-{
-	return(R::CompareIds(Id,id));
-}
-
-
-//------------------------------------------------------------------------------
-int GClass::Compare(const RString& name) const
-{
-	return(Name.Compare(name));
-}
-
-
-//------------------------------------------------------------------------------
 void GClass::Update(GDescription& desc)
 {
 	bool Save(Session->MustSaveResults());  // Must the results be saved on disk?

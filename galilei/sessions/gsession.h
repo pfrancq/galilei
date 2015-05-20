@@ -654,6 +654,19 @@ public:
 
 	/**
 	* Add a new feedback of a given profile on a given document.
+	* @param prof            Profile.
+	* @param doc             Document.
+	* @param fdbk            Feedback type.
+	* @param done            Date on the last feedback.
+	* @param load            Is the feedback loaded from the storage or not. It
+	*                        should be always true if the method is call from a
+	*                        GStorage child class.
+	* @return true if it is a new feedback.
+	*/
+	bool InsertFdbk(GProfile* prof,GDoc* doc,tFdbkType fdbk,R::RDate done,bool load=false);
+
+	/**
+	* Add a new feedback of a given profile on a given document.
 	* @param profid          Identifier of the profile.
 	* @param docid           Identifier of the document.
 	* @param fdbk            Feedback type.

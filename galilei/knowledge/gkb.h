@@ -64,6 +64,11 @@ class GKB
 protected:
 
 	/**
+	 * Session.
+	 */
+	GSession* Session;
+
+	/**
 	* State of the knowledge base.
 	*/
 	tObjState State;
@@ -108,12 +113,13 @@ protected:
 	 */
 	R::RContainer<GStatement,true,false> Statements;
 
-public:
-
 	/**
 	* Constructor.
+	* @param session         Session.
 	*/
-	GKB(void);
+	GKB(GSession* session);
+
+public:
 
 	/**
 	 * The knowlegde base may be in two states only :

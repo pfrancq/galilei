@@ -68,9 +68,10 @@ public:
 
 	/**
 	* Construct a tree of classes.
+	* @param session        Session.
 	* @param max             Initial size of the container.
 	*/
-	GClasses(size_t max);
+	GClasses(GSession* session,size_t max);
 
 	/**
 	 * @return Pointer to the class.

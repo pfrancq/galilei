@@ -175,13 +175,15 @@ GSessionMsg::GSessionMsg(GSession* session,tObjType type,bool del)
 GSession::GSession(size_t id,const RString& name)
 	:
 	  RObject(name),
+	  GKB(this),
 	  RConfig("lib/galilei/sessions",name),
-	  GObjects<GDoc,hDocs>(20000,"Documents",otDoc),
-	  GObjects<GTopic,hTopics>(200,"Topics",otTopic),
-	  GObjects<GUser,hUsers>(1000,"Users",otUser),
-	  GObjects<GProfile,hProfiles>(5000,"Profiles",otProfile),
-	  GObjects<GCommunity,hCommunities>(100,"Communities",otCommunity),
-	  GClasses(300),
+	  GObjects<GDoc,hDocs>(this,20000,"Documents",otDoc),
+	  GObjects<GTopic,hTopics>(this,200,"Topics",otTopic),
+	  GObjects<GUser,hUsers>(this,1000,"Users",otUser),
+	  GObjects<GProfile,hProfiles>(this,5000,"Profiles",otProfile),
+	  GObjects<GCommunity,hCommunities>(this,100,"Communities",otCommunity),
+	  GClasses(this,300),
+	  GSubjects(this),
 	  Id(id), Name(name),
 	  ValidConfigFile(false), Log("/var/log/galilei/"+name+".log"),
 	  CurrentRandom(1), Random(RRandom::Good,1),
@@ -466,7 +468,7 @@ void GSession::AnalyzeDocs(GSlot* rec)
 		}
 		// If a log file specified -> write to it and it is OK
 		// If no log file specified -> Propagate error
-		HANDLEALLEXCEPTIONS(rec,Docs()->GetURI()()+"("+RString::Number(Docs()->GetId())+"): ")
+		HANDLEALLEXCEPTIONS(rec,Docs()->GetName()+"("+RString::Number(Docs()->GetId())+"): ")
 	}
 
 	 // Force to save all document descriptions and structures
@@ -827,23 +829,36 @@ void GSession::GroupProfiles(GSlot* rec)
 
 
 //------------------------------------------------------------------------------
-bool GSession::InsertFdbk(size_t profid,size_t docid,tFdbkType fdbk,R::RDate done,bool load)
+bool GSession::InsertFdbk(GProfile* prof,GDoc* doc,tFdbkType fdbk,R::RDate done,bool load)
 {
+	if(!prof)
+		mThrowGException("Null profile");
+	if(!doc)
+		mThrowGException("Null document");
 	if(fdbk==ftUnknown)
-		mThrowGException("Cannot add an unknown feedback to profile +'"+RString::Number(Id)+"' for document '"+RString::Number(docid)+"'");
+		mThrowGException("Cannot add an unknown feedback to profile +'"+RString::Number(prof->GetId())+"' for document '"+RString::Number(doc->GetId())+"'");
 
 	bool NewFdbk(false);
-	GProfile* prof(GetObj(pProfile,profid,false));
-	if(prof)
-		NewFdbk=prof->InsertFdbk(docid,fdbk,done);
-	GDoc* doc(GetObj(pDoc,docid,false));
-	if(doc)
-		NewFdbk=doc->InsertFdbk(profid);
+	NewFdbk=prof->InsertFdbk(doc->GetId(),fdbk,done);
+	NewFdbk=doc->InsertFdbk(prof->GetId());
 
 	if((!load)&&((!Storage->IsAllInMemory())||(SaveResults)))
-		Storage->UpdateFdbk(profid,docid,fdbk,done);
+		Storage->UpdateFdbk(prof,doc,fdbk,done);
 
 	return((!load)&&NewFdbk);
+}
+
+
+//------------------------------------------------------------------------------
+bool GSession::InsertFdbk(size_t profid,size_t docid,tFdbkType fdbk,R::RDate done,bool load)
+{
+	GProfile* prof(GetObj(pProfile,profid,false));
+	if(!prof)
+		mThrowGException("Unknown profile with identifier '"+RString::Number(profid)+"'");
+	GDoc* doc(GetObj(pDoc,docid,false));
+	if(!doc)
+		mThrowGException("Unknown document with identifier '"+RString::Number(docid)+"'");
+	return(InsertFdbk(prof,doc,fdbk,done,load));
 }
 
 

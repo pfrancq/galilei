@@ -30,6 +30,8 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gobject.h>
+
+#include "gsession.h"
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -58,19 +60,40 @@ GObject::GObject(const GObject* obj)
 }
 
 
+//-----------------------------------------------------------------------------
+int GObject::Compare(const GObject& obj) const
+{
+	return(CompareIds(Id,obj.Id));
+}
+
+
+//-----------------------------------------------------------------------------
+int GObject::Compare(size_t id) const
+{
+	return(CompareIds(Id,id));
+}
+
+
+//-----------------------------------------------------------------------------
+int GObject::Search(const GObject& obj) const
+{
+	return(Name.Compare(obj.Name));
+}
+
+
+//-----------------------------------------------------------------------------
+int GObject::Search(const RString& name) const
+{
+	return(Name.Compare(name));
+}
+
+
 //------------------------------------------------------------------------------
 void GObject::SetId(size_t id)
 {
 	if(Id!=cNoRef)
 		mThrowGException("Object '"+RString::Number(Id)+"' has already an identifier");
 	Id=id;
-}
-
-
-//------------------------------------------------------------------------------
-R::RString GObject::GetSearchStr(void) const
-{
-	return(GetName());
 }
 
 

@@ -635,7 +635,7 @@ void GSimulator::InitSubject(GSubject* subject,bool selectdocs)
 	RCursor<GUser> Cur(Session->GetObjs(pUser));
 	for(Cur.Start();(nbprof)&&(!Cur.End());Cur.Next())
 	{
-		if(Cur()->GetPtr(subject->GetName(),false))
+		if(Cur()->GetProfile(subject->GetName()))
 			continue;
 		GProfile* prof(new GProfile(Session,Cur(),ptInterest,subject->GetName(),nbsocial));
 		Session->AssignId(prof);

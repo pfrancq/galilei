@@ -45,8 +45,8 @@ const size_t SizeT3=3*sizeof(size_t);
 
 //-----------------------------------------------------------------------------
 template<class C,const R::hNotification* hEvents>
-	GObjects<C,hEvents>::GObjects(size_t size,const R::RString& name,tObjType type)
-		: R::RObjectContainer<C,true>(1,size), ObjName(name), Type(type), MaxObjs(0),
+	GObjects<C,hEvents>::GObjects(GSession* session,size_t size,const R::RString& name,tObjType type)
+		: GKB(session), R::RObjectContainer<C,true>(1,size), ObjName(name), Type(type), MaxObjs(0),
 		  Desc(0), Index(0), Tree(0), Loaded(false), tmpRefs(size/2)
 {
 }
@@ -487,8 +487,9 @@ template<class C,const R::hNotification* hEvents>
 		{
 			// Read the vector representing the current index
 			GConcept* Concept(Cur()->GetConcept());
-			if(Concept->GetIndex(Type))
-				Index->Read(Concept->GetIndex(Type),Concept->GetId(),GObjects<C,hEvents>::tmpRefs);
+			size_t idx(Concept->GetIndex(Type));
+			if(idx)
+				Index->Read(idx,Concept->GetId(),tmpRefs);
 			else
 				tmpRefs.Clear();
 
@@ -502,7 +503,6 @@ template<class C,const R::hNotification* hEvents>
 			// If the size of vector has changed -> Save it back
 			if(oldsize!=tmpRefs.GetNb())
 			{
-				size_t idx(Concept->GetIndex(Type));
 				Index->Write(idx,Concept->GetId(),tmpRefs);
 				Concept->SetIndex(Type,idx);
 			}

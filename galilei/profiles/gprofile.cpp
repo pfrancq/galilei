@@ -98,27 +98,6 @@ int GProfile::Compare(const GProfile& profile) const
 
 
 //------------------------------------------------------------------------------
-int GProfile::Compare(const GProfile* profile) const
-{
-	return(CompareIds(Id,profile->Id));
-}
-
-
-//------------------------------------------------------------------------------
-int GProfile::Compare(const RString& name) const
-{
-	return(GetName().Compare(name));
-}
-
-
-//------------------------------------------------------------------------------
-int GProfile::Compare(const size_t id) const
-{
- 	return(CompareIds(Id,id));
-}
-
-
-//------------------------------------------------------------------------------
 void GProfile::Clear(bool disk)
 {
 	// Clear the information
