@@ -60,6 +60,7 @@ void GStringTokenizer::InitSchemes(void)
 {
 	Schemes.InsertPtr(new RString("about"));
 	Schemes.InsertPtr(new RString("http"));
+	Schemes.InsertPtr(new RString("https"));
 	Schemes.InsertPtr(new RString("mailto"));
 }
 
