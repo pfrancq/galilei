@@ -184,18 +184,18 @@ void QSessionProgress::NextDoc(const GDoc* doc)
 	if(doc)
 	{
 		QString DocName;
-		if(doc->GetName().GetLen()>80)
-			DocName=ToQString(doc->GetName().Mid(0,20))+"..."+ToQString(doc->GetName().Mid(doc->GetName().GetLen()-57,57));
+		if(doc->GetTitle().GetLen()>80)
+			DocName=ToQString(doc->GetTitle().Mid(0,20))+"..."+ToQString(doc->GetTitle().Mid(doc->GetTitle().GetLen()-57,57));
 		else
 		{
 			if(doc->GetName().GetLen())
-				DocName=ToQString(doc->GetName());
+				DocName=ToQString(doc->GetTitle());
 			else
 			{
-				if(doc->GetURI()().GetLen()>80)
-					DocName=ToQString(doc->GetURI()().Mid(0,20))+"..."+ToQString(doc->GetURI()().Mid(doc->GetURI()().GetLen()-57,57));
+				if(doc->GetName().GetLen()>80)
+					DocName=ToQString(doc->GetName().Mid(0,20))+"..."+ToQString(doc->GetName().Mid(doc->GetName().GetLen()-57,57));
 				else
-					DocName=ToQString(doc->GetURI()());
+					DocName=ToQString(doc->GetName());
 			}
 		}
 		setLabelText("Treat document '"+DocName+"'");
@@ -294,7 +294,7 @@ void QCreateSession::DoIt(void)
 //-----------------------------------------------------------------------------
 void QAnalyzeDoc::DoIt(void)
 {
-	setLabelText("Analze '"+ToQString(Doc->GetURI()())+"'...");
+	setLabelText("Analze '"+ToQString(Doc->GetName())+"'...");
 	Win->getSession()->AnalyzeDoc(Doc,this);
 }
 

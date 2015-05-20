@@ -34,6 +34,7 @@
 // include files for R/GALILEI Project
 #include <rqt.h>
 #include <gtool.h>
+#include <gstorage.h>
 
 
 //------------------------------------------------------------------------------
@@ -140,6 +141,22 @@ void QChooseDlg::populateTools(const RString& cat,const RString& tool)
 		List->addItem(ToQString(Tools()->GetName()));
 	}
 	List->setCurrentRow(Row);
+}
+
+
+//------------------------------------------------------------------------------
+void QChooseDlg::populateStorages(void)
+{
+	GPlugInManager* Manager(GALILEIApp->GetManager("Storage"));
+
+	// Init the dialog box with the plug-ins
+	Desc->setText("Choose the storage to use");
+	RCastCursor<GPlugIn,GStorage> Storages(Manager->GetPlugIns<GStorage>());
+	List->clear();
+	for(Storages.Start();!Storages.End();Storages.Next())
+	{
+		List->addItem(ToQString(Storages()->GetName()));
+	}
 }
 
 

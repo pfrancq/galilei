@@ -189,8 +189,8 @@ void Configure::Type::Apply(void)
 Configure::Configure(QGALILEIWin* win)
 	: QDialog(win), Ui_Configure(), Types(10), CurType(0), Win(win)
 {
-	setWindowTitle("Preferences");
 	setupUi(this);
+	setWindowTitle("Preferences");
 	connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
 	connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 	adjustSize();

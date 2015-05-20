@@ -162,10 +162,11 @@ void QCreateDB::DoIt(void)
 QCreateDatabase::QCreateDatabase(QGALILEIWin* parent)
 	: QDialog(parent), Ui_QCreateDatabase(), Win(parent)
 {
-	setWindowTitle("Fill Database");
 	setupUi(this);
+	setWindowTitle("Fill Database");
 	connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
    connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
+	adjustSize();
 }
 
 

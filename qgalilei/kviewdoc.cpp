@@ -136,8 +136,8 @@ KViewDoc::KViewDoc(QGALILEIWin* win,GDoc* doc)
 
 
 //-----------------------------------------------------------------------------
-KViewDoc::KViewDoc(QGALILEIWin* win,const RURI& file)
-	: QMdiSubWindow(), Ui_KViewDoc(), Win(win), Document(new GDoc(win->getSession(),file,file(),0,RString::Null)), bDelDoc(true)
+KViewDoc::KViewDoc(QGALILEIWin* win,const RString& file)
+	: QMdiSubWindow(), Ui_KViewDoc(), Win(win), Document(new GDoc(win->getSession(),file(),file(),RString::Null,0,RString::Null)), bDelDoc(true)
 {
 	setUp();
 }

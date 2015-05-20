@@ -39,6 +39,7 @@
 #include <gstorage.h>
 #include <gfilter.h>
 #include <gsession.h>
+using namespace std;
 using namespace R;
 using namespace GALILEI;
 
@@ -167,11 +168,11 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent,int depth)
 			if(!InDir)
 			{
 				InDir=true;
-				setLabelText(ToQString(uri.GetPath()));
+			//	setLabelText(ToQString(uri.GetPath()));
 			}
 
 			// Must be a normal document
-			GDoc* doc(new GDoc(Session,Files()->GetURI(),Files()->GetURI()(),Info->Lang,Info->DefaultMIME));
+			GDoc* doc(new GDoc(Session,Files()->GetURI()(),Files()->GetURI()(),RString::Null,Info->Lang,Info->DefaultMIME));
 			Session->InsertObj(doc);
 			if(Info->Categorized)
 			{
@@ -199,9 +200,11 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent,int depth)
 QFillDatabase::QFillDatabase(QGALILEIWin* parent)
 	: QDialog(parent), Ui_QFillDatabase(), Win(parent)
 {
-	setWindowTitle("Fill Database");
 	setupUi(this);
 	connect(EditDir,SIGNAL(pressed()),this,SLOT(editDir()));
+	connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
+   connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
+	setWindowTitle("Fill Database");
 }
 
 
@@ -222,7 +225,7 @@ void QFillDatabase::run(void)
 	// Execute
 	if(exec())
 	{
-		Dir=FromQString(KUDirectory->text());
+		Dir=FromQString(DirChosen->text());
 		Parent=FromQString(ParentName->text());
 		if(Dir.IsEmpty())
 		{
@@ -345,5 +348,5 @@ void QFillDatabase::editDir(void)
 {
 	QString fileName(QFileDialog::getExistingDirectory(this,"Choose directory",EditDir->text(),QFileDialog::ShowDirsOnly));
    if(!fileName.isEmpty())
-		EditDir->setText(fileName);
+		DirChosen->setText(fileName);
 }

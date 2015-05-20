@@ -79,7 +79,7 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-const double QGALILEIVersion=0.1;
+const QString QGALILEIVersion="1.0";
 
 
 
@@ -96,7 +96,7 @@ QGALILEIWin::QGALILEIWin(QGALILEI* app)
 	setupUi(this);
 	connectMenus();
 	sessionConnected();
-	setWindowTitle("QGALILEI "+QString::number(QGALILEIVersion));
+	setWindowTitle("QGALILEI "+QGALILEIVersion);
 }
 
 
@@ -475,7 +475,7 @@ void QGALILEIWin::exportDocs(void)
 	dlg.setValue(0);
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
-		Export<<"\t<document id=\""<<Docs()->GetId()<<"\" url=\""<<Docs()->GetURI()()<<"\">"<<endl;
+		Export<<"\t<document id=\""<<Docs()->GetId()<<"\" url=\""<<Docs()->GetName()<<"\">"<<endl;
 		RConstCursor<GVector> Vector(Docs()->GetVectors());
 		for(Vector.Start();!Vector.End();Vector.Next())
 		{
@@ -886,7 +886,7 @@ void QGALILEIWin::configSession(void)
 //-----------------------------------------------------------------------------
 void QGALILEIWin::about(void)
 {
-	QRAboutDialog dlg("QGALILEI","1.0");
+	QRAboutDialog dlg("QGALILEI",QGALILEIVersion);
 	dlg.setDescription("Qt-based GALILEI frontend.");
 	dlg.setCopyright(QWidget::trUtf8("(C) 2001-2008 by the Université Libre de Bruxelles (ULB)<br/>(C) 2010-2015 by the Paul Otlet Institute"));
 	dlg.setURL("http://www.otlet-institute.org/GALILEI_Platform_en.html");

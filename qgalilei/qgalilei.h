@@ -106,6 +106,15 @@ public:
 	virtual void Run(void);
 
 	/**
+	 * Create a valid storage. The method is call when a session is opened for
+	 * which a current storage doesn't exist. It proposes to choose one storage,
+	 * ahnd call the configuration dialog box for it.
+	 * @param session        Session for which the stoarge must be created.
+    * @return a valid pointer to a GStorage.
+    */
+	virtual GALILEI::GStorage* CreateStorage(GALILEI::GSession* session);
+
+	/**
 	  * Get a path where the scripts must be initially searched.
      * @return R::RString.
      */

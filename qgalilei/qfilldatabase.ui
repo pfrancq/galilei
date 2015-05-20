@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>433</width>
-    <height>403</height>
+    <width>481</width>
+    <height>487</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -39,7 +39,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="KUDirectory"/>
+         <widget class="QLineEdit" name="DirChosen"/>
         </item>
         <item>
          <widget class="QToolButton" name="EditDir">
@@ -271,6 +271,13 @@
        </layout>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
     </widget>
    </item>
   </layout>

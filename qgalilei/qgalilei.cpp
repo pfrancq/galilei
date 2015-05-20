@@ -59,6 +59,7 @@
 #include <kviewprofile.h>
 #include <kviewstats.h>
 #include <kviewusers.h>
+#include <qchoosedlg.h>
 using namespace R;
 using namespace GALILEI;
 
@@ -151,6 +152,22 @@ void QGALILEI::Run(void)
 	Main->resize(Config.GetInt("MainWindowWidth"),Config.GetInt("MainWindowHeight"));
 	Main->show();
 	QApplication::instance()->exec();
+}
+
+
+//-----------------------------------------------------------------------------
+GStorage* QGALILEI::CreateStorage(GSession* session)
+{
+	// Create the dialog box
+	QChooseDlg Choose(0);
+	Choose.populateStorages();
+	if(!Choose.exec())
+		return(0);
+	GStorage* Storage(GALILEIApp->GetManager("Storage")->GetPlugIn<GStorage>(Choose.GetChoice()));
+	Storage->GetFactory()->Configure();
+	Storage->ApplyConfig();
+	Storage->Init();
+	return(Storage);
 }
 
 

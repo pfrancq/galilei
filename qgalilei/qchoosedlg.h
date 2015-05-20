@@ -91,6 +91,11 @@ public:
 	void populateTools(const RString& cat,const RString& tool);
 
 	/**
+	 * Populate the list of storages.
+    */
+	void populateStorages(void);
+
+	/**
     * @return the current choice.
     */
 	RString GetChoice(void) const;

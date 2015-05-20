@@ -93,7 +93,7 @@ public:
 	* @param win            Main window.
 	* @param file           Document to represent.
 	*/
-	KViewDoc(QGALILEIWin* win,const RURI& file);
+	KViewDoc(QGALILEIWin* win,const RString& file);
 
 	/**
 	 * Create the options in a configuration structure.
