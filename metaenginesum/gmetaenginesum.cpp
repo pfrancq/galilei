@@ -137,7 +137,7 @@ void GMetaEngineSum::PostRequest(void)
 		R::RCursor<GDocFragmentRanks> Ranks(GetRankings());
 		for(Ranks.Start();!Ranks.End();Ranks.Next())
 		{
-			cout<<Ranks()->GetFragment()->GetDoc()->GetURI()()<<endl;
+			cout<<Ranks()->GetFragment()->GetDoc()->GetName()<<endl;
 			RCursor<GDocFragmentRank> Cur(Ranks()->GetRankings());
 			for(Cur.Start();!Cur.End();Cur.Next())
 				cout<<"\t\t"<<Cur()->GetRanking()<<" : "<<Cur()->GetInfo()<<"  ";
