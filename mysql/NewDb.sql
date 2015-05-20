@@ -131,7 +131,7 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `docs` (
   `docid` int(11) unsigned NOT NULL auto_increment,
-  `doc` varchar(250) collate utf8_bin NOT NULL,
+  `doc` varchar(512) collate utf8_bin NOT NULL,
   `title` text collate utf8_bin NOT NULL,
   `langid` char(2),
   `updated` date NOT NULL,
@@ -142,6 +142,7 @@ CREATE TABLE `docs` (
   `structid` int(11) unsigned NOT NULL default '0',
   `topicid` int(11) unsigned NOT NULL default '0',
   `attached` date NOT NULL,
+  `description` text collate utf8_bin NULL,
   PRIMARY KEY  (`docid`),
   KEY `index_doc` (`doc`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -192,7 +193,7 @@ CREATE TABLE `profiles` (
   `profileid` int(11) unsigned NOT NULL auto_increment,
   `userid` int(11) unsigned NOT NULL,
   `profiletype` int(3) unsigned NOT NULL,
-  `description` varchar(100) collate utf8_bin NOT NULL,
+  `description` text collate utf8_bin NOT NULL,
   `social` tinyint(1) NOT NULL default '1',
   `attached` date NOT NULL,
   `communityid` int(11) unsigned NOT NULL default '0',
@@ -310,8 +311,8 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `users` (
   `userid` int(11) NOT NULL auto_increment,
-  `user` varchar(20) collate utf8_bin NOT NULL,
-  `fullname` varchar(50) collate utf8_bin NOT NULL,
+  `user` varchar(512) collate utf8_bin NOT NULL,
+  `fullname` TEXT collate utf8_bin NOT NULL,
   PRIMARY KEY  (`userid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;

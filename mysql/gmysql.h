@@ -421,7 +421,7 @@ public:
 	* @param user            Pointer to the user that will be created.
 	* @param name            Name of the user.
 	*/
-	virtual void LoadObj(GUser* &user,const R::RString name);
+	virtual void LoadObj(GUser* &user,const R::RString& name);
 
 	/**
 	* Method that load a profile that is stored.
@@ -429,6 +429,13 @@ public:
 	* @param profileid       Identifier of the profile.
 	*/
 	virtual void LoadObj(GProfile* &profile,size_t profileid);
+
+	/**
+	* Method that load a profile that is stored.
+	* @param profile         Pointer to the profile that will be created.
+	* @param name            Name of the profile.
+	*/
+	virtual void LoadObj(GProfile* &profile,const R::RString& name);
 
 	/**
 	* A document was updated and the profiles that have made a feedback on it
@@ -464,12 +471,12 @@ public:
 	/**
 	* Update a feedback for a given profile and document. If it is a new one, it
 	* must be created in the database.
-	* @param p               Identifier of the profile.
-	* @param d               Identifier of the document.
+	* @param prof            Profile.
+	* @param doc             Document.
 	* @param fdbk            Feedback type.
 	* @param done            Date on the last feedback.
 	*/
-	virtual void UpdateFdbk(size_t p,size_t d,tFdbkType fdbk,R::RDate done);
+	virtual void UpdateFdbk(GProfile* prof,GDoc* doc,tFdbkType fdbk,R::RDate done);
 
 
 	// @} Users/Profiles

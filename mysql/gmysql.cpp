@@ -160,6 +160,11 @@ double GStorageMySQL::atof(const R::RString& str)
 //-----------------------------------------------------------------------------
 void GStorageMySQL::Init(void)
 {
+	if(Db)
+	{
+		delete Db;
+		Db=0;
+	}
 	try
 	{
 		Db=new RDbMySQL(Database,Host,User,Password,Encoding);
@@ -1155,7 +1160,7 @@ void GStorageMySQL::AssignId(GDoc* doc)
 	{
 		// Reserved an identifier
 		RString sSql="INSERT INTO docs(doc,title,langid) "
-		             "VALUES("+RQuery::SQLValue(doc->GetURI()())+","+RQuery::SQLValue(doc->GetName())+","+Lang(doc->GetLang())+")";
+		             "VALUES("+RQuery::SQLValue(doc->GetName())+","+RQuery::SQLValue(doc->GetTitle())+","+Lang(doc->GetLang())+")";
 		RQuery Insert(Db,sSql);
 
 		// Get the id and assign it to the document
@@ -1177,7 +1182,7 @@ void GStorageMySQL::LoadObj(GDoc* &doc,size_t docid)
 {
 	try
 	{
-		RQuery quer (Db,"SELECT docid,doc,title,mimetype,langid,updated,calculated,topicid,attached,blockid,structid "
+		RQuery quer (Db,"SELECT docid,doc,title,mimetype,langid,updated,calculated,topicid,attached,blockid,structid,description "
 		                "FROM docs WHERE docid="+Num(docid));
 		quer.Start();
 		if(quer.End())
@@ -1194,7 +1199,7 @@ void GStorageMySQL::LoadObj(GDoc* &doc,size_t docid)
 			return;
 		}
 
-		doc=new GDoc(Session,quer[1],quer[2],docid,quer[9].ToSizeT(),quer[10].ToSizeT(),lang,
+		doc=new GDoc(Session,quer[1],quer[2],quer[11],docid,quer[9].ToSizeT(),quer[10].ToSizeT(),lang,
 				     quer[3],quer[7].ToSizeT(),GetMySQLToDate(quer[6]),GetMySQLToDate(quer[5]),GetMySQLToDate(quer[8]));
 	}
 	catch(RDbException e)
@@ -1210,7 +1215,7 @@ void GStorageMySQL::LoadObj(GDoc* &doc,const R::RString& url)
 {
 	try
 	{
-		RQuery quer (Db,"SELECT docid,doc,title,mimetype,langid,updated,calculated,topicid,attached,blockid,structid "
+		RQuery quer (Db,"SELECT docid,doc,title,mimetype,langid,updated,calculated,topicid,attached,blockid,structid,description "
 		                "FROM docs WHERE doc="+url);
 		quer.Start();
 		if(quer.End())
@@ -1227,7 +1232,7 @@ void GStorageMySQL::LoadObj(GDoc* &doc,const R::RString& url)
 			return;
 		}
 
-		doc=new GDoc(Session,quer[1],quer[2],quer[0].ToSizeT(),quer[9].ToSizeT(),quer[10].ToSizeT(),lang,
+		doc=new GDoc(Session,quer[1],quer[2],quer[11],quer[0].ToSizeT(),quer[9].ToSizeT(),quer[10].ToSizeT(),lang,
 				     quer[3],quer[7].ToSizeT(),GetMySQLToDate(quer[6]),GetMySQLToDate(quer[5]),GetMySQLToDate(quer[8]));
 	}
 	catch(RDbException e)
@@ -1243,7 +1248,7 @@ void GStorageMySQL::LoadObjs(const GDoc*)
 {
 	try
 	{
-		RString Sql("SELECT docid,doc,title,mimetype,langid,updated,calculated,topicid,attached,blockid,structid FROM docs");
+		RString Sql("SELECT docid,doc,title,mimetype,langid,updated,calculated,topicid,attached,blockid,structid,description FROM docs");
 		if(!LoadAll)
 			Sql+=" WHERE calculated<updated";
 		if(Filtering)
@@ -1262,7 +1267,7 @@ void GStorageMySQL::LoadObjs(const GDoc*)
 			if((!lang)&&(!quer[4].IsEmpty()))
 				continue;
 			size_t docid(quer[0].ToSizeT());
-			GDoc* doc(new GDoc(Session,quer[1],quer[2],docid,quer[9].ToSizeT(),quer[10].ToSizeT(),lang,
+			GDoc* doc(new GDoc(Session,quer[1],quer[2],quer[11],docid,quer[9].ToSizeT(),quer[10].ToSizeT(),lang,
 					           quer[3],quer[7].ToSizeT(),GetMySQLToDate(quer[6]),GetMySQLToDate(quer[5]),GetMySQLToDate(quer[8])));
 			Session->InsertObj(doc);
 		}
@@ -1305,21 +1310,22 @@ void GStorageMySQL::SaveObj(GDoc* doc)
 		if(!atoi(Test[0]))
 		{
 			// Insert the document
-			sSql="INSERT INTO docs(docid,doc,title,mimetype,langid,updated,calculated,topicid,attached,blockid,structid) "
-			     "VALUES("+Num(doc->GetId())+","+RQuery::SQLValue(doc->GetURI()())+","+
-			     RQuery::SQLValue(doc->GetName())+","+f+","+l+","+RQuery::SQLValue(doc->GetUpdated())+
+			sSql="INSERT INTO docs(docid,doc,title,mimetype,langid,updated,calculated,topicid,attached,blockid,structid,description) "
+			     "VALUES("+Num(doc->GetId())+","+RQuery::SQLValue(doc->GetName())+","+
+			     RQuery::SQLValue(doc->GetTitle())+","+f+","+l+","+RQuery::SQLValue(doc->GetUpdated())+
 			     ","+RQuery::SQLValue(doc->GetComputed())+","+Num(doc->GetGroupId())+","+RQuery::SQLValue(doc->GetAttached())+
-			     ","+Num(doc->GetBlockId())+","+Num(doc->GetStructId())+")";
+			     ","+Num(doc->GetBlockId())+","+Num(doc->GetStructId())+","+RQuery::SQLValue(doc->GetDescription())+")";
 			RQuery Insert(Db,sSql);
 		}
 		else
 		{
 			// Update the document
-			sSql="UPDATE docs SET doc="+RQuery::SQLValue(doc->GetURI()())+",title="+
-			     RQuery::SQLValue(doc->GetName())+",mimetype="+f+",langid="+l+
+			sSql="UPDATE docs SET doc="+RQuery::SQLValue(doc->GetName())+",title="+
+			     RQuery::SQLValue(doc->GetTitle())+",mimetype="+f+",langid="+l+
 			     ",updated="+RQuery::SQLValue(doc->GetUpdated())+",calculated="+RQuery::SQLValue(doc->GetComputed())+
 			     ",topicid="+Num(doc->GetGroupId())+",attached="+RQuery::SQLValue(doc->GetAttached())+
 			     ",blockid="+Num(doc->GetBlockId())+",structid="+Num(doc->GetStructId())+
+				  ",description="+RQuery::SQLValue(doc->GetDescription())+
 				 " WHERE docid="+Num(doc->GetId());
 			RQuery Update(Db,sSql);
 		}
@@ -1376,7 +1382,7 @@ void GStorageMySQL::LoadObjs(const GUser*)
 			}
 
 			// Load feedbacks
-			RQuery fdbks(Db,"SELECT docid,fdbk,profileid,calculated FROM docsbyprofiles");
+			RQuery fdbks(Db,"SELECT docid,fdbk,profileid,done FROM docsbyprofiles");
 			for(fdbks.Start();!fdbks.End();fdbks.Next())
 				Session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),GetFdbkType(atoi(fdbks[1])),GetMySQLToDate(fdbks[3]),true);
 		}
@@ -1412,7 +1418,7 @@ void GStorageMySQL::LoadObj(GUser* &user,size_t userid)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::LoadObj(GUser* &user,const R::RString name)
+void GStorageMySQL::LoadObj(GUser* &user,const R::RString& name)
 {
 	try
 	{
@@ -1457,8 +1463,46 @@ void GStorageMySQL::LoadObj(GProfile* &profile,size_t profileid)
 				Profile[2].ToBool(true),Profile[9].ToDouble(),Profile[10].ToChar(),5);
 
 		// Load Feedbacks
-		RQuery fdbks(Db,"SELECT docid,fdbk,profileid,calculated "
+		RQuery fdbks(Db,"SELECT docid,fdbk,profileid,done "
 		                "FROM docsbyprofiles WHERE profileid="+Num(profileid));
+		for(fdbks.Start();!fdbks.End();fdbks.Next())
+			Session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),GetFdbkType(atoi(fdbks[1])),RDate(fdbks[3]),true);
+	}
+	catch(RDbException& e)
+	{
+		cerr<<e.GetMsg()<<endl;
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::LoadObj(GProfile* &profile,const R::RString& name)
+{
+	try
+	{
+		// Load Profile
+		RQuery Profile(Db,"SELECT profileid,description,social,userid,attached,communityid,updated,calculated,blockid,score,level,profiletype "
+		                  "FROM profiles WHERE description="+RQuery::SQLValue(name));
+		Profile.Start();
+		if(Profile.End())
+		{
+			profile=0;
+			return;
+		}
+		GUser* user=Session->GetObj(pUser,Profile[3].ToSizeT());
+		if(!user)
+			throw GException("Profile "+Profile[0]+" has no parent user");
+		size_t groupid=Profile[5].ToSizeT();
+
+		// Create the profile
+		profile=new GProfile(Session,user,GetProfileType(Profile[11].ToUInt()),Profile[0].ToSizeT(),Profile[8].ToSizeT(),Profile[1],groupid,
+				GetMySQLToDate(Profile[4]),GetMySQLToDate(Profile[6]),GetMySQLToDate(Profile[7]),
+				Profile[2].ToBool(true),Profile[9].ToDouble(),Profile[10].ToChar(),5);
+
+		// Load Feedbacks
+		RQuery fdbks(Db,"SELECT docid,fdbk,profileid,done "
+		                "FROM docsbyprofiles WHERE profileid="+Num(profile->GetId()));
 		for(fdbks.Start();!fdbks.End();fdbks.Next())
 			Session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),GetFdbkType(atoi(fdbks[1])),RDate(fdbks[3]),true);
 	}
@@ -1612,15 +1656,14 @@ void GStorageMySQL::SaveObj(GProfile* prof)
 			RQuery Update(Db,sSql);
 		}
 
+		// Delete all the feedbacks of this profile
+		RQuery Delete(Db,"DELETE FROM docsbyprofiles WHERE profileid="+Num(profid));
+
 		// First insert information from GFdbk
 		RCursor<GFdbk> Fdbks=prof->GetFdbks();
 		for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 		{
-			// Clear the feedback
-			RQuery Delete(Db,"DELETE FROM docsbyprofiles WHERE profileid="+Num(profid)+" AND docid="+Num(Fdbks()->GetDocId()));
-
-			// Re-Insert all the feedback
-			sSql="INSERT INTO docsbyprofiles(docid,fdbk,profileid,calculated) "
+			sSql="INSERT INTO docsbyprofiles(docid,fdbk,profileid,done) "
 			     "VALUES("+Num(Fdbks()->GetDocId())+",'"+RString::Number(Fdbks()->GetFdbk())+"',"+
 			     Num(prof->GetId())+","+RQuery::SQLValue(Fdbks()->GetDone())+")";
 			RQuery Insert(Db,sSql);
@@ -1642,28 +1685,26 @@ void GStorageMySQL::SaveObj(GProfile* prof)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::UpdateFdbk(size_t p,size_t d,tFdbkType fdbk,R::RDate done)
+void GStorageMySQL::UpdateFdbk(GProfile* prof,GDoc* doc,tFdbkType fdbk,R::RDate done)
 {
 	try
 	{
 		RString sSql;
 
-		// First try to insert it. Since there is a primary key on (docid,profileid),
-		// if it exists, an exception is generated.
+		// Delete first the existing feedback
+		sSql="DELETE FROM docsbyprofiles WHERE docid="+Num(doc->GetId())+" AND profileid="+Num(prof->GetId());
+		RQuery Del(Db,sSql);
 
-		try
-		{
-			sSql="INSERT INTO docsbyprofiles(docid,fdbk,profileid,done) "
-		     "VALUES("+Num(d)+",'"+RString::Number(fdbk)+"',"+Num(p)+","+RQuery::SQLValue(done)+")";
-			RQuery Insert(Db,sSql);
-		}
-		catch(...)
-		{
-			// Update the line then
-			sSql="UPDATE docsbyprofiles SET calculated="+RQuery::SQLValue(done)+", fdbk='"+RString::Number(fdbk)+"'"
-				" WHERE docid="+Num(d)+" AND profileid="+Num(p);
-			RQuery Update(Db,sSql);
-		}
+		// Insert it.
+		RString Lang;
+		if(doc->GetLang())
+			Lang=doc->GetLang()->GetCode();
+		else
+			Lang="00";
+		sSql="INSERT INTO docsbyprofiles(docid,fdbk,profileid,done,langid,calculated,updated) "
+	     "VALUES("+Num(doc->GetId())+","+Num(fdbk)+","+Num(prof->GetId())+","+RQuery::SQLValue(done)+","
+			 +RQuery::SQLValue(Lang)+","+RQuery::SQLValue(doc->GetComputed())+","+RQuery::SQLValue(doc->GetUpdated())+")";
+		RQuery Insert(Db,sSql);
 	}
 	catch(RDbException e)
 	{
