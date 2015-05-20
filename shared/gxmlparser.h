@@ -58,7 +58,7 @@ public:
 	{
 		cout<<"Extract at "<<fragment->GetPos()<<" in ["<<fragment->GetBegin()<<","<<fragment->GetEnd()<<"]"<<endl;
 		RString Fragment;
-		RTextFile File(fragment->GetDoc()->GetURI(),"utf-8");
+		RTextFile File(fragment->GetDoc()->GetName(),"utf-8");
 		File.Open(RIO::Read);
 
 		// Read the head of the fragment
