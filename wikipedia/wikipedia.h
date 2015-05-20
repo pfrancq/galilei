@@ -60,19 +60,39 @@ class Wikipedia : public GTool
 	RDate Dump;
 
 	/**
+	 * Must the articles be imported.
+	 */
+	bool ImportArticles;
+
+	/**
 	 * Number of articles to treat. If null, all articles are treated.
 	 */
 	size_t NbArticles;
 
 	/**
-	 * Number of contributions to treat. If null, all contributions are treated.
+	 * Must the revisions be imported?
 	 */
-	size_t NbContributions;
+	bool ImportRevisions;
+
+	/**
+	 * Must all the revisions from the treated articles must be imported?
+	 */
+	bool ImportAllRevisions;
+
+	/**
+	 * Number of revisions to treat. If null, all contributions are treated.
+	 */
+	size_t NbRevisions;
 
 	/**
 	 * Must the external URI be extracted from the wiki?
 	 */
 	bool ExtractExternalURI;
+
+	/**
+	 * Must all the users with the same username be merged?
+	 */
+	bool MergeUsers;
 
 	/**
 	 * String representing the date of the dump.
@@ -251,6 +271,12 @@ public:
 	size_t GetNbArticles(void) const {return(NbArticles);}
 
 	/**
+	 * Get the number of revisions to treat.
+	 * @return a size_t
+	 */
+	size_t GetNbRevisions(void) const {return(NbRevisions);}
+
+	/**
 	 * Must all Wikipedia articles be (re)analyzed ?
 	 * @return true if yes.
 	 */
@@ -261,6 +287,18 @@ public:
 	 * @return true if yes.
 	 */
 	bool MustExtractExternalURI(void) const {return(ExtractExternalURI);}
+
+	/**
+	 * Must all the users with the same username be merged?
+	 * @return true if yes.
+	 */
+	bool MustMergeUsers(void) const {return(MergeUsers);}
+
+	/**
+	 * Must all the revisions from the treated articles must be imported?
+	 * @return true if yes.
+	 */
+	bool MustImportAllRevisions(void) const {return(ImportAllRevisions);}
 
 	/**
 	 * Get the slot.

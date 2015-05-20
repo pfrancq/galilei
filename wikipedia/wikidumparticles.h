@@ -50,10 +50,6 @@ class WikiToken;
 //-----------------------------------------------------------------------------
 class WikiDumpArticles : RXMLParser
 {
-	/**
-	 * Possible states of a Wikipedia article content.
-	 */
-	enum tState {sText,sLink,sCite,sRef,sComment,sTable,sDiv,sTag,sExternalLink,sCode};
 
 	/**
 	 * Is a <page> tag currently treated.
@@ -201,7 +197,9 @@ private:
     */
 	void CreateTitle(void);
 
-	void CreateLink(const char* begin,const char* end,tState state);
+	void CreateExternalLink(void);
+
+	void CreateInternalLinks(void);
 };
 
 

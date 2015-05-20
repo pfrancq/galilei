@@ -42,6 +42,7 @@
 // include files for current project
 #include <wikipedia.h>
 #include <wikidumparticles.h>
+#include <wikidumphistory.h>
 
 
 //-----------------------------------------------------------------------------
@@ -76,9 +77,13 @@ void Wikipedia::ApplyConfig(void)
 {
 	Dir=FindParam<RParamValue>("Dir")->Get();
 	NbArticles=FindParam<RParamValue>("NbArticles")->GetUInt();
-	NbContributions=FindParam<RParamValue>("NbContributions")->GetUInt();
+	NbRevisions=FindParam<RParamValue>("NbRevisions")->GetUInt();
 	ForceAnalyze=FindParam<RParamValue>("ForceAnalyze")->GetBool();
 	ExtractExternalURI=FindParam<RParamValue>("ExtractExternalURI")->GetBool();
+	ImportArticles=FindParam<RParamValue>("ImportArticles")->GetBool();
+	ImportRevisions=FindParam<RParamValue>("ImportRevisions")->GetBool();
+	MergeUsers=FindParam<RParamValue>("MergeUsers")->GetBool();
+	ImportAllRevisions=FindParam<RParamValue>("ImportAllRevisions")->GetBool();
 	try
 	{
 		Dump.SetDate(FindParam<RParamValue>("Dump")->Get());
@@ -102,15 +107,31 @@ void Wikipedia::ApplyConfig(void)
 void Wikipedia::Run(GSlot* slot)
 {
 	Slot=slot;
-	Slot->StartJob("Import Wikipedia Articles");
 	if(!LangEn)
 		LangEn=GALILEIApp->GetPlugIn<GLang>("Lang","en");
+
+	// Verify that the anonymous user was inserted
+	GUser* User(Session->GetObj(pUser,1,true,true));
+	if(!User)
+	{
+		User=new GUser(Session,1,"@Anonymous","Anonymous Contributor",100);
+		Session->InsertObj(User);
+	}
+
+	// Run the job
 	NbTreatedArticles=NbAnalyzedArticles=NbFdbks=0;
-	if(NbArticles)
-		AnalyzePages();
-	Slot->StartJob("Import Wikipedia Contributions");
-	if(NbContributions)
-		AnalyzeLogs();
+	if(ImportArticles)
+	{
+		Slot->StartJob("Import Wikipedia Articles");
+		WikiDumpArticles Articles(this,Dir+RFile::GetDirSeparator()+"enwiki-"+DumpStr+"-pages-articles.xml");
+		Articles.Open();
+	}
+	if(ImportRevisions)
+	{
+		Slot->StartJob("Import Wikipedia Revisions");
+		WikiDumpHistory History(this,Dir+RFile::GetDirSeparator()+"enwiki-"+DumpStr+"-stub-meta-history.xml");
+		History.Open();
+	}
 	Slot->EndJob(RString::Number(NbTreatedArticles)+" documents ("+RString::Number(NbAnalyzedArticles)+" were analyzed) and "+RString::Number(NbFdbks)+" contributions imported.");
 }
 
@@ -328,7 +349,7 @@ void Wikipedia::AnalyzeInPage(void)
 			// If necessary -> print the tokens
 			if(Article&&Debug)
 			{
-				(*Test)<<Article->GetURI()()<<endl;
+				(*Test)<<Article->GetName()<<endl;
 				RCursor<WikiToken> Cur(WikiTokens::Get()->GetTokens());
 				for(Cur.Start();!Cur.End();Cur.Next())
 				{
@@ -959,7 +980,7 @@ void Wikipedia::AnalyzeLogs(void)
 		if(!Rest)
 			Slot->StartJob("Import Wikipedia Contributions ("+RString::Number(NbFdbks)+")");
 
-		if(NbContributions&&(NbFdbks>NbContributions))
+		if(NbRevisions&&(NbFdbks>NbRevisions))
 			return;
 	}
 }
@@ -990,33 +1011,33 @@ void Wikipedia::ExtractFromTag(const RString& line,RString& text) const
 //------------------------------------------------------------------------------
 void Wikipedia::LookDoc(bool create)
 {
-	Article=Session->GetObj(pDoc,Id,true,true);
-	if(!Article)
-	{
-		if(!create)
-		{
-			Article=0;
-			return;
-		}
-
-		// Doc must me created
-		RURI URI("http://en.wikipedia.org/wiki/"+WikiToken::GetWikiTitle(ArticleTitle));
-		Article=new GDoc(Session,URI,ArticleTitle,Id,0,0,LangEn,"wikipedia/dump",0,RDate::Null,ArticleUpdated,RDate::Null);
-		Session->InsertObj(Article);
-		Status=New;
-	}
-	else
-	{
-		// Doc exist -> Look if updated
-		if((ArticleUpdated>Article->GetUpdated())||Article->MustCompute())
-		{
-			Status=Update;
-			Article->SetUpdated(ArticleUpdated);
-		}
-		else
-			Status=OK;
-	}
-	WikiTokens::Get()->SetDoc(Article);
+//	Article=Session->GetObj(pDoc,Id,true,true);
+//	if(!Article)
+//	{
+//		if(!create)
+//		{
+//			Article=0;
+//			return;
+//		}
+//
+//		// Doc must me created
+//		RURI URI("http://en.wikipedia.org/wiki/"+WikiToken::GetWikiTitle(ArticleTitle));
+//		Article=new GDoc(Session,URI,ArticleTitle,Id,0,0,LangEn,"wikipedia/dump",0,RDate::Null,ArticleUpdated,RDate::Null);
+//		Session->InsertObj(Article);
+//		Status=New;
+//	}
+//	else
+//	{
+//		// Doc exist -> Look if updated
+//		if((ArticleUpdated>Article->GetUpdated())||Article->MustCompute())
+//		{
+//			Status=Update;
+//			Article->SetUpdated(ArticleUpdated);
+//		}
+//		else
+//			Status=OK;
+//	}
+//	WikiTokens::Get()->SetDoc(Article);
 }
 
 
@@ -1044,9 +1065,14 @@ void Wikipedia::CreateConfig(void)
 	InsertParam(new RParamValue("Dir",""));
 	InsertParam(new RParamValue("Dump",""));
 	InsertParam(new RParamValue("NbArticles",20000,"Number of articles to treat. If null, all articles are treated."));
-	InsertParam(new RParamValue("NbContributions",1000,"Number of contributions to treat. If null, all contributions are treated."));
+	InsertParam(new RParamValue("NbRevisions",1000,"Number of revisions to treat. If null, all contributions are treated."));
 	InsertParam(new RParamValue("ForceAnalyze",false,"Must all the articles be analyzed or only the new and the updated ones?"));
 	InsertParam(new RParamValue("ExtractExternalURI",true,"Must the external URI be extracted from the wiki?"));
+	InsertParam(new RParamValue("ImportArticles",true,"Must the articles be imported?"));
+	InsertParam(new RParamValue("ImportRevisions",true,"Must the revisions be imported?"));
+	InsertParam(new RParamValue("MergeUsers",true,"Must all the users with the same username be merged?"));
+	InsertParam(new RParamValue("ImportAllRevisions",false,"Must all the revisions from the treated articles must be imported?"));
+
 }
 
 

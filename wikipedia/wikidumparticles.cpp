@@ -49,15 +49,6 @@ static RTextFile Test2("/home/pfrancq/debug-wiki.txt","utf-8");
 
 //-----------------------------------------------------------------------------
 //
-// class GChar
-//
-//-----------------------------------------------------------------------------
-
-
-
-
-//-----------------------------------------------------------------------------
-//
 // class WikiDumpArticles
 //
 //-----------------------------------------------------------------------------
@@ -130,13 +121,15 @@ void WikiDumpArticles::EndTag(const RString& namespaceURI,const RString& lName,c
 		InPage=false;
 		if(Original)
 		{
-			GDoc* Article(PlugIn->GetSession()->GetObj(pDoc,ArticleId,true,true));
+			RString URL(Title);
+			URL.Replace(' ','_');
+			URL="https://en.wikipedia.org/wiki/"+URL;
+
+			GDoc* Article(PlugIn->GetSession()->GetObj(pDoc,URL,true,true));
 			if(!Article)
 			{
 				// Article must me created
-				RString URL(Title);
-				URL.Replace(' ','_');
-				Article=new GDoc(PlugIn->GetSession(),"https://en.wikipedia.org/wiki/"+URL,Title,ArticleId,0,0,LangEn,"wikipedia/dump",0,RDate::Null,Updated,RDate::Null);
+				Article=new GDoc(PlugIn->GetSession(),URL,Title,RString::Number(ArticleId),LangEn,"wikipedia/dump");
 				PlugIn->GetSession()->InsertObj(Article);
 			}
 			else
@@ -147,81 +140,86 @@ void WikiDumpArticles::EndTag(const RString& namespaceURI,const RString& lName,c
 			}
 			WikiTokens::Get()->SetDoc(Article);
 
-			// Create a title
-			Token=WikiTokens::Get()->CreateToken();
-			Token->Type=WikiToken::Title;
-			Token->Pos=ContentPos;
-			Token->SyntacticPos=0;
-			Token->Content=Title;
-			Token->Depth=0;
-			Token=0;
-
-			TreatWiki();
-
-//			// Remove all the last links where an outside Wikipedia
-//			size_t ToDel(0);
-//			WikiToken* Last(0);
-//			RCursor<WikiToken> Del(WikiTokens::Get()->GetTokens());
-//			for(Del.StartFromEnd();!Del.Begin();Del.Prev())
-//			{
-//				if(Del()->Type!=WikiToken::Link)
-//				{
-//					if(Last)
-//						break;
-//					Last=Del();
-//				}
-//				else
-//				{
-//					// Point to English
-//					if(!RChar::StrNCmp(&Del()->Content()[7],"en",2))
-//						break;
-//
-//					// Not wikipedia
-//
-//					if(RChar::StrNCmp(&Del()->Content()[10],"wikipedia",9)&&RChar::StrNCmp(&Del()->Content()[11],"wikipedia",9))
-//						break;
-//
-//					ToDel+=2;
-//					Last=0;
-//				}
-//			}
-//			for(ToDel++;--ToDel;)
-//				WikiTokens::Get()->DeleteLastToken();
-
-			// If necessary -> print the tokens
-			if(Article&&Debug)
-			{
-				Test2<<Article->GetURI()()<<endl;
-				RCursor<WikiToken> Cur(WikiTokens::Get()->GetTokens());
-				for(Cur.Start();!Cur.End();Cur.Next())
-				{
-					for(size_t i=Cur()->Depth+2;--i;)
-						Test2<<"\t";
-					switch(Cur()->Type)
-					{
-						case WikiToken::Text:
-							Test2<<"T ";
-							break;
-						case WikiToken::Name:
-							Test2<<"N ";
-							break;
-						case WikiToken::Section:
-							Test2<<"S ";
-							break;
-						case WikiToken::Title:
-							Test2<<"M ";
-							break;
-						case WikiToken::Link:
-							Test2<<"L ";
-							break;
-					}
-					Test2<<Cur()->Depth<<" "<<Cur()->SyntacticPos<<" "<<Cur()->Pos<<"\t"<<Cur()->Content<<endl;
-				}
-				Test2<<endl;
-			}
-
+			// Look if the article must be analyzed
 			if(Article->MustCompute()||PlugIn->MustForceAnalyze())
+			{
+				cout<<"Treat "<<URL<<endl;
+
+				// Create a title
+				Token=WikiTokens::Get()->CreateToken();
+				Token->Type=WikiToken::Title;
+				Token->Pos=ContentPos;
+				Token->SyntacticPos=0;
+				Token->Content=Title;
+				Token->Depth=0;
+				Token=0;
+
+				TreatWiki();
+
+	//			// Remove all the last links where an outside Wikipedia
+	//			size_t ToDel(0);
+	//			WikiToken* Last(0);
+	//			RCursor<WikiToken> Del(WikiTokens::Get()->GetTokens());
+	//			for(Del.StartFromEnd();!Del.Begin();Del.Prev())
+	//			{
+	//				if(Del()->Type!=WikiToken::Link)
+	//				{
+	//					if(Last)
+	//						break;
+	//					Last=Del();
+	//				}
+	//				else
+	//				{
+	//					// Point to English
+	//					if(!RChar::StrNCmp(&Del()->Content()[7],"en",2))
+	//						break;
+	//
+	//					// Not wikipedia
+	//
+	//					if(RChar::StrNCmp(&Del()->Content()[10],"wikipedia",9)&&RChar::StrNCmp(&Del()->Content()[11],"wikipedia",9))
+	//						break;
+	//
+	//					ToDel+=2;
+	//					Last=0;
+	//				}
+	//			}
+	//			for(ToDel++;--ToDel;)
+	//				WikiTokens::Get()->DeleteLastToken();
+
+				// If necessary -> print the tokens
+				if(Article&&Debug)
+				{
+					Test2<<Article->GetName()<<endl;
+					RCursor<WikiToken> Cur(WikiTokens::Get()->GetTokens());
+					for(Cur.Start();!Cur.End();Cur.Next())
+					{
+						for(size_t i=Cur()->Depth+2;--i;)
+							Test2<<"\t";
+						switch(Cur()->Type)
+						{
+							case WikiToken::Text:
+								Test2<<"T ";
+								break;
+							case WikiToken::Name:
+								Test2<<"N ";
+								break;
+							case WikiToken::Section:
+								Test2<<"S ";
+								break;
+							case WikiToken::Title:
+								Test2<<"M ";
+								break;
+							case WikiToken::Link:
+								Test2<<"L ";
+								break;
+						}
+						Test2<<Cur()->Depth<<" "<<Cur()->SyntacticPos<<" "<<Cur()->Pos<<"\t"<<Cur()->Content<<endl;
+					}
+					Test2<<endl;
+				}
+
 				PlugIn->GetSession()->AnalyzeDoc(Article,0,true);
+			}
 
 			NbAnalyzedArticles++;
 			if(PlugIn->GetNbArticles()&&(NbAnalyzedArticles>=PlugIn->GetNbArticles()))
@@ -244,7 +242,7 @@ void WikiDumpArticles::EndTag(const RString& namespaceURI,const RString& lName,c
 	else if(lName=="title")
 	{
 		InTitle=false;
-		PlugIn->GetSlot()->StartJob("Treat '"+Title+"'");
+		PlugIn->GetSlot()->StartJob("Extract content from '"+Title+"'");
 	}
 	else if(lName=="timestamp")
 	{
@@ -278,129 +276,163 @@ void WikiDumpArticles::Text(const RString& text)
 void WikiDumpArticles::TreatWiki(void)
 {
 	CurSection=0;
-	tState State(sText);  // Suppose we read a text
 	CurSyntacticPos=0;
+	bool NewLine(true);
 
 	Char.Set(Content);
 	Char.Start();
 	while(!Char.End())
 	{
-		switch(State)
+		if(Char().IsSpace())
 		{
-			case sText:
+			Token=0;  // Terminate a token
+
+			// Look if a new line
+			if(Char()==10)          // UNIX case
 			{
-				if(RChar::StrNCmp(Char.GetCurrent(),"==",2)==0)
-					CreateTitle();
-				else if(Char().IsSpace())
-				{
-					Token=0;  // Terminate a token
+				NewLine=true;
+				Char.Next();
+			}
+			else if(Char()==13) 	 // MAC and DOS
+			{
+				NewLine=true;
+				Char.Next();
+
+				// DOS only
+				if((!Char.End())&&(Char()==10))
 					Char.Next();
-				}
-				else if(RChar::StrNCmp(Char.GetCurrent(),"[[",2)==0)
-					CreateLink("[[","]]",sLink);
-				else if(RChar::StrNCmp(Char.GetCurrent(),"{{",2)==0)
-					CreateLink("{{","}}",sCite);
-				else if(Char()=='[')
-				{
-					// Link ?
-					Token=0;  // Terminate a token
-					Char.Next();   // Skip '['
+			}
+			else
+			{
+				NewLine=false;
+				Char.Next();
+			}
+		}
+		else
+		{
+			if(NewLine&&(RChar::StrNCmp(Char.GetCurrent(),"==",2)==0))
+				CreateTitle();
+			else if(RChar::StrNCmp(Char.GetCurrent(),"[[",2)==0)
+				CreateInternalLinks();
+			else if(RChar::StrNCmp(Char.GetCurrent(),"{{",2)==0)
+				CreateExternalLink();
+			else if(Char()=='[')
+			{
+				// Link ?
+				Token=0;  // Terminate a token
+				Char.Next();   // Skip '['
 
-					if(PlugIn->MustExtractExternalURI() &&
-						 (!RChar::StrNCmp(Char.GetCurrent(),"http",4))  &&
-					    ( ((*(Char.GetCurrent()+4))==':') || (((*(Char.GetCurrent()+4))=='s')&&((*(Char.GetCurrent()+5))==':')) )
-						)
+				if(PlugIn->MustExtractExternalURI() &&
+					 (!RChar::StrNCmp(Char.GetCurrent(),"http",4))  &&
+					 ( ((*(Char.GetCurrent()+4))==':') || (((*(Char.GetCurrent()+4))=='s')&&((*(Char.GetCurrent()+5))==':')) )
+					)
+				{
+					// Create the link
+					Token=WikiTokens::Get()->CreateToken();
+					Token->Type=WikiToken::Link;
+					Token->Pos=ContentPos+Char.GetPos()-1;
+					Token->SyntacticPos=CurSyntacticPos++;
+					if(CurSection)
+						Token->Depth=CurSection->Depth+1;
+
+					while((!Char.End())&&(!Char().IsSpace())&&(Char()!=']'))
 					{
-						// Create the link
-						Token=WikiTokens::Get()->CreateToken();
-						Token->Type=WikiToken::Link;
-						Token->Pos=ContentPos+Char.GetPos()-1;
-						Token->SyntacticPos=CurSyntacticPos++;
-						if(CurSection)
-							Token->Depth=CurSection->Depth+1;
-
-						while((!Char.End())&&(!Char().IsSpace())&&(Char()!=']'))
-						{
-							Token->Content+=Char();
-							Char.Next();
-						}
-
-						Token=0;
-					}
-				}
-				else if(RChar::StrNCmp(Char.GetCurrent(),"<!--",4)==0)
-				{
-					CurSyntacticPos++; // Consider the comment as a token
-
-					// Skip the comment
-					Char.Next(4);
-					while((!Char.End())&&RChar::StrNCmp(Char.GetCurrent(),"-->",3))
-						Char.Next();
-					Char.Next(3);
-				}
-				else if(RChar::StrNCmp(Char.GetCurrent(),"</ref>",6)==0)
-				{
-/*					CurSyntacticPos++; // Consider a reference as a token
-
-					// Skip including "</ref>"
-					while((!Char.End())&&(RChar::StrNCmp(Char.GetCurrent(),"</ref>",6)))
-						Char.Next();*/
-					Char.Next(5);  // Skip /ref>
-				}
-				else if(RChar::StrNCmp(Char.GetCurrent(),"<ref",4)==0)
-				{
-					CurSyntacticPos++; // Consider a reference as a token
-
-					// Skip including "</ref>"
-					//while((!Char.End())&&(RChar::StrNCmp(Char.GetCurrent(),">",1)))
-					while((!Char.End())&&(Char()!='>'))
-						Char.Next();
-					//Char.Next();  // Skip /
-				}
-				else if(Char()=='&')
-				{
-					// This a HTML-like code
-					Char.Next(); // Skip '&'
-					RString Code;
-					while((!Char.End())&&(Char()!=';'))
-					{
-						Code+=Char();
+						Token->Content+=Char();
 						Char.Next();
 					}
 
-					if(!Char.End())
-						Char.Next();
-					bool IsCode;
-					unsigned int TheCode(Code.ToUInt(IsCode));
-					if(IsCode)
-						Token->Content+=RChar(TheCode);
+					Token=0;
 				}
-				else if(Char().IsPunct())
+			}
+			else if(RChar::StrNCmp(Char.GetCurrent(),"<!--",4)==0)
+			{
+				CurSyntacticPos++; // Consider the comment as a token
+
+				// Skip the comment
+				Char.Next(4);
+				while((!Char.End())&&RChar::StrNCmp(Char.GetCurrent(),"-->",3))
+					Char.Next();
+				Char.Next(3);
+			}
+			else if(RChar::StrNCmp(Char.GetCurrent(),"<code",5)==0)
+			{
+				CurSyntacticPos++; // Consider the code as a token
+
+				// Skip the tag
+				Char.Next(5);
+				while((!Char.End())&&RChar::StrNCmp(Char.GetCurrent(),"</code>",7))
+					Char.Next();
+				Char.Next(7);
+			}
+			else if(RChar::StrNCmp(Char.GetCurrent(),"<source",7)==0)
+			{
+				CurSyntacticPos++; // Consider the source code as a token
+
+				// Skip the tag
+				Char.Next(7);
+				while((!Char.End())&&RChar::StrNCmp(Char.GetCurrent(),"</source>",9))
+					Char.Next();
+				Char.Next(9);
+			}
+			else if(RChar::StrNCmp(Char.GetCurrent(),"</ref>",6)==0)
+			{
+	/*					CurSyntacticPos++; // Consider a reference as a token
+
+				// Skip including "</ref>"
+				while((!Char.End())&&(RChar::StrNCmp(Char.GetCurrent(),"</ref>",6)))
+					Char.Next();*/
+				Char.Next(5);  // Skip /ref>
+			}
+			else if(RChar::StrNCmp(Char.GetCurrent(),"<ref",4)==0)
+			{
+				CurSyntacticPos++; // Consider a reference as a token
+
+				// Skip including "</ref>"
+				//while((!Char.End())&&(RChar::StrNCmp(Char.GetCurrent(),">",1)))
+				while((!Char.End())&&(Char()!='>'))
+					Char.Next();
+				//Char.Next();  // Skip /
+			}
+			else if(Char()=='&')
+			{
+				// This a HTML-like code
+				Char.Next(); // Skip '&'
+				RString Code;
+				while((!Char.End())&&(Char()!=';'))
 				{
-					Token=0;  // Terminate a token
+					Code+=Char();
 					Char.Next();
 				}
-				else
-				{
-					// Normal Token
-					if(!Token)
-					{
-						Token=WikiTokens::Get()->CreateToken();
-						Token->Type=WikiToken::Text;
-						Token->Pos=ContentPos+Char.GetPos();
-						Token->SyntacticPos=CurSyntacticPos++;
-						if(CurSection)
-							Token->Depth=CurSection->Depth+1;
-					}
-					Token->Content+=Char();
+
+				if(!Char.End())
 					Char.Next();
+				bool IsCode;
+				unsigned int TheCode(Code.ToUInt(IsCode));
+				if(IsCode&&Token)
+					Token->Content+=RChar(TheCode);
+			}
+			else if(Char().IsPunct())
+			{
+				Token=0;  // Terminate a token
+				Char.Next();
+			}
+			else
+			{
+				// Normal Token
+				if(!Token)
+				{
+					Token=WikiTokens::Get()->CreateToken();
+					Token->Type=WikiToken::Text;
+					Token->Pos=ContentPos+Char.GetPos();
+					Token->SyntacticPos=CurSyntacticPos++;
+					if(CurSection)
+						Token->Depth=CurSection->Depth+1;
 				}
-				break;
+				Token->Content+=Char();
+				Char.Next();
 			}
 
-			default:
-				Char.Next();
-				break;
+			NewLine=false; // The last character treated is not a new line
 		}
 	}
 }
@@ -449,6 +481,11 @@ void WikiDumpArticles::CreateTitle(void)
 	while(RChar::StrNCmp(Char.GetCurrent(),Sec,CurSection->Depth+2))
 	{
 		CurSection->Content+=Char();
+		if(CurSection->Content.GetLen()>200)
+		{
+			cout<<CurSection->Content<<endl;
+			return;
+		}
 		Char.Next();
 	}
 
@@ -459,21 +496,23 @@ void WikiDumpArticles::CreateTitle(void)
 
 
 //------------------------------------------------------------------------------
-void WikiDumpArticles::CreateLink(const char* begin,const char* end,tState state)
+void WikiDumpArticles::CreateExternalLink(void)
 {
 	// Skip the two characters
 	size_t Pos(Char.GetPos());
 	Char.Next(2);
 	int NbBrackets(1);
+	bool OnlyOneAccolade(true);
 
 	while(!Char.End())
 	{
-		if(RChar::StrNCmp(Char.GetCurrent(),begin,2)==0)
+		if(RChar::StrNCmp(Char.GetCurrent(),"{{",2)==0)
 		{
 			NbBrackets++;
 			Char.Next(2);
+			OnlyOneAccolade=false;
 		}
-		else if(RChar::StrNCmp(Char.GetCurrent(),end,2)==0)
+		else if(RChar::StrNCmp(Char.GetCurrent(),"}}",2)==0)
 		{
 			NbBrackets--;
 			Char.Next(2);
@@ -485,42 +524,21 @@ void WikiDumpArticles::CreateLink(const char* begin,const char* end,tState state
 			Char.Next();
 	}
 
-	if(state==sLink)
+	// If there is more than one pair of accolades -> Problem
+	if(!OnlyOneAccolade)
 	{
-		TmpStrs.Clear();
-		Content.Mid(Pos+2,Char.GetPos()-Pos-4).Split(TmpStrs,'|'); // Char.GetPos()-Pos-3 = (Char.GetPos()-2)-(Pos+2)
-		RCursor<RString> Str(TmpStrs);
-		size_t Intern(0);
-		for(Str.Start();!Str.End();Str.Next())
-		{
-			// Add a main article link
-			(*Str())=Str()->Trim();
-			if(Str()->IsEmpty())
-				continue;
-			Token=WikiTokens::Get()->CreateToken();
-			Token->Type=WikiToken::Link;
-			Token->Pos=ContentPos+Pos+Intern+Str.GetPos();
-			Token->SyntacticPos=CurSyntacticPos++;
-			Str()->Replace(' ','_');
-			Token->Content="https://en.wikipedia.org/wiki/"+(*Str());  // Skip 'Main:'
-			Intern+=Str()->GetLen();
-			if(CurSection)
-				Token->Depth=CurSection->Depth+1;
-			cout<<"*"<<Token->Content<<"*"<<endl;
-		}
+		CurSyntacticPos++; // Consider other links as a single token
+		return;
 	}
-	else if(state==sCite)
+
+
+	//	cout<<"*"<<Content.Mid(Pos+2,4)<<"*"<<endl;
+	if(Content.Mid(Pos+2,4)=="cite")
 	{
-//		cout<<"*"<<Content.Mid(Pos+2,4)<<"*"<<endl;
-		if(Content.Mid(Pos+2,4)!="cite")
-			return;
 //		cout<<"\t*"<<Content.Mid(Pos+6,80)<<"*"<<endl;
 
 		// Parse the whole thing and search for last,first and title
-//		RString Tmp;
 		RString Name;
-//		Tmp.SetLen(2000);
-//		Tmp.SetLen(0);
 		bool Last(false), First(false);
 		TmpStrs2.Clear();
 		Content.Mid(Pos+6,Char.GetPos()-3-Pos-5).Split(TmpStrs2,'|');
@@ -528,8 +546,6 @@ void WikiDumpArticles::CreateLink(const char* begin,const char* end,tState state
 		for(Cite.Start();!Cite.End();Cite.Next())
 		{
 			(*Cite())=Cite()->Trim();
-			//cout<<"*"<<(*Cite())<<"*"<<endl;
-//			continue;
 			TmpStrs.Clear();
 			Cite()->Split(TmpStrs,'=');
 			if(TmpStrs.GetNb()==2)
@@ -538,6 +554,7 @@ void WikiDumpArticles::CreateLink(const char* begin,const char* end,tState state
 				//cout<<"\t*"<<(*TmpStrs[0])<<"*"<<endl;
 				if(((*TmpStrs[0])=="last")||((*TmpStrs[0])=="first"))
 				{
+					//cout<<"*"<<(*Cite())<<"*"<<endl;
 					(*TmpStrs[1])=TmpStrs[1]->Trim();
 					if(((*TmpStrs[0])=="last"))
 					{
@@ -558,11 +575,12 @@ void WikiDumpArticles::CreateLink(const char* begin,const char* end,tState state
 						Token->Content=Name;  // Skip 'Main:'
 						if(CurSection)
 							Token->Depth=CurSection->Depth+1;
-						//cout<<"Name *"<<Name<<"*"<<endl;
+						//cout<<"\tName *"<<Name<<"*"<<endl;
 					}
 				}
 				else if(((*TmpStrs[0])=="title"))
 				{
+					//cout<<"*"<<(*Cite())<<"*"<<endl;
 					(*TmpStrs[1])=TmpStrs[1]->Trim();
 					Token=WikiTokens::Get()->CreateToken();
 					Token->Type=WikiToken::Text;
@@ -575,6 +593,7 @@ void WikiDumpArticles::CreateLink(const char* begin,const char* end,tState state
 				}
 				else if(((*TmpStrs[0])=="author"))
 				{
+					//cout<<"*"<<(*Cite())<<"*"<<endl;
 					(*TmpStrs[1])=TmpStrs[1]->Trim();
 					int Pos(TmpStrs[1]->Find(','));
 					if(Pos!=-1)
@@ -591,7 +610,7 @@ void WikiDumpArticles::CreateLink(const char* begin,const char* end,tState state
 					Token->Content=(*TmpStrs[1]);
 					if(CurSection)
 						Token->Depth=CurSection->Depth+1;
-					//cout<<"Author *"<<(*TmpStrs[1])<<"*"<<endl;
+					//cout<<"\tAuthor *"<<(*TmpStrs[1])<<"*"<<endl;
 				}
 			}
 		}
@@ -599,4 +618,70 @@ void WikiDumpArticles::CreateLink(const char* begin,const char* end,tState state
 	}
 	else
 		CurSyntacticPos++; // Consider other links as a single token
+}
+
+
+//------------------------------------------------------------------------------
+void WikiDumpArticles::CreateInternalLinks(void)
+{
+	// Skip the two characters
+	size_t Pos(Char.GetPos());
+	Char.Next(2);
+	int NbBrackets(1);
+	size_t BeginLink(Char.GetPos()),Size(0);
+
+	while(!Char.End())
+	{
+		if(RChar::StrNCmp(Char.GetCurrent(),"[[",2)==0)
+		{
+			NbBrackets++;
+			Char.Next(2);
+			BeginLink=Char.GetPos();
+		}
+		else if(RChar::StrNCmp(Char.GetCurrent(),"]]",2)==0)
+		{
+			// There must be a valid beginning position
+			if(BeginLink!=cNoRef)
+			{
+				// Create the internal links
+				TmpStrs.Clear();
+				RString URI(Content.Mid(BeginLink,Char.GetPos()-BeginLink));
+				//cout<<"Link *"<<URI<<"*"<<endl;
+				URI.Split(TmpStrs,'|');
+				RCursor<RString> Str(TmpStrs);
+				size_t Intern(0);
+				for(Str.Start();!Str.End();Str.Next())
+				{
+					// Add a main article link
+					(*Str())=Str()->Trim();
+					if(Str()->IsEmpty())
+						continue;
+					Token=WikiTokens::Get()->CreateToken();
+					Token->Type=WikiToken::Link;
+					Token->Pos=BeginLink+Size-ContentPos;//+Pos+Intern+Str.GetPos();
+					Size+=URI.GetLen()+1;
+					Token->SyntacticPos=CurSyntacticPos++;
+					Str()->Replace(' ','_');
+					Token->Content="https://en.wikipedia.org/wiki/"+(*Str());  // Skip 'Main:'
+					Intern+=Str()->GetLen();
+					if(CurSection)
+						Token->Depth=CurSection->Depth+1;
+
+					//cout<<"*"<<Token->Content<<"*"<<endl;
+				}
+
+				BeginLink=cNoRef;   // The last beginning position becomes invalid
+			}
+
+			// Skip the brackets
+			NbBrackets--;
+			Char.Next(2);
+
+			// If no more brackets -> finish treating the link
+			if(!NbBrackets)
+				break;
+		}
+		else
+			Char.Next();
+	}
 }

@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>448</width>
-    <height>320</height>
+    <width>422</width>
+    <height>488</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_3">
+  <layout class="QVBoxLayout" name="verticalLayout_5">
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="minimumSize">
@@ -101,10 +101,26 @@
     </widget>
    </item>
    <item>
-    <widget class="QCheckBox" name="ForceAnalyze">
-     <property name="text">
-      <string>All articles are analyzed and not only the new and the updated ones.</string>
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="title">
+      <string>Options</string>
      </property>
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <widget class="QCheckBox" name="ForceAnalyze">
+        <property name="text">
+         <string>All articles are analyzed and not only the new and the updated ones.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="MergeUsers">
+        <property name="text">
+         <string>Must all the users with the same username be merged?</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>
@@ -112,7 +128,7 @@
      <property name="title">
       <string>Filter</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
        <widget class="QCheckBox" name="ExtractExternalURI">
         <property name="statusTip">
@@ -128,6 +144,13 @@
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QCheckBox" name="ImportArticles">
+          <property name="text">
+           <string>Import articles</string>
+          </property>
+         </widget>
+        </item>
         <item>
          <widget class="QLabel" name="label_3">
           <property name="text">
@@ -158,35 +181,58 @@
        </layout>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
-        <item>
-         <widget class="QLabel" name="label_4">
-          <property name="text">
-           <string>Number of contributions</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_4">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QSpinBox" name="NbContributions">
-          <property name="maximum">
-           <number>100000</number>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       <widget class="QCheckBox" name="ImportRevisions">
+        <property name="text">
+         <string>Import revisions</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="Revisions">
+        <property name="title">
+         <string>Revisions Filter</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QCheckBox" name="ImportAllRevisions">
+           <property name="text">
+            <string>Must all the revisions from the treated articles must be imported?</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>Number of revisions</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_4">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="NbRevisions">
+             <property name="maximum">
+              <number>100000</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -201,5 +247,54 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>ImportArticles</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>NbArticles</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>58</x>
+     <y>299</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>406</x>
+     <y>304</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ImportRevisions</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Revisions</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>63</x>
+     <y>323</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>102</x>
+     <y>341</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ImportAllRevisions</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>NbRevisions</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>62</x>
+     <y>380</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>330</x>
+     <y>407</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

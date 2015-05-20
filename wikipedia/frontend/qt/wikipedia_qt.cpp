@@ -40,6 +40,9 @@ Config::Config(void)
 	connect(buttonBox,SIGNAL(accepted()),this,SLOT(accept()));
 	connect(buttonBox,SIGNAL(rejected()),this,SLOT(reject()));
 	connect(EditDir,SIGNAL(pressed()),this,SLOT(chooseDir()));
+	NbArticles->setStyleSheet(QString::fromUtf8("QSpinBox:disabled{ color: gray }"));
+	Revisions->setStyleSheet(QString::fromUtf8("QGroupBox:disabled{ color: gray }"));
+	NbRevisions->setStyleSheet(QString::fromUtf8("QSpinBox:disabled{ color: gray }"));
 	adjustSize();
 }
 
@@ -75,9 +78,16 @@ extern "C" bool Configure(GPlugIn* fac)
 	RDate Dump(fac->FindParam<RParamValue>("Dump")->Get());
 	dlg.Dump->setDate(QDate(Dump.GetYear(),Dump.GetMonth(),Dump.GetDay()));
 	dlg.NbArticles->setValue(fac->FindParam<RParamValue>("NbArticles")->GetInt());
-	dlg.NbContributions->setValue(fac->FindParam<RParamValue>("NbContributions")->GetInt());
+	dlg.NbArticles->setEnabled(fac->FindParam<RParamValue>("ImportArticles")->GetBool());
+	dlg.NbRevisions->setValue(fac->FindParam<RParamValue>("NbRevisions")->GetInt());
+	dlg.NbRevisions->setDisabled(fac->FindParam<RParamValue>("ImportAllRevisions")->GetBool());
+	dlg.Revisions->setEnabled(fac->FindParam<RParamValue>("ImportRevisions")->GetBool());
 	dlg.ForceAnalyze->setChecked(fac->FindParam<RParamValue>("ForceAnalyze")->GetBool());
 	dlg.ExtractExternalURI->setChecked(fac->FindParam<RParamValue>("ExtractExternalURI")->GetBool());
+	dlg.ImportArticles->setChecked(fac->FindParam<RParamValue>("ImportArticles")->GetBool());
+	dlg.ImportRevisions->setChecked(fac->FindParam<RParamValue>("ImportRevisions")->GetBool());
+	dlg.MergeUsers->setChecked(fac->FindParam<RParamValue>("MergeUsers")->GetBool());
+	dlg.ImportAllRevisions->setChecked(fac->FindParam<RParamValue>("ImportAllRevisions")->GetBool());
 	if(dlg.exec())
 	{
 		fac->FindParam<RParamValue>("Dir")->Set(FromQString(dlg.Dir->text()));
@@ -85,9 +95,13 @@ extern "C" bool Configure(GPlugIn* fac)
 		Dump.SetDate(QtDate.day(),QtDate.month(),QtDate.year());
 		fac->FindParam<RParamValue>("Dump")->Set(Dump);
 		fac->FindParam<RParamValue>("NbArticles")->SetUInt(dlg.NbArticles->value());
-		fac->FindParam<RParamValue>("NbContributions")->SetUInt(dlg.NbContributions->value());
+		fac->FindParam<RParamValue>("NbRevisions")->SetUInt(dlg.NbRevisions->value());
 		fac->FindParam<RParamValue>("ForceAnalyze")->SetBool(dlg.ForceAnalyze->isChecked());
 		fac->FindParam<RParamValue>("ExtractExternalURI")->SetBool(dlg.ExtractExternalURI->isChecked());
+		fac->FindParam<RParamValue>("ImportArticles")->SetBool(dlg.ImportArticles->isChecked());
+		fac->FindParam<RParamValue>("ImportRevisions")->SetBool(dlg.ImportRevisions->isChecked());
+		fac->FindParam<RParamValue>("MergeUsers")->SetBool(dlg.MergeUsers->isChecked());
+		fac->FindParam<RParamValue>("ImportAllRevisions")->SetBool(dlg.ImportAllRevisions->isChecked());
 		return(true);
 	}
 	return(false);
