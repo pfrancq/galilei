@@ -168,7 +168,7 @@ void GLangDK::GetStopWords(RContainer<RString,true,false>& stop)
 //-----------------------------------------------------------------------------
 RString GLangDK::GetStemming(const RString& kwd)
 {
-	RCString Str(StdCodec->FromUnicode(kwd));
+	RCString Str(StdCodec->FromUnicode(kwd,false));
 	const sb_symbol * stemmed = sb_stemmer_stem(Stemmer,(const sb_symbol*)Str(),Str.GetLen());
 	return RString((char *)stemmed);
 }
