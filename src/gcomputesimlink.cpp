@@ -102,7 +102,7 @@ void GComputeSimLink::Fill(RContainer<Node,true,true>& cont,const GVector* vec,d
 		// Look if it is a known document and use its vector
 		if(Link->Search)
 		{
-			Link->Doc=PlugIn->GetSession()->GetObj(pDoc,ptr()->GetConcept()->GetSearchStr(),true,true);
+			Link->Doc=PlugIn->GetSession()->GetObj(pDoc,ptr()->GetConcept()->GetName(),true,true);
 			Link->Search=false;
 		}
 		if(Link->Doc)
