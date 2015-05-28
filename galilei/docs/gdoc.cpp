@@ -50,9 +50,9 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDoc::GDoc(GSession* session,const RString& uri,const R::RString& title,const R::RString& desc,GLang* lang,const RString& mime)
+GDoc::GDoc(GSession* session,const RString& uri,const R::RString& title,const R::RString& desc,GLang* lang,const RString& mime,const R::RDate& u)
 	: GDescriptionObject<GDoc>(session,cNoRef,0,otDoc,uri), Title(title),
-	  Lang(lang),MIMEType(mime), Updated(RDate::GetToday()), Computed(RDate::Null),
+	  Lang(lang),MIMEType(mime), Updated(u), Computed(RDate::Null),
 	  Fdbks(0), GroupId(0), Attached(RDate::Null),
 	  StructId(0), Tree(0), Description(desc)
 {

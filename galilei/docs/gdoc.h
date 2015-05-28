@@ -128,8 +128,9 @@ public:
 	* @param desc            Description of the document.
 	* @param lang            Language of the document.
 	* @param mime            MIME type of the document.
+	* @param u               Date of the last updated.
 	*/
-	GDoc(GSession* session,const R::RString& uri,const R::RString& title,const R::RString& desc,GLang* lang,const R::RString& mime);
+	GDoc(GSession* session,const R::RString& uri,const R::RString& title,const R::RString& desc,GLang* lang,const R::RString& mime,const R::RDate& u=R::RDate::GetToday());
 
 	/**
 	* Construct a document.

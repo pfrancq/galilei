@@ -188,7 +188,8 @@ GSession::GSession(size_t id,const RString& name)
 	  ValidConfigFile(false), Log("/var/log/galilei/"+name+".log"),
 	  CurrentRandom(1), Random(RRandom::Good,1),
 	  ExternBreak(false),
-	  Simulator(0), DocAnalyze(this)
+	  Simulator(0), DocAnalyze(this),
+	  AnalyzerReserved(false)
 
 {
 	// Log files
@@ -432,8 +433,26 @@ void GSession::ReInit(const GCommunity*)
 
 
 //------------------------------------------------------------------------------
-void GSession::AnalyzeDoc(GDoc* doc,GSlot* rec,bool force)
+GDocAnalyze* GSession::ReserveAnalyzer(void)
 {
+	AnalyzerReserved=true;
+	return(&DocAnalyze);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::ReleaseAnalyzer(GDocAnalyze*)
+{
+	AnalyzerReserved=false;
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::AnalyzeDoc(GDoc* doc,GSlot* rec,bool force,bool download)
+{
+	if(AnalyzerReserved)
+		mThrowGException("No available analyzer");
+
 	if(rec)
 	{
 		rec->Interact();
@@ -441,13 +460,16 @@ void GSession::AnalyzeDoc(GDoc* doc,GSlot* rec,bool force)
 	}
 	if(ExternBreak) return;
 
-	DocAnalyze.Analyze(doc,force);
+	DocAnalyze.Analyze(doc,force,download);
 }
 
 
 //------------------------------------------------------------------------------
 void GSession::AnalyzeDocs(GSlot* rec)
 {
+	if(AnalyzerReserved)
+		mThrowGException("No available analyzer");
+
 	// Opens and appends the Log File for all errors occurring in the filter or analyze phase.
 	if(rec)
 	{

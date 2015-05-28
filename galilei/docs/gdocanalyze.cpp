@@ -68,12 +68,20 @@ bool Debug=false;
 
 //------------------------------------------------------------------------------
 GDocAnalyze::GDocAnalyze(GSession* session)
-	: RDownloadFile(), Session(session), Description(), Tree(0,20000,2000), Tokenizer(0),
+	: RDownloadFile(), Doc(0), Data(0),
+	  Session(session), Description(), Tree(0,20000,2000), Tokenizer(0),
 	  DefaultText(0), DCMI(0), DefaultURI(0), DefaultNamedEntity(0),
 	  MemoryTokens(500), MemoryOccurs(20000),
 	  OrderTokens(27,27,50,20), Tokens(500), Occurs(20000), Top(200), Depths(100,50),
 	  SyntacticPos(20)
 {
+}
+
+
+//------------------------------------------------------------------------------
+void GDocAnalyze::SetData(void* data)
+{
+	Data=data;
 }
 
 
@@ -708,7 +716,7 @@ void GDocAnalyze::Print(GTokenOccur* occur)
 
 
 //------------------------------------------------------------------------------
-void GDocAnalyze::Analyze(GDoc* doc,bool force)
+void GDocAnalyze::Analyze(GDoc* doc,bool force,bool download)
 {
 	// Verify the the document must be computed
 	if((!doc->MustCompute())&&(!force)) return;
@@ -740,7 +748,7 @@ void GDocAnalyze::Analyze(GDoc* doc,bool force)
 
 	// If it is not a local	file -> Download it
 	RURI URI(doc->GetName());
-	if(URI.GetScheme()!="file")
+	if((URI.GetScheme()!="file")&&download)
 	{
 		File=TmpFile.GetName();
 		Download(URI,File);

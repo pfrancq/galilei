@@ -92,6 +92,11 @@ class GDocAnalyze : R::RDownloadFile
 	GDoc* Doc;
 
 	/**
+	 * Some data than can be assigned to the analyzer.
+	 */
+	void* Data;
+
+	/**
 	 * Corresponding session.
 	 */
 	GSession* Session;
@@ -244,6 +249,21 @@ public:
 	 * @return pointer to the document.
 	 */
 	GDoc* GetDoc(void) const {return(Doc);}
+
+	/**
+	 * Get the data assigned to the analyzer.
+	 *
+	 * It is the responsible of the caller of this function to correctly cast the
+	 * pointer.
+    * @return a raw pointer.
+    */
+	void* GetData(void) const {return(Data);}
+
+	/**
+	 * Assign some data to the analyzer.
+    * @param data           Raw pointer to the data.
+    */
+	void SetData(void* data);
 
 	/**
 	 * @return the session.
@@ -586,8 +606,9 @@ public:
 	* Analyze a document.
 	* @param doc             Pointer to the document to analyze.
 	* @param force           Force the analysis of the document?
+	* @param download        Try to download locally the document?
 	*/
-	void Analyze(GDoc* doc,bool force=false);
+	void Analyze(GDoc* doc,bool force,bool download);
 
 	/**
 	* Destruct the document analyzer.

@@ -317,6 +317,11 @@ private :
 	 */
 	GDocAnalyze DocAnalyze;
 
+	/**
+	 * Is the analyzer reserved ?
+	 */
+	bool AnalyzerReserved;
+
 public:
 
 	/**
@@ -412,7 +417,7 @@ public:
 	/**
 	 * Apply the internal configuration. This method must be called to take
 	 * changes in the configuration into account.
-	 */
+	*/
 	void ApplyConfig(void);
 
 	/**
@@ -441,6 +446,7 @@ public:
 	* @param str             String to analyze.
 	*/
 	R::RString AnalyzeString(const R::RString& str);
+
 	//@}
 
 	/** @name Computing Methods
@@ -448,17 +454,37 @@ public:
 	 */
 	//@{
 	/**
+	 * Reserve a document analyzer. While it is not released, it cannot be used
+	 * by the session.
+    * @return a pointer to a GDocAnalyze.
+    */
+	GDocAnalyze* ReserveAnalyzer(void);
+
+	/**
+	 * Release an analyzer.
+    * @param analyzer       Analyzer to release.
+    */
+	void ReleaseAnalyzer(GDocAnalyze* analyzer);
+
+	/**
 	* Analyze a document.
+	*
+	* If multiple analyzers are managed by the session, one is randomly chosen.
 	* @param doc             Pointer to the document to analyze.
 	* @param rec             Receiver for the signals.
 	* @param force           Force the analysis of the document?
+	* @param download        Try to download locally the document?
+	* @exception When no analyzer is available.
 	*/
-	void AnalyzeDoc(GDoc* doc,GSlot* rec=0,bool force=false);
+	void AnalyzeDoc(GDoc* doc,GSlot* rec=0,bool force=false,bool download=true);
 
 	/**
 	* Analyze the documents. At the end, all the enabled post-documents methods
 	* are run.
+	*
+	* All enabled analyzers managed by the session are used.
 	* @param rec             Receiver for the signals.
+	* @exception When no analyzer is available.
 	*/
 	void AnalyzeDocs(GSlot* rec=0);
 

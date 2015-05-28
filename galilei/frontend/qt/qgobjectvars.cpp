@@ -69,6 +69,7 @@ void QGObjectVars::Set(GDoc* doc)
 	AddVar("Last Updated",doc->GetUpdated());
 	AddVar("Last Computed",doc->GetComputed());
 	AddVar("Last Attached",doc->GetAttached());
+	AddVar("Description",doc->GetDescription());
 	static_cast<Ui_QGObjectVars*>(Ui)->Vars->resizeColumnToContents(0);
 	static_cast<Ui_QGObjectVars*>(Ui)->Vars->resizeColumnToContents(1);
 }
