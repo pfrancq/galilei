@@ -63,7 +63,7 @@ const bool Debug=false;
 
 //-----------------------------------------------------------------------------
 WParser::WParser(GSession* session,GPlugInFactory* fac)
-	: GFilter(session,fac), TermsSpace(0), URI(0)
+	: GFilter(session,fac)
 {
 	AddMIME("wikipedia/dump");
 }
@@ -96,12 +96,6 @@ void WParser::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI&)
 	// Verify that the process is fine
 	if(!WikiTokens::Get()->SameDoc(doc))
 		mThrowGException("The Wikipedia notice currently analyzed was not extracted from the dump");
-
-	// Get the concept types if necessary
-	if(!TermsSpace)
-		TermsSpace=Session->GetObj(pConceptType,ccText,"Terms","Terms");
-	if(!URI)
-		URI=Session->GetObj(pConceptType,ccLink,"URI","URI");
 
 	// Initialize the analyze
 	Clear();

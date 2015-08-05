@@ -65,16 +65,6 @@ class WParser : public GFilter
 	 */
 	bool ExtractMetadata;
 
-	/**
-	 * Type of the concepts representing terms (words, etc.).
-	 */
-	GConceptType* TermsSpace;
-
-	/**
-	 * URI concepts.
-    */
-	GConceptType* URI;
-
 public:
 
 	/**
