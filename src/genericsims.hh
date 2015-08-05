@@ -234,7 +234,7 @@ template<class cObj1,class cObj2>
 	if(obj1==obj2)
 		return(1.0);
 	if(!URI)
-		URI=Session->GetObj(pConceptType,ccLink,"URI","Uniform Resource Identifier");
+		URI=Session->InsertObj(pConceptType,ccLink,"URI","Uniform Resource Identifier");
 
 	Desc1=dynamic_cast<cObj1*>(obj1);
 	Desc2=dynamic_cast<cObj2*>(obj2);
