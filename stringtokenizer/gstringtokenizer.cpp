@@ -49,7 +49,7 @@ const bool Debug=false;
 
 //------------------------------------------------------------------------------
 GStringTokenizer::GStringTokenizer(GSession* session,GPlugInFactory* fac)
-	: GTokenizer(session,fac), Schemes(30), URISpace(0)
+	: GTokenizer(session,fac), Schemes(30)
 {
 	InitSchemes();
 }
@@ -147,12 +147,31 @@ bool GStringTokenizer::IsURI(R::RString& str)
 }
 
 
+ //------------------------------------------------------------------------------
+bool GStringTokenizer::IsSeperator(const R::RChar& car)
+{
+	// Ending character of a string
+	if(!car)
+		return(true);
+
+	// Spaces
+	if(car.IsSpace())
+		return(true);
+
+	// Look at punctation
+	if((car==',')||(car==';')||(car=='.')||(car=='\''))
+		return(true);
+
+	// Else it is not a separatoe
+	return(false);
+}
+
 //------------------------------------------------------------------------------
 bool GStringTokenizer::TreatChar(GDocAnalyze* analyzer,const R::RChar& car)
 {
 	bool TokenStart(false);
 
-	if((!car)||(car.IsSpace()))
+	if(IsSeperator(car))
 	{
 		// if Leading -> skip it
 		if(State==StartToken)
@@ -188,7 +207,7 @@ bool GStringTokenizer::TreatChar(GDocAnalyze* analyzer,const R::RChar& car)
 			NbCurOccurs=0;
 		}
 
-		if (car.IsPunct())
+		if(car.IsPunct())
 		{
 			// if Leading -> skip it
 			if(State==StartToken)
@@ -256,12 +275,10 @@ bool GStringTokenizer::TreatChar(GDocAnalyze* analyzer,const R::RChar& car)
 			if(((PosDoublePoint&&(PosDoublePoint<=SkipSep))||Pos1At)&&IsURI(Token))
 			{
 				GVector* Cur(analyzer->GetCurrentVector());
-				GTokenOccur* Occur(analyzer->AddToken(Token,analyzer->GetDefaultURI(),ttLink));
+				GTokenOccur* Occur(analyzer->AddToken(Token,Session->GetURI(),ttLink));
 				if(!Occur->GetToken()->GetConcept())
 				{
-					if(!URISpace)
-						URISpace=Session->GetObj(pConceptType,ccLink,"URI","Uniform Resource Identifier");
-					Occur->GetToken()->SetConcept(Session->InsertObj(pConcept,URISpace,Token));
+					Occur->GetToken()->SetConcept(Session->InsertObj(pConcept,Session->GetURIType(),Token));
 				}
 				analyzer->SetCurrentVector(Cur);
 			}

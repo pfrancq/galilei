@@ -47,7 +47,7 @@
 
 //------------------------------------------------------------------------------
 GStringIndexer::GStringIndexer(GSession* session,GPlugInFactory* fac)
-	: GAnalyzer(session,fac), TermsSpace(0), ToDelete(500)
+	: GAnalyzer(session,fac), ToDelete(500)
 {
 }
 
@@ -73,8 +73,6 @@ void GStringIndexer::ApplyConfig(void)
 //------------------------------------------------------------------------------
 void GStringIndexer::TreatTokens(GDocAnalyze* analyzer)
 {
-	if(!TermsSpace)
-		TermsSpace=Session->GetObj(pConceptType,ccText,"Terms","Terms");
 
 	ToDelete.Clear();
 	RCursor<GToken> Token(analyzer->GetTokens());
@@ -100,7 +98,7 @@ void GStringIndexer::TreatTokens(GDocAnalyze* analyzer)
 		// OK -> Assign a concept to it
 		if(!Token()->GetConcept())
 		{
-			GConcept* Concept(Session->InsertObj(pConcept,TermsSpace,Term));
+			GConcept* Concept(Session->InsertObj(pConcept,Session->GetTokenType(),Term));
 			Token()->SetConcept(Concept);
 		}
 	}

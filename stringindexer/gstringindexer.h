@@ -50,11 +50,6 @@ using namespace std;
 class GStringIndexer : public GAnalyzer
 {
 	/**
-	 * Type of the concepts representing terms (words, etc.).
-	 */
-	GConceptType* TermsSpace;
-
-	/**
 	* Minimum number of characters to have a valid token.
 	*/
 	size_t MinSize;

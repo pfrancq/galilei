@@ -137,11 +137,6 @@ class GStringTokenizer : public GTokenizer
 	 * Accepted schemes.
     */
 	RContainer<RString,true,true> Schemes;
-	
-	/**
-	 * Type of the concepts representing URI.
-	 */
-	GConceptType* URISpace;
 
 public:
 
@@ -178,6 +173,13 @@ public:
     * @return true if it was treated as URI.
     */
 	bool IsURI(R::RString& str);
+
+	/**
+	 * Look if a character is a separator or not.
+    * @param car            Character to verofy.
+    * @return true if it is a separator.
+    */
+	inline bool IsSeperator(const R::RChar& car);
 
 	/**
 	 * This method is called each time the analyzer treat a character.
