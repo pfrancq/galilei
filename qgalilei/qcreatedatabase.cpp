@@ -27,12 +27,6 @@
 
 
 
-//------------------------------------------------------------------------------
-// include files for current project
-#include <qsessionprogress.h>
-#include <qcreatedatabase.h>
-
-
 //-----------------------------------------------------------------------------
 // include files for R/GALILEI
 #include <rqt.h>
@@ -47,11 +41,14 @@ using namespace std;
 //-----------------------------------------------------------------------------
 // include files for Qt
 #include <QMessageBox>
+#include <QDialog>
 
 
 //-----------------------------------------------------------------------------
 // include files for current application
 #include <qgalileiwin.h>
+#include <qsessionprogress.h>
+#include <qcreatedatabase.h>
 
 
 
@@ -98,14 +95,14 @@ RString QCreateDB::GetConceptType(tConceptCat cat,const RString& name,const RStr
 void QCreateDB::DoIt(void)
 {
 	// Create the database
-	setLabelText("Database structure created");
+	WriteStr("Database structure created");
 	RDbMySQL::Create(Info->Name,Info->Host,Info->User,Info->Pwd);
 	RDbMySQL Db(Info->Name,Info->Host,Info->User,Info->Pwd,"utf8");
- 	setLabelText("Dump database model");
+ 	WriteStr("Dump database model");
  	Db.RunSQLFile(Info->DbSchema);
 
 	// Create Languages
- 	setLabelText("Insert the language stopwords");
+ 	WriteStr("Insert the language stopwords");
  	RCursor<GPlugInFactory> Langs(GALILEIApp->GetFactories("Lang"));
  	RContainer<RString,true,false> Stops(200);
  	for(Langs.Start();!Langs.End();Langs.Next())
@@ -185,7 +182,8 @@ void QCreateDatabase::run(void)
 		Pwd=FromQString(password->text());
 		DbSchema=FromQString(URL->text());
 		ConfigDir=R::FromQString(ConfigPath->text());
-		QCreateDB(Win,this).run();
+		QCreateDB Task(Win,this);
+		QSessionProgress::execute(Task);
 	}
 	catch(GException& e)
 	{

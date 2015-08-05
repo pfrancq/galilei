@@ -103,12 +103,14 @@ IF(WIN32)
 	TARGET_LINK_LIBRARIES(qgalilei
 						"C:/Users/Pascal/prj/r/build/rcore/librcore.a"
 						"C:/Users/Pascal/prj/r/build/rcore/librcoreqt.a"
+						"C:/Users/Pascal/prj/r/build/rcore/librprg.a"
+						"C:/Users/Pascal/prj/r/build/rcore/librprgqt.a"
 						${QT_LIBRARIES} pthread iconv
 						"C:/Program Files/MySQL/MySQL Connector C 6.1/lib/libmysql.lib"
 						"C:/Program Files/MySQL/MySQL Connector C 6.1/lib/vs11/mysqlclient.lib"
 						C:/curl/lib/libcurl.a C:/curl/lib/libcurldll.a)
 ELSE(WIN32)
-	TARGET_LINK_LIBRARIES(qgalilei rcore rcoreqt rmath galilei galileiqt ${QT_LIBRARIES})
+	TARGET_LINK_LIBRARIES(qgalilei rcore rcoreqt rprg rprgqt rmath galilei galileiqt ${QT_LIBRARIES})
 ENDIF(WIN32)
 
 #KDE4_ADD_EXECUTABLE(qgalilei ${QGALILEI_SOURCES})

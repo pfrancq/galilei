@@ -42,6 +42,7 @@
 //-----------------------------------------------------------------------------
 // include files for Qt/KDE
 #include <QProgressDialog>
+#include <QThread>
 
 
 //-----------------------------------------------------------------------------
@@ -54,9 +55,19 @@ class QGALILEIWin;
 * The QSessionProgressDlg provides a generic task for doing something in the
 * session.
 */
-class QSessionProgress : public QProgressDialog, public GALILEI::GSlot
+class QSessionProgress : public QThread /*QProgressDialog*/, public GALILEI::GSlot
 {
 		Q_OBJECT
+
+		/**
+		 * Everything works find?
+		 */
+		bool OK;
+
+		/**
+		 * Title of the task to execute.
+		 */
+		QString Title;
 
 protected:
 
@@ -73,12 +84,33 @@ protected:
 public:
 
 	/**
+	 * Execute the thread and show the dialog box.
+	 * @task                 Task to execute.
+    * @return true of everything works fine.
+    */
+	static bool execute(QSessionProgress& task);
+
+signals:
+
+	/**
+	* Change the text of the label.
+   * @param text            Text to show.
+   */
+	void setLabelText(const QString& text);
+
+	/**
+	* Change the label of the button.
+	* @param text            Text to show.
+	*/
+	void setCancelButtonText(const QString& text);
+
+protected:
+
+	/**
 	 * Main run of the thread.
 	 * @see DoIt.
 	 */
-	bool run(void);
-
-private:
+	virtual void run(void);
 
 	/**
 	 * Do the real task. This is the method to overload for child classes.

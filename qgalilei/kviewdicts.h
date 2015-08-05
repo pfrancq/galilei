@@ -116,9 +116,23 @@ public:
 private:
 
 	/**
-	 * Build a string representing a concept.
+	* Build a string representing a concept.
+	* @param concept        Concept for which the statements must be build.
 	*/
-	QString BuildConcept(GConcept* concept);
+	QString buildConcept(GConcept* concept);
+
+	/**
+	* Build a string representing an object.
+	* @param obj             Object for which the statements must be build.
+	*/
+	QString buildObject(GObject* obj);
+
+	/**
+	 * Build some statements for a given concept.
+    * @param concept        Concept for which the statements must be build.
+    * @param what           What kind of statements.
+    */
+	void buildStatements(GConcept* concept,tStatementElement what);
 
 protected slots:
 
@@ -135,7 +149,7 @@ protected slots:
 	void selectDict(QTreeWidgetItem* item,int col);
 
 	/**
-	* a given concept was selected.
+	* A given concept was selected.
 	* @param item            Item.
 	* @param col             Column.
 	*/

@@ -137,7 +137,8 @@ void KViewProfile::updateCommunity(void)
 //-----------------------------------------------------------------------------
 void KViewProfile::ComputeProfile(void)
 {
-	QComputeProfile(Win,Profile).run();
+	QComputeProfile Task(Win,Profile);
+	QSessionProgress::execute(Task);
 	updateProfile();
 }
 

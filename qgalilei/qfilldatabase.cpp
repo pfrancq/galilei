@@ -130,7 +130,7 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent,int depth)
 	depth++;
 	RDir Dir(uri);
 	Dir.Open(RIO::Read);
-	setLabelText(ToQString(uri.GetPath()));
+	WriteStr(uri.GetPath());
 	RCursor<RFile> Files(Dir.GetEntries());
 	for(Files.Start();!Files.End();Files.Next())
 	{
@@ -168,7 +168,7 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent,int depth)
 			if(!InDir)
 			{
 				InDir=true;
-			//	setLabelText(ToQString(uri.GetPath()));
+			//	WriteStr(ToQString(uri.GetPath()));
 			}
 
 			// Must be a normal document
@@ -242,7 +242,8 @@ void QFillDatabase::run(void)
 			Lang=theLangs.GetPtr(Language->currentText())->Lang;
 		DefaultMIME=FromQString(DefaultMIMEType->text());
 		Categorized=Subjects->isChecked();
-		QImportDocs(Win,this).run();
+		QImportDocs Task(Win,this);
+		QSessionProgress::execute(Task);
 	}
 }
 

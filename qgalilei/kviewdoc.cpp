@@ -232,7 +232,8 @@ void KViewDoc::update(void)
 //-----------------------------------------------------------------------------
 void KViewDoc::AnalyzeDoc(void)
 {
-	if(QAnalyzeDoc(Win,Document).run())
+	QAnalyzeDoc Task(Win,Document);
+	if(QSessionProgress::execute(Task))
 		update();
 }
 

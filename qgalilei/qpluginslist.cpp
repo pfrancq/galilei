@@ -30,6 +30,7 @@
 //-----------------------------------------------------------------------------
 // include files for Qt/KDE
 #include <QtGui/QTreeWidget>
+#include <QDialog>
 #include <qsessionprogress.h>
 
 
@@ -450,7 +451,7 @@ public:
 		: QSessionProgress(win,"Reset Plug-In"), PlugIn(plugin) {}
 	virtual void DoIt(void)
 	{
-	 	setLabelText("Reset the plug-in '"+ToQString(PlugIn->GetName())+"'");
+	 	WriteStr("Reset the plug-in '"+PlugIn->GetName()+"'");
 		PlugIn->Reset();
 	}
 };
@@ -462,7 +463,8 @@ void QPlugInsList::DoReset(QListWidget* list)
 	if(!list->currentItem()) return;
 	QPlugIn* f=dynamic_cast<QPlugIn*>(list->currentItem());
 	if(!f) return;
-	QReset(0,f->PlugIn->GetPlugIn()).run();
+	QReset Task(0,f->PlugIn->GetPlugIn());
+	QSessionProgress::execute(Task);
 }
 
 

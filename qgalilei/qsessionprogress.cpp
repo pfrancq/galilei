@@ -73,6 +73,8 @@ using namespace std;
 #include <QtGui/QPushButton>
 #include <QtGui/QMessageBox>
 #include <QtGui/QLayout>
+#include <QProgressBar>
+#include <QProgressDialog>
 
 
 //-----------------------------------------------------------------------------
@@ -91,74 +93,90 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 QSessionProgress::QSessionProgress(QGALILEIWin* win,const QString& title)
-	: QProgressDialog(win), Win(win)
+	: Win(win), Title(title)
 {
-	setWindowTitle(title);
-	setAutoClose(false);
-	setAutoReset(false);
-	setWindowModality(Qt::WindowModal);
-	setMinimumSize(380,0);
 }
 
 
 //-----------------------------------------------------------------------------
-bool QSessionProgress::run(void)
+bool QSessionProgress::execute(QSessionProgress& task)
+{
+	task.OK=false;
+	QProgressDialog Dialog(task.Win);
+	Dialog.setWindowTitle(task.Title);
+	Dialog.setAutoClose(false);
+	Dialog.setAutoReset(false);
+	Dialog.setWindowModality(Qt::WindowModal);
+	QProgressBar* Bar(new QProgressBar(&Dialog));
+	Dialog.setBar(Bar);
+	Bar->setVisible(false);
+	Dialog.setMinimumDuration(0);
+	Dialog.setLabelText("Start "+task.Title);
+	Dialog.show();
+	Dialog.raise();
+	Dialog.activateWindow();
+	connect(&task,SIGNAL(setLabelText(const QString&)),&Dialog,SLOT(setLabelText(const QString&)));
+	connect(&task,SIGNAL(setCancelButtonText(const QString&)),&Dialog,SLOT(setCancelButtonText(const QString&)));
+	task.run();
+	Dialog.exec();
+	return(task.OK);
+}
+
+
+//-----------------------------------------------------------------------------
+void QSessionProgress::run(void)
 {
 	QApplication::setOverrideCursor(Qt::WaitCursor);
-	setValue(0);
-	show();
-	QApplication::processEvents();
-	bool OK(false);
 	try
 	{
 		DoIt();
-		setLabelText("Finish");
-		setCancelButtonText("OK");
-		setValue(maximum());
+		emit setLabelText("Finish");
+		emit setCancelButtonText("OK");
 		OK=true;
 		QApplication::setOverrideCursor(Qt::ArrowCursor);
 	}
 	catch(GException& e)
 	{
 		QApplication::setOverrideCursor(Qt::ArrowCursor);
-		setCancelButtonText("Error");
-		setLabelText(QWidget::trUtf8(e.GetMsg()));
+		emit setCancelButtonText("Error");
+		emit setLabelText(QWidget::trUtf8(e.GetMsg()));
 	}
 	catch(RException& e)
 	{
 		QApplication::setOverrideCursor(Qt::ArrowCursor);
-		setCancelButtonText("Error");
-		setLabelText(QWidget::trUtf8(e.GetMsg()));
+		emit setCancelButtonText("Error");
+		emit setLabelText(QWidget::trUtf8(e.GetMsg()));
 	}
 	catch(std::exception& e)
 	{
 		QApplication::setOverrideCursor(Qt::ArrowCursor);
-		setCancelButtonText("Error");
-		setLabelText(QWidget::trUtf8(e.what()));
+		emit setCancelButtonText("Error");
+		emit setLabelText(QWidget::trUtf8(e.what()));
 	}
 	catch(...)
 	{
 		QApplication::setOverrideCursor(Qt::ArrowCursor);
-		setCancelButtonText("Error");
-		setLabelText(QWidget::trUtf8("Unknown"));
+		emit setCancelButtonText("Error");
+		emit setLabelText(QWidget::trUtf8("Unknown"));
 	}
-	OK=OK&&(!wasCanceled());
-	exec();
-	return(OK);
+	QApplication::processEvents();
+	//OK=OK&&(!wasCanceled());
+	//exec();
+	//return(OK);
 }
 
 
 //------------------------------------------------------------------------------
 void QSessionProgress::StartJob(const R::RString& job)
 {
-	setLabelText(ToQString(job));
+	WriteStr(job);
 }
 
 
 //------------------------------------------------------------------------------
 void QSessionProgress::EndJob(const R::RString& msg)
 {
-	setLabelText(ToQString(msg));
+	WriteStr(msg);
 }
 
 
@@ -166,7 +184,7 @@ void QSessionProgress::EndJob(const R::RString& msg)
 void QSessionProgress::NextGroupLang(const GLang* lang)
 {
 	if(lang)
-		setLabelText("Treat "+ToQString(lang->GetLangName())+" language");
+		WriteStr("Treat "+lang->GetLangName()+" language");
 }
 
 
@@ -174,7 +192,7 @@ void QSessionProgress::NextGroupLang(const GLang* lang)
 void QSessionProgress::NextConceptType(const GConceptType* type)
 {
 	if(type)
-		setLabelText("Treat concept type '"+ToQString(type->GetName())+"'");
+		WriteStr("Treat concept type '"+type->GetName()+"'");
 }
 
 
@@ -183,22 +201,22 @@ void QSessionProgress::NextDoc(const GDoc* doc)
 {
 	if(doc)
 	{
-		QString DocName;
+		RString DocName;
 		if(doc->GetTitle().GetLen()>80)
-			DocName=ToQString(doc->GetTitle().Mid(0,20))+"..."+ToQString(doc->GetTitle().Mid(doc->GetTitle().GetLen()-57,57));
+			DocName=doc->GetTitle().Mid(0,20)+"..."+doc->GetTitle().Mid(doc->GetTitle().GetLen()-57,57);
 		else
 		{
 			if(doc->GetName().GetLen())
-				DocName=ToQString(doc->GetTitle());
+				DocName=doc->GetTitle();
 			else
 			{
 				if(doc->GetName().GetLen()>80)
-					DocName=ToQString(doc->GetName().Mid(0,20))+"..."+ToQString(doc->GetName().Mid(doc->GetName().GetLen()-57,57));
+					DocName=doc->GetName().Mid(0,20)+"..."+doc->GetName().Mid(doc->GetName().GetLen()-57,57);
 				else
-					DocName=ToQString(doc->GetName());
+					DocName=doc->GetName();
 			}
 		}
-		setLabelText("Treat document '"+DocName+"'");
+		WriteStr("Treat document '"+DocName+"'");
 	}
 }
 
@@ -206,8 +224,7 @@ void QSessionProgress::NextDoc(const GDoc* doc)
 //-----------------------------------------------------------------------------
 void QSessionProgress::NextProfile(const GProfile* prof)
 {
-	if(prof)
-		setLabelText("Treat profile '"+ToQString(prof->GetName())+"' ("+ToQString(prof->GetUser()->GetFullName())+")");
+	WriteStr("Treat profile '"+prof->GetName()+"' ("+prof->GetUser()->GetFullName()+")");
 }
 
 
@@ -235,14 +252,18 @@ void QSessionProgress::Alert(const R::RString&)
 //------------------------------------------------------------------------------
 void QSessionProgress::WriteStr(const R::RString& str)
 {
-	setLabelText(ToQString(str));
+	// No clue why I have to make the call two times to correctly update the dialog box
+	emit setLabelText(ToQString(str));
+	QApplication::processEvents();
+	emit setLabelText(ToQString(str));
+	QApplication::processEvents();
 }
 
 
 //------------------------------------------------------------------------------
 void QSessionProgress::Interact(void)
 {
-	QCoreApplication::processEvents();
+	qApp->processEvents();
 }
 
 
@@ -256,37 +277,29 @@ void QSessionProgress::Interact(void)
 //-----------------------------------------------------------------------------
 void QCreateSession::DoIt(void)
 {
-	setRange(0,7);
-	setValue(0);
-	setLabelText("Load Concepts, Predicates and Statements ...");
-	Session=GALILEIApp->GetSession(Name,true);
-	setValue(1);
+	WriteStr("Load Concepts, Predicates and Statements ...");
+	Session=GALILEIApp->GetSession(Name,true,this);
 	if(Win->getSession()->MustBreak())
 		return;
-	setLabelText("Load Classes ...");
+	WriteStr("Load Classes ...");
 	Win->getSession()->LoadObjs(pClass);
-	setValue(2);
-	setLabelText("Load Topics ...");
+	WriteStr("Load Topics ...");
 	Win->getSession()->LoadObjs(pTopic);
-	setValue(3);
 	if(Win->getSession()->MustBreak())
 		return;
-	setLabelText("Loading Documents ...");
+	WriteStr("Loading Documents ...");
 	Win->getSession()->LoadObjs(pDoc);
-	setValue(4);
 	if(Win->getSession()->MustBreak())
 		return;
-	setLabelText("Load Communities ...");
+	WriteStr("Load Communities ...");
 	Win->getSession()->LoadObjs(pCommunity);
-	setValue(5);
 	if(Win->getSession()->MustBreak())
 		return;
-	setLabelText("Load Users/Profiles/Feedbacks ...");
+	WriteStr("Load Users/Profiles/Feedbacks ...");
 	Win->getSession()->LoadObjs(pUser);
-	setValue(6);
 	if(Win->getSession()->MustBreak())
 		return;
-	setLabelText("Load Subjects ...");
+	WriteStr("Load Subjects ...");
 	Win->getSession()->LoadObjs(pSubject);
 }
 
@@ -294,7 +307,7 @@ void QCreateSession::DoIt(void)
 //-----------------------------------------------------------------------------
 void QAnalyzeDoc::DoIt(void)
 {
-	setLabelText("Analze '"+ToQString(Doc->GetName())+"'...");
+	WriteStr("Analze '"+Doc->GetName()+"'...");
 	Win->getSession()->AnalyzeDoc(Doc,this);
 }
 
@@ -302,7 +315,7 @@ void QAnalyzeDoc::DoIt(void)
 //-----------------------------------------------------------------------------
 void QIndexDocs::DoIt(void)
 {
-	setLabelText("Index Documents ...");
+	WriteStr("Index Documents ...");
 	Win->getSession()->BuildIndex(static_cast<const GDoc*>(0));
 }
 
@@ -310,7 +323,7 @@ void QIndexDocs::DoIt(void)
 //-----------------------------------------------------------------------------
 void QAnalyzeDocs::DoIt(void)
 {
-	setLabelText("Analyze Documents ...");
+	WriteStr("Analyze Documents ...");
 	Win->getSession()->AnalyzeDocs(this);
 }
 
@@ -318,7 +331,7 @@ void QAnalyzeDocs::DoIt(void)
 //-----------------------------------------------------------------------------
 void QComputeProfiles::DoIt(void)
 {
-	setLabelText("Compute Profiles ...");
+	WriteStr("Compute Profiles ...");
 	Win->getSession()->CalcProfiles(this);
 }
 
@@ -326,7 +339,7 @@ void QComputeProfiles::DoIt(void)
 //-----------------------------------------------------------------------------
 void QComputeProfile::DoIt(void)
 {
-	setLabelText("Compute Profile ...");
+	WriteStr("Compute Profile ...");
 	Win->getSession()->CalcProfile(Profile,0,0,this);
 }
 
@@ -334,7 +347,7 @@ void QComputeProfile::DoIt(void)
 //-----------------------------------------------------------------------------
 void QGroupProfiles::DoIt(void)
 {
-	setLabelText("Groups Profiles ...");
+	WriteStr("Groups Profiles ...");
 	Win->getSession()->GroupProfiles(this);
 }
 
@@ -342,7 +355,7 @@ void QGroupProfiles::DoIt(void)
 //-----------------------------------------------------------------------------
 void QGroupDocs::DoIt(void)
 {
-	setLabelText("Groups Documents ...");
+	WriteStr("Groups Documents ...");
 	Win->getSession()->GroupDocs(this);
 }
 
@@ -350,7 +363,7 @@ void QGroupDocs::DoIt(void)
 //-----------------------------------------------------------------------------
 void QInitSimulation::DoIt(void)
 {
-	setLabelText("Start a Simulation ...");
+	WriteStr("Start a Simulation ...");
 	Win->getSession()->GetSimulator()->StartSimulation();
 }
 
@@ -358,7 +371,7 @@ void QInitSimulation::DoIt(void)
 //-----------------------------------------------------------------------------
 void QCreateIdealCommunities::DoIt(void)
 {
-	setLabelText("Create Ideal Communities ...");
+	WriteStr("Create Ideal Communities ...");
 	Win->getSession()->GetSimulator()->BuildIdealCommunities();
 }
 
@@ -366,7 +379,7 @@ void QCreateIdealCommunities::DoIt(void)
 //-----------------------------------------------------------------------------
 void QCreateIdealTopics::DoIt(void)
 {
-	setLabelText("Create Ideal Topics ...");
+	WriteStr("Create Ideal Topics ...");
 	Win->getSession()->GetSimulator()->BuildIdealTopics();
 }
 
@@ -374,7 +387,7 @@ void QCreateIdealTopics::DoIt(void)
 //-----------------------------------------------------------------------------
 void QCreateIdealTopicsClasses::DoIt(void)
 {
-	setLabelText("Create Ideal Topics using classes ...");
+	WriteStr("Create Ideal Topics using classes ...");
 	Win->getSession()->GetSimulator()->BuildIdealLeafTopics();
 }
 
@@ -382,7 +395,7 @@ void QCreateIdealTopicsClasses::DoIt(void)
 //-----------------------------------------------------------------------------
 void QCreateIdealClasses::DoIt(void)
 {
-	setLabelText("Create Ideal Classes ...");
+	WriteStr("Create Ideal Classes ...");
 	Win->getSession()->GetSimulator()->BuildIdealClasses();
 }
 
@@ -390,7 +403,7 @@ void QCreateIdealClasses::DoIt(void)
 //-----------------------------------------------------------------------------
 void QCreateIdealClassesDocs::DoIt(void)
 {
-	setLabelText("Create Ideal Classes using documents ...");
+	WriteStr("Create Ideal Classes using documents ...");
 	Win->getSession()->GetSimulator()->BuildIdealDocsClasses();
 }
 
@@ -398,7 +411,7 @@ void QCreateIdealClassesDocs::DoIt(void)
 //-----------------------------------------------------------------------------
 void QRepairSubjects::DoIt(void)
 {
-	setLabelText("Repair Subjects ...");
+	WriteStr("Repair Subjects ...");
 	Win->getSession()->Repair();
 }
 
@@ -406,7 +419,7 @@ void QRepairSubjects::DoIt(void)
 //-----------------------------------------------------------------------------
 void QFeedbackCycle::DoIt(void)
 {
-	setLabelText("Make feedbacks ...");
+	WriteStr("Make feedbacks ...");
 	Win->getSession()->GetSimulator()->ShareDocuments();
 }
 
@@ -414,7 +427,7 @@ void QFeedbackCycle::DoIt(void)
 //-----------------------------------------------------------------------------
 void QAssessmentCycle::DoIt(void)
 {
-	setLabelText("Make assessments ...");
+	WriteStr("Make assessments ...");
 	Win->getSession()->GetSimulator()->AddAssessments();
 }
 
@@ -422,7 +435,7 @@ void QAssessmentCycle::DoIt(void)
 //-----------------------------------------------------------------------------
 void QComputeTrust::DoIt(void)
 {
-	setLabelText("Determine trust ...");
+	WriteStr("Determine trust ...");
 	Win->getSession()->ComputeTrust();
 }
 
@@ -430,7 +443,7 @@ void QComputeTrust::DoIt(void)
 //-----------------------------------------------------------------------------
 void QComputeSugs::DoIt(void)
 {
-	setLabelText("Make suggestions ...");
+	WriteStr("Make suggestions ...");
 	Win->getSession()->ComputeSugs();
 }
 
@@ -438,7 +451,7 @@ void QComputeSugs::DoIt(void)
 //-----------------------------------------------------------------------------
 void QRunTool::DoIt(void)
 {
-	setLabelText("Run tool '"+ToQString(Tool)+"' of '"+ToQString(List)+"'...");
+	WriteStr("Run tool '"+Tool+"' of '"+List+"'...");
 	Win->getSession()->RunTool(Tool,List,this);
 }
 
@@ -446,15 +459,14 @@ void QRunTool::DoIt(void)
 //-----------------------------------------------------------------------------
 void QComputeAll::DoIt(void)
 {
-	setLabelText("Analyze Documents ...");
+	WriteStr("Analyze Documents ...");
 	Win->getSession()->AnalyzeDocs(this);
-	if(wasCanceled())
-		return;
-	setLabelText("Compute Profiles ...");
+/*	if(wasCanceled())
+		return;*/
+	WriteStr("Compute Profiles ...");
 	Win->getSession()->CalcProfiles(this);
-	if(wasCanceled())
-		return;
-	setLabelText("Groups Profiles ...");
+/*	if(wasCanceled())
+		return;*/
+	WriteStr("Groups Profiles ...");
 	Win->getSession()->GroupProfiles(this);
 }
-

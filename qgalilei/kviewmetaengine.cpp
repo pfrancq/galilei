@@ -145,10 +145,13 @@ void KViewMetaEngine::QueryEngine(void)
 		ResLabel->setText("<b> Enter first a query!</b>");
 		return;
 	}
-	if(QQuery(Win,TxtQuery->text()).run())
+	QQuery Task(Win,TxtQuery->text());
+	if(QSessionProgress::execute(Task))
 	{
+		QApplication::setOverrideCursor(Qt::WaitCursor);
 		GMetaEngine* Meta(GALILEIApp->GetCurrentPlugIn<GMetaEngine>("MetaEngine"));
 		Results->Set(QGObjectsList::Docs,Meta,NbRes->value());
 		ResLabel->setText("<b>"+QString::number(Meta->GetNbResults())+" Results displayed.</b>");
+		QApplication::setOverrideCursor(Qt::ArrowCursor);
 	}
 }

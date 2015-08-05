@@ -38,7 +38,6 @@
 // include files for R/GALILEI Projects
 #include <rqt.h>
 #include <gconcept.h>
-#include <gpredicate.h>
 #include <gstatement.h>
 #include <ggalileiapp.h>
 #include <gsession.h>
@@ -109,10 +108,43 @@ public:
 		//setIcon(0,KIconLoader::global()->loadIcon("dashboard-show",KIconLoader::Small));
 	}
 
-	QGObject(QTreeWidget* parent,GStatement* statement,const QString& str1,const QString& str2,const QString& str3)
-		: QTreeWidgetItem(parent,QStringList()<<str1<<str2<<str3), Type(otStatement)
+	QGObject(QTreeWidget* parent,GStatement* statement,const QString& subject,const QString& predicate,const QString& value)
+		: QTreeWidgetItem(parent,QStringList()<<QString::number(statement->GetId())<<subject<<predicate<<value<<QString::number(statement->GetWeight())), Type(otStatement)
 	{
 		Obj.Statement=statement;
+	}
+
+private:
+
+	bool operator<(const QTreeWidgetItem &other) const
+	{
+		switch(Type)
+		{
+			case otConceptType:
+			{
+				int column(treeWidget()->sortColumn());
+				return(text(column).toLower()<other.text(column).toLower());
+			}
+			case otConcept:
+			{
+				int column(treeWidget()->sortColumn());
+				if(column!=1)
+					return(text(column).toUInt()<other.text(column).toUInt());
+				return(text(column).toLower()<other.text(column).toLower());
+			}
+			case otStatement:
+			{
+				int column(treeWidget()->sortColumn());
+				if(column==4)
+					return(text(column).toDouble()<other.text(column).toDouble());
+				else if(column==0)
+					return(text(column).toUInt()<other.text(column).toUInt());
+				return(text(column).toLower()<other.text(column).toLower());
+			}
+
+			default:
+				return(text(0).toLower()<other.text(0).toLower());
+		}
 	}
 };
 
@@ -137,12 +169,10 @@ public:
 	{
 		// Go trough each language and create a Item.
 		RCursor<GConceptType> Types(Win->getSession()->GetObjs(pConceptType));
-		setRange(0,Types.GetNb());
 		for(Types.Start();!Types.End();Types.Next())
 		{
 			new QGObject(Dicts,Types());
-			setLabelText(ToQString(Types()->GetDescription()));
-			setValue(Types.GetPos()+1);
+			WriteStr(Types()->GetDescription());
 		}
 	}
 };
@@ -183,7 +213,7 @@ void KViewDicts::create(void)
 	Dicts->resizeColumnToContents(0);
 	Dicts->resizeColumnToContents(1);
 	//connect(&Task,SIGNAL(finish()),this,SLOT(update()));
-	Task.run();
+	QSessionProgress::execute(Task);
 	update();
 }
 
@@ -232,15 +262,11 @@ void KViewDicts::update(void)
 void KViewDicts::selectDict(QTreeWidgetItem* item,int)
 {
 	GMeasure* Weighting(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Features Evaluation",0));
-/*	if(!Weighting)
-	{
-		QMessageBox::critical(0, QWidget::tr("QGALILEI"),QWidget::trUtf8("No plug-in selected for \"Features Evaluation\""),QMessageBox::Ok);
-		return;
-	}*/
-
 	QGObject* ptr(dynamic_cast<QGObject*>(item));
 	if(!ptr)
 		return;
+
+	QApplication::setOverrideCursor(Qt::WaitCursor);
 	Dict->clear();
 	CurDict=ptr->Obj.Dict;
 
@@ -272,13 +298,33 @@ void KViewDicts::selectDict(QTreeWidgetItem* item,int)
           }
        }
     }
+
+	 QApplication::setOverrideCursor(Qt::ArrowCursor);
 }
 
 
-////-----------------------------------------------------------------------------
-QString KViewDicts::BuildConcept(GConcept* concept)
+//-----------------------------------------------------------------------------
+QString KViewDicts::buildConcept(GConcept* concept)
 {
 	return("\""+ToQString(concept->GetName())+"\" ("+QString::number(concept->GetId())+","+QString::number(concept->GetType()->GetId())+")");
+}
+
+
+//-----------------------------------------------------------------------------
+QString KViewDicts::buildObject(GObject* obj)
+{
+	return("\""+ToQString(obj->GetName())+"\" ("+QString::number(obj->GetId())+","+ToQString(GetObjType(obj->GetObjType(),false,false))+")");
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewDicts::buildStatements(GConcept* concept,tStatementElement what)
+{
+	RCursor<GStatement> Statement(concept->GetObjs(pStatement,what));
+	for(Statement.Start();!Statement.End();Statement.Next())
+	{
+		new QGObject(Statements,Statement(),buildObject(Statement()->GetSubject()),buildObject(Statement()->GetPredicate()),buildObject(Statement()->GetValue()));
+	}
 }
 
 
@@ -290,16 +336,17 @@ void KViewDicts::selectConcept(QTreeWidgetItem* item,int)
 		return;
 	if((!ptr)||(!CurDict))
 		return;
-//	GConcept* concept(ptr->Obj.Concept);
+
+	QApplication::setOverrideCursor(Qt::WaitCursor);
+	GConcept* concept(ptr->Obj.Concept);
+
+	// Show the corresponding statements
 	Statements->clear();
-//	Rels.Clear();
-//	GALILEIApp->GetSession()->GetRelations(Rels,concept,cNoRef,0,true);
-//	RCursor<GRelation> Cur(Rels);
-//	for(Cur.Start();!Cur.End();Cur.Next())
-//		new QGObject(Relations,Cur(),
-//				 BuildConcept(Cur()->GetSubject()),
-//				 ToQString(GALILEIApp->GetSession()->GetPredicate(Cur()->GetType(),false)->GetName()),
-//				 BuildConcept(Cur()->GetObject()));
+	buildStatements(concept,seSubject);
+	buildStatements(concept,sePredicate);
+	buildStatements(concept,seValue);
+
+	QApplication::setOverrideCursor(Qt::ArrowCursor);
 }
 
 
@@ -326,7 +373,7 @@ void KViewDicts::delConcept(void)
 	QGObject* ptr(dynamic_cast<QGObject*>(Dict->currentItem()));
 	if(!ptr) return;
 	GConcept* concept(ptr->Obj.Concept);
-	if(QMessageBox::warning(this,tr("QGALILEI"),"Do you want to delete the concept "+BuildConcept(concept)+"?",QMessageBox::Yes|QMessageBox::Cancel)==QMessageBox::Cancel)
+	if(QMessageBox::warning(this,tr("QGALILEI"),"Do you want to delete the concept "+buildConcept(concept)+"?",QMessageBox::Yes|QMessageBox::Cancel)==QMessageBox::Cancel)
 	  return;
 	delete ptr;
 	Win->getSession()->DeleteObj(concept);

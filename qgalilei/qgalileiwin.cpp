@@ -247,7 +247,8 @@ void QGALILEIWin::sessionConnect(void)
    SessionName=FromQString(QInputDialog::getText(this,tr("Connect to a session"),tr("Session name:"),QLineEdit::Normal,ToQString(App->GetLastSession()),&ok));
    if((!ok)||(SessionName.IsEmpty()))
 		return;
-	if(QCreateSession(this,Session,SessionName).run())
+	QCreateSession Task(this,Session,SessionName);
+	if(QSessionProgress::execute(Task))
 	{
 		sessionConnected();
 		App->SetLastSession(SessionName);
@@ -277,7 +278,8 @@ void QGALILEIWin::sessionDisconnect(void)
 //-----------------------------------------------------------------------------
 void QGALILEIWin::computeSession(void)
 {
-	if(QComputeAll(this).run())
+	QComputeAll Task(this);
+	if(QSessionProgress::execute(Task))
 	{
 		emit docsChanged();
 		emit topicsChanged();
@@ -346,7 +348,8 @@ void QGALILEIWin::runTool(void)
 		return;
 	App->SetLastTool(Choose.GetChoice());
 
-	QRunTool(this,App->GetLastTool(),App->GetLastToolCat()).run();
+	QRunTool Task(this,App->GetLastTool(),App->GetLastToolCat());
+	QSessionProgress::execute(Task);
 }
 
 
@@ -416,7 +419,7 @@ void QGALILEIWin::exportDocDecs(void)
 			{
 				for(size_t i=lround(Ref()->GetWeight())+1;--i;)
 				{
-					file<<Session->GetStorage()->LoadConcept(Ref()->GetId());
+					file<<Session->GetStorage()->LoadObj(pConcept,Ref()->GetId());
 				}
 				file<<endl;
 			}
@@ -431,7 +434,8 @@ void QGALILEIWin::exportDocDecs(void)
 //-----------------------------------------------------------------------------
 void QGALILEIWin::indexDocs(void)
 {
-	QIndexDocs(this).run();
+	QIndexDocs Task(this);
+	QSessionProgress::execute(Task);
 }
 
 
@@ -448,7 +452,8 @@ void QGALILEIWin::clearDocs(void)
 //-----------------------------------------------------------------------------
 void QGALILEIWin::analyzeDocs(void)
 {
-	if(QAnalyzeDocs(this).run())
+	QAnalyzeDocs Task(this);
+	if(QSessionProgress::execute(Task))
 		updateWins<KViewDoc>();
 }
 
@@ -546,7 +551,8 @@ void QGALILEIWin::clearTopics(void)
 void QGALILEIWin::groupDocs(void)
 {
 	QApplication::setOverrideCursor(Qt::WaitCursor);
-	QGroupDocs(this).run();
+	QGroupDocs Task(this);
+	QSessionProgress::execute(Task);
 	emit topicsChanged();
 	updateWins<KViewTopic>();
 	QApplication::setOverrideCursor(Qt::ArrowCursor);
@@ -603,7 +609,8 @@ void QGALILEIWin::showProfile(GProfile* profile)
 //-----------------------------------------------------------------------------
 void QGALILEIWin::computeProfiles(void)
 {
-	QComputeProfiles(this).run();
+	QComputeProfiles Task(this);
+	QSessionProgress::execute(Task);
 	emit profilesChanged();
 	updateWins<KViewProfile>();
 }
@@ -650,7 +657,8 @@ void QGALILEIWin::showCommunity(GCommunity* community)
 //-----------------------------------------------------------------------------
 void QGALILEIWin::groupProfiles(void)
 {
-	QGroupProfiles(this).run();
+	QGroupProfiles Task(this);
+	QSessionProgress::execute(Task);
 	emit communitiesChanged();
 	updateWins<KViewCommunity>();
 }
@@ -674,28 +682,32 @@ void QGALILEIWin::queryMetaEngine(void)
 //-----------------------------------------------------------------------------
 void QGALILEIWin::computeTrust(void)
 {
-	QComputeTrust(this).run();
+	QComputeTrust Task(this);
+	QSessionProgress::execute(Task);
 }
 
 
 //-----------------------------------------------------------------------------
 void QGALILEIWin::computeSugs(void)
 {
-	QComputeSugs(this).run();
+	QComputeSugs Task(this);
+	QSessionProgress::execute(Task);
 }
 
 
 //-----------------------------------------------------------------------------
 void QGALILEIWin::repairSubjects(void)
 {
-	QRepairSubjects(this).run();
+	QRepairSubjects Task(this);
+	QSessionProgress::execute(Task);
 }
 
 
 //-----------------------------------------------------------------------------
 void QGALILEIWin::initSimulation(void)
 {
-	QInitSimulation(this).run();
+	QInitSimulation Task(this);
+	QSessionProgress::execute(Task);
 	emit docsChanged();
 	emit topicsChanged();
 	emit profilesChanged();
@@ -706,7 +718,8 @@ void QGALILEIWin::initSimulation(void)
 //-----------------------------------------------------------------------------
 void QGALILEIWin::createIdealTopics(void)
 {
-	QCreateIdealTopics(this).run();
+	QCreateIdealTopics Task(this);
+	QSessionProgress::execute(Task);
 	emit topicsChanged();
 	updateWins<KViewTopics>();
 }
@@ -715,7 +728,8 @@ void QGALILEIWin::createIdealTopics(void)
 //-----------------------------------------------------------------------------
 void QGALILEIWin::createIdealTopicsClasses(void)
 {
-	QCreateIdealTopicsClasses(this).run();
+	QCreateIdealTopicsClasses Task(this);
+	QSessionProgress::execute(Task);
 	emit topicsChanged();
 	updateWins<KViewTopics>();
 }
@@ -724,7 +738,8 @@ void QGALILEIWin::createIdealTopicsClasses(void)
 //-----------------------------------------------------------------------------
 void QGALILEIWin::createIdealClasses(void)
 {
-	QCreateIdealClasses(this).run();
+	QCreateIdealClasses Task(this);
+	QSessionProgress::execute(Task);
 	emit topicsChanged();
 	updateWins<KViewClasses>();
 }
@@ -733,7 +748,8 @@ void QGALILEIWin::createIdealClasses(void)
 //-----------------------------------------------------------------------------
 void QGALILEIWin::createIdealClassesDocs(void)
 {
-	QCreateIdealClassesDocs(this).run();
+	QCreateIdealClassesDocs Task(this);
+	QSessionProgress::execute(Task);
 	emit topicsChanged();
 	updateWins<KViewClasses>();
 }
@@ -742,7 +758,8 @@ void QGALILEIWin::createIdealClassesDocs(void)
 //-----------------------------------------------------------------------------
 void QGALILEIWin::createIdealCommunities(void)
 {
-	QCreateIdealCommunities(this).run();
+	QCreateIdealCommunities Task(this);
+	QSessionProgress::execute(Task);
 	emit communitiesChanged();
 	updateWins<KViewCommunities>();
 }
@@ -751,7 +768,8 @@ void QGALILEIWin::createIdealCommunities(void)
 //-----------------------------------------------------------------------------
 void QGALILEIWin::feedbackCycle(void)
 {
-	QFeedbackCycle(this).run();
+	QFeedbackCycle Task(this);
+	QSessionProgress::execute(Task);
 	emit profilesChanged();
 	updateWins<KViewProfile>();
 }
@@ -760,7 +778,8 @@ void QGALILEIWin::feedbackCycle(void)
 //-----------------------------------------------------------------------------
 void QGALILEIWin::assessmentCycle(void)
 {
-	QAssessmentCycle(this).run();
+	QAssessmentCycle Task(this);
+	QSessionProgress::execute(Task);
 	emit profilesChanged();
 	updateWins<KViewProfile>();
 }
