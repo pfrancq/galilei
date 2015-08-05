@@ -108,9 +108,10 @@ protected:
 	/**
 	* Count the number of rows of a table.
 	* @param tbl            Table to analyze.
+	* @param condition      Condition.
 	* @returns Number of rows.
 	*/
-	virtual size_t GetCount(R::RString tbl);
+	virtual size_t GetCount(const R::RString& tbl,const R::RString& condition=R::RString::Null);
 
 	/**
 	* Count the maximal value for a field of a table.
@@ -118,7 +119,7 @@ protected:
 	* @param fld            Field to analyze.
 	* @returns Maximal value.
 	*/
-	size_t GetMax(R::RString tbl,R::RString fld);
+	size_t GetMax(const R::RString& tbl,const R::RString& fld);
 
 	/**
 	* Transform a MySQL date into a C string, in particular when the
@@ -126,7 +127,7 @@ protected:
 	* @param date           MySQL date.
 	* @return string.
 	*/
-	R::RString GetMySQLToDate(R::RString date);
+	R::RString GetMySQLToDate(const R::RString& date);
 
 	/**
 	 * Return a SQL string for a given char.
@@ -227,8 +228,9 @@ public:
 
 	/**
 	* Load the concept types from the database.
+	* @param obj             Pseudo-parameter.
 	*/
-	virtual void LoadConceptTypes(void);
+	virtual void LoadObjs(const GConceptType* obj);
 
 	/**
 	* Assign an identifier to a new concept type.
@@ -237,9 +239,10 @@ public:
 	virtual void AssignId(GConceptType* type);
 
 	/**
-	* Loading the all concepts.
+	* Loading the all concepts.3
+	* @param obj            Pseudo-parameter.
 	*/
-	virtual void LoadConcepts(void);
+	virtual void LoadObjs(const GConcept* obj);
 
 	/**
 	* Loading the all concepts of given concept type.
@@ -251,26 +254,28 @@ public:
 	* Delete a data from the dictionary.
 	* @param concept         Concept.
 	*/
-	virtual void DeleteConcept(GConcept* concept);
+	virtual void DeleteObj(GConcept* concept);
 
 	/**
 	* Load the name of specific concept.
+	* @param obj             Pseudo-parameter.
 	* @param id              Identifier of the concept.
 	*/
-	virtual R::RString LoadConcept(size_t id);
+	virtual R::RString LoadObj(const GConcept* obj,size_t id);
 
 	/**
 	* Load the identifier of a specific concept.
+	* @param obj             Pseudo-parameter.
 	* @param name            Name of the concept.
 	* @param type            Type of the concept.
 	*/
-	virtual size_t LoadConcept(const R::RString name,GConceptType* type);
+	virtual size_t LoadObj(const GConcept* obj,const R::RString name,GConceptType* type);
 
 	/**
 	* Save a concept in the database.
 	* @param concept         Concept.
 	*/
-	virtual void SaveConcept(GConcept* concept);
+	virtual void SaveObj(GConcept* concept);
 
 	/**
 	 * Save the index information of a given object type for a given concept.
@@ -301,20 +306,10 @@ public:
 	virtual void ClearRefs(tObjType what);
 
 	/**
-	* Load the predicates from the database.
-	*/
-	virtual void LoadPredicates(void);
-
-	/**
-	* Assign an identifier to a new predicate.
-	* @param predicate       Predicate.
-	*/
-	virtual void AssignId(GPredicate* predicate);
-
-	/**
 	* Load the statements from the database.
+	* @param obj             Pseudo-parameter.
 	*/
-	virtual void LoadStatements(void);
+	virtual void LoadObjs(const GStatement* obj);
 
 	/**
 	* Assign an identifier to a new statement.

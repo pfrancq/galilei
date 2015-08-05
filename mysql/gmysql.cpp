@@ -53,10 +53,8 @@
 #include <gsession.h>
 #include <ggalileiapp.h>
 #include <gconcept.h>
-#include <gconceptlist.h>
 #include <gconcepttype.h>
 #include <gstatement.h>
-#include <gpredicate.h>
 #include <gclass.h>
 #include <gfdbk.h>
 
@@ -76,11 +74,13 @@ GStorageMySQL::GStorageMySQL(GSession* session,GPlugInFactory* fac)
 
 
 //------------------------------------------------------------------------------
-size_t GStorageMySQL::GetCount(RString tbl)
+size_t GStorageMySQL::GetCount(const RString& tbl,const R::RString& condition)
 {
 	RString c;
 	RString sSql("SELECT COUNT(*) FROM "+tbl);
 
+	if(condition!=RString::Null)
+		sSql+=" WHERE "+condition;
 	RQuery Count(Db,sSql);
 	Count.Start();
 	c=Count[0];
@@ -90,7 +90,7 @@ size_t GStorageMySQL::GetCount(RString tbl)
 
 
 //------------------------------------------------------------------------------
-size_t GStorageMySQL::GetMax(RString tbl,RString fld)
+size_t GStorageMySQL::GetMax(const RString& tbl,const RString& fld)
 {
 	RString sSql("SELECT MAX("+fld+") FROM "+tbl);
 	RString c;
@@ -104,7 +104,7 @@ size_t GStorageMySQL::GetMax(RString tbl,RString fld)
 
 
 //------------------------------------------------------------------------------
-RString GStorageMySQL::GetMySQLToDate(RString date)
+RString GStorageMySQL::GetMySQLToDate(const RString& date)
 {
 	if(date.IsEmpty())
 		return("1970-01-01");
@@ -244,15 +244,8 @@ void GStorageMySQL::LoadObjs(const GSubject*)
 {
 	try
 	{
-		// Verify if there are subjects or not -> If yes initialize it.
-		RQuery Is(Db,"SELECT COUNT(*) FROM subjects");
-		Is.Start();
-		size_t Nb(Is[0].ToSizeT());
-		if(!Nb)
-			return;
-		Session->Init(pSubject,Nb);
-
 		// Load the subjects
+		Session->VerifyTab(otSubject,GetCount("subjects"));
 		RQuery sub(Db,"SELECT subjectid,name,used,parent FROM subjects");
 		for(sub.Start();!sub.End();sub.Next())
 		{
@@ -499,10 +492,11 @@ void GStorageMySQL::Clear(tObjType objtype)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::LoadConceptTypes(void)
+void GStorageMySQL::LoadObjs(const GConceptType*)
 {
 	try
 	{
+		Session->VerifyTab(otConceptType,GetCount("concepttypes"));
 		RQuery Types(Db,"SELECT typeid,name,description,catid FROM concepttypes");
 		for(Types.Start();!Types.End();Types.Next())
 			Session->InsertObj(pConceptType,ConceptCat_cast(Types[3].ToChar()),static_cast<char>(atoi(Types[0])),Types[1],Types[2]);
@@ -557,15 +551,15 @@ void GStorageMySQL::AssignId(GConceptType* type)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::LoadConcepts(void)
+void GStorageMySQL::LoadObjs(const GConcept*)
 {
 	try
 	{
-		size_t TermGroup(Session->GetObj(pConceptType,ccText,"TermGroup","Group of terms")->GetId());
+		Session->VerifyTab(otConcept,GetCount("concepts"));
 
 		// Create and insert the dictionary
 		// Load the dictionary from the database
-		RQuery dicts(Db,"SELECT conceptid,name,typeid,def,"
+		RQuery dicts(Db,"SELECT conceptid,name,typeid,"
 				"indexdocs,"
 				"indexprofiles,"
 				"indexcommunities,"
@@ -573,28 +567,14 @@ void GStorageMySQL::LoadConcepts(void)
 				"indexclasses FROM concepts");
 		for(dicts.Start();!dicts.End();dicts.Next())
 		{
-			size_t TypeId(dicts[2].ToSizeT());
-			GConceptType* Type(Session->GetObj(pConceptType,TypeId,false));
-			if(TypeId==TermGroup)
-			{
-				GConceptList w(Session,dicts[0].ToSizeT(),dicts[1],Type,dicts[3],
+			GConceptType* Type(Session->GetObj(pConceptType,dicts[2].ToSizeT(),false));
+			GConcept w(Session,dicts[0].ToSizeT(),dicts[1],Type,
+						dicts[3].ToSizeT(),
 						dicts[4].ToSizeT(),
 						dicts[5].ToSizeT(),
 						dicts[6].ToSizeT(),
-						dicts[7].ToSizeT(),
-						dicts[8].ToSizeT());
+						dicts[7].ToSizeT());
 				Session->InsertObj(&w);
-			}
-			else
-			{
-				GConcept w(Session,dicts[0].ToSizeT(),dicts[1],Type,
-						dicts[4].ToSizeT(),
-						dicts[5].ToSizeT(),
-						dicts[6].ToSizeT(),
-						dicts[7].ToSizeT(),
-						dicts[8].ToSizeT());
-				Session->InsertObj(&w);
-			}
 		}
 	}
 	catch(RDbException e)
@@ -642,7 +622,7 @@ void GStorageMySQL::AssignId(GConcept* concept)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::DeleteConcept(GConcept* concept)
+void GStorageMySQL::DeleteObj(GConcept* concept)
 {
 	try
 	{
@@ -657,7 +637,7 @@ void GStorageMySQL::DeleteConcept(GConcept* concept)
 
 
 //------------------------------------------------------------------------------
-RString GStorageMySQL::LoadConcept(size_t id)
+RString GStorageMySQL::LoadObj(const GConcept*,size_t id)
 {
 	try
 	{
@@ -677,11 +657,11 @@ RString GStorageMySQL::LoadConcept(size_t id)
 
 
 //------------------------------------------------------------------------------
-size_t GStorageMySQL::LoadConcept(const RString name,GConceptType* type)
+size_t GStorageMySQL::LoadObj(const GConcept*,const RString name,GConceptType* type)
 {
 	try
 	{
-		RString sSql("SELECT conceptid FROM concepts WHERE typeid="+Num(type->GetId())+" AND kwd="+RQuery::SQLValue(name));
+		RString sSql("SELECT conceptid FROM concepts WHERE typeid="+Num(type->GetId())+" AND name="+RQuery::SQLValue(name));
 		RQuery w(Db,sSql);
 		w.Start();
 		if(!w.End())
@@ -697,7 +677,7 @@ size_t GStorageMySQL::LoadConcept(const RString name,GConceptType* type)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::SaveConcept(GConcept* concept)
+void GStorageMySQL::SaveObj(GConcept* concept)
 {
 	try
 	{
@@ -707,9 +687,25 @@ void GStorageMySQL::SaveConcept(GConcept* concept)
 		RQuery Delete(Db,"DELETE FROM concepts WHERE conceptid="+Num(concept->GetId()));
 
 		// Insert the new word in the database
-		Sql="INSERT INTO concepts(conceptid,name,typeid) ";
-		Sql+="VALUES("+Num(concept->GetId())+","+RQuery::SQLValue(concept->GetName())+","+
-		               Num(concept->GetType()->GetId())+")";
+		Sql="INSERT INTO concepts("
+			    "conceptid,"
+			    "name,"
+			    "typeid,"
+				 "indexdocs,"
+				 "indexprofiles,"
+				 "indexcommunities,"
+				 "indextopics,"
+				 "indexclasses) "
+		    "VALUES("+
+		       Num(concept->GetId())+","+
+			    RQuery::SQLValue(concept->GetName())+","+
+		       Num(concept->GetType()->GetId())+
+			    Num(concept->GetIndex(otDoc))+
+			    Num(concept->GetIndex(otProfile))+
+			    Num(concept->GetIndex(otCommunity))+
+			    Num(concept->GetIndex(otTopic))+
+			    Num(concept->GetIndex(otClass))+
+			 ")";
 		RQuery Insert(Db,Sql);
 	}
 	catch(RDbException e)
@@ -888,70 +884,29 @@ void GStorageMySQL::ClearRefs(tObjType what)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::LoadPredicates(void)
+void GStorageMySQL::LoadObjs(const GStatement*)
 {
 	try
 	{
-		RQuery Types(Db,"SELECT predicateid,name,description FROM predicates");
-		for(Types.Start();!Types.End();Types.Next())
-			Session->InsertObj(pPredicate,Types[0].ToSizeT(),Types[1],Types[2]);
-	}
-	catch(RDbException e)
-	{
-		cerr<<e.GetMsg()<<endl;
-		throw GException(e.GetMsg());
-	}
-}
+		// Adapt sizes
+		Session->VerifyTab(otStatement,GetCount("statements"));
+		GConcept* IsA(Session->GetIsA());
+		IsA->VerifyStatements(sePredicate,GetCount("statements","predicateid="+Num(IsA->GetId())+" AND predicatetype="+Num(IsA->GetObjType())));
+		GConcept* Synonym(Session->GetSynonym());
+		Synonym->VerifyStatements(sePredicate,GetCount("statements","predicateid="+Num(Synonym->GetId())+" AND predicatetype="+Num(Synonym->GetObjType())));
+		GConcept* PartOf(Session->GetPartOf());
+		PartOf->VerifyStatements(sePredicate,GetCount("statements","predicateid="+Num(PartOf->GetId())+" AND predicatetype="+Num(PartOf->GetObjType())));
 
 
-//------------------------------------------------------------------------------
-void GStorageMySQL::AssignId(GPredicate* predicate)
-{
-	try
-	{
-		// Init some strings
-		RString name=RQuery::SQLValue(predicate->GetName());
-
-		// Verify that the predicate didn't already exist.
-		RString sSql="SELECT predicateid FROM predicates WHERE name="+name;
-		RQuery find(Db,sSql);
-		find.Start();
-		if(!find.End())
-		{
-			predicate->SetId(find[0].ToSizeT());
-			return;
-		}
-
-		// Insert the new predicate
-		sSql="INSERT INTO predicates(name,description) VALUES("+name+","+RQuery::SQLValue(predicate->GetDescription())+")";
-		RQuery insert(Db,sSql);
-
-		// Get the next id
-		sSql=RString("SELECT predicateid FROM predicates WHERE predicateid=LAST_INSERT_ID()");
-		RQuery getinsert(Db,sSql);
-		getinsert.Start();
-		predicate->SetId(getinsert[0].ToSizeT());
-	}
-	catch(RDbException e)
-	{
-		cerr<<e.GetMsg()<<endl;
-		throw GException(e.GetMsg());
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GStorageMySQL::LoadStatements(void)
-{
-	try
-	{
-		RQuery Statements(Db,"SELECT statementid,predicate,xi,xitype,xj,xjtype,weight FROM statements");
+		//                                0          1          2            3           4          5       6        7
+		RQuery Statements(Db,"SELECT statementid,subjectid,subjecttype,predicateid,predicatetype,valueid,valuetype,weight FROM statements");
 		for(Statements.Start();!Statements.End();Statements.Next())
-			Session->InsertObj(pStatement,Statements[0].ToSizeT(),
-					Statements[1].ToSizeT(),
-					Statements[2].ToSizeT(),ObjType_cast(Statements[3].ToInt()),
-					Statements[4].ToSizeT(),ObjType_cast(Statements[5].ToInt()),
-					Statements[6].ToDouble());
+		{
+			GObject* Subject(Session->GetObj(static_cast<tObjType>(Statements[2].ToSizeT()),Statements[1].ToSizeT(),true));
+			GObject* Predicate(Session->GetObj(static_cast<tObjType>(Statements[4].ToSizeT()),Statements[3].ToSizeT(),true));
+			GObject* Value(Session->GetObj(static_cast<tObjType>(Statements[6].ToSizeT()),Statements[5].ToSizeT(),true));
+			Session->InsertObj(pStatement,Statements[0].ToSizeT(),Subject,Predicate,Value,Statements[7].ToDouble());
+		}
 	}
 	catch(RDbException e)
 	{
@@ -967,15 +922,17 @@ void GStorageMySQL::AssignId(GStatement* statement)
 	try
 	{
 		// Init some strings
-		RString predicate(Num(statement->GetPredicate()->GetId()));
-		RString xi(Num(statement->GetXi()->GetId()));
-		RString xitype(Num(statement->GetXi()->GetObjType()));
-		RString xj(Num(statement->GetXj()->GetId()));
-		RString xjtype(Num(statement->GetXj()->GetObjType()));
+		RString subjectid(Num(statement->GetSubject()->GetId()));
+		RString subjecttype(Num(statement->GetSubject()->GetObjType()));
+		RString predicateid(Num(statement->GetPredicate()->GetId()));
+		RString predicatetype(Num(statement->GetPredicate()->GetObjType()));
+		RString valueid(Num(statement->GetValue()->GetId()));
+		RString valuetype(Num(statement->GetValue()->GetObjType()));
 
 		// Verify that the statement didn't already exist.
-		RString sSql="SELECT statementid FROM statements WHERE xi="+xi+" AND xitype="+xitype+
-		             " AND predicate="+predicate+" AND xj="+xj+" AND xjtype="+xjtype;
+		RString sSql="SELECT statementid FROM statements WHERE subjectid="+subjectid+" AND subjecttype="+subjecttype+
+		             " AND predicateid="+predicateid+" AND predicatetype="+predicatetype+
+		             " AND valueid="+valueid+" AND valuetype="+valuetype;
 		RQuery find(Db,sSql);
 		find.Start();
 		if(!find.End())
@@ -985,8 +942,8 @@ void GStorageMySQL::AssignId(GStatement* statement)
 		}
 
 		// Insert the new statement
-		RQuery insert(Db,"INSERT INTO statements(predicate,xi,xitype,xj,xjtype,weight) VALUES("+
-				         predicate+","+xi+","+xitype+","+xj+","+xjtype+","+Num(statement->GetWeight())+")");
+		RQuery insert(Db,"INSERT INTO statements(subjectid,subjecttype,predicateid,predicatetype,valueid,valuetype,weight) VALUES("+
+				         subjectid+","+subjecttype+","+predicateid+","+predicatetype+","+valueid+","+valuetype+","+Num(statement->GetWeight())+")");
 
 		// Get the next id
 		sSql=RString("SELECT statementid FROM statements WHERE statementid=LAST_INSERT_ID()");
@@ -1055,6 +1012,7 @@ void GStorageMySQL::LoadObjs(const GClass*)
 {
 	try
 	{
+		Session->VerifyTab(otClass,GetCount("classes"));
 		// Load the classes
 		RQuery sub(Db,"SELECT classid,name,parent,blockid,calculated FROM classes");
 		for(sub.Start();!sub.End();sub.Next())
@@ -1248,6 +1206,7 @@ void GStorageMySQL::LoadObjs(const GDoc*)
 {
 	try
 	{
+		Session->VerifyTab(otDoc,GetCount("docs"));
 		RString Sql("SELECT docid,doc,title,mimetype,langid,updated,calculated,topicid,attached,blockid,structid,description FROM docs");
 		if(!LoadAll)
 			Sql+=" WHERE calculated<updated";
@@ -1355,11 +1314,13 @@ void GStorageMySQL::LoadObjs(const GUser*)
 		if(IsAllInMemory()) // If everything must be in memory -> load all the users and the profiles
 		{
 			// Load users
+			Session->VerifyTab(otUser,GetCount("users"));
 			RQuery Users(Db,"SELECT userid,user,fullname FROM users");
 			for(Users.Start();!Users.End();Users.Next())
 				Session->InsertObj(new GUser(Session,atoi(Users[0]),Users[1],Users[2],10));
 
 			// Load profiles
+			Session->VerifyTab(otProfile,GetCount("profiles"));
 			RString Sql("SELECT profileid,description,social,userid,attached,communityid,updated,calculated,blockid,score,level,profiletype FROM profiles");
 			if(!LoadAll)
 				Sql+=" WHERE calculated<updated";
@@ -1729,6 +1690,7 @@ void GStorageMySQL::LoadObjs(const GCommunity*)
 
 	try
 	{
+		Session->VerifyTab(otCommunity,GetCount("communities"));
 		RString Sql("SELECT communityid,updated,calculated,name,blockid FROM communities");
 		if(!LoadAll)
 			Sql+=" WHERE calculated<updated";
@@ -1916,6 +1878,7 @@ void GStorageMySQL::LoadObjs(const GTopic*)
 
 	try
 	{
+		Session->VerifyTab(otTopic,GetCount("topics"));
 		RString Sql("SELECT topicid,updated,calculated,name,blockid FROM topics");
 		if(!LoadAll)
 			Sql+=" WHERE calculated<updated";

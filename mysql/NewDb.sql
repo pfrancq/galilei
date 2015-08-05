@@ -26,7 +26,6 @@ CREATE TABLE `concepts` (
   `conceptid` int(11) unsigned NOT NULL auto_increment,
   `name` text collate utf8_bin  NOT NULL,
   `typeid` int(11) unsigned NOT NULL default '0',
-  `def` text collate utf8_bin  NOT NULL,
   `indexdocs` int(11) unsigned NOT NULL default '0',
   `indexprofiles` int(11) unsigned NOT NULL default '0',
   `indexcommunities` int(11) unsigned NOT NULL default '0',
@@ -62,28 +61,15 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `statements` (
   `statementid` int(11) unsigned NOT NULL auto_increment,
-  `predicate` text collate utf8_bin NOT NULL,
-  `xi` int(11) unsigned NOT NULL,
-  `xitype` int(11) unsigned NOT NULL,
-  `xj` int(11) unsigned NOT NULL,
-  `xjtype` int(11) unsigned NOT NULL,
+  `subjectid` int(11) unsigned NOT NULL,
+  `subjecttype` int(11) unsigned NOT NULL,  
+  `predicateid` int(11) unsigned NOT NULL,
+  `predicatetype` int(11) unsigned NOT NULL,
+  `valueid` int(11) unsigned NOT NULL,
+  `valuetype` int(11) unsigned NOT NULL,
   `weight` double NOT NULL default '0.0000000000',
-  PRIMARY KEY  (`statementid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
-
---
--- Table structure for table `predicates`
---
-
-DROP TABLE IF EXISTS `predicates`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `predicates` (
-  `predicateid` int(11) unsigned NOT NULL auto_increment,
-  `name` varchar(50) collate utf8_bin NOT NULL,
-  `description` varchar(200) collate utf8_bin NOT NULL,
-  PRIMARY KEY  (`predicateid`)
+  PRIMARY KEY  (`statementid`),
+  KEY `statementidx` (`subjectid` ASC, `subjecttype` ASC, `predicateid` ASC, `predicatetype` ASC, `valueid` ASC, `valuetype` ASC)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
