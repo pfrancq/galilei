@@ -66,13 +66,6 @@ public:
 	GConceptNodes(size_t conceptid);
 
 	/**
-	 * Construct a concept node container.
-	 * @param conceptid      Concept identifier.
-	 * @param max            Initial size of the container.
-	 */
-	GConceptNodes(size_t conceptid,size_t max);
-
-	/**
 	 * Copy constructor.
 	 * @param nodes          Container to copy.
 	 */

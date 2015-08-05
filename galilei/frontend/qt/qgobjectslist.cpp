@@ -27,6 +27,11 @@
 
 
 
+//-----------------------------------------------------------------------------
+// include files for Qt
+#include <QtGui/QMessageBox>
+
+
 //------------------------------------------------------------------------------
 // include files for R/GALILEI
 #include <ui_qgobjectslist.h>
@@ -627,25 +632,32 @@ void QGObjectsList::Set(oType type,GMetaEngine* engine,size_t nbres)
 	QTreeWidget* List(static_cast<Ui_QGObjectsList*>(Ui)->List);
 	List->clear();
 
-	QTreeWidgetItem* DocItem;
-	GDoc* Doc(0);
-	RCursor<GDocFragment> Cur(engine->GetResults());
-	size_t i;
-	for(Cur.Start(),i=0;(!Cur.End())&&(i<nbres);Cur.Next(),i++)
+	try
 	{
-		if(Cur()->GetDoc()!=Doc)
+		QTreeWidgetItem* DocItem;
+		GDoc* Doc(0);
+		RCursor<GDocFragment> Cur(engine->GetResults());
+		size_t i;
+		for(Cur.Start(),i=0;(!Cur.End())&&(i<nbres);Cur.Next(),i++)
 		{
-			Doc=Cur()->GetDoc();
-			DocItem=new QGObject(List,Cur()->GetDoc());
+			if(Cur()->GetDoc()!=Doc)
+			{
+				Doc=Cur()->GetDoc();
+				DocItem=new QGObject(List,Cur()->GetDoc());
+			}
+			QTreeWidgetItem* Item(new QTreeWidgetItem(DocItem));
+			QString Text(PrintExtract(Cur()->GetFragment()));
+			Item->setText(0,Text);
+			Item->setToolTip(0,Text);
 		}
-		QTreeWidgetItem* Item(new QTreeWidgetItem(DocItem));
-		QString Text(PrintExtract(Cur()->GetFragment()));
-		Item->setText(0,Text);
-		Item->setToolTip(0,Text);
-	}
 
-	List->resizeColumnToContents(0);
-	List->resizeColumnToContents(1);
+		List->resizeColumnToContents(0);
+		List->resizeColumnToContents(1);
+	}
+	catch(RException& e)
+	{
+		QMessageBox::critical(0,QWidget::tr("R Exception"),QWidget::trUtf8(e.GetMsg()),QMessageBox::Ok);
+	}
 }
 
 

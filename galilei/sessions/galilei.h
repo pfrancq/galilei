@@ -79,7 +79,6 @@ enum tObjType
 	otConcept                /** Concept.*/,
 	otConceptType            /** Concept Type.*/,
 	otConceptCat             /** Concept Category.*/,
-	otPredicate              /** Predicate.*/,
 	otStatement              /** Statement.*/,
 	otClass                  /** Class.*/,
 	otTree                   /** Concept Tree. */,
@@ -293,7 +292,8 @@ enum tConceptCat
 	ccText                   /** Text.*/,
 	ccMetadata               /** Metadata.*/,
 	ccSemantic               /** Semantic rules.*/,
-	ccLink                   /** Links. */
+	ccLink                   /** Links. */,
+	ccPredicate              /** Predicate.*/
 };
 
 
@@ -301,7 +301,7 @@ enum tConceptCat
 /**
  * @return the number of concept categories.
  */
-inline size_t GetNbConceptCats(void) {return(4);}
+inline size_t GetNbConceptCats(void) {return(5);}
 
 
 //------------------------------------------------------------------------------
@@ -423,6 +423,19 @@ enum tSubjectDesc
 
 //------------------------------------------------------------------------------
 /**
+ * Each statement is a triple (subject,predicate,value).
+ * @short Statement Element Types.
+ */
+enum tStatementElement
+{
+	seSubject                /** Subject.*/,
+	sePredicate              /** Predicate.*/,
+	seValue                  /** Value.*/
+};
+
+
+//------------------------------------------------------------------------------
+/**
 * The GException class provides a basic representation for an exception.
 * @author Pascal Francq
 * @short Basic Exception.
@@ -469,7 +482,6 @@ public:
 // forward class declaration - Knowledge Part
 class GConcept;
 class GConceptType;
-class GPredicate;
 class GStatement;
 class GLang;
 class GConceptRef;
@@ -580,8 +592,6 @@ extern const GFdbk* pFdbk;
 extern const GCommunity* pCommunity;
 /** Null pointer for GSubject.*/
 extern const GSubject* pSubject;
-/** Null pointer for GPredicate.*/
-extern const GPredicate* pPredicate;
 /** Null pointer for GStatement.*/
 extern const GStatement* pStatement;
 

@@ -63,7 +63,7 @@ GSearchToken::GSearchToken(GSession* session,const R::RString& token,tType type)
 		case tStem:
 		{
 			Token=Token.ToLower();
-			GConceptType* Terms(session->GetObj(pConceptType,"Terms",false));
+			GConceptType* Terms(session->GetTokenType());
 			Concept=session->GetObj(pConcept,Terms,Token,true);
 			break;
 		}

@@ -73,7 +73,24 @@ public:
 	* Add a specific MIME-Type for the filter.
 	* @param mime           Name of the MIME-Type.
 	*/
-	void AddMIME(R::RString mime);
+	void AddMIME(const R::RString& mime);
+
+	/**
+	* Add a specific scheme for the filter.
+	* @param scheme          Name of the scheme.
+	*/
+	void AddScheme(const R::RString& scheme);
+
+	/**
+	 * Get a valid URI (something that a normal RFile can handle) and specify
+	 * if the corresponding document must be deleted (because it is temporary
+	 * file) or not once the caller does not need it anymore.
+    * @param uri            Original URI.
+    * @param mustdelete     Must the document be deleted by the caller (modified
+	 *                       by the function.
+    * @return an URI.
+    */
+	virtual R::RURI GetValidURI(const R::RURI& uri,bool& mustdelete);
 
 	/**
 	* Analyze a document with a given URI. This method must be re-implemented by

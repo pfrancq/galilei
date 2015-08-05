@@ -55,9 +55,24 @@ GFilter::GFilter(GSession* session,GPlugInFactory* fac)
 
 
 //---------------------------------------------------------------------------
-void GFilter::AddMIME(RString name)
+void GFilter::AddMIME(const RString& name)
 {
 	GALILEIApp->AddMIME(name,this);
+}
+
+
+//---------------------------------------------------------------------------
+void GFilter::AddScheme(const RString& scheme)
+{
+	GALILEIApp->AddMIME(scheme,this);
+}
+
+
+//------------------------------------------------------------------------------
+R::RURI GFilter::GetValidURI(const R::RURI& uri,bool& mustdelete)
+{
+	mustdelete=false;
+	return(uri);
 }
 
 
@@ -77,7 +92,20 @@ RString GFilter::GetTextFragment(GDocFragment* fragment)
 	Fragment.SetLen(0);
 
 	// Open the file and put it at the beginning of the window position
-	RTextFile File(fragment->GetDoc()->GetName(),"utf-8");
+	GFilter* Filter(GALILEIApp->FindScheme(fragment->GetDoc()));
+	bool Delete,ToManage;
+	RURI URI;
+	if(Filter)
+	{
+		ToManage=true;
+		URI=Filter->GetValidURI(fragment->GetDoc()->GetName(),Delete);
+	}
+	else
+	{
+		ToManage=false;
+		URI=fragment->GetDoc()->GetName();
+	}
+	RTextFile File(URI,"utf-8");
 	File.Open(RIO::Read);
 	File.Seek(Begin);
 
@@ -90,6 +118,9 @@ RString GFilter::GetTextFragment(GDocFragment* fragment)
 		Fragment+=c;
 	}
 
+	File.Close();
+	if(ToManage&&Delete)
+		RFile::RemoveFile(URI);
 	return(Fragment);
 }
 

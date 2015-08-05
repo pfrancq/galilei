@@ -122,18 +122,6 @@ protected:
 	*/
 	GSubjects(GSession* session);
 
-public:
-
-	/**
-	 * Allocate the internal structures of the tree. Ideally, this method should
-	 * be called when the subjects are loaded from a storage.
-    * @param obj            Pseudo-parameter.
-	 * @param nbsubjects     Number of subjects.
-    */
-	void Init(const GSubject* obj,size_t nbsubjects);
-
-protected:
-
    /**
     * Clear the tree.
     */

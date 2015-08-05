@@ -34,7 +34,7 @@
 
 //------------------------------------------------------------------------------
 // include files for R Project
-#include <rindexfile.h>
+#include <rkeys.h>
 #include <rconfig.h>
 #include <rdir.h>
 #include <robjectcontainer.h>
@@ -118,7 +118,7 @@ template<class C,const R::hNotification* hEvents>
 	/**
 	 * Description of the objects.
 	 */
-	R::RIndexFile* Desc;
+	R::RKeyValueFile<R::RIntKey>* Desc;
 
 	/**
 	 * Create the index ?
@@ -128,7 +128,7 @@ template<class C,const R::hNotification* hEvents>
 	/**
 	 * Index of the objects.
 	 */
-	R::RIndexFile* Index;
+	R::RKeyValueFile<R::RIntKey>* Index;
 
 	/**
 	 * Create the tree concepts?
@@ -138,7 +138,7 @@ template<class C,const R::hNotification* hEvents>
 	/**
 	 * Tree concepts of the objects.
 	 */
-	R::RIndexFile* Tree;
+	R::RKeyValueFile<R::RIntKey>* Tree;
 
 	/**
 	 * Are the objects loaded.

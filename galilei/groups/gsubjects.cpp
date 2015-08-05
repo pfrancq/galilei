@@ -44,6 +44,7 @@
 #include <gdoc.h>
 #include <gcommunity.h>
 #include <gtopic.h>
+#include <gstatement.h>
 using namespace R;
 using namespace GALILEI;
 using namespace std;
@@ -61,18 +62,6 @@ GSubjects::GSubjects(GSession* session)
 	: GKB(session), RTree<GSubjects,GSubject,true>(), Subjects(0), UsedSubjects(0), UsedDocs(0), DocsStatus(0), DocsSubjects(0),
 	  ProfilesSubject(0), MustLoad(true), DescType(sdNames)
 {
-}
-
-
-//------------------------------------------------------------------------------
-void GSubjects::Init(const GSubject*,size_t nbsubjects)
-{
-	Subjects.VerifyTab(nbsubjects);
-	UsedSubjects.VerifyTab(nbsubjects);
-	UsedDocs.VerifyTab(dynamic_cast<GSession*>(this)->GetMaxObjId(pDoc)+1);
-	DocsSubjects.VerifyTab(dynamic_cast<GSession*>(this)->GetMaxObjId(pDoc)+1);
-	DocsStatus.ReSize(dynamic_cast<GSession*>(this)->GetMaxObjId(pDoc)+1);
-	ProfilesSubject.VerifyTab(dynamic_cast<GSession*>(this)->GetMaxObjId(pProfile)+1);
 }
 
 

@@ -53,7 +53,6 @@ const GProfile* GALILEI::pProfile(0);
 const GFdbk* GALILEI::pFdbk(0);
 const GCommunity* GALILEI::pCommunity(0);
 const GSubject* GALILEI::pSubject(0);
-const GPredicate* GALILEI::pPredicate(0);
 const GStatement* GALILEI::pStatement(0);
 
 
@@ -219,10 +218,6 @@ RString GALILEI::GetObjType(tObjType type,bool upper,bool plural)
 			if(plural)
 				return(Str("concept categories",upper));
 			return(Str("concept category",upper));
-		case otPredicate:
-			if(plural)
-				return(Str("predicates",upper));
-			return(Str("predicate",upper));
 		case otStatement:
 			if(plural)
 				return(Str("statements",upper));
@@ -333,6 +328,11 @@ RString GALILEI::GetConceptCat(tConceptCat cat,bool upper,bool plural)
 			if(plural)
 				return(Str("links",upper));
 			return(Str("link",upper));
+		case ccPredicate:
+			if(plural)
+				return(Str("predicates",upper));
+			return(Str("predicate",upper));
+
 	}
 	mThrowGException("'"+RString::Number(cat)+"' is not a valid concept category value");
 }
@@ -341,7 +341,7 @@ RString GALILEI::GetConceptCat(tConceptCat cat,bool upper,bool plural)
 //------------------------------------------------------------------------------
 tConceptCat GALILEI::ConceptCat_cast(size_t cat)
 {
-	if(cat>=4)
+	if(cat>=5)
 		mThrowGException("'"+RString::Number(cat)+"' is not a valid concept category value");
 	return(static_cast<tConceptCat>(cat));
 }

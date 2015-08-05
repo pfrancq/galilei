@@ -73,7 +73,6 @@ using namespace R;
 #include <gcomputesugs.h>
 #include <gcomputetrust.h>
 #include <gtool.h>
-#include <gpredicate.h>
 #include <gstatement.h>
 #include <gclass.h>
 #include <gsearchquery.h>
@@ -649,7 +648,7 @@ size_t GSession::GetNbObjs(tObjType type) const
 		case otUser:
 			return(GObjects<GUser,hUsers>::Objects.GetNb());
 		case otConcept:
-			return(Concepts.GetNb());
+			return(ConceptsByIds.GetNb());
 		case otConceptType:
 			return(ConceptTypes.GetNb());
 		case otDoc:
@@ -676,9 +675,9 @@ size_t GSession::GetMaxObjId(tObjType type) const
 	switch(type)
 	{
 		case otConcept:
-			if(!Concepts.GetNb())
+			if(!ConceptsByIds.GetNb())
 				return(0);
-			return(Concepts[Concepts.GetMaxPos()]->GetId());
+			return(ConceptsByIds[ConceptsByIds.GetMaxPos()]->GetId());
 		case otDoc:
 			if(!GObjects<GDoc,hDocs>::Objects.GetNb())
 				return(0);
@@ -714,7 +713,7 @@ size_t GSession::GetMaxObjPos(tObjType type) const
 	switch(type)
 	{
 		case otConcept:
-			return(Concepts.GetMaxPos());
+			return(ConceptsByIds.GetMaxPos());
 		case otDoc:
 			return(GetMaxObjPos(pDoc));
 		case otTopic:
@@ -739,7 +738,7 @@ GObject* GSession::GetObj(tObjType type,size_t id,bool null)
 	switch(type)
 	{
 		case otConcept:
-			return(Concepts[id]);
+			return(ConceptsByIds[id]);
 		case otConceptType:
 			return(GetObj(pConceptType,id,null));
 		case otDoc:
@@ -781,6 +780,53 @@ size_t GSession::GetObjs(tObjType type,GObject** &tab,bool alloc)
 			if(alloc)
 				tab=new GObject*[GObjects<GTopic,hTopics>::Objects.GetMaxPos()+1];
 			return(GObjects<GTopic,hTopics>::Objects.GetTab(reinterpret_cast<void**>(tab)));
+		default:
+			mThrowGException(GetObjType(type,true,true)+" are not managed");
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::VerifyTab(tObjType type,size_t max)
+{
+	switch(type)
+	{
+		case otConcept:
+			ConceptsByIds.VerifyTab(max);
+			break;
+		case otConceptType:
+			ConceptTypes.VerifyTab(max);
+			ConceptTypesByIds.VerifyTab(max);
+			break;
+		case otStatement:
+			StatementsByIds.VerifyTab(max);
+			break;
+		case otDoc:
+			GObjects<GDoc,hDocs>::Objects.VerifyTab(max);
+			break;
+		case otProfile:
+			GObjects<GProfile,hProfiles>::Objects.VerifyTab(max);
+			break;
+		case otUser:
+			GObjects<GUser,hUsers>::Objects.VerifyTab(max);
+			break;
+		case otCommunity:
+			GObjects<GCommunity,hCommunities>::Objects.VerifyTab(max);
+			break;
+		case otTopic:
+			GObjects<GTopic,hTopics>::Objects.VerifyTab(max);
+			break;
+		case otClass:
+			GObjects<GClass,hClasses>::Objects.VerifyTab(max);
+			break;
+		case otSubject:
+			Subjects.VerifyTab(max);
+			UsedSubjects.VerifyTab(max);
+			UsedDocs.VerifyTab(GetMaxObjId(pDoc)+1);
+			DocsSubjects.VerifyTab(GetMaxObjId(pDoc)+1);
+			DocsStatus.ReSize(GetMaxObjId(pDoc)+1);
+			ProfilesSubject.VerifyTab(GetMaxObjId(pProfile)+1);
+			break;
 		default:
 			mThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
@@ -885,7 +931,7 @@ bool GSession::InsertFdbk(size_t profid,size_t docid,tFdbkType fdbk,R::RDate don
 
 
 //------------------------------------------------------------------------------
-void GSession::RequestMetaEngine(const R::RString query)
+void GSession::RequestMetaEngine(const R::RString& query)
 {
 	GMetaEngine* MetaEngine(GALILEIApp->GetCurrentPlugIn<GMetaEngine>("MetaEngine"));
 	if(!MetaEngine)
@@ -1040,6 +1086,9 @@ GSession::~GSession(void)
 			Cur()->SaveConfig(this);
 		Save();
 	}
+
+	// Delete the statements
+	StatementsByIds.Clear();
 
 	delete Simulator;
 	if(Storage)

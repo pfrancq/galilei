@@ -94,7 +94,7 @@ QGDocStruct::QGDocStruct(QWidget* parent)
 void QGDocStruct::Display(GSession* session,GConceptNode* node)
 {
 	QTreeWidget* RecsList(static_cast<Ui_QGDocStruct*>(Ui)->RecsList);
-	QString name(ToQString(session->GetStorage()->LoadConcept(node->GetConceptId())));
+	QString name(ToQString(session->GetStorage()->LoadObj(pConcept,node->GetConceptId())));
 	QString ConceptType(ToQString(session->GetObj(pConcept,node->GetConceptId())->GetType()->GetDescription()));
 	QString TokenType;
 	switch(node->GetType())

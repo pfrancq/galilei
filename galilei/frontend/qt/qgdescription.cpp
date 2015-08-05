@@ -46,7 +46,6 @@ using namespace std;
 #include <qgdescription.h>
 #include <gsession.h>
 #include <gstorage.h>
-#include <gconceptlist.h>
 #include <ggalileiapp.h>
 using namespace GALILEI;
 

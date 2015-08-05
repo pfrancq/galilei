@@ -166,9 +166,10 @@ private:
 	// @{
 
 	/**
-	* Load the concept categories and types from the database.
+	* Load the concept types from the database.
+	* @param obj             Pseudo-parameter.
 	*/
-	virtual void LoadConceptTypes(void)=0;
+	virtual void LoadObjs(const GConceptType* obj)=0;
 
 	/**
 	* Assign an identifier to a new concept type.
@@ -178,8 +179,9 @@ private:
 
 	/**
 	* Loading all concepts.
+	* @param obj             Pseudo-parameter.
 	*/
-	virtual void LoadConcepts(void)=0;
+	virtual void LoadObjs(const GConcept* obj)=0;
 
 	/**
 	* Assign an identifier to a new concept of a given type.
@@ -191,22 +193,24 @@ private:
 	* Delete a concept.
 	* @param concept         Concept.
 	*/
-	virtual void DeleteConcept(GConcept* concept)=0;
+	virtual void DeleteObj(GConcept* concept)=0;
 
 public:
 
 	/**
 	* Load the name of specific concept.
+	* @param obj             Pseudo-parameter.
 	* @param id              Identifier of the concept.
 	*/
-	virtual R::RString LoadConcept(size_t id)=0;
+	virtual R::RString LoadObj(const GConcept* obj,size_t id)=0;
 
 	/**
 	* Load the identifier of a specific concept.
+	* @param obj             Pseudo-parameter.
 	* @param name            Name of the concept.
 	* @param type            Type of the concept.
 	*/
-	virtual size_t LoadConcept(const R::RString name,GConceptType* type)=0;
+	virtual size_t LoadObj(const GConcept* obj,const R::RString name,GConceptType* type)=0;
 
 private:
 
@@ -214,7 +218,7 @@ private:
 	* Save a concept in the database.
 	* @param concept         Concept.
 	*/
-	virtual void SaveConcept(GConcept* concept)=0;
+	virtual void SaveObj(GConcept* concept)=0;
 
 	/**
 	 * Save the index information of a given object type for a given concept.
@@ -245,20 +249,10 @@ private:
 	virtual void ClearRefs(tObjType what)=0;
 
 	/**
-	* Load the predicates from the database.
-	*/
-	virtual void LoadPredicates(void)=0;
-
-	/**
-	* Assign an identifier to a new predicate.
-	* @param predicate       Predicate.
-	*/
-	virtual void AssignId(GPredicate* predicate)=0;
-
-	/**
 	* Load the statements from the database.
+	* @param obj             Pseudo-parameter.
 	*/
-	virtual void LoadStatements(void)=0;
+	virtual void LoadObjs(const GStatement* obj)=0;
 
 	/**
 	* Assign an identifier to a new statement.

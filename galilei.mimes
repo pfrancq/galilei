@@ -1,0 +1,27 @@
+<!-- This is a very basic MIME file for GALILEI -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mimeTypes>
+<mimeTypes>
+	<mimeType code="text/plain">
+		<file ext="*.txt"/>
+	</mimeType>
+	<mimeType code="text/html">
+		<file ext="*.html"/>
+		<file ext="*.htm"/>
+	</mimeType>	
+	<mimeType code="application/msword">
+		<file ext="*.doc"/>
+	</mimeType>
+	<mimeType code="application/pdf">
+		<file ext="*.pdf"/>
+	</mimeType>
+	<mimeType code="application/postscript">
+		<file ext="*.ps"/>
+	</mimeType>
+	<mimeType code="text/rtf">
+		<file ext="*.rtf"/>
+	</mimeType>
+	<mimeType code="text/xml">
+		<file ext="*.xml"/>
+	</mimeType>	
+</mimeTypes>

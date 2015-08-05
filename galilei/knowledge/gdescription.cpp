@@ -28,10 +28,6 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R
-#include <rindexfile.h>
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gdescription.h>
 #include <gdescriptionset.h>

@@ -40,7 +40,6 @@
 // include files for R Project
 #include <rconfig.h>
 #include <rrandom.h>
-#include <rindexfile.h>
 #include <rtree.h>
 #include <robject.h>
 
@@ -261,7 +260,6 @@ public:
 	using GSubjects::GetObjs;
 	using GSubjects::GetNbObjs;
 	using GSubjects::InsertObj;
-	using GSubjects::Init;
 	using GSubjects::GetMaxDepth;
 	using GSubjects::GetUpOperationsCost;
 
@@ -544,7 +542,7 @@ public:
 	* ranked.
 	* @param query           String representing the query.
 	*/
-	void RequestMetaEngine(const R::RString query);
+	void RequestMetaEngine(const R::RString& query);
 	//@}
 
 	/** @name Informational Methods
@@ -576,7 +574,7 @@ public:
 	 * Find an object of a given type and with a particular identifier.
 	 * @param type           Type. Only the objects managed.
 	 * @param id             Identifier.
-	 * @param null           If set to true, if the document does not exist,
+	 * @param null           If set to true, if the object does not exist,
 	 *                       return 0, else an exception is generated.
 	 * @return Pointer to the object.
 	 */
@@ -590,6 +588,15 @@ public:
 	 * @return number of elements in the array (including null pointers).
 	 */
 	size_t GetObjs(tObjType type,GObject** &tab,bool alloc);
+
+	/**
+	 * Verify that a given set of containers can hold a given size of objects.
+	 * This method can be useful before a given set of elements is loaded in
+	 * order to avoid a constant increase of the corresponding containers.
+    * @param type           Type of the container.
+	 * @param max            Maximum number of objects.
+    */
+	void VerifyTab(tObjType type,size_t max);
 
 	/**
 	 * @return Simulator associated with the session.

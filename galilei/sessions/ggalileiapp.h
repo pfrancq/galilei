@@ -72,8 +72,8 @@ namespace GALILEI{
 */
 class GGALILEIApp : public R::RApplication, public R::RContainer<GPlugInManager,true,false>
 {
-	class GMIMEFilter;
-	class GMIMEExt;
+	class cFilter;
+	class cExt;
 
 protected:
 
@@ -110,12 +110,17 @@ protected:
 	/**
 	* List of all pairs (MIME type,filter) available.
 	*/
-	R::RContainer<GMIMEFilter,true,true> MIMES;
+	R::RContainer<cFilter,true,true> MIMES;
 
 	/**
 	* List of all pairs (extension, MIME type) available.
 	*/
-	R::RContainer<GMIMEExt,true,true> Exts;
+	R::RContainer<cExt,true,true> Exts;
+
+	/**
+	* List of all pairs (Schemes,filter) available.
+	*/
+	R::RContainer<cFilter,true,true> Schemes;
 
 	/**
      * Log file for the application.
@@ -153,8 +158,9 @@ public:
 	* @param name            Name of the session.
 	* @param created         Determine if the session must be created if not
 	*                        existing.
+	* @param slot            Slot to show progress.
 	*/
-	GSession* GetSession(const R::RString& name,bool created=false);
+	GSession* GetSession(const R::RString& name,bool created=false,GSlot* slot=0);
 
 	/**
 	* Delete a session.
@@ -422,10 +428,27 @@ public:
 	 *
 	 * An exception is generated if no filter was found (no MIME type, no
 	 * corresponding filter, ...).
-	 * @param doc             Document to analyze.
-	 * @return the filter needed to analyze the document.
+	 * @param doc             Document to analyse.
+	 * @return the filter needed to analyse the document.
 	 */
 	GFilter* FindMIMEType(GDoc* doc) const;
+
+	/**
+	 * Find the filter corresponding to a given scheme. This allows GALILEI to
+	 * manage exotic schemes that CURL cannot handle.
+	 *
+	 * @param doc             Document with a given scheme.
+	 * @return the filter or a null pointer if no filter is found (hoping that
+	 * CURL can handle the protocol).
+	 */
+	GFilter* FindScheme(GDoc* doc) const;
+
+	/**
+	* Add a pair (Scheme,filter).
+	* @param scheùe         Name of the scheme.
+	* @param f              Pointer to the filter.
+	*/
+	void AddScheme(const char* mime,GFilter* f);
 
 	/**
 	* Add a pair (MIME type,filter).

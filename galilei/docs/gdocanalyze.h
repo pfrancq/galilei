@@ -126,31 +126,6 @@ class GDocAnalyze : R::RDownloadFile
 	 */
 	R::RCastCursor<GPlugIn,GAnalyzer> Analyzers;
 
-   /**
-    * Meta-concept representing the default textual content.
-    */
-   GConcept* DefaultText;
-
-	/**
-	 * Concepts related to the Dublin Core Metadata Initiative.
-	 */
-	GConceptType* DCMI;
-
-	/**
-	 * Concepts related to the default URI content.
-	 */
-	GConcept* DefaultURI;
-
-	/**
-	 * Default type for named entities.
-    */
-	GConceptType* DefaultNamedEntityType;
-
-	/**
-	 * Concepts related to named entities.
-	 */
-	GConcept* DefaultNamedEntity;
-
   	/**
 	 * Memory of tokens.
 	 */
@@ -302,31 +277,6 @@ private:
 	GToken* CreateToken(const R::RString& token,tTokenType type);
 
 public:
-
-	/**
-    * @return the meta-concept representing the default text content.
-    */
-	GConcept* GetDefaultText(void);
-
-	/**
-    * @return the concept type representing the DMCI.
-    */
-	GConceptType* GetDCMI(void);
-
-	/**
-    * @return the meta-concept representing the default URI content.
-    */
-	GConcept* GetDefaultURI(void);
-
-	/**
-    * @return the default type for named entities.
-    */
-	GConceptType* GetDefaultNamedEntityType(void);
-
-	/**
-    * @return the meta-concept representing the default named entities.
-    */
-	GConcept* GetDefaultNamedEntity(void);
 
 	/**
 	 * Get the current vector.

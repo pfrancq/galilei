@@ -34,6 +34,7 @@
 #include <gprofile.h>
 #include <gfdbk.h>
 #include <gsession.h>
+#include <gstatement.h>
 using namespace GALILEI;
 using namespace R;
 

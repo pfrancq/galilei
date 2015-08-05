@@ -140,7 +140,7 @@ template<class C,const R::hNotification* hEvents>
 			R::RDir::CreateDirIfNecessary(Dir,true);
 
 			// Create the description file
-			Desc=new R::RIndexFile(Dir+ObjName+".desc",
+			Desc=new R::RKeyValueFile<R::RIntKey>(Dir+ObjName+".desc",
 					config->GetUInt("BlockSize","Indexer",ObjName,"Description"),
 					config->GetUInt("CacheSize","Indexer",ObjName,"Description"),
 					config->GetUInt("Tolerance","Indexer",ObjName,"Description"));
@@ -151,7 +151,7 @@ template<class C,const R::hNotification* hEvents>
 			CreateIndex=config->GetBool("CreateIndex","Indexer",ObjName,"Index");
 			if(CreateIndex)
 			{
-				Index=new R::RIndexFile(Dir+ObjName+".index",
+				Index=new R::RKeyValueFile<R::RIntKey>(Dir+ObjName+".index",
 						config->GetUInt("BlockSize","Indexer",ObjName,"Index"),
 						config->GetUInt("CacheSize","Indexer",ObjName,"Index"),
 						config->GetUInt("Tolerance","Indexer",ObjName,"Index"));
@@ -168,7 +168,7 @@ template<class C,const R::hNotification* hEvents>
 			CreateTree=config->GetBool("CreateTree","Indexer",ObjName,"Tree");
 			if(CreateTree)
 			{
-				Tree=new R::RIndexFile(Dir+"Documents.tree",
+				Tree=new R::RKeyValueFile<R::RIntKey>(Dir+"Documents.tree",
 						config->GetUInt("BlockSize","Indexer",ObjName,"Tree"),
 						config->GetUInt("CacheSize","Indexer",ObjName,"Tree"),
 						config->GetUInt("Tolerance","Indexer",ObjName,"Tree"));
@@ -350,7 +350,8 @@ template<class C,const R::hNotification* hEvents>
 		double weight;
 
 		// Position the block file to the correct position
-		Desc->Seek(blockid,id);
+		R::RIntKey Key(id);
+		Desc->Seek(blockid,Key);
 
 		// Read the number of vectors, create the container or clear it
 		Desc->Read((char*)&nb,sizeof(size_t));
@@ -412,7 +413,8 @@ template<class C,const R::hNotification* hEvents>
 			return;
 
 		// Position the block file to the correct position
-		Desc->Seek(blockid,id,sizeof(size_t)+(vectors.GetNb()*SizeT2)+(TotalWrite*SizeRecDesc));
+		R::RIntKey Key(id);
+		Desc->Seek(blockid,Key,sizeof(size_t)+(vectors.GetNb()*SizeT2)+(TotalWrite*SizeRecDesc));
 
 		// Write the number of vectors and then each vector
 		Desc->Write((char*)&nb,sizeof(size_t));
@@ -466,7 +468,8 @@ template<class C,const R::hNotification* hEvents>
 		refs.Clear();
 		return;
 	}
-	Index->Read(Refs,concept->GetId(),refs);
+	R::RIntKey Key(concept->GetId());
+	Index->Read(Refs,Key,refs);
 }
 
 
@@ -488,8 +491,9 @@ template<class C,const R::hNotification* hEvents>
 			// Read the vector representing the current index
 			GConcept* Concept(Cur()->GetConcept());
 			size_t idx(Concept->GetIndex(Type));
+			R::RIntKey Key(Concept->GetId());
 			if(idx)
-				Index->Read(idx,Concept->GetId(),tmpRefs);
+				Index->Read(idx,Key,tmpRefs);
 			else
 				tmpRefs.Clear();
 
@@ -503,7 +507,7 @@ template<class C,const R::hNotification* hEvents>
 			// If the size of vector has changed -> Save it back
 			if(oldsize!=tmpRefs.GetNb())
 			{
-				Index->Write(idx,Concept->GetId(),tmpRefs);
+				Index->Write(idx,Key,tmpRefs);
 				Concept->SetIndex(Type,idx);
 			}
 		}
@@ -539,7 +543,8 @@ template<class C,const R::hNotification* hEvents>
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		// Position the block file to the correct position and read the size
-		Desc->Seek(Cur()->BlockId,Cur()->Id);
+		R::RIntKey Key(Cur()->GetId());
+		Desc->Seek(Cur()->BlockId,Key);
 		size_t v,size,concept;
 		double weight;
 		Desc->Read((char*)&v,sizeof(size_t)); // Load number of vectors
@@ -555,8 +560,9 @@ template<class C,const R::hNotification* hEvents>
 
 				// Read the vector representing the current index
 				GConcept* Concept(GetObj(pConcept,concept));
+				R::RIntKey Key2(Concept->GetId());
 				if(Concept->GetIndex(Type))
-					Index->Read(Concept->GetIndex(Type),Concept->GetId(),tmpRefs);
+					Index->Read(Concept->GetIndex(Type),Key2,tmpRefs);
 				else
 					tmpRefs.Clear();
 
@@ -568,7 +574,7 @@ template<class C,const R::hNotification* hEvents>
 				if(oldsize!=tmpRefs.GetNb())
 				{
 					size_t idx(Concept->GetIndex(Type));
-					Index->Write(idx,Concept->GetId(),tmpRefs);
+					Index->Write(idx,Key2,tmpRefs);
 					Concept->SetIndex(GObjects<C,hEvents>::Type,idx);
 
 					// If no cache is asked -> Save each time
@@ -649,11 +655,11 @@ template<class C,const R::hNotification* hEvents>
 	try
 	{
 		// Position the file to correct block
-		Tree->Seek(blockid,id);
+		R::RIntKey Key(id);
+		Tree->Seek(blockid,Key);
 
 		// Read the number of nodes, references and top nodes.
 		size_t nbnodes,nbrefs,topnodes;
-		Tree->Seek(blockid,id);
 		Tree->Read((char*)&nbnodes,sizeof(size_t));
 		Tree->Read((char*)&nbrefs,sizeof(size_t));
 		Tree->Read((char*)&topnodes,sizeof(size_t));
@@ -691,7 +697,8 @@ template<class C,const R::hNotification* hEvents>
 
 		// Position the file to correct block and announce that a given number of bytes will be written
 	    size_t size(SizeT3+(tree.GetNbNodes()*SizeRecNode));
-	    Tree->Seek(blockid,id,size);
+		 R::RIntKey Key(id);
+	    Tree->Seek(blockid,Key,size);
 
 		// Save the number of nodes, references and top nodes.
 		size_t nb(tree.GetNbNodes());

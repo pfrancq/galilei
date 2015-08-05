@@ -45,14 +45,7 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GConceptNodes::GConceptNodes(size_t conceptid)
-	: RContainer<GConceptNode,false,true>(2000), ConceptId(conceptid)
-{
-}
-
-
-//------------------------------------------------------------------------------
-GConceptNodes::GConceptNodes(size_t conceptid,size_t max)
-	: RContainer<GConceptNode,false,true>(max), ConceptId(conceptid)
+	: RContainer<GConceptNode,false,true>(10,5), ConceptId(conceptid)
 {
 }
 

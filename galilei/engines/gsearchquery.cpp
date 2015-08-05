@@ -219,7 +219,7 @@ GSearchQueryNode* GSearchQuery::CreateToken(GSearchQueryNode* parent,const R::RS
 
 		// Some initialization
 		RString Token(token.Trim().ToLower());
-		GConceptType* Terms(Session->GetObj(pConceptType,"Terms",false));
+		GConceptType* Terms(Session->GetTokenType());
 		Stems.Clear();
 
 		// Find the concept corresponding to the token

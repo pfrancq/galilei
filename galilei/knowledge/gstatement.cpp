@@ -31,7 +31,6 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gstatement.h>
-#include <gpredicate.h>
 #include <gconcept.h>
 using namespace GALILEI;
 using namespace R;
@@ -45,22 +44,50 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GStatement::GStatement(size_t id,GPredicate* predicate,GObject* xi,GObject* xj,double weight)
-	: Id(id), Predicate(predicate), Xi(xi), Xj(xj), Weight(weight)
+GStatement::GStatement(size_t id,GObject* subject,GObject* predicate,GObject* value,double weight)
+	: Id(id), Subject(subject), Predicate(predicate), Value(value),
+	  Weight(weight)
 {
+	if(!Subject)
+		mThrowGException("Statement must have a valid subject");
+	if(!Predicate)
+		mThrowGException("Statement must have a valid predicate");
+	if(!Value)
+		mThrowGException("Statement must have a valid value");
 }
 
 
 //-----------------------------------------------------------------------------
 int GStatement::Compare(const GStatement& statement) const
 {
-	int i(CompareIds(Xi->GetId(),statement.Xi->GetId()));
+	int i;
+
+	// Compare first the two subjects
+	i=CompareIds(Subject->GetObjType(),statement.Subject->GetObjType());
 	if(i)
 		return(i);
-	i=CompareIds(Xj->GetId(),statement.Xj->GetId());
+	i=CompareIds(Subject->GetId(),statement.Subject->GetId());
 	if(i)
 		return(i);
-	return(CompareIds(Predicate->GetId(),statement.Predicate->GetId()));
+
+	// Compare then the two predicayes
+	i=CompareIds(Predicate->GetObjType(),statement.Predicate->GetObjType());
+	if(i)
+		return(i);
+	i=CompareIds(Predicate->GetId(),statement.Predicate->GetId());
+	if(i)
+		return(i);
+
+	// Compare then the two values
+	i=CompareIds(Value->GetObjType(),statement.Value->GetObjType());
+	if(i)
+		return(i);
+	i=CompareIds(Value->GetId(),statement.Value->GetId());
+	if(i)
+		return(i);
+
+	// The two statements are identical
+	return(0);
 }
 
 
@@ -68,6 +95,13 @@ int GStatement::Compare(const GStatement& statement) const
 void GStatement::SetId(size_t id)
 {
 	Id=id;
+}
+
+
+//-----------------------------------------------------------------------------
+void GStatement::SetWeight(double weight)
+{
+	Weight=weight;
 }
 
 

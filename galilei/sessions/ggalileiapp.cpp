@@ -94,15 +94,15 @@ GGALILEIApp* GALILEI::GALILEIApp=0;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GGALILEIApp::GMIMEFilter
+class GGALILEIApp::cFilter
 {
 public:
 	RString Name;
 	GFilter* Filter;
 
-	GMIMEFilter(const char* n,GFilter* f) : Name(n), Filter(f) {}
-	int Compare(const GMIMEFilter* f) const {return(Name.Compare(f->Name));}
-	int Compare(const GMIMEFilter& f) const {return(Name.Compare(f.Name));}
+	cFilter(const char* n,GFilter* f) : Name(n), Filter(f) {}
+	int Compare(const cFilter* f) const {return(Name.Compare(f->Name));}
+	int Compare(const cFilter& f) const {return(Name.Compare(f.Name));}
 	int Compare(const R::RString& t) const {return(Name.Compare(t));}
 };
 
@@ -115,15 +115,15 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GGALILEIApp::GMIMEExt
+class GGALILEIApp::cExt
 {
 public:
 	RString Name;
 	RString Ext;
 
-	GMIMEExt(const RString& n,const RString& e) : Name(n), Ext(e) {}
-	int Compare(const GMIMEExt* f) const {return(Name.Compare(f->Ext));}
-	int Compare(const GMIMEExt& f) const {return(Name.Compare(f.Ext));}
+	cExt(const RString& n,const RString& e) : Name(n), Ext(e) {}
+	int Compare(const cExt* f) const {return(Name.Compare(f->Ext));}
+	int Compare(const cExt& f) const {return(Name.Compare(f.Ext));}
 	int Compare(const R::RString& e) const {return(Name.Compare(e));}
 	int Compare(const char* e) const {return(Name.Compare(e));}
 };
@@ -141,7 +141,7 @@ public:
 GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
 	: RApplication(name,argc,argv), RContainer<GPlugInManager,true,false>(20,10),
 	  Sessions(10), LoadDialogs(dlg), PlugInsPaths(10), MIMES(50,25),
-	  Exts(50,25), Log("/var/log/galilei/galilei.log")
+	  Exts(50,25), Schemes(50,25), Log("/var/log/galilei/galilei.log")
 {
 	Log.Open(RIO::Append);
 
@@ -184,12 +184,16 @@ GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
 			// Go through all file extension
 			RNodeCursor<RXMLStruct,RXMLTag> Cur2(Cur());
 			for(Cur2.Start();!Cur2.End();Cur2.Next())
-				Exts.InsertPtr(new GMIMEExt(MIME,Cur2()->GetAttrValue("ext")));
+				Exts.InsertPtr(new cExt(MIME,Cur2()->GetAttrValue("ext")));
 		}
+	}
+	catch(RException& e)
+	{
+		cerr<<e.GetMsg()<<endl;
 	}
 	catch(...)
 	{
-		//cerr<<"Cannot load '/etc/galilei/galilei.mimes'"<<endl;
+		cerr<<"Cannot load '/etc/galilei/galilei.mimes'"<<endl;
 	}
 
 	GALILEIApp=this;
@@ -225,7 +229,7 @@ void GGALILEIApp::Init(void)
 
 
 //------------------------------------------------------------------------------
-GSession* GGALILEIApp::GetSession(const R::RString& name,bool created)
+GSession* GGALILEIApp::GetSession(const R::RString& name,bool created,GSlot* slot)
 {
 	// If the session exist -> return it
 	GSession* Session(Sessions.GetPtr(name));
@@ -245,6 +249,8 @@ GSession* GGALILEIApp::GetSession(const R::RString& name,bool created)
 			Cur()->Create(Session);
 		Session->Init();
 		Log.WriteLog("Session '"+name+"' created",false);
+		if(slot)
+			slot->WriteStr("Session '"+name+"' created");
 
 		// Initialize the storage and load the ontology
 		Storages->InitPlugIns(Session);
@@ -254,21 +260,32 @@ GSession* GGALILEIApp::GetSession(const R::RString& name,bool created)
 		if(!Storage)
 			mThrowGException("Cannot create a storage for session '"+name+"'");
 		Session->Storage=Storage;
-		Storage->LoadConceptTypes();
-		Storage->LoadConcepts();
-		Storage->LoadPredicates();
-		Storage->LoadStatements();
+		if(slot)
+			slot->WriteStr("Load Concept Types");
+		Storage->LoadObjs(pConceptType);
+		if(slot)
+			slot->WriteStr("Load Concepts");
+		Storage->LoadObjs(pConcept);
+		if(slot)
+			slot->WriteStr("Load Statements");
+		Storage->LoadObjs(pStatement);
 		Log.WriteLog("Storages for session '"+name+"' created",false);
+		if(slot)
+			slot->WriteStr("Storages for session '"+name+"' created");
 
 		// Initialize the languages
 		Langs->InitPlugIns(Session);
 		Log.WriteLog("Languages for session '"+name+"' created",false);
+		if(slot)
+			slot->WriteStr("Languages for session '"+name+"' created");
 
 		// Initialize the rest of the plug-ins
 		for(Cur.Start();!Cur.End();Cur.Next())
 			if((Cur()!=Storages)&&(Cur()!=Langs))
 				Cur()->InitPlugIns(Session);
 		Log.WriteLog("Plug-ins connected to session '"+name+"'",false);
+		if(slot)
+			slot->WriteStr("Plug-Ins connected to session '"+name+"' created");
 
 		// Return the session
 		Session->State=osLatest;
@@ -571,7 +588,7 @@ GFilter* GGALILEIApp::FindMIMEType(GDoc* doc) const
 	if(doc->GetMIMEType().IsEmpty())
 	{
 		// Goes through all defined MIME types
-		RCursor<GMIMEExt> Cur(Exts);
+		RCursor<cExt> Cur(Exts);
 		for(Cur.Start();!Cur.End();Cur.Next())
 			if(fnmatch(Cur()->Ext,doc->GetName(),0)!=FNM_NOMATCH)
 			{
@@ -583,7 +600,7 @@ GFilter* GGALILEIApp::FindMIMEType(GDoc* doc) const
 		mThrowGException("Cannot find MIME type for "+doc->GetName());
 
 	// If no filter -> Exception
-	GMIMEFilter* ptr=MIMES.GetPtr(doc->GetMIMEType());
+	cFilter* ptr=MIMES.GetPtr(doc->GetMIMEType());
 	if(!ptr)
 		mThrowGException("Cannot treat the MIME type '"+doc->GetMIMEType()+"'");
 	return(ptr->Filter);
@@ -591,19 +608,37 @@ GFilter* GGALILEIApp::FindMIMEType(GDoc* doc) const
 
 
 //------------------------------------------------------------------------------
+GFilter* GGALILEIApp::FindScheme(GDoc* doc) const
+{
+	if(!doc)
+		mThrowGException("Invalid document passed");
+
+	cFilter* ptr=Schemes.GetPtr(RURI(doc->GetName()).GetScheme());
+	return(ptr->Filter);
+}
+
+
+//------------------------------------------------------------------------------
+void GGALILEIApp::AddScheme(const char* mime,GFilter* f)
+{
+	Schemes.InsertPtr(new cFilter(mime,f));
+}
+
+
+//------------------------------------------------------------------------------
 void GGALILEIApp::AddMIME(const char* mime,GFilter* f)
 {
-	MIMES.InsertPtr(new GMIMEFilter(mime,f));
+	MIMES.InsertPtr(new cFilter(mime,f));
 }
 
 
 //------------------------------------------------------------------------------
 void GGALILEIApp::DelMIMES(GFilter* f)
 {
-	RContainer<GMIMEFilter,false,false> Rem(5,5);
+	RContainer<cFilter,false,false> Rem(5,5);
 
 	// Find All MIMES types to deleted
-	RCursor<GMIMEFilter> Cur(MIMES);
+	RCursor<cFilter> Cur(MIMES);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		if(Cur()->Filter==f)

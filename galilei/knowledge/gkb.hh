@@ -63,21 +63,21 @@ inline R::RCursor<GConceptType> GKB::GetObjs(const GConceptType*) const
 //------------------------------------------------------------------------------
 inline size_t GKB::GetNbObjs(const GConcept*) const
 {
-	return(Concepts.GetNb());
+	return(ConceptsByIds.GetNb());
 }
 
 
 //------------------------------------------------------------------------------
 inline size_t GKB::GetMaxObjId(const GConcept*) const
 {
-	if(!Concepts.GetNb())
+	if(!ConceptsByIds.GetNb())
 		return(0);
-	return(Concepts[Concepts.GetMaxPos()]->Id);
+	return(ConceptsByIds[ConceptsByIds.GetMaxPos()]->Id);
 }
 
 
 //------------------------------------------------------------------------------
 inline R::RCursor<GConcept> GKB::GetObjs(const GConcept*) const
 {
-	return(R::RCursor<GConcept>(Concepts));
+	return(R::RCursor<GConcept>(ConceptsByIds));
 }
