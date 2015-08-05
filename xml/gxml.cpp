@@ -216,7 +216,7 @@ XMLSchema* GXML::GetSchema(const RString& uri)
 	XMLSchema* Schema(Schemas.GetInsertPtr(uri));
 	if(!Schema->Type)
 	{
-		Schema->Type=Session->GetObj(pConceptType,ccSemantic,uri,RString::Null);
+		Schema->Type=Session->InsertObj(pConceptType,ccSemantic,uri,RString::Null);
 		Schema->MetaConcept=Schema->Type->GetSession()->InsertObj(pConcept,Schema->Type,uri);
 	}
 	return(Schema);
