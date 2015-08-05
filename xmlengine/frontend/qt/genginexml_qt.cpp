@@ -90,6 +90,7 @@ bool Configure(GPlugIn* fac)
 	Dlg.Weight->setValue(fac->FindParam<RParamValue>("Weight")->GetDouble());
 	Dlg.BeginWindowPos->setValue(fac->FindParam<RParamValue>("BeginWindowPos")->GetUInt());
 	Dlg.EndWindowPos->setValue(fac->FindParam<RParamValue>("EndWindowPos")->GetUInt());
+	Dlg.MaxNbTrees->setValue(fac->FindParam<RParamValue>("MaxNbTrees")->GetUInt());
 	Dlg.OnlyDocs->setChecked(fac->FindParam<RParamValue>("OnlyDocs")->GetBool());
 
 	if(Dlg.exec())
@@ -99,6 +100,7 @@ bool Configure(GPlugIn* fac)
 		fac->FindParam<RParamValue>("Weight")->SetDouble(Dlg.Weight->value());
 		fac->FindParam<RParamValue>("BeginWindowPos")->SetUInt(Dlg.BeginWindowPos->value());
 		fac->FindParam<RParamValue>("EndWindowPos")->SetUInt(Dlg.EndWindowPos->value());
+		fac->FindParam<RParamValue>("MaxNbTrees")->SetUInt(Dlg.MaxNbTrees->value());
 		fac->FindParam<RParamValue>("OnlyDocs")->SetBool(Dlg.OnlyDocs->isChecked());
 
 		return(true);

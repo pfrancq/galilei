@@ -78,6 +78,11 @@ class GEngineXML : public RObject, public GEngine
 	RContainer<cTreeRef,true,true> Trees;
 
 	/**
+	 * Maximum number of trees.
+	 */
+	size_t MaxNbTrees;
+
+	/**
 	 * Beginning synaptic position of a window (<=0).
 	 */
 	int BeginWindowPos;

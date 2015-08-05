@@ -97,7 +97,7 @@ public:
 //------------------------------------------------------------------------------
 GEngineXML::GEngineXML(GSession* session,GPlugInFactory* fac)
 	: RObject(fac->GetMng()->GetName()+"|"+fac->GetList()+"|"+fac->GetName()),
-	  GEngine(session,fac), NbResults(40), Trees(1000), DocIds(5000), Results(30)
+	  GEngine(session,fac), NbResults(40), Trees(1000), MaxNbTrees(1000), DocIds(5000), Results(30)
 {
 }
 
@@ -111,6 +111,7 @@ void GEngineXML::CreateConfig(void)
 	InsertParam(new RParamValue("OnlyDocs",false,"Retrieve only documents?"));
 	InsertParam(new RParamValue("BeginWindowPos",30,"Beginning synaptic position of a window (<=0)."));
 	InsertParam(new RParamValue("EndWindowPos",30,"Ending synaptic position of a window (>=0)."));
+	InsertParam(new RParamValue("MaxNbTrees",1000,"Maximum number of description to hold in memory (>=0)."));
 }
 
 
@@ -123,6 +124,9 @@ void GEngineXML::ApplyConfig()
 	OnlyDocs=FindParam<RParamValue>("OnlyDocs")->GetBool();
 	BeginWindowPos=FindParam<RParamValue>("BeginWindowPos")->GetUInt();
 	EndWindowPos=FindParam<RParamValue>("EndWindowPos")->GetUInt();
+	MaxNbTrees=FindParam<RParamValue>("MaxNbTrees")->GetUInt();
+	if((MaxNbTrees<1000)||(MaxNbTrees>1000000))
+		MaxNbTrees=1000;
 }
 
 
@@ -478,10 +482,10 @@ const GConceptTree* GEngineXML::GetTree(size_t docid)
 	}
 
 	// Look if the container is full and remove the less used structure
-	if(Trees.GetNb()==Trees.GetMaxNb())
+	if(Trees.GetNb()>=MaxNbTrees)
 	{
 		// Cache is full -> The block must replace another one
-		// Select the less used block in cache
+		// Select the less 10% used blocks in cache
 		Trees.ReOrder(sortOrderAccess);
 
 		// Find the first tree not used
@@ -493,7 +497,8 @@ const GConceptTree* GEngineXML::GetTree(size_t docid)
 		if(Cur.End())
 		{
 			// Must increase the container
-			Trees.InsertPtr(Tree=new cTreeRef(docid));
+			//Trees.InsertPtr(Tree=new cTreeRef(docid));
+			mThrowGException("Memory allocated ("+RString::Number(MaxNbTrees)+")from the trees is full");
 		}
 		else
 		{

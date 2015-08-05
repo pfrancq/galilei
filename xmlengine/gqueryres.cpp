@@ -81,9 +81,10 @@ void GQueryRes::AddDoc(GEngineXML* engine,GDoc* doc,GConcept* concept)
 	{
 		if(engine->OnlyDocs)
 		{
-			// Select the whole document
+			// Select the whole document --> and only one fragment
 			bool Exist;
 			Occurs->AddFragment(doc,Cur(),0,Tree->GetMaxPos(Tree->GetNearestNode(0),engine->EndWindowPos),Exist);
+			return;
 		}
 		else
 		{
