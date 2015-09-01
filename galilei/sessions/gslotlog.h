@@ -52,7 +52,6 @@ namespace GALILEI{
 /**
 * The GSlotLog class provides a receiver of signals of a GALILEI session using a
 * log file to store the outputs.
-* @author Pascal Francq
 * @short Log File Slot.
 */
 class GSlotLog : public GSlot, public R::RTextFile

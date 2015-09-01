@@ -52,7 +52,6 @@ namespace GALILEI{
 /**
  * The QGDescription class provides a Qt Widget to display the description.
  * It shows the name of the different elements.
- * @author Pascal Francq
  * @short Description Widget
  */
 class QGDescription : public QWidget

@@ -101,7 +101,7 @@ GSearchQueryNode::tOperator GSearchQueryNode::GetOperator(const RChar c)
 		return(oINC);
 	if(c=='.')
 		return(oSIB);
-	if(c=='-')
+	if(c=='~')
 		return(oNOT);
 	return(oNOP);
 }

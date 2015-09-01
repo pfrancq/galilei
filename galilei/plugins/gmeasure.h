@@ -56,7 +56,6 @@ namespace GALILEI{
  * agreement ratios between profiles, ...).
  *
  * See the documentation related to GPlugIn for more general information.
- * @author Pascal Francq
  * @short Measures.
 */
 class GMeasure : public GPlugIn

@@ -48,7 +48,6 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 /**
 * This class represent a virtual community, i.e. a group of profiles.
-* @author Pascal Francq
 * @short Community.
 */
 class GCommunity : public GGroup<GProfile,GCommunity,otCommunity>

@@ -104,21 +104,19 @@ public:
 	 * @param spos           Syntactic position of the fragment centre.
 	 * @param begin          Beginning of the fragment.
 	 * @param end            Ending of the fragment.
-	 * @param children       Must all the children be considered as selecting the
-	 *                       fragment (true) or not (false).
 	 * @param exist          Set by the method to specify if the fragment already
 	 *                       exists (true) or was created (false).
 	 * @return a pointer to a GDocFragment.
     */
-	GDocFragment* AddFragment(const GConceptNode* node,size_t pos,size_t spos,size_t begin,size_t end,bool children,bool& exist);
+	GDocFragment* AddFragment(const GConceptRecord* rec,size_t pos,size_t spos,size_t begin,size_t end,bool& exist);
 
 	/**
-	 * Add a fragment related to a given node. The fragment is limited to the
+	 * Add a fragment related to a given record. The fragment is limited to the
 	 * concept node.
 	 * @param node           Concept node associated to the fragment.
 	 * @return a pointer to a GDocFragment.
     */
-	GDocFragment* AddFragment(const GConceptNode* node);
+	GDocFragment* AddFragment(const GConceptRecord* rec);
 
 	/**
 	 * Add a fragment selected by a child node.
@@ -129,13 +127,11 @@ public:
 	 * @param spos           Syntactic position of the fragment centre.
 	 * @param begin          Beginning of the fragment.
 	 * @param end            Ending of the fragment.
-	 * @param children       Must all the children be considered as selecting the
-	 *                       fragment (true) or not (false).
 	 * @param exist          Set by the method to specify if the fragment already
 	 *                       exists (true) or was created (false).
 	 * @return a pointer to a GDocFragment.
     */
-	GDocFragment* AddFragment(const GConceptNode* node,const GConceptNode* child,size_t pos,size_t spos,size_t begin,size_t end,bool children,bool& exist);
+	GDocFragment* AddFragment(const GConceptRecord* rec,const GConceptRecord* child,size_t pos,size_t spos,size_t begin,size_t end,bool& exist);
 
 	/**
 	 * Add a fragment selected by a child node. The fragment is limited to the
@@ -146,7 +142,7 @@ public:
 	 *                       exists (true) or was created (false).
 	 * @return a pointer to a GDocFragment.
     */
-	GDocFragment* AddFragment(const GConceptNode* node,const GConceptNode* child,bool& exist);
+	GDocFragment* AddFragment(const GConceptRecord* rec,const GConceptRecord* child,bool& exist);
 
 	/**
 	 * Add a document that represents the whole document.
@@ -158,7 +154,7 @@ public:
 	 *                       exists (true) or was created (false).
     * @return a pointer to a GDocFragment.
     */
-	GDocFragment* AddFragment(GDoc* doc,const GConceptNode* child,size_t begin,size_t end,bool& exist);
+	GDocFragment* AddFragment(GDoc* doc,const GConceptRecord* child,size_t begin,size_t end,bool& exist);
 
 	/**
 	 * Copy a fragment into the container.

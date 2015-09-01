@@ -437,7 +437,6 @@ enum tStatementElement
 //------------------------------------------------------------------------------
 /**
 * The GException class provides a basic representation for an exception.
-* @author Pascal Francq
 * @short Basic Exception.
 */
 class GException : public R::RException
@@ -503,6 +502,7 @@ class GTokenizer;
 class GAnalyzer;
 class GTokenOccur;
 class GToken;
+class GConceptRecord;
 class GConceptNode;
 class GConceptNodes;
 class GConceptTree;

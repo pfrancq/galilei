@@ -49,6 +49,7 @@
 #include <gdescriptionobject.h>
 #include <gconceptnode.h>
 #include <gconcepttree.h>
+#include <gdocfragment.h>
 
 
 //------------------------------------------------------------------------------
@@ -87,7 +88,11 @@ namespace GALILEI{
  * @endcode
  * The reason for this trick is that C++ does not managed methods with the same
  * name, the same parameters but different return types.
- * @author Pascal Francq
+ *
+ * For the storage of trees (to store the full description if documents), each
+ * node is stored as a record (GConceptRecord). The nodes are stored with using
+ * a depth-first approach: the first root node is stored, followed by its first
+ * child node, followed by its first grandchild nodes, etc.
  * @short Stored Objects.
  */
 template<class C,const R::hNotification* hEvents>
@@ -370,6 +375,150 @@ private:
 	 * @param obj            Pseudo-parameter.
 	 */
 	void FlushTree(const C* obj);
+
+	/**
+	 * Seek the store to the beginning of a record of an object.
+    * @param obj            Pointer to the object.
+    * @param idx            Index of the object.
+    */
+	void SeekRecord(const C* obj,size_t idx);
+
+public:
+
+	/**
+	 * Find the first record that correspond to a given object starting from a
+	 * given index.
+	 *
+	 * The first record is not necessary the highest in the hierarchy, since a
+	 * depth-first search is used.
+    * @param obj            Pointer to the object.
+    * @param rec            Record that will be filled with the result. The
+	 *                       concept to be searched must be set.
+	 * @param idx            Index where to start the search.
+    * @return true of a record was found.
+    */
+	bool FindDepthFirstRecord(const C* obj,GConceptRecord& rec,size_t idx);
+
+	/**
+	 * Find a record at a given syntactic position.
+    * @param obj            Pointer to the object.
+    * @param rec            Record that will be filled with the result.
+    * @param synpos         Syntactic position.
+    * @return true of a record was found.
+    */
+	bool FindRecord(const C* obj,GConceptRecord& rec,size_t synpos);
+
+	/**
+	 * Find the parent record of a given record.
+    * @param obj            Pointer to the object.
+    * @param search         Record that contains the record for which the
+	 *                       parent must be found.
+	 * @param rec            Record that will be filled with the result.
+    * @return true of a parent record was found.
+    */
+	bool FindParentRecord(const C* obj,const GConceptRecord& search,GConceptRecord& rec);
+
+	/**
+	 * Find the first child record that correspond to a given record and starting
+	 * from a given index.
+	 *
+    * @param obj            Pointer to the object.
+    * @param search         Record that contains the record for which the
+	 *                       parent must be found.
+	 * @param rec            Record that will be filled with the result.
+	 * @param idx            Index where to start the search.
+    * @return true of a record was found.
+    */
+	bool FindFirstChildRecord(const C* obj,const GConceptRecord& search,GConceptRecord& rec,size_t idx);
+
+	/**
+	 * Find the nearest record at a given syntactic position. In practice, the
+	 * method searches alternatively before and after the given position.
+    * @param obj            Pointer to the object.
+    * @param rec            Record that will be filled with the result.
+    * @param synpos         Syntactic position.
+    * @return true of a record was found.
+    */
+	bool FindNearestRecord(const C* obj,GConceptRecord& rec,size_t synpos);
+
+	/**
+	 * Find the nearest record at a given syntactic position.  In practice, the
+	 * method searches the first record after or before the given position. If no
+	 * record is found, it searches in the order direction.
+    * @param obj            Pointer to the object.
+    * @param rec            Record that will be filled with the result.
+    * @param synpos         Syntactic position.
+	 * @param after          Search after the position (true) or before it
+	 *                       (false)?
+    * @return true if a record was found.
+    */
+	bool FindNearestRecord(const C* obj,GConceptRecord& rec,size_t synpos,bool after);
+
+	/**
+	 * Find the root record (the most common highest record) of two records. If
+	 * at least one of the node doesn't have a parent, no root node can be found.
+    * @param obj            Pointer to the object.
+    * @param rec1           First record.
+    * @param rec2           Second record.
+    * @param rec            Record that will be filled with the result.
+	 * @return true if a root node could be found.
+    */
+	bool FindRootRecord(const C* obj,const GConceptRecord& rec1,const GConceptRecord& rec2,GConceptRecord& rec);
+
+	/**
+	 * Find the minimal position centred on a given record and a number of
+	 * records before.
+    * @param obj            Pointer to the object.
+    * @param rec            Record that contains the record for which the
+	 *                       parent must be found.
+    * @param nbbefore       Maximum number of concept node before.
+    * @return a position.
+    */
+	size_t GetMinPosRecord(const C* obj,const GConceptRecord& rec,size_t nbbefore);
+
+	/**
+	 * Find the maximal position centred on a given record and a number of
+	 * records after.
+    * @param obj            Pointer to the object.
+    * @param rec            Record that contains the record for which the
+	 *                       parent must be found.
+    * @param nbafter        Maximum number of record after.
+    * @return a position.
+    */
+	size_t GetMaxPosRecord(const C* obj,const GConceptRecord& rec,size_t nbafter);
+
+	/**
+	 * Compute the maximal position occupied by a record in an object.
+	 * @param obj            Pointer to the object.
+    * @return a position.
+    */
+	size_t GetMaxPosRecord(const C* obj);
+
+	/**
+	 * Compute the maximal syntactic position occupied by a record in an object.
+	 * @param obj            Pointer to the object.
+    * @return a syntactic position.
+    */
+	size_t GetMaxSyntacticPosRecord(const C* obj);
+
+	/**
+	 * Get the number of child records of a given record.
+    * @param obj            Pointer to the object.
+    * @param rec            Record that contains the record for which the
+	 *                       number must be found.
+    * @return a number.
+    */
+	size_t GetNbChildRecords(const C* obj,const GConceptRecord& rec);
+
+	/**
+	 * Get the total number of child records (including all the children) of a
+	 * given record.
+    * @param obj            Pointer to the object.
+    * @param rec            Record that contains the record for which the
+	 *                       number must be found.
+    * @return a number.
+    */
+	size_t GetNbTotalChildRecords(const C* obj,const GConceptRecord& rec);
 
 	/**
 	 * Destructor.

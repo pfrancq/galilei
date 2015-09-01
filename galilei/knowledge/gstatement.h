@@ -69,7 +69,6 @@ namespace GALILEI{
 * The GKB class maintains two lists of statements: "normal" ones that are
 * stored, and "internal" ones that are just created in memory (for example
 * between a GConceptList and its GConcept).
-* @author Pascal Francq
 * @short Statement
 */
 class GStatement

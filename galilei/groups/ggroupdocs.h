@@ -50,7 +50,6 @@ namespace GALILEI{
 * documents.
 *
 * See the documentation related to GPlugIn for more general information.
-* @author Pascal Francq
 * @short Generic Documents Grouping Method.
 */
 class GGroupDocs : public GPlugIn

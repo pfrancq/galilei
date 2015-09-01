@@ -55,7 +55,6 @@ namespace GALILEI{
  * is used to determine which filter should extracts the text from a document.
  *
  * See the documentation related to GPlugIn for more general information.
- * @author Pascal Francq
  * @short Generic Filter.
  */
 class GFilter : public GPlugIn

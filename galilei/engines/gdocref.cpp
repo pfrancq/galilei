@@ -44,6 +44,7 @@ using namespace R;
 #include <gdocfragment.h>
 #include <gconceptnode.h>
 #include <gconcepttree.h>
+#include <gsession.h>
 using namespace GALILEI;
 
 
@@ -85,7 +86,7 @@ void GDocRef::Clear(void)
 
 
 //-----------------------------------------------------------------------------
-GDocFragment* GDocRef::AddFragment(const GConceptNode* node,size_t pos,size_t spos,size_t begin,size_t end,bool children,bool& exist)
+GDocFragment* GDocRef::AddFragment(const GConceptRecord* rec,size_t pos,size_t spos,size_t begin,size_t end,bool& exist)
 {
 	GDocFragment* Fragment;
 
@@ -96,52 +97,58 @@ GDocFragment* GDocRef::AddFragment(const GConceptNode* node,size_t pos,size_t sp
 		Fragment=Fragments[idx];
 	}
 	else
-		Fragments.InsertPtrAt(Fragment=new GDocFragment(Doc,node,pos,spos,begin,end),idx,false);
-
-	if(node&&children)
-	{
-		RNodeCursor<GConceptTree,GConceptNode> Child(node);
-		for(Child.Start();!Child.End();Child.Next())
-			Fragment->AddChild(Child());
-	}
+		Fragments.InsertPtrAt(Fragment=new GDocFragment(Doc,rec,pos,spos,begin,end),idx,false);
 
 	return(Fragment);
 }
 
 
 //-----------------------------------------------------------------------------
-GDocFragment* GDocRef::AddFragment(const GConceptNode* node)
+GDocFragment* GDocRef::AddFragment(const GConceptRecord* rec)
 {
+	if(!rec)
+		mThrowGException("Null concept record not allowed");
+
 	bool Exist;
-	return(AddFragment(node,node->GetPos(),node->GetSyntacticPos(),node->GetPos(),node->GetTree()->GetMaxPos(node,1),false,Exist));
+	GConceptRecord find;
+	size_t Max(Doc->GetSession()->GetMaxPosRecord(Doc,*rec,1));
+	return(AddFragment(rec,rec->GetPos(),rec->GetSyntacticPos(),rec->GetPos(),Max,Exist));
 }
 
 
 //-----------------------------------------------------------------------------
-GDocFragment* GDocRef::AddFragment(const GConceptNode* node,const GConceptNode* child,size_t pos,size_t spos,size_t begin,size_t end,bool children,bool& exist)
+GDocFragment* GDocRef::AddFragment(const GConceptRecord* rec,const GConceptRecord* child,size_t pos,size_t spos,size_t begin,size_t end,bool& exist)
 {
-	GDocFragment* Fragment(AddFragment(node,pos,spos,begin,end,children,exist));
+	if(!child)
+		mThrowGException("Null concept record not allowed");
+	GDocFragment* Fragment(AddFragment(rec,pos,spos,begin,end,exist));
 	Fragment->AddChild(child);
 	return(Fragment);
 }
 
 
 //-----------------------------------------------------------------------------
-GDocFragment* GDocRef::AddFragment(const GConceptNode* node,const GConceptNode* child,bool& exist)
+GDocFragment* GDocRef::AddFragment(const GConceptRecord* rec,const GConceptRecord* child,bool& exist)
 {
-	size_t Min(node->GetPos());
+	if((!rec)||(!child))
+		mThrowGException("Null concept record not allowed");
+
+	size_t Min(rec->GetPos());
 	if(Min>child->GetPos())
 		Min=child->GetPos();
-	size_t Max(node->GetPos());
+	size_t Max(rec->GetPos());
 	if(Max<child->GetPos())
 		Max=child->GetPos();
-	return(AddFragment(node,child,node->GetPos(),node->GetSyntacticPos(),Min,Max,false,exist));
+	return(AddFragment(rec,child,rec->GetPos(),rec->GetSyntacticPos(),Min,Max,exist));
 }
 
 
 //-----------------------------------------------------------------------------
-GDocFragment* GDocRef::AddFragment(GDoc* doc,const GConceptNode* child,size_t begin,size_t end,bool& exist)
+GDocFragment* GDocRef::AddFragment(GDoc* doc,const GConceptRecord* child,size_t begin,size_t end,bool& exist)
 {
+	if(!child)
+		mThrowGException("Null concept record not allowed");
+
 	GDocFragment* Fragment;
 
 	size_t idx(Fragments.GetIndex(GDocFragment::Search(doc->GetId(),0,true),exist));
@@ -172,7 +179,7 @@ GDocFragment* GDocRef::CopyFragment(const GDocFragment* tocopy,bool& exist)
 	}
 	else
 		Fragments.InsertPtrAt(Fragment=new GDocFragment(tocopy->GetDoc(),
-																	   tocopy->GetNode(),
+																	   tocopy->GetRecord(),
 																	   tocopy->GetPos(),
 																	   tocopy->GetSyntacticPos(),
 																	   tocopy->GetBegin(),
@@ -193,7 +200,7 @@ void GDocRef::CopyFragments(const GDocRef* tocopy)
 		size_t idx(Fragments.GetIndex(GDocFragment::Search(Fragment()->GetDoc()->GetId(),Fragment()->GetPos(),Fragment()->WholeDoc),Find));
 		if(!Find)
 			Fragments.InsertPtrAt(new GDocFragment(Fragment()->GetDoc(),
-															   Fragment()->GetNode(),
+															   Fragment()->GetRecord(),
 															   Fragment()->GetPos(),
 																Fragment()->GetSyntacticPos(),
 																Fragment()->GetBegin(),
@@ -213,11 +220,26 @@ RCursor<GDocFragment> GDocRef::GetFragments(void) const
 //------------------------------------------------------------------------------
 bool GDocRef::FindSibling(GDocFragment* fragment) const
 {
-	GConceptNode* Parent(fragment->GetNode()->GetParent());
-	RCursor<GDocFragment> Nodes(Fragments);
-	for(Nodes.Start();!Nodes.End();Nodes.Next())
+	if(fragment->GetDoc()!=Doc)
+		return(false);
+
+	// If the fragment is the whole document, it has a sibling of course
+	const GConceptRecord* Child(fragment->GetRecord());
+	if(!Child)
+		return(true);
+
+	// Find the parent
+	GConceptRecord Parent;
+	bool HasParent(!Doc->GetSession()->FindParentRecord(Doc,*Child,Parent));
+	RCursor<GDocFragment> Recs(Fragments);
+	for(Recs.Start();!Recs.End();Recs.Next())
 	{
-		if(Nodes()->GetNode()->GetParent()==Parent)
+		const GConceptRecord* Child2(Recs()->GetRecord());
+		if(!Child2)
+			return(true);
+		GConceptRecord Parent2;
+		bool HasParent2(Doc->GetSession()->FindParentRecord(Doc,*Child2,Parent2));
+		if(((!HasParent)&&(!HasParent2))||(HasParent&&HasParent2&&(Parent2==Parent)))
 			return(true);
 	}
 	return(false);
@@ -227,19 +249,31 @@ bool GDocRef::FindSibling(GDocFragment* fragment) const
 //------------------------------------------------------------------------------
 bool GDocRef::FindChild(GDocFragment* fragment) const
 {
-	size_t Depth(fragment->GetNode()->GetSyntacticDepth());
-	RCursor<GDocFragment> Nodes(Fragments);
-	for(Nodes.Start();!Nodes.End();Nodes.Next())
+	if(fragment->GetDoc()!=Doc)
+		return(false);
+	const GConceptRecord* Rec(fragment->GetRecord());
+	if(!Rec)
+		return(true);
+
+	size_t Depth(fragment->GetRecord()->GetSyntacticDepth());
+	RCursor<GDocFragment> Recs(Fragments);
+	for(Recs.Start();!Recs.End();Recs.Next())
 	{
-		if(Nodes()->GetNode()->GetSyntacticDepth()>Depth)
+		if(Recs()->GetRecord()->GetSyntacticDepth()>Depth)
 		{
 			// Search the if one of the parent is node
-			GConceptNode* Parent(Nodes()->GetNode()->GetParent());
-			while(Parent&&(Parent->GetSyntacticDepth()>=Depth))
+			const GConceptRecord* Child(Recs()->GetRecord());
+			if(!Child)
+				return(true);
+
+			GConceptRecord Parent,Search;
+			bool HasParent(Doc->GetSession()->FindParentRecord(Doc,*Child,Parent));
+			while(HasParent&&(Parent.GetSyntacticDepth()>=Depth))
 			{
-				if(Parent==fragment->GetNode())
+				if(Parent==(*Rec))
 					return(false);
-				Parent=Parent->GetParent();
+				Search=Parent;
+				HasParent=Doc->GetSession()->FindParentRecord(Doc,Search,Parent);
 			}
 			return(false);
 		}
@@ -272,7 +306,9 @@ void GDocRef::Reduce(bool force)
 				continue;
 
 			// Verify if the two fragment are force to be merged if they have the same node or if they overlap
-			if((force&&(Fragment()->GetNode()==Fragment2()->GetNode()))||((!force)&&Fragment()->Overlap(Fragment2())))
+			const GConceptRecord* Rec(Fragment()->GetRecord());
+			const GConceptRecord* Rec2(Fragment2()->GetRecord());
+			if((force&&(((!Rec)&&(!Rec2))||(Rec&&Rec2&&((*Rec)==(*Rec2)))))||((!force)&&Fragment()->Overlap(Fragment2())))
 			{
 				Fragment()->Merge(Fragment2());
 				ToDel.InsertPtr(Fragment2());
@@ -294,8 +330,11 @@ void GDocRef::Print(void)
 	RCursor<GDocFragment> Fragment(Fragments);
 	for(Fragment.Start();!Fragment.End();Fragment.Next())
 	{
-		cout<<"\t"<<Fragment()->GetNode()->GetSyntacticPos()<<" ("<<Fragment()->GetNode()->GetConceptId()<<")"<<endl;
-		RCursor<const GConceptNode> Child(Fragment()->GetChildren());
+		if(Fragment()->GetRecord())
+			cout<<"\t"<<Fragment()->GetRecord()->GetSyntacticPos()<<" ("<<Fragment()->GetRecord()->GetConceptId()<<")"<<endl;
+		else
+			cout<<"\tWhole document"<<endl;
+		RCursor<const GConceptRecord> Child(Fragment()->GetChildren());
 		for(Child.Start();!Child.End();Child.Next())
 			cout<<"\t\t"<<Child()->GetSyntacticPos()<<" ("<<Child()->GetConceptId()<<")"<<endl;
 	}

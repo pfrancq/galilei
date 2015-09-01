@@ -48,7 +48,7 @@ namespace GALILEI{
  * associated with a given concept.
  *
  * The nodes are ordered by depths and syntactic positions.
- * @author Concept Node Container.
+ * @short Concept Node Container.
  */
 class GConceptNodes : public R::RContainer<GConceptNode,false,true>
 {

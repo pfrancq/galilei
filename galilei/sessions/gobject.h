@@ -57,8 +57,7 @@ namespace GALILEI{
  * large. But for certain objects, for example those who are predicates, one of
  * these containers can be used. It is then more efficient to verify that it can
  * hold a large number of statements with the method GObject::VerifyStatements.
- * @author Pascal Francq
- * @short Generic Object
+  * @short Generic Object
  */
 class GObject : public R::RObject
 {
@@ -81,7 +80,7 @@ protected:
 
 	/**
 	 * Statements where the object is a subject.
-	 * 
+	 *
 	 * It is ordered to allow the verification that a given statement doesn't
 	 * already exist.
 	 */
@@ -112,7 +111,7 @@ public:
 	 * Copy constructor.
 	 * @param obj            Original object.
 	 */
-	GObject(const GObject* obj);
+	GObject(const GObject& obj);
 
 	/**
 	 * Verify that a given container can hold a given number of statements.
@@ -231,7 +230,6 @@ public:
 	friend class GObjects<GClass,hClasses>;
 	friend class GClasses;
 	friend class GSubjects;
-	friend class GConceptList;
 };
 
 

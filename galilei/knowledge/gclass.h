@@ -52,7 +52,6 @@ namespace GALILEI{
 /**
 * The GClass provides a representation for a group of concepts. All the classes
 * are part of tree.
-* @author Pascal Francq
 * @short Concepts Class.
 */
 class GClass : public R::RNode<GClasses,GClass,false>, public GDescriptionObject<GClass>

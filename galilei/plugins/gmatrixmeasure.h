@@ -91,7 +91,6 @@ namespace GALILEI{
 *
 * @remarks The class supposes that the identifiers of the elements are continuous and
 * that the first identifier is one.
-* @author Pascal Francq.
 * @short Matrix Measure.
 */
 class GMatrixMeasure : public R::RObject, public GMeasure

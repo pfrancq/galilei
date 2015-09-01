@@ -63,7 +63,6 @@ namespace GALILEI{
  * for documents and communities for profiles).
  *
  * It is possible to use some documents and subjects only.
- * @author Pascal Francq.
  * @short Subjects
  */
 class GSubjects : virtual GKB, public R::RTree<GSubjects,GSubject,true>

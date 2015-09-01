@@ -49,7 +49,6 @@ namespace GALILEI{
 * The GConceptRef class provides a representation for reference of a given
 * concept in a vector. In practice, it is composed from a concept and an
 * associated weight.
-* @author Pascal Francq
 * @short Concept Reference.
 */
 class GConceptRef

@@ -101,35 +101,35 @@ private:
 	* Add a fragment from a known document as result to the meta-engine. In
 	* practice, it adds an entry to the container of results.
 	* @param doc             Document.
-	* @param node            Concept node.
+	* @param rec             Concept record
 	* @param pos             Position to the fragment to extract.
 	* @param spos            Syntactic position of the fragment centre.
 	* @param first           First concept found.
 	* @param last            Last concept found.
-	* @param children        Must all the children be considered as selecting the
-	*                        fragment (true) or not (false).
 	* @param ranking         Ranking of the document given by the engine
 	*                        (\f$0\leq ranking \leq 1\f$).
 	* @param engine          Engine from which the result come.
+	* @warning The deallocation of the record must be managed by the caller.
+	* @return a pointer to a GDocFragment.
 	*/
-	void AddResult(GDoc* doc,const GConceptNode* node,size_t pos,size_t spos,size_t first,size_t last,bool children,double ranking,GEngine* engine);
+	GDocFragment* AddResult(GDoc* doc,const GConceptRecord* rec,size_t pos,size_t spos,size_t first,size_t last,double ranking,GEngine* engine);
 
 	/**
 	* Add a fragment from a known document as result to the meta-engine. In
 	* practice, it adds an entry to the container of results.
 	* @param docid           Identifier of the document.
-	* @param node            Concept node.
+	* @param rec             Concept record
 	* @param pos             Position to the fragment to extract.
 	* @param spos            Syntactic position of the fragment centre.
 	* @param first           First concept found.
 	* @param last            Last concept found.
-	* @param children        Must all the children be considered as selecting the
-	*                        fragment (true) or not (false).
 	* @param ranking         Ranking of the document given by the engine
 	*                        (\f$0\leq ranking \leq 1\f$).
 	* @param engine          Engine from which the result come.
+	* @warning The deallocation of the record must be managed by the caller.
+	* @return a pointer to a GDocFragment.
 	*/
-	void AddResult(size_t docid,const GConceptNode* node,size_t spos,size_t pos,size_t first,size_t last,bool children,double ranking,GEngine* engine);
+	GDocFragment* AddResult(size_t docid,const GConceptRecord* rec,size_t spos,size_t pos,size_t first,size_t last,double ranking,GEngine* engine);
 
 protected:
 

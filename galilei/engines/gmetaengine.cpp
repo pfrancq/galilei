@@ -61,7 +61,7 @@ GMetaEngine::GMetaEngine(GSession* session,GPlugInFactory* fac)
 
 
 //------------------------------------------------------------------------------
-void GMetaEngine::AddResult(GDoc* doc,const GConceptNode* node,size_t pos,size_t spos,size_t first,size_t last,bool children,double ranking,GEngine* engine)
+GDocFragment* GMetaEngine::AddResult(GDoc* doc,const GConceptRecord* rec,size_t pos,size_t spos,size_t first,size_t last,double ranking,GEngine* engine)
 {
 	if(!doc)
 		mThrowGException("Unknown document");
@@ -71,7 +71,7 @@ void GMetaEngine::AddResult(GDoc* doc,const GConceptNode* node,size_t pos,size_t
 	// Insert the fragment
 	bool Exist;
 	GDocRef* Ref(ResultsByDocs.GetInsertPtr(doc));
-	GDocFragment* Fragment(Ref->AddFragment(node,pos,spos,first,last,children,Exist));
+	GDocFragment* Fragment(Ref->AddFragment(rec,pos,spos,first,last,Exist));
 	if(!Exist)
 		engine->Results.InsertPtr(Fragment);
 
@@ -79,15 +79,16 @@ void GMetaEngine::AddResult(GDoc* doc,const GConceptNode* node,size_t pos,size_t
 	GDocFragmentRanks* Ranks(Rankings.GetInsertPtr(Fragment));
 	GDocFragmentRank* Rank(Ranks->AddRanking(ranking,engine->GetName()));
 	FragmentRankAdded(Rank,engine);
+	return(Fragment);
 }
 
 
 //------------------------------------------------------------------------------
-void GMetaEngine::AddResult(size_t docid,const GConceptNode* node,size_t pos,size_t spos,size_t first,size_t last,bool children,double ranking,GEngine* engine)
+GDocFragment* GMetaEngine::AddResult(size_t docid,const GConceptRecord* rec,size_t pos,size_t spos,size_t first,size_t last,double ranking,GEngine* engine)
 {
 	// Find the document reference
 	GDoc* Doc(Session->GetObj(pDoc,docid));
-	AddResult(Doc,node,pos,spos,first,last,children,ranking,engine);
+	return(AddResult(Doc,rec,pos,spos,first,last,ranking,engine));
 }
 
 

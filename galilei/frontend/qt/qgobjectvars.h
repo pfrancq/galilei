@@ -52,8 +52,7 @@ namespace GALILEI{
  * The GGObjectVars provides a widget to manage the information of a given
  * object.
  * @short Object Information Widget
- * @author Pascal Francq
- */
+  */
 class QGObjectVars : public QWidget
 {
 	/**

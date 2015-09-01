@@ -132,7 +132,6 @@ namespace GALILEI{
 * GALILEIApp.SetMeasureParam("Profiles Agreements","Count Method","MinDocs","7");
 * GALILEIApp.SetCurrentMeasure("Profiles Agreements","Count Method");
 * @endcode
-* @author Pascal Francq
 * @short GALILEI Program.
 */
 class GGALILEIPrg : public R::RInterpreter

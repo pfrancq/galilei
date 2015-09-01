@@ -168,6 +168,18 @@ public:
 	using GObjects<GDoc,hDocs>::UpdateIndex;
 	using GObjects<GDoc,hDocs>::LoadIndex;
 	using GObjects<GDoc,hDocs>::BuildIndex;
+	using GObjects<GDoc,hDocs>::FindDepthFirstRecord;
+	using GObjects<GDoc,hDocs>::FindRecord;
+	using GObjects<GDoc,hDocs>::FindParentRecord;
+	using GObjects<GDoc,hDocs>::FindNearestRecord;
+	using GObjects<GDoc,hDocs>::FindRootRecord;
+	using GObjects<GDoc,hDocs>::FindFirstChildRecord;
+	using GObjects<GDoc,hDocs>::GetMaxPosRecord;
+	using GObjects<GDoc,hDocs>::GetMaxSyntacticPosRecord;
+	using GObjects<GDoc,hDocs>::GetMinPosRecord;
+	using GObjects<GDoc,hDocs>::GetMaxPosRecord;
+	using GObjects<GDoc,hDocs>::GetNbChildRecords;
+	using GObjects<GDoc,hDocs>::GetNbTotalChildRecords;
 
 	// Explicit use of methods from GObjects<GTopic,eCreateTopic>
 	using GObjects<GTopic,hTopics>::Clear;

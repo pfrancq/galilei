@@ -60,7 +60,6 @@ namespace GALILEI{
 * @tparam cObj                Object contained.
 * @tparam cGroup              Group.
 * @tparam type                Type of the object.
-* @author Pascal Francq
 * @short Generic Group.
 */
 template<class cObj,class cGroup,tObjType type>

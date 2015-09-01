@@ -34,6 +34,8 @@ const size_t SizeRecNode=sizeof(tTokenType)+sizeof(size_t)+sizeof(size_t)+sizeof
 const size_t SizeT=sizeof(size_t);
 const size_t SizeT2=2*sizeof(size_t);
 const size_t SizeT3=3*sizeof(size_t);
+const size_t SizeRec=sizeof(tTokenType)+5*sizeof(size_t);
+const size_t SizeRec2=2*SizeRec;
 
 
 
@@ -254,7 +256,7 @@ template<class C,const R::hNotification* hEvents>
 template<class C,const R::hNotification* hEvents>
 	C* GObjects<C,hEvents>::GetObj(const C*,size_t id,bool load,bool null)
 {
-	C* Obj(R::RObjectContainer<C,true>::GetObj(id));
+	C* Obj(R::RObjectContainer<C,true>::operator[](id));
 	if(Obj)
 		return(Obj);
 
@@ -695,7 +697,7 @@ template<class C,const R::hNotification* hEvents>
 	    if(!tree.GetNbNodes())
 			return;
 
-		// Position the file to correct block and announce that a given number of bytes will be written
+		// Position the file to the correct block and announce that a given number of bytes will be written
 	    size_t size(SizeT3+(tree.GetNbNodes()*SizeRecNode));
 		 R::RIntKey Key(id);
 	    Tree->Seek(blockid,Key,size);
@@ -728,6 +730,873 @@ template<class C,const R::hNotification* hEvents>
 	if((!CreateTree)||(!Tree))
 		return;
 	Tree->Flush();
+}
+
+
+//------------------------------------------------------------------------------
+template<class C,const R::hNotification* hEvents>
+	void GObjects<C,hEvents>::SeekRecord(const C* obj,size_t idx)
+{
+	if(!Tree)
+		mThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
+
+	try
+	{
+		// Position the file to correct block
+		R::RIntKey Key(obj->GetId());
+		Tree->Seek(obj->GetStructId(),Key);
+
+		// Read the number of nodes, references and top nodes.
+		size_t nbnodes;
+		Tree->Read((char*)&nbnodes,sizeof(size_t));
+		if(idx>=nbnodes)
+			mThrowGException("Index outside the record");
+
+		// Skip nbrefs and topnodes before going to the right record
+		Tree->SeekRel(idx*SizeRec+SizeT2);
+	}
+	catch(R::RIOException e)
+	{
+		std::cerr<<e.GetMsg()<<std::endl;
+		mThrowGException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+template<class C,const R::hNotification* hEvents>
+	bool GObjects<C,hEvents>::FindDepthFirstRecord(const C* obj,GConceptRecord& rec,size_t idx)
+{
+	if(!Tree)
+		mThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
+	if((rec.ConceptId==0)||(rec.ConceptId==R::cNoRef))
+		mThrowGException("Invalid identifier for a "+GetObjType(Type,false,false));
+
+	try
+	{
+		// Position the file to correct block
+		R::RIntKey Key(obj->GetId());
+		Tree->Seek(obj->GetStructId(),Key);
+
+		// Read the number of nodes, references and top nodes.
+		size_t nbnodes,nbrefs,topnodes;
+		Tree->Read((char*)&nbnodes,sizeof(size_t));
+		Tree->Read((char*)&nbrefs,sizeof(size_t));
+		Tree->Read((char*)&topnodes,sizeof(size_t));
+
+		if((!nbnodes)||(idx>=nbnodes))
+		{
+			rec.Type=ttUnknown;
+			rec.ConceptId=R::cNoRef;
+			rec.SyntacticPos=R::cNoRef;
+			rec.Pos=R::cNoRef;
+			rec.SyntacticDepth=R::cNoRef;
+			return(false);
+		}
+
+		// Put the internal cursor to the right index
+		Tree->SeekRel(idx*SizeRec);
+
+		// Parse each node
+		for(size_t i=idx;i<nbnodes;i++)
+		{
+			// Load the information concerning the current node
+			Tree->Read((char*)&rec.Type,sizeof(tTokenType));
+			size_t children,concept;
+			Tree->Read((char*)&concept,sizeof(size_t));
+			Tree->Read((char*)&rec.SyntacticPos,sizeof(size_t));
+			Tree->Read((char*)&rec.Pos,sizeof(size_t));
+			Tree->Read((char*)&rec.SyntacticDepth,sizeof(size_t));
+			Tree->Read((char*)&children,sizeof(size_t));
+
+			if(concept==rec.ConceptId)
+			{
+				rec.Index=i;
+				return(true);
+			}
+		}
+	}
+	catch(R::RIOException e)
+	{
+		std::cerr<<e.GetMsg()<<std::endl;
+		mThrowGException(e.GetMsg());
+	}
+
+	// Nothing was found
+	rec.Type=ttUnknown;
+	rec.SyntacticPos=R::cNoRef;
+	rec.Pos=R::cNoRef;
+	rec.SyntacticDepth=R::cNoRef;
+	return(false);
+}
+
+
+//------------------------------------------------------------------------------
+template<class C,const R::hNotification* hEvents>
+	bool GObjects<C,hEvents>::FindRecord(const C* obj,GConceptRecord& rec,size_t synpos)
+{
+	if(!Tree)
+		mThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
+
+	try
+	{
+		// Position the file to correct block
+		R::RIntKey Key(obj->GetId());
+		Tree->Seek(obj->GetStructId(),Key);
+
+		// Read the number of nodes, references and top nodes.
+		size_t nbnodes,nbrefs,topnodes;
+		Tree->Read((char*)&nbnodes,sizeof(size_t));
+		Tree->Read((char*)&nbrefs,sizeof(size_t));
+		Tree->Read((char*)&topnodes,sizeof(size_t));
+
+		if(!nbnodes)
+		{
+			rec.Type=ttUnknown;
+			rec.ConceptId=R::cNoRef;
+			rec.SyntacticPos=R::cNoRef;
+			rec.Pos=R::cNoRef;
+			rec.SyntacticDepth=R::cNoRef;
+			return(false);
+		}
+
+		// Put the internal cursor to the right index
+		size_t i;
+		if(synpos<nbnodes)
+		{
+			i=synpos+2;
+			Tree->SeekRel(synpos*SizeRec);
+		}
+		else
+		{
+			i=nbnodes+1;
+			Tree->SeekRel((nbnodes-1)*SizeRec);
+		}
+
+		// Parse each node
+		bool Rewind(false);  // Go to the beginning of the previous record?
+		for(;--i;)
+		{
+			if(Rewind)
+				Tree->SeekRel(-SizeRec2);
+			else
+				Rewind=true;
+
+			// Load the information concerning the current node
+			Tree->Read((char*)&rec.Type,sizeof(tTokenType));
+			size_t children;
+			Tree->Read((char*)&rec.ConceptId,sizeof(size_t));
+			Tree->Read((char*)&rec.SyntacticPos,sizeof(size_t));
+			Tree->Read((char*)&rec.Pos,sizeof(size_t));
+			Tree->Read((char*)&rec.SyntacticDepth,sizeof(size_t));
+			Tree->Read((char*)&children,sizeof(size_t));
+
+			if(synpos==rec.SyntacticPos)
+			{
+				rec.Index=i-1;
+				return(true);
+			}
+			else if(synpos>rec.SyntacticPos)
+				break;
+		}
+	}
+	catch(R::RIOException e)
+	{
+		std::cerr<<e.GetMsg()<<std::endl;
+		mThrowGException(e.GetMsg());
+	}
+
+	// Nothing was found
+	rec.Type=ttUnknown;
+	rec.ConceptId=R::cNoRef;
+	rec.SyntacticPos=R::cNoRef;
+	rec.Pos=R::cNoRef;
+	rec.SyntacticDepth=R::cNoRef;
+	return(false);
+}
+
+
+//------------------------------------------------------------------------------
+template<class C,const R::hNotification* hEvents>
+	bool GObjects<C,hEvents>::FindParentRecord(const C* obj,const GConceptRecord& search,GConceptRecord& rec)
+{
+	if(!Tree)
+		mThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
+
+	if((search.Index==0)||(search.SyntacticDepth==0))
+	{
+		rec.Type=ttUnknown;
+		rec.ConceptId=R::cNoRef;
+		rec.SyntacticPos=R::cNoRef;
+		rec.Pos=R::cNoRef;
+		rec.SyntacticDepth=R::cNoRef;
+		return(false);
+	}
+
+	try
+	{
+		// Position the file to correct block
+		R::RIntKey Key(obj->GetId());
+		Tree->Seek(obj->GetStructId(),Key);
+
+		// Read the number of nodes, references and top nodes.
+		size_t nbnodes,nbrefs,topnodes;
+		Tree->Read((char*)&nbnodes,sizeof(size_t));
+		Tree->Read((char*)&nbrefs,sizeof(size_t));
+		Tree->Read((char*)&topnodes,sizeof(size_t));
+
+		if((!nbnodes)||(search.Index>=nbnodes))
+		{
+			rec.Type=ttUnknown;
+			rec.ConceptId=R::cNoRef;
+			rec.SyntacticPos=R::cNoRef;
+			rec.Pos=R::cNoRef;
+			rec.SyntacticDepth=R::cNoRef;
+			return(false);
+		}
+
+		// Put the internal cursor to the right index
+		Tree->SeekRel((search.Index-1)*SizeRec);
+
+		// Parse each previous node : the first that has a lower syntactic depth is the parent
+		bool Rewind(false);  // Go to the beginning of the previous record?
+		for(size_t i=search.Index;--i;)
+		{
+			if(Rewind)
+				Tree->SeekRel(-SizeRec2);
+			else
+				Rewind=true;
+
+			// Load the information concerning the current node
+			Tree->Read((char*)&rec.Type,sizeof(tTokenType));
+			size_t children;
+			Tree->Read((char*)&rec.ConceptId,sizeof(size_t));
+			Tree->Read((char*)&rec.SyntacticPos,sizeof(size_t));
+			Tree->Read((char*)&rec.Pos,sizeof(size_t));
+			Tree->Read((char*)&rec.SyntacticDepth,sizeof(size_t));
+			Tree->Read((char*)&children,sizeof(size_t));
+
+			if(search.SyntacticDepth>rec.SyntacticDepth)
+			{
+				rec.Index=i;
+				return(true);
+			}
+		}
+	}
+	catch(R::RIOException e)
+	{
+		std::cerr<<e.GetMsg()<<std::endl;
+		mThrowGException(e.GetMsg());
+	}
+
+	// Nothing was found
+	rec.Type=ttUnknown;
+	rec.ConceptId=R::cNoRef;
+	rec.SyntacticPos=R::cNoRef;
+	rec.Pos=R::cNoRef;
+	rec.SyntacticDepth=R::cNoRef;
+	return(false);
+}
+
+
+//------------------------------------------------------------------------------
+template<class C,const R::hNotification* hEvents>
+	bool GObjects<C,hEvents>::FindFirstChildRecord(const C* obj,const GConceptRecord& search,GConceptRecord& rec,size_t idx)
+{
+	if(!Tree)
+		mThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
+
+	try
+	{
+		// Position the file to correct block
+		R::RIntKey Key(obj->GetId());
+		Tree->Seek(obj->GetStructId(),Key);
+
+		// Read the number of nodes, references and top nodes.
+		size_t nbnodes,nbrefs,topnodes;
+		Tree->Read((char*)&nbnodes,sizeof(size_t));
+		Tree->Read((char*)&nbrefs,sizeof(size_t));
+		Tree->Read((char*)&topnodes,sizeof(size_t));
+
+		if((!nbnodes)||(search.Index>=nbnodes-1))
+		{
+			rec.Type=ttUnknown;
+			rec.ConceptId=R::cNoRef;
+			rec.SyntacticPos=R::cNoRef;
+			rec.Pos=R::cNoRef;
+			rec.SyntacticDepth=R::cNoRef;
+			return(false);
+		}
+
+		// Put the internal cursor to the right index
+		Tree->SeekRel(search.Index*SizeRec);
+
+		// Load the information concerning the search node
+		Tree->Read((char*)&search.Type,sizeof(tTokenType));
+		size_t children;
+		Tree->Read((char*)&search.ConceptId,sizeof(size_t));
+		Tree->Read((char*)&search.SyntacticPos,sizeof(size_t));
+		Tree->Read((char*)&search.Pos,sizeof(size_t));
+		Tree->Read((char*)&search.SyntacticDepth,sizeof(size_t));
+		Tree->Read((char*)&children,sizeof(size_t));
+		if(idx>search.Index+children)
+		{
+			rec.Type=ttUnknown;
+			rec.ConceptId=R::cNoRef;
+			rec.SyntacticPos=R::cNoRef;
+			rec.Pos=R::cNoRef;
+			rec.SyntacticDepth=R::cNoRef;
+			return(false);
+		}
+
+		// Parse each previous node : the first that has a lower syntactic depth is the parent
+		for(size_t i=search.Index+1;i<nbnodes;)
+		{
+			// Load the information concerning the current node
+			Tree->Read((char*)&rec.Type,sizeof(tTokenType));
+			size_t children;
+			Tree->Read((char*)&rec.ConceptId,sizeof(size_t));
+			Tree->Read((char*)&rec.SyntacticPos,sizeof(size_t));
+			Tree->Read((char*)&rec.Pos,sizeof(size_t));
+			Tree->Read((char*)&rec.SyntacticDepth,sizeof(size_t));
+			Tree->Read((char*)&children,sizeof(size_t));
+
+			if(rec.SyntacticDepth==search.SyntacticDepth+1)
+			{
+				if(i>=idx)
+				{
+					rec.Index=i;
+					return(true);
+				}
+			}
+			else
+				break;
+		}
+
+	}
+	catch(R::RIOException e)
+	{
+		std::cerr<<e.GetMsg()<<std::endl;
+		mThrowGException(e.GetMsg());
+	}
+
+	// Nothing was found
+	rec.Type=ttUnknown;
+	rec.ConceptId=R::cNoRef;
+	rec.SyntacticPos=R::cNoRef;
+	rec.Pos=R::cNoRef;
+	rec.SyntacticDepth=R::cNoRef;
+	return(false);
+}
+
+
+//------------------------------------------------------------------------------
+template<class C,const R::hNotification* hEvents>
+	bool GObjects<C,hEvents>::FindNearestRecord(const C* obj,GConceptRecord& rec,size_t synpos)
+{
+	if(!Tree)
+		mThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
+
+	try
+	{
+		// Position the file to correct block
+		R::RIntKey Key(obj->GetId());
+		Tree->Seek(obj->GetStructId(),Key);
+
+		// Read the number of nodes, references and top nodes.
+		size_t nbnodes,nbrefs,topnodes;
+		Tree->Read((char*)&nbnodes,sizeof(size_t));
+		Tree->Read((char*)&nbrefs,sizeof(size_t));
+		Tree->Read((char*)&topnodes,sizeof(size_t));
+
+		if(!nbnodes)
+			return(false);
+
+		// Put the internal cursor to the right index
+		size_t i;
+		if(synpos<nbnodes)
+		{
+			i=synpos+2;
+			Tree->SeekRel(synpos*SizeRec);
+		}
+		else
+		{
+			i=nbnodes+1;
+			Tree->SeekRel((nbnodes-1)*SizeRec);
+		}
+
+		// Parse each node
+		bool Rewind(false);  // Go to the beginning of the previous record?
+		for(;--i;)
+		{
+			if(Rewind)
+				Tree->SeekRel(-SizeRec2);
+			else
+				Rewind=true;
+
+			// Load the information concerning the current node
+			Tree->Read((char*)&rec.Type,sizeof(tTokenType));
+			size_t children;
+			Tree->Read((char*)&rec.ConceptId,sizeof(size_t));
+			Tree->Read((char*)&rec.SyntacticPos,sizeof(size_t));
+			Tree->Read((char*)&rec.Pos,sizeof(size_t));
+			Tree->Read((char*)&rec.SyntacticDepth,sizeof(size_t));
+			Tree->Read((char*)&children,sizeof(size_t));
+
+			if(synpos==rec.SyntacticPos)
+			{
+				rec.Index=i-1;
+				return(true);
+			}
+			else if(synpos>rec.SyntacticPos)
+				break;
+		}
+
+		// If we are are -> the syntactic position was not found.
+		if(!i)
+		{
+			// First record is the correct one
+			rec.Index=0;
+			return(true);
+		}
+
+		// Read the next record after than
+		GConceptRecord rec2;
+		Tree->Read((char*)&rec2.Type,sizeof(tTokenType));
+		size_t children;
+		Tree->Read((char*)&rec2.ConceptId,sizeof(size_t));
+		Tree->Read((char*)&rec2.SyntacticPos,sizeof(size_t));
+		Tree->Read((char*)&rec2.Pos,sizeof(size_t));
+		Tree->Read((char*)&rec2.SyntacticDepth,sizeof(size_t));
+		Tree->Read((char*)&children,sizeof(size_t));
+
+		if(synpos-rec.SyntacticPos<=rec2.SyntacticPos-synpos)
+		{
+			// Choose the syntactic position just before the one searched
+			rec.Index=i-1;
+			return(true);
+		}
+		else
+		{
+			// Choose the syntactic position just next the one searched
+			rec.Index=i;
+			rec.Type=rec2.Type;
+			rec.ConceptId=rec2.ConceptId;
+			rec.SyntacticPos=rec2.SyntacticPos;
+			rec.Pos=rec2.Pos;
+			rec.SyntacticDepth=rec2.SyntacticDepth;
+			return(true);
+		}
+	}
+	catch(R::RIOException e)
+	{
+		std::cerr<<e.GetMsg()<<std::endl;
+		mThrowGException(e.GetMsg());
+	}
+
+	// Nothing was found
+	rec.ConceptId=R::cNoRef;
+	rec.Type=ttUnknown;
+	rec.SyntacticPos=R::cNoRef;
+	rec.Pos=R::cNoRef;
+	rec.SyntacticDepth=R::cNoRef;
+	return(false);
+}
+
+
+//------------------------------------------------------------------------------
+template<class C,const R::hNotification* hEvents>
+	bool GObjects<C,hEvents>::FindNearestRecord(const C* obj,GConceptRecord& rec,size_t synpos,bool after)
+{
+	if(!Tree)
+		mThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
+
+	try
+	{
+		// Position the file to correct block
+		R::RIntKey Key(obj->GetId());
+		Tree->Seek(obj->GetStructId(),Key);
+
+		// Read the number of nodes, references and top nodes.
+		size_t nbnodes,nbrefs,topnodes;
+		Tree->Read((char*)&nbnodes,sizeof(size_t));
+		Tree->Read((char*)&nbrefs,sizeof(size_t));
+		Tree->Read((char*)&topnodes,sizeof(size_t));
+
+		if(!nbnodes)
+			return(false);
+
+		// Put the internal cursor to the right index
+		size_t i;
+		if(synpos<nbnodes)
+		{
+			i=synpos+2;
+			Tree->SeekRel(synpos*SizeRec);
+		}
+		else
+		{
+			i=nbnodes+1;
+			Tree->SeekRel((nbnodes-1)*SizeRec);
+		}
+
+		// Parse each node
+		bool Rewind(false);  // Go to the beginning of the previous record?
+		for(;--i;)
+		{
+			if(Rewind)
+				Tree->SeekRel(-SizeRec2);
+			else
+				Rewind=true;
+
+			// Load the information concerning the current node
+			Tree->Read((char*)&rec.Type,sizeof(tTokenType));
+			size_t children;
+			Tree->Read((char*)&rec.ConceptId,sizeof(size_t));
+			Tree->Read((char*)&rec.SyntacticPos,sizeof(size_t));
+			Tree->Read((char*)&rec.Pos,sizeof(size_t));
+			Tree->Read((char*)&rec.SyntacticDepth,sizeof(size_t));
+			Tree->Read((char*)&children,sizeof(size_t));
+
+			if(synpos==rec.SyntacticPos)
+			{
+				rec.Index=i-1;
+				return(true);
+			}
+			else if(synpos>rec.SyntacticPos)
+			{
+				if(after)
+					break;
+				else
+				{
+					rec.Index=i-1;
+					return(true);
+				}
+			}
+		}
+
+		// If we are are -> the syntactic position was not found.
+		if(!i)
+		{
+			// First record is the correct one
+			rec.Index=0;
+			return(true);
+		}
+
+		// The next record must be taken
+		Tree->Read((char*)&rec.Type,sizeof(tTokenType));
+		size_t children;
+		Tree->Read((char*)&rec.ConceptId,sizeof(size_t));
+		Tree->Read((char*)&rec.SyntacticPos,sizeof(size_t));
+		Tree->Read((char*)&rec.Pos,sizeof(size_t));
+		Tree->Read((char*)&rec.SyntacticDepth,sizeof(size_t));
+		Tree->Read((char*)&children,sizeof(size_t));
+		rec.Index=i;
+		return(true);
+	}
+	catch(R::RIOException e)
+	{
+		std::cerr<<e.GetMsg()<<std::endl;
+		mThrowGException(e.GetMsg());
+	}
+
+	// Nothing was found
+	rec.ConceptId=R::cNoRef;
+	rec.Type=ttUnknown;
+	rec.SyntacticPos=R::cNoRef;
+	rec.Pos=R::cNoRef;
+	rec.SyntacticDepth=R::cNoRef;
+	return(false);
+}
+
+
+//------------------------------------------------------------------------------
+template<class C,const R::hNotification* hEvents>
+	bool GObjects<C,hEvents>::FindRootRecord(const C* obj,const GConceptRecord& rec1,const GConceptRecord& rec2,GConceptRecord& rec)
+{
+	if(!Tree)
+		mThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
+
+	if((rec1.SyntacticDepth==0)||(rec2.SyntacticDepth==0))
+	{
+		rec.ConceptId=R::cNoRef;
+		rec.Type=ttUnknown;
+		rec.SyntacticPos=R::cNoRef;
+		rec.Pos=R::cNoRef;
+		rec.SyntacticDepth=R::cNoRef;
+		return(false);
+	}
+	if(rec1==rec2)
+	{
+		rec=rec;
+		return(true);
+	}
+
+	try
+	{
+		// Search Method:
+		// 1. Start from the highest index
+		// 2. Find the first record which a syntactic depth lower than rec1 and rec2
+		// 3. If both records were parsed -> it is a common root record
+		// 4. If a record with a syntactic depth of 0 is found before the second record -> no common root record
+
+		// Search the highest index (Idx)
+		size_t Idx;
+		if(rec1.GetIndex()>rec2.GetIndex())
+			Idx=rec1.GetIndex();
+		else
+			Idx=rec2.GetIndex();
+
+		// Start to search from the previous record
+		Idx--;
+		SeekRecord(obj,Idx);
+
+		// Find the first record which a syntactic depth lower than rec1 and rec2
+		bool Cont(true);
+		while(Cont)
+		{
+			// Read the record
+			Tree->Read((char*)&rec.Type,sizeof(tTokenType));
+			size_t children;
+			Tree->Read((char*)&rec.ConceptId,sizeof(size_t));
+			Tree->Read((char*)&rec.SyntacticPos,sizeof(size_t));
+			Tree->Read((char*)&rec.Pos,sizeof(size_t));
+			Tree->Read((char*)&rec.SyntacticDepth,sizeof(size_t));
+			Tree->Read((char*)&children,sizeof(size_t));
+			rec.Index=Idx;
+
+			if((rec.SyntacticDepth<rec1.SyntacticDepth)&&(rec.SyntacticDepth<rec2.SyntacticDepth))
+				Cont=false;
+			else
+			{
+				Tree->SeekRel(-SizeRec2);
+				Idx--;
+			}
+		}
+	}
+	catch(R::RIOException e)
+	{
+		std::cerr<<e.GetMsg()<<std::endl;
+		mThrowGException(e.GetMsg());
+	}
+
+	// Look if both records were parsed
+	if((rec.Index<rec1.Index)&&(rec.Index<rec2.Index))
+		return(true);
+
+	// Nothing was found
+	rec.ConceptId=R::cNoRef;
+	rec.Type=ttUnknown;
+	rec.SyntacticPos=R::cNoRef;
+	rec.Pos=R::cNoRef;
+	rec.SyntacticDepth=R::cNoRef;
+	return(false);
+}
+
+
+//------------------------------------------------------------------------------
+template<class C,const R::hNotification* hEvents>
+	size_t GObjects<C,hEvents>::GetMinPosRecord(const C* obj,const GConceptRecord& rec,size_t nbbefore)
+{
+	if(!Tree)
+		mThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
+
+	if(nbbefore>rec.GetSyntacticPos())
+		nbbefore=0;
+	else
+		nbbefore=rec.GetSyntacticPos()-nbbefore;
+
+	GConceptRecord search;
+	if(!FindNearestRecord(obj,search,nbbefore,false))
+		mThrowGException("Cannot find a valid position");
+	return(search.GetPos());
+}
+
+
+//------------------------------------------------------------------------------
+template<class C,const R::hNotification* hEvents>
+	size_t GObjects<C,hEvents>::GetMaxPosRecord(const C* obj,const GConceptRecord& rec,size_t nbafter)
+{
+	if(!Tree)
+		mThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
+
+	nbafter+=rec.GetSyntacticPos();
+	size_t Max(GetMaxSyntacticPosRecord(obj));
+	if(nbafter>Max)
+		nbafter=Max;
+	GConceptRecord search;
+	if(!FindNearestRecord(obj,search,nbafter,true))
+		mThrowGException("Cannot find a valid position");
+	return(search.GetPos());
+}
+
+
+//------------------------------------------------------------------------------
+template<class C,const R::hNotification* hEvents>
+	size_t GObjects<C,hEvents>::GetMaxPosRecord(const C* obj)
+{
+	if(!Tree)
+		mThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
+
+	try
+	{
+		// Position the file to correct block
+		R::RIntKey Key(obj->GetId());
+		Tree->Seek(obj->GetStructId(),Key);
+
+		// Read the number of nodes, references and top nodes.
+		size_t nbnodes,nbrefs,topnodes;
+		Tree->Read((char*)&nbnodes,sizeof(size_t));
+		Tree->Read((char*)&nbrefs,sizeof(size_t));
+		Tree->Read((char*)&topnodes,sizeof(size_t));
+		if(!nbnodes)
+			return(0);
+
+		// Go to the last record
+		Tree->SeekRel((nbnodes-1)*SizeRec);
+
+		// Load the information concerning the current node
+		tTokenType Type;
+		Tree->Read((char*)&Type,sizeof(tTokenType));
+		size_t children,pos;
+		Tree->Read((char*)&children,sizeof(size_t));
+		Tree->Read((char*)&children,sizeof(size_t));
+		Tree->Read((char*)&pos,sizeof(size_t));
+		Tree->Read((char*)&children,sizeof(size_t));
+		Tree->Read((char*)&children,sizeof(size_t));
+		return(pos);
+	}
+	catch(R::RIOException e)
+	{
+		std::cerr<<e.GetMsg()<<std::endl;
+		mThrowGException(e.GetMsg());
+	}
+	return(0);
+}
+
+
+//------------------------------------------------------------------------------
+template<class C,const R::hNotification* hEvents>
+	size_t GObjects<C,hEvents>::GetMaxSyntacticPosRecord(const C* obj)
+{
+	if(!Tree)
+		mThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
+
+	try
+	{
+		// Position the file to correct block
+		R::RIntKey Key(obj->GetId());
+		Tree->Seek(obj->GetStructId(),Key);
+
+		// Read the number of nodes, references and top nodes.
+		size_t nbnodes,nbrefs,topnodes;
+		Tree->Read((char*)&nbnodes,sizeof(size_t));
+		Tree->Read((char*)&nbrefs,sizeof(size_t));
+		Tree->Read((char*)&topnodes,sizeof(size_t));
+		if(!nbnodes)
+			return(0);
+
+		// Go to the last record
+		Tree->SeekRel((nbnodes-1)*SizeRec);
+
+		// Load the information concerning the current node
+		tTokenType Type;
+		Tree->Read((char*)&Type,sizeof(tTokenType));
+		size_t children,pos;
+		Tree->Read((char*)&children,sizeof(size_t));
+		Tree->Read((char*)&pos,sizeof(size_t));
+		Tree->Read((char*)&children,sizeof(size_t));
+		Tree->Read((char*)&children,sizeof(size_t));
+		Tree->Read((char*)&children,sizeof(size_t));
+		return(pos);
+	}
+	catch(R::RIOException e)
+	{
+		std::cerr<<e.GetMsg()<<std::endl;
+		mThrowGException(e.GetMsg());
+	}
+	return(0);
+}
+
+//------------------------------------------------------------------------------
+template<class C,const R::hNotification* hEvents>
+	size_t GObjects<C,hEvents>::GetNbChildRecords(const C* obj,const GConceptRecord& rec)
+{
+	if(!Tree)
+		mThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
+
+	try
+	{
+		SeekRecord(obj,rec.GetIndex());
+
+		// Load the information concerning the current node
+		GConceptRecord read;
+		Tree->Read((char*)&read.Type,sizeof(tTokenType));
+		size_t children;
+		Tree->Read((char*)&read.ConceptId,sizeof(size_t));
+		Tree->Read((char*)&read.SyntacticPos,sizeof(size_t));
+		Tree->Read((char*)&read.Pos,sizeof(size_t));
+		Tree->Read((char*)&read.SyntacticDepth,sizeof(size_t));
+		Tree->Read((char*)&children,sizeof(size_t));
+		return(children);
+	}
+	catch(R::RIOException e)
+	{
+		std::cerr<<e.GetMsg()<<std::endl;
+		mThrowGException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+template<class C,const R::hNotification* hEvents>
+	size_t GObjects<C,hEvents>::GetNbTotalChildRecords(const C* obj,const GConceptRecord& rec)
+{
+	if(!Tree)
+		mThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
+	size_t Nb(0);
+
+	try
+	{
+	// Position the file to correct block
+		R::RIntKey Key(obj->GetId());
+		Tree->Seek(obj->GetStructId(),Key);
+
+		// Read the number of nodes, references and top nodes.
+		size_t nbnodes,nbrefs,topnodes;
+		Tree->Read((char*)&nbnodes,sizeof(size_t));
+		Tree->Read((char*)&nbrefs,sizeof(size_t));
+		Tree->Read((char*)&topnodes,sizeof(size_t));
+		if(rec.Index+1>=nbnodes)
+			return(0);
+
+		// Go to the next record after rec
+		Tree->SeekRel((rec.Index+1)*SizeRec);
+
+		// Count the number of records with a deeper syntactic depth
+		for(size_t i=rec.Index+1;i<nbnodes;i++)
+		{
+			// Load the information concerning the current node
+			GConceptRecord read;
+			Tree->Read((char*)&read.Type,sizeof(tTokenType));
+			size_t children;
+			Tree->Read((char*)&read.ConceptId,sizeof(size_t));
+			Tree->Read((char*)&read.SyntacticPos,sizeof(size_t));
+			Tree->Read((char*)&read.Pos,sizeof(size_t));
+			Tree->Read((char*)&read.SyntacticDepth,sizeof(size_t));
+			Tree->Read((char*)&children,sizeof(size_t));
+			if(read.SyntacticDepth>=rec.SyntacticDepth)
+				break;
+
+			Nb++;
+		}
+	}
+	catch(R::RIOException e)
+	{
+		std::cerr<<e.GetMsg()<<std::endl;
+		mThrowGException(e.GetMsg());
+	}
+
+	return(Nb);
 }
 
 

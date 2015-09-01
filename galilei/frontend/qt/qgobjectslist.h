@@ -54,7 +54,6 @@ namespace GALILEI{
  * The QGObjectsList provides a widget to list a given set of objects. When the
  * user double clicks on one object, the widget emits a corresponding signal.
  * @short Objects List Widget
- * @author Pascal Francq
  */
 class QGObjectsList : public QWidget
 {

@@ -40,55 +40,25 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <gconceptrecord.h>
 
 
 //------------------------------------------------------------------------------
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
-
 //------------------------------------------------------------------------------
 /**
  * The GConceptNode provides a representation for an occurrence of a concept in
  * a document tree, i.e. a concept node.
- * @author Concept Node.
+ * @short Concept Node.
  */
-class GConceptNode : R::RNode<GConceptTree,GConceptNode,false>
+class GConceptNode : R::RNode<GConceptTree,GConceptNode,false>, public GConceptRecord
 {
 	/**
 	 * Tree of the node.
 	 */
 	GConceptTree* Tree;
-
-	/**
-	 * Type of the token corresponding to the node.
-	 */
-	tTokenType Type;
-
-	/**
-	* Concept Identifier.
-	 */
-	size_t ConceptId;
-
-	/**
-	 * Syntactic position in the document.
-	 */
-	size_t SyntacticPos;
-
-	/**
-	 * Position in the document (in byte).
-	 */
-	size_t Pos;
-
-	/**
-	 * Syntactic depth of the node.
-	 */
-	size_t SyntacticDepth;
-
-	/**
-	 * Index of the node in the main container.
-	 */
-	size_t Index;
 
 public:
 
@@ -99,26 +69,14 @@ public:
 	 * @param conceptid      Identifier of the concept.
 	 * @param synpos         Syntactic position.
 	 * @param pos            Position in the file.
-	 * @param depth          Syntactic depth of the record.
+	 * @param syndepth       Syntactic depth of the record.
 	 */
 	GConceptNode(GConceptTree* tree,tTokenType type,size_t conceptid,size_t synpos,size_t pos,size_t depth);
-
-	/**
-	 * Compare two nodes regarding their depths and positions
-    * @param node           Node to compare with.
-    * @return a number compatible with R::RContainer.
-    */
-	int Compare(const GConceptNode& node) const;
 
 	/**
 	 * Clear the node.
 	 */
 	virtual void Clear(void);
-
-	/**
-    * @return the type of the token corresponding to the node.
-    */
-	tTokenType GetType(void) const {return(Type);}
 
 	/**
     * @return the tree of the node.
@@ -150,31 +108,6 @@ public:
     * @return the total number of child nodes (including all possible children).
     */
 	size_t GetNbTotalNodes(void) const;
-
-	/**
-	 * @return the concept identifier.
-	 */
-	size_t GetConceptId(void) const {return(ConceptId);}
-
-	/**
-	 * @return the syntactic position in the file.
-	 */
-	size_t GetSyntacticPos(void) const {return(SyntacticPos);}
-
-	/**
-	 * @return the position in the file.
-	 */
-	size_t GetPos(void) const {return(Pos);}
-
-	/**
-	 * @return the depth of the record.
-	 */
-	size_t GetSyntacticDepth(void) const {return(SyntacticDepth);}
-
-	/**
-	 * @return the index of the node.
-	 */
-	size_t GetIndex(void) const {return(Index);}
 
 	/**
 	 * Simply print the node information on the screen;

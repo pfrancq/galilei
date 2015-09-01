@@ -81,20 +81,20 @@ void GEngine::Clear(GMetaEngine* metaengine,GSearchQuery*)
 
 
 //------------------------------------------------------------------------------
-void GEngine::AddResult(GDoc* doc,const GConceptNode* node,size_t pos,size_t spos,size_t first,size_t last,bool children,double ranking)
+GDocFragment* GEngine::AddResult(GDoc* doc,const GConceptRecord* rec,size_t pos,size_t spos,size_t first,size_t last,double ranking)
 {
 	if(!MetaEngine)
 		mThrowGException("Cannot call this method because no meta-engine valid");
-	MetaEngine->AddResult(doc,node,pos,spos,first,last,children,ranking,this);
+	return(MetaEngine->AddResult(doc,rec,pos,spos,first,last,ranking,this));
 }
 
 
 //------------------------------------------------------------------------------
-void GEngine::AddResult(size_t docid,const GConceptNode* node,size_t pos,size_t spos,size_t first,size_t last,bool children,double ranking)
+GDocFragment* GEngine::AddResult(size_t docid,const GConceptRecord* rec,size_t pos,size_t spos,size_t first,size_t last,double ranking)
 {
 	if(!MetaEngine)
 		mThrowGException("Cannot call this method because no meta-engine valid");
- 	MetaEngine->AddResult(docid,node,pos,spos,first,last,children,ranking,this);
+ 	return(MetaEngine->AddResult(docid,rec,pos,spos,first,last,ranking,this));
 }
 
 //------------------------------------------------------------------------------

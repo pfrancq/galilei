@@ -52,7 +52,6 @@ namespace GALILEI{
 /**
 * The GSlot class provides a representation for a receiver of signals emit by a
 * GALILEI session.
-* @author Pascal Francq
 * @short Generic Slot.
 */
 class GSlot : public R::RPrgOutput

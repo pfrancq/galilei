@@ -174,28 +174,29 @@ public:
 
 	/**
 	 * Get the node at a given syntactic position.
-    * @param pos             Syntactic position.
+    * @param synpos         Syntactic position.
     * @return a pointer or null if the position is outside the tree.
     */
-	const GConceptNode* GetNode(size_t pos) const {return(Pos.GetPtrAt(pos));}
+	const GConceptNode* GetNode(size_t synpos) const {return(Pos.GetPtrAt(synpos));}
 
 	/**
 	 * Get the nearest node at a given syntactic position. In practice, the
 	 * method searches alternatively before and after the given position.
-    * @param pos             Syntactic position.
+    * @param synpos         Syntactic position.
     * @return a pointer or null if the position is outside the tree.
     */
-	const GConceptNode* GetNearestNode(size_t pos) const;
+	const GConceptNode* GetNearestNode(size_t synpos) const;
 
 	/**
 	 * Get the nearest node at a given syntactic position.  In practice, the
-	 * method searches the first node after or before the given position.
-    * @param pos             Syntactic position.
+	 * method searches the first node after or before the given position. If no
+	 * node is found, it searches in the order direction.
+    * @param synpos          Syntactic position.
 	 * @param after           Search after the position (true) or before it
 	 *                        (false)?
     * @return a pointer or null if the position is outside the tree.
     */
-	const GConceptNode* GetNearestNode(size_t pos,bool after) const;
+	const GConceptNode* GetNearestNode(size_t synpos,bool after) const;
 
 	/**
 	 * Find the root node (the most common highest node) of two nodes. If at

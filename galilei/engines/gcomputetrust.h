@@ -50,7 +50,6 @@ namespace GALILEI{
 * trust computing.
 *
 * See the documentation related to GPlugIn for more general information.
-* @author Pascal Francq
 * @short Generic Trust Computing Method.
 */
 class GComputeTrust : public GPlugIn

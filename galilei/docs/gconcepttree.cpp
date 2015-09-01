@@ -178,11 +178,11 @@ const GConceptNode* GConceptTree::GetRoot(const GConceptNode* node1,const GConce
 
 
 //------------------------------------------------------------------------------
-const GConceptNode* GConceptTree::GetNearestNode(size_t pos) const
+const GConceptNode* GConceptTree::GetNearestNode(size_t synpos) const
 {
 	const GConceptNode* Find(0);
-	size_t before(pos);
-	size_t after(pos);
+	size_t before(synpos);
+	size_t after(synpos);
 	size_t max(GetMaxSyntacticPos());
 
 	while(true)
@@ -215,27 +215,27 @@ const GConceptNode* GConceptTree::GetNearestNode(size_t pos) const
 
 
 //------------------------------------------------------------------------------
-const GConceptNode* GConceptTree::GetNearestNode(size_t pos,bool after) const
+const GConceptNode* GConceptTree::GetNearestNode(size_t synpos,bool after) const
 {
 	const GConceptNode* Find(0);
-	size_t Max(GetMaxSyntacticPos());
+	size_t Max(GetMaxSyntacticPos()),oldpos(synpos);
 	while(true)
 	{
-		Find=Pos.GetPtrAt(pos);
+		Find=Pos.GetPtrAt(synpos);
 		if(Find)
 			break;
 
 		if(after)
 		{
-			pos++;
-			if(pos>Max)
-				break;
+			synpos++;
+			if(synpos>Max)
+				return(GetNearestNode(oldpos,false));
 		}
 		else
 		{
-			if(pos==0)
-				break;
-			pos--;
+			if(synpos==0)
+				return(GetNearestNode(oldpos,true));
+			synpos--;
 		}
 	}
 	return(Find);

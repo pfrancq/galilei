@@ -54,7 +54,6 @@ namespace GALILEI{
 /**
 * The GSimulator class provides a simulator that can be used for validation
 * purposes.
-* @author Pascal Francq, Julien Lamoral and David Wartel.
 * @short Subjects.
 */
 class GSimulator

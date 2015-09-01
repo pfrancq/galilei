@@ -68,7 +68,6 @@ namespace GALILEI{
 *    parameters for the plug-ins, the log file, etc.). All the applications
 *    having the same current session share this configuration file.
 * @short Generic GALILEI Application
-* @author Pascal Francq
 */
 class GGALILEIApp : public R::RApplication, public R::RContainer<GPlugInManager,true,false>
 {

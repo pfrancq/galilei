@@ -35,7 +35,7 @@
 
 //------------------------------------------------------------------------------
 // include files for R Project
-#include <rdblhashcontainer.h>
+#include <rhashcontainer.h>
 
 
 //-----------------------------------------------------------------------------
@@ -74,7 +74,7 @@ class GConceptType : public GObject
 	/**
 	 * Concepts.
 	 */
-	R::RDblHashContainer<GConcept,false> Concepts;
+	R::RContainer<GConcept,false,false> Concepts;
 
 	/**
 	* Short description of the type.
@@ -139,7 +139,7 @@ public:
 	* @return a cursor over the main hash table.
 	* @param obj             Pseudo-parameter.
 	*/
-	R::RCursor<R::RDblHashContainer<GConcept,false>::Hash> GetObjs(const GConcept* obj) const;
+	R::RCursor<GConcept> GetObjs(const GConcept* obj) const {return(R::RCursor<GConcept>(Concepts));}
 
 	/**
 	* Look if a given concept is in the dictionary.
@@ -179,7 +179,8 @@ public:
 	* Get the total number of concepts.
 	* @param obj             Pseudo-parameter.
 	*/
-	inline size_t GetNbObjs(const GConcept* obj) const;
+	inline size_t GetNbObjs(const GConcept* obj) const {return(Concepts.GetNb());
+}
 
 	/**
 	 * Destruct.
@@ -189,19 +190,6 @@ public:
 	friend class GConcept;
 	friend class GKB;
 };
-
-
-//-----------------------------------------------------------------------------
-// inline implementations
-inline size_t GConceptType::GetNbObjs(const GConcept*) const
-{
-	return(Concepts.GetNb());
-}
-inline R::RCursor<R::RDblHashContainer<GConcept,false>::Hash> GConceptType::GetObjs(const GConcept*) const
-{
-	return(R::RCursor<R::RDblHashContainer<GConcept,false>::Hash>(Concepts.GetCursor()));
-}
-
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

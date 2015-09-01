@@ -46,7 +46,6 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 /**
 * This class represent a virtual Topic, i.e. a group of Docs.
-* @author Pascal Francq
 * @short Topic.
 */
 class GTopic : public GGroup<GDoc,GTopic,otTopic>

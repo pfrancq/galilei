@@ -60,7 +60,6 @@ namespace GALILEI{
  *    dlg.Configure(params);
  * }
  * @endcode
- * @author Pascal Francq
  * @short Configuration For Measures Between Two Elements
  */
 class QGMatrixMeasureDlg : public QDialog

@@ -648,9 +648,9 @@ size_t GSession::GetNbObjs(tObjType type) const
 		case otUser:
 			return(GObjects<GUser,hUsers>::Objects.GetNb());
 		case otConcept:
-			return(ConceptsByIds.GetNb());
+			return(Concepts.GetNbObjs());
 		case otConceptType:
-			return(ConceptTypes.GetNb());
+			return(ConceptTypes.GetNbObjs());
 		case otDoc:
 			return(GObjects<GDoc,hDocs>::Objects.GetNb());
 		case otProfile:
@@ -675,9 +675,9 @@ size_t GSession::GetMaxObjId(tObjType type) const
 	switch(type)
 	{
 		case otConcept:
-			if(!ConceptsByIds.GetNb())
-				return(0);
-			return(ConceptsByIds[ConceptsByIds.GetMaxPos()]->GetId());
+			return(Concepts.GetMaxObjId());
+		case otConceptType:
+			return(ConceptTypes.GetMaxObjId());
 		case otDoc:
 			if(!GObjects<GDoc,hDocs>::Objects.GetNb())
 				return(0);
@@ -713,7 +713,9 @@ size_t GSession::GetMaxObjPos(tObjType type) const
 	switch(type)
 	{
 		case otConcept:
-			return(ConceptsByIds.GetMaxPos());
+			return(Concepts.GetMaxObjPos());
+		case otConceptType:
+			return(ConceptTypes.GetMaxObjPos());
 		case otDoc:
 			return(GetMaxObjPos(pDoc));
 		case otTopic:
@@ -738,9 +740,9 @@ GObject* GSession::GetObj(tObjType type,size_t id,bool null)
 	switch(type)
 	{
 		case otConcept:
-			return(ConceptsByIds[id]);
+			return(Concepts[id]);
 		case otConceptType:
-			return(GetObj(pConceptType,id,null));
+			return(ConceptTypes[id]);
 		case otDoc:
 			return(GetObj(pDoc,id,null));
 		case otUser:
@@ -792,11 +794,10 @@ void GSession::VerifyTab(tObjType type,size_t max)
 	switch(type)
 	{
 		case otConcept:
-			ConceptsByIds.VerifyTab(max);
+			Concepts.VerifyTab(max);
 			break;
 		case otConceptType:
 			ConceptTypes.VerifyTab(max);
-			ConceptTypesByIds.VerifyTab(max);
 			break;
 		case otStatement:
 			StatementsByIds.VerifyTab(max);

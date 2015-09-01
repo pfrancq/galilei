@@ -71,7 +71,7 @@ GDocAnalyze::GDocAnalyze(GSession* session)
 	: RDownloadFile(), Doc(0), Data(0),
 	  Session(session), Description(), Tree(0,20000,2000), Tokenizer(0),
 	  MemoryTokens(500), MemoryOccurs(20000),
-	  OrderTokens(27,27,50,20), Tokens(500), Occurs(20000), Top(200), Depths(100,50),
+	  OrderTokens(10000,20,10), Tokens(500), Occurs(20000), Top(200), Depths(100,50),
 	  SyntacticPos(20)
 {
 }
@@ -137,27 +137,22 @@ GTokenOccur* GDocAnalyze::AddToken(const RString& token,tTokenType type,double w
 		return(0);
 
 	// Search for the token
-	GToken* Token;
-	size_t Idx1(token.HashIndex(1)), Idx2(token.HashIndex(2));
-	bool Find;
-	RDblHashContainer<GToken,false>::Hash2* Hash2((*OrderTokens[Idx1])[Idx2]);
-	size_t Idx(Hash2->GetIndex(GToken::Search(token,type),Find));
+	GToken* Token(OrderTokens.GetPtr(GToken::Search(token,type)));
 	if(type==ttUnknown)
 		type=CurTokenType;
 	if(weight==0.0)
 		weight=CurTokenWeight;
 
 	// Create the token (if necessary)
-	if(Find)
+	if(Token)
 	{
-		Token=(*Hash2)[Idx];
 		if(Token->Type!=type)
 			mThrowGException("The token '"+token+"' exists with different token type");
 	}
 	else
 	{
 		Token=CreateToken(token,type);
-		Hash2->InsertPtrAt(Token,Idx,false);
+		OrderTokens.InsertPtr(Token);
 		Token->Index=Tokens.GetNb();
 		Tokens.InsertPtr(Token);
 	}
@@ -405,15 +400,11 @@ void GDocAnalyze::ReplaceToken(GToken* token,RString value)
 
 	// Look first if another token already exist with that value
 	// Search for that token
-	size_t Idx1(value.HashIndex(1)), Idx2(value.HashIndex(2));
-	bool Find;
-	RDblHashContainer<GToken,false>::Hash2* Hash2((*OrderTokens[Idx1])[Idx2]);
-	size_t Idx(Hash2->GetIndex(GToken::Search(value,token->Type),Find));
-
-	if(Find)
+	GToken* Token(OrderTokens.GetPtr(*token));
+	if(Token)
 	{
 		// Merge the two token occurrences.
-		GToken* NewToken((*Hash2)[Idx]);
+		GToken* NewToken(Token);
 		if(NewToken->Type==ttDeleted)
 			NewToken->Type=token->Type;
 		RCursor<GTokenOccur> Occur(token->Occurs);
@@ -453,15 +444,10 @@ void GDocAnalyze::MoveToken(GTokenOccur* occur,R::RString value)
 
 	// Look first if another token already exist with that value
 	// Search for that token
-	size_t Idx1(value.HashIndex(1)), Idx2(value.HashIndex(2));
-	bool Find;
-	RDblHashContainer<GToken,false>::Hash2* Hash2((*OrderTokens[Idx1])[Idx2]);
-	size_t Idx(Hash2->GetIndex(GToken::Search(value,Token->Type),Find));
-
-	if(Find)
+	GToken* NewToken(OrderTokens.GetPtr(GToken::Search(value,Token->Type)));
+	if(NewToken)
 	{
 		// Copy the occurrence from one token to another.
-		GToken* NewToken((*Hash2)[Idx]);
 		if(NewToken->Type==ttDeleted)
 			NewToken->Type=occur->Token->Type;
 		Token->Occurs.DeletePtr(*occur);
@@ -520,15 +506,11 @@ void GDocAnalyze::MoveToken(GTokenOccur* occur,GConcept* concept)
 	// Look first if another token already exist with that concept
 	// Search for that token
 	RString Value(concept->GetName());
-	size_t Idx1(Value.HashIndex(1)), Idx2(Value.HashIndex(2));
-	bool Find;
-	RDblHashContainer<GToken,false>::Hash2* Hash2((*OrderTokens[Idx1])[Idx2]);
-	size_t Idx(Hash2->GetIndex(GToken::Search(Value,Token->Type),Find));
+	GToken* NewToken(OrderTokens.GetPtr(GToken::Search(Value,Token->Type)));
 
-	if(Find)
+	if(NewToken)
 	{
 		// Copy the occurrence from one token to another.
-		GToken* NewToken((*Hash2)[Idx]);
 		if(NewToken->Concept!=concept)
 			mThrowGException("Token '"+Value+"' associated to multiple concepts");
 		if(NewToken->Type==ttDeleted)

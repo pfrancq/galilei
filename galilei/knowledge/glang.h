@@ -60,7 +60,6 @@ namespace GALILEI{
 * - A name ("English") and a code ("en") ;
 * - A set of dictionaries of concepts (stems, stopwords, ...);
 * - A list of words to skip during the analysis.
-* @author Pascal Francq.
 * @short Generic Language.
 */
 class GLang : public R::RLang, public GPlugIn

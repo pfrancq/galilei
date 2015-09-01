@@ -68,7 +68,6 @@ namespace GALILEI{
 /**
 * The GPlugInFactory class provides a template for a generic plug-in factory. A
 * factory handles the loading of the dynamic library containing the plug-in.
-* @author Pascal Francq
 * @short Generic Plug-in Factory.
 */
 class GPlugInFactory
@@ -360,8 +359,7 @@ public:
  *
  * Generally, the best approach is to create internal structures as late as
  * possible.
- * @author Pascal Francq
- * @short Generic Plug-in.
+  * @short Generic Plug-in.
  */
 class GPlugIn
 {

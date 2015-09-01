@@ -52,7 +52,6 @@ namespace GALILEI{
 *
 * In practice, several vectors are used to describe the object (document,
 * profile, community or class) in the tensor space model.
-* @author Pascal Francq
 * @short Concept Vector.
 */
 class GVector : private R::RContainer<GConceptRef,true,true>

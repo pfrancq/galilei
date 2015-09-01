@@ -51,13 +51,13 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GConcept::GConcept(const GConcept* concept)
-	: GObject(concept), Type(concept->Type),
-	  IndexDocs(concept->IndexDocs),
-	  IndexProfiles(concept->IndexProfiles),
-	  IndexCommunities(concept->IndexCommunities),
-	  IndexTopics(concept->IndexTopics),
-	  IndexClasses(concept->IndexClasses)
+GConcept::GConcept(const GConcept& concept)
+	: GObject(concept), Type(concept.Type),
+	  IndexDocs(concept.IndexDocs),
+	  IndexProfiles(concept.IndexProfiles),
+	  IndexCommunities(concept.IndexCommunities),
+	  IndexTopics(concept.IndexTopics),
+	  IndexClasses(concept.IndexClasses)
 {
 }
 
@@ -94,23 +94,12 @@ GConcept::GConcept(GSession* session,size_t id, const R::RString& name, GConcept
 
 
 //-----------------------------------------------------------------------------
-int GConcept::Compare(const GConcept& c) const
+int GConcept::Search(const GConcept& c) const
 {
-	return(GetName().Compare(c.GetName()));
-}
-
-
-//-----------------------------------------------------------------------------
-int GConcept::Compare(const R::RString& name) const
-{
-	return(GetName().Compare(name));
-}
-
-
-//-----------------------------------------------------------------------------
-GConcept* GConcept::DeepCopy(void) const
-{
-	return(new GConcept(this));
+	int i(Type->Compare(c.Type));
+	if(!i)
+		return(GetName().Compare(c.GetName()));
+	return(i);
 }
 
 

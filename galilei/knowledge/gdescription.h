@@ -51,7 +51,6 @@ namespace GALILEI{
  *
  * The GDescriptionObject class provides a generic class for an object described
  * as a tensor.
- * @author Pascal Francq
  * @short Description.
  */
 class GDescription

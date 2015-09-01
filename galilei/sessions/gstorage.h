@@ -53,7 +53,6 @@ namespace GALILEI{
 * managing classes (GSession, GObjects, etc.).
 *
 * See the documentation related to GPlugIn for more general information.
-* @author GALILEI Team
 * @short Generic Storage Manager.
 */
 class GStorage : public GPlugIn

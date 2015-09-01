@@ -57,7 +57,6 @@ public:
 /**
  * The GObjectIndex provides a representation for a object list and, eventually,
  * the syntactic positions of the occurrences of concepts in these objects.
- * @author Pascal Francq
  * @short Object Index
  */
 class GObjectIndex

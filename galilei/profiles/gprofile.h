@@ -51,7 +51,6 @@ namespace GALILEI{
 * etc.
 *
 * Each profile is associated to a set feedbacks on documents.
-* @author Pascal Francq
 * @short Profile.
 */
 class GProfile : public GDescriptionObject<GProfile>

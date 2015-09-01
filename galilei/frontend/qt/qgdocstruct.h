@@ -51,7 +51,6 @@ namespace GALILEI{
 /**
  * The QGDocStruct class provides a Qt Widget to display the description of a
  * GDocStruct object. It shows the name of the different element.
- * @author Pascal Francq
  * @short Description Displayer
  */
 class QGDocStruct : public QWidget

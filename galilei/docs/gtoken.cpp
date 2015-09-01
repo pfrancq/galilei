@@ -107,13 +107,6 @@ int GToken::Compare(const Search& token) const
 
 
 //------------------------------------------------------------------------------
-size_t GToken::HashIndex(size_t idx) const
-{
-	return(Token.HashIndex(idx));
-}
-
-
-//------------------------------------------------------------------------------
 bool GToken::IsAlpha(void) const
 {
 	RCharCursor Cur(Token);

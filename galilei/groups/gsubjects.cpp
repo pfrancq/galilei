@@ -571,10 +571,10 @@ void GSubjects::Repair(void)
 			Storage->SaveObj(Subject());
 	}
 
-	cout<<"There are "<<GetNbObjs(pSubject)<<" subjects:"<<endl;
-	if(NbNoLeaf)
-		cout<<"  "<<NbNoLeaf<<" non-leaf subjects have some documents attached"<<endl;
-	if(NbLeaf)
-		cout<<"  "<<NbLeaf<<" leaf subjects have no documents attached"<<endl;
-	cout<<"  "<<static_cast<double>(NbNoLeaf+NbLeaf)*100.0/static_cast<double>(GetNbObjs(pSubject))<<"% of invalid subjects"<<endl;
+//	cout<<"There are "<<GetNbObjs(pSubject)<<" subjects:"<<endl;
+//	if(NbNoLeaf)
+//		cout<<"  "<<NbNoLeaf<<" non-leaf subjects have some documents attached"<<endl;
+//	if(NbLeaf)
+//		cout<<"  "<<NbLeaf<<" leaf subjects have no documents attached"<<endl;
+//	cout<<"  "<<static_cast<double>(NbNoLeaf+NbLeaf)*100.0/static_cast<double>(GetNbObjs(pSubject))<<"% of invalid subjects"<<endl;
 }

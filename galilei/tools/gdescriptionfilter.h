@@ -57,8 +57,6 @@ namespace GALILEI{
  *
  * In practice, each class that need such as a tool, can inherit from it (this
  * avoid the allocation and deallocation of multiple blocks on the heap)
- * @author Pascal Francq
- * @short Description Filter
  */
 class GDescriptionFilter
 {

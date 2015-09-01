@@ -41,6 +41,8 @@
 #include <galilei.h>
 #include <gconcept.h>
 #include <gconcepttype.h>
+#include <robjectcontainer.h>
+#include <robjecthashcontainer.h>
 
 
 //------------------------------------------------------------------------------
@@ -144,17 +146,12 @@ protected:
 	/**
 	 *  Types of Concepts.
 	 */
-	R::RContainer<GConceptType,true,true> ConceptTypes;
+	R::RObjectContainer<GConceptType,true> ConceptTypes;
 
 	/**
-	 *  Types of Concepts (accessed by identifiers).
-	 */
-	R::RContainer<GConceptType,false,false> ConceptTypesByIds;
-
-	/**
-	* Concepts (accessed by identifier).
+	* Concepts.
 	*/
-	R::RContainer<GConcept,true,false> ConceptsByIds;
+	R::RObjectHashContainer<GConcept,true> Concepts;
 
 	/**
 	 * Statements (accessed by identifier).
@@ -281,13 +278,13 @@ public:
 	 * Get the number of concept types.
 	 * @param obj            Pseudo-parameter.
 	 */
-	inline size_t GetNbObjs(const GConceptType* obj) const;
+	inline size_t GetNbObjs(const GConceptType* obj) const {return(ConceptTypes.GetNbObjs());}
 
 	/**
 	 * Get the highest identifier of the concept types.
 	 * @param obj            Pseudo-parameter.
 	 */
-	inline size_t GetMaxObjId(const GConceptType* obj) const;
+	inline size_t GetMaxObjId(const GConceptType* obj) const {return(ConceptTypes.GetMaxObjId());}
 
 	/**
 	* Get the a pointer to a type of concept.
@@ -314,7 +311,7 @@ public:
 	* @param obj             Pseudo-parameter.
 	* @return RCursor over GConceptType.
 	*/
-	inline R::RCursor<GConceptType> GetObjs(const GConceptType* obj) const;
+	inline R::RCursor<GConceptType> GetObjs(const GConceptType* obj) const {return(R::RCursor<GConceptType>(ConceptTypes.GetObjs()));}
 
 	/**
 	* Create a new concept type. If the concept type exists, nothing is done.
@@ -384,20 +381,20 @@ public:
 	 * Get the number of concepts.
 	 * @param obj            Pseudo-parameter.
 	 */
-	inline size_t GetNbObjs(const GConcept* obj) const;
+	inline size_t GetNbObjs(const GConcept* obj) const {return(Concepts.GetNbObjs());}
 
 	/**
 	 * Get the highest identifier of the concepts.
 	 * @param obj            Pseudo-parameter.
 	 */
-	inline size_t GetMaxObjId(const GConcept* obj) const;
+	inline size_t GetMaxObjId(const GConcept* obj) const {return(Concepts.GetMaxObjId());}
 
 	/**
 	* Get all concept defined.
 	* @param obj             Pseudo-parameter.
 	* @return RCursor over GConcept.
 	*/
-	inline R::RCursor<GConcept> GetObjs(const GConcept* obj) const;
+	inline R::RCursor<GConcept> GetObjs(const GConcept* obj) const {return(R::RCursor<GConcept>(Concepts.GetObjs()));}
 
 	/**
 	* Get the concept with a specific identifier.
@@ -547,11 +544,6 @@ public:
 
 	friend class GConceptType;
 };
-
-
-//------------------------------------------------------------------------------
-// some inline implementations
-# include <gkb.hh>
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

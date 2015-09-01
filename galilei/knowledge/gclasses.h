@@ -52,7 +52,6 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 /**
  * The GClasses provides just a tree of GClass.
- * @author Pascal Francq.
  * @short Classes
  */
 class GClasses : private R::RTree<GClasses,GClass,false>, private GObjects<GClass,hClasses>

@@ -162,6 +162,13 @@ class GToken
        * @param type         Type.
        */
 		Search(R::RString token,tTokenType type);
+
+		/**
+		* Compute the hash code for a token.
+		* @see R::RHashContainer
+		* @param max             Maximal size of the hash code.
+		*/
+		size_t HashCode(size_t max) const {return(Token.HashCode(max));}
 	};
 
 
@@ -213,11 +220,11 @@ public:
 	int Compare(const Search& token) const;
 
 	/**
-	 * Compute the hash index of a given token.
-	 * @param idx            Index of the hash table.
-	 * @return a number usable by R::RDblHasContainer.
-	 */
-	size_t HashIndex(size_t idx) const;
+	* Compute the hash code for a token.
+	* @see R::RHashContainer
+	* @param max             Maximal size of the hash code.
+	*/
+	size_t HashCode(size_t max) const {return(Token.HashCode(max));}
 
 	/**
 	 * @return a R::RString representing the token.

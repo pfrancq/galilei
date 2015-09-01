@@ -55,8 +55,8 @@ GObject::GObject(GSession* session,size_t id,const RString& name,tObjType objtyp
 
 
 //------------------------------------------------------------------------------
-GObject::GObject(const GObject* obj)
-	: RObject(obj->GetName()), Session(obj->Session),Id(obj->Id), ObjType(obj->ObjType),
+GObject::GObject(const GObject& obj)
+	: RObject(obj.GetName()), Session(obj.Session),Id(obj.Id), ObjType(obj.ObjType),
 	  Subjects(0), Predicates(0), Values(0)
 {
 }

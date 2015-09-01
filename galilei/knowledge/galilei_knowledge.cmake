@@ -4,7 +4,6 @@ SET(galilei_knowledge_INST_INCLUDES
 	gstatement.h
 	glang.h
 	gkb.h
-	gkb.hh
 	gconceptref.h
 	gvector.h
 	gdescription.h

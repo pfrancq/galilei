@@ -79,7 +79,6 @@ namespace GALILEI{
  * of the manager and its name separated by a | (for example
  * "Measures|Features Evaluation"). The name of a list is the one of the manager
  * if there is only one list (for example "Storage|Storage").
- * @author Pascal Francq
  * @short Plug-in List.
  */
 class GPlugInList : public R::RObject
@@ -209,7 +208,6 @@ private:
  *
  * Several template methods are provided to get a plug-in, to get a cursor over
  * plug-ins or to get the current one.
- * @author Pascal Francq
  * @short Plug-in Manager.
  */
 class GPlugInManager

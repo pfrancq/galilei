@@ -47,7 +47,6 @@ namespace GALILEI{
 /**
 * This class provides a representation for a list of suggestions for a given
 * addressee.
-* @author Pascal Francq
 * @short Suggestions
 */
 class GSugs : public R::RContainer<GDocFragment,true,false>

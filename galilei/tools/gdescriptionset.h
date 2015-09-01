@@ -91,7 +91,6 @@ public:
 /**
  * The GDescriptionSet provides a representation for a set of descriptions. It
  * is useful to compute the inverse object for a given subset.
- * @author Pascal Francq
  * @short Description Set
  */
 class GDescriptionSet

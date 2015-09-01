@@ -52,7 +52,6 @@ namespace GALILEI{
  * unselected, the object is not taken into account for computation. For
  * example, the document clustering treats only the selected documents.
  * @tparam C                 Class of the object.
- * @author Pascal Francq
  * @short Generic Vector Object
  */
 template<class C>

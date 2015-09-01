@@ -60,20 +60,22 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 /**
 * The GDocFragment class provides a representation for a fragment of a document.
-* In practice, a fragment is centred at a given position (for example the
+* In practice, a fragment is centred at a given record (for example the
 * position of word) and is defined by a window (such as a sentence).
 *
 * What exactly a window is depends from the type of document and the search
 * engine. In particular, the GFilter class provides a method that builds a
 * string representation of a given fragment.
 *
-* A fragment can be associated with a selected concept that defines it (such as
-* a XML tag) and by a list of child concepts that select the main concept. But a
-* fragment can define a whole document. In this case, the selected concept is
+* A fragment can be associated with a selected record that defines it (such as
+* a XML tag) and by a list of child records that select the main concept. But a
+* fragment can define a whole document. In this case, the selected record is
 * null.
 *
 * Two document fragments are considered as identical if they are related to the
 * same document and if they start at the same position
+* @warning The GDdocFragment class manages pointers to GConceptRecord. It is
+* never responsible for their deallocation.
 * @short Document Fragment.
 */
 class GDocFragment
@@ -117,9 +119,9 @@ private:
 	GDoc* Doc;
 
 	/**
-	 * Concept node.
+	 * Concept record.
 	 */
-	const GConceptNode* Node;
+	const GConceptRecord* Rec;
 
 	/**
 	* The fragment.
@@ -167,16 +169,16 @@ private:
 	bool WholeDoc;
 
 	/**
-	 * Child nodes used by the query to select the node.
+	 * Child records used by the query to select the node.
     */
-	R::RContainer<const GConceptNode,false,false> Children;
+	R::RContainer<const GConceptRecord,false,false> Children;
 
 public:
 
 	/**
 	* Constructor of a document fragment.
 	* @param doc             Document.
-	* @param node            Concept node.
+	* @param rec             Concept record.
 	* @param pos             Position in the fragment centre.
 	* @param spos            Syntactic position of the fragment centre.
 	* @param begin           Beginning position of the window.
@@ -184,7 +186,7 @@ public:
 	* @param ranking         Ranking of the fragment.
 	* @param info            Information.
 	*/
-	GDocFragment(GDoc* doc,const GConceptNode* node,size_t pos,size_t spos,size_t begin,size_t end,double ranking=0.0,const R::RString& info=R::RString::Null,const R::RDate& proposed=R::RDate::Null);
+	GDocFragment(GDoc* doc,const GConceptRecord* rec,size_t pos,size_t spos,size_t begin,size_t end,double ranking=0.0,const R::RString& info=R::RString::Null,const R::RDate& proposed=R::RDate::Null);
 
 	/**
 	* Constructor of a document fragment representing the whole document. A
@@ -227,12 +229,12 @@ public:
 	bool IsFlat(void) const;
 
 	/**
-	* Get the selected concept node corresponding to the fragment.
-	* @return a pointer to a GConceptNode
+	* Get the selected concept record corresponding to the fragment.
+	* @return a pointer to a GConceptRecord.
 	* @warning The pointer may be null if the fragment corresponds to the whole
 	* document or if the structure trees are not built during the analysis.
 	*/
-	const GConceptNode* GetNode(void) const {return(Node);}
+	const GConceptRecord* GetRecord(void) const {return(Rec);}
 
 	/**
     * @return the number of children.
@@ -242,7 +244,7 @@ public:
 	/**
     * @return a cursor over the children.
     */
-	R::RCursor<const GConceptNode> GetChildren(void) const;
+	R::RCursor<const GConceptRecord> GetChildren(void) const;
 
 	/**
 	 * @return the date of the suggestion.
@@ -286,7 +288,7 @@ public:
 	R::RString GetInfo(void) const {return(Info);}
 
 	/**
-	 * Set the gloabl ranking of the document fragment.
+	 * Set the global ranking of the document fragment.
     * @param ranking        Value to assign.
     */
 	void SetRanking(double ranking);
@@ -297,12 +299,12 @@ public:
 	double GetRanking(void) const {return(Ranking);}
 
 	/**
-	 * Add a child node to the document fragment. The interval of the fragment is
-	 * adjusted if necessary in order to contain the child (except if the
+	 * Add a child record to the document fragment. The interval of the fragment
+	 * is adjusted if necessary in order to contain the child (except if the
 	 * fragment represents the whole document).
-    * @param child          Concept node to add.
+    * @param rec            Concept record to add.
     */
-	void AddChild(const GConceptNode* child);
+	void AddChild(const GConceptRecord* rec);
 
 	/**
 	 * Look if two fragments overlaps. In practice, the method follows different

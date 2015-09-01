@@ -55,7 +55,6 @@ namespace GALILEI{
 * example a dictionary that returns if a given word is contained in it).
 *
 * See the documentation related to GPlugIn for more general information.
-* @author Pascal Francq
 * @short Functions.
 */
 class GFunction : public GPlugIn

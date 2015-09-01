@@ -50,7 +50,6 @@ namespace GALILEI{
 * the description of a specific topic.
 *
 * See the documentation related to GPlugIn for more general information.
-* @author Pascal Francq
 * @short Generic Topic Computing Method.
 */
 class GTopicCalc : public GPlugIn

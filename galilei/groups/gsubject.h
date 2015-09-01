@@ -94,7 +94,6 @@ public:
 * group of documents and profiles.
 *
 * This class is used for validation purposes.
-* @author Pascal Francq, Julien Lamoral and David Wartel.
 * @short Subject
 */
 class GSubject : protected R::RNode<GSubjects,GSubject,true>, public GDescription

@@ -106,7 +106,7 @@ int GSearchToken::Compare(const GSearchToken& token) const
 			return(0);
 		return(-1);
 	}
-	return(Concept->Compare(token.Concept));
+	return(Concept->Compare(*token.Concept));
 }
 
 
@@ -115,5 +115,5 @@ int GSearchToken::Compare(const R::RString& token) const
 {
 	if(!Concept)
 		return(0);
-	return(Concept->Compare(token));
+	return(Concept->GetName().Compare(token));
 }

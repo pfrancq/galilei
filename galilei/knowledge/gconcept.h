@@ -47,7 +47,6 @@ namespace GALILEI{
 /**
 * The GConcept class provides a representation for a generic concept. A concept
 * is a "representation" of a given piece of knowledge.
-* @author Pascal Francq
 * @short Concept
 */
 class GConcept : public GObject
@@ -90,7 +89,7 @@ public:
 	 * Copy constructor.
 	 * @param concept        Original concept.
 	 */
-	GConcept(const GConcept* concept);
+	GConcept(const GConcept& concept);
 
 	/**
 	* Constructor of a generic concept.
@@ -126,32 +125,20 @@ public:
 	virtual R::RCString GetClassName(void) const {return("GConcept");}
 
 	/**
-	* Compare two concepts.
+	* Compare two concepts using their names and their types.
 	* @param c               Concept used.
+	* @return -1,0 or +1 depending if the concept is "smaller", equals or is
+	* "higher" than the argument.
 	* @see R::RContainer
 	*/
-	int Compare(const GConcept& c) const;
+	int Search(const GConcept& c) const;
 
 	/**
-	* Compare a concept with a given name.
-	* @param name            Name.
-	* @see R::RContainer
-	*/
-	int Compare(const R::RString& name) const;
-
-	/**
-	 * Do a deep copy of the current concept.
-	 * @return Pointer to a new element created.
-	 */
-	virtual GConcept* DeepCopy(void) const;
-
-	/**
-	* Compute the first hash index of the name of a concept.
+	* Compute the hash code for a concept.
 	* @see R::RHashContainer
-	* @param idx             Index of the hash index.
+	* @param max             Maximal size of the hash code.
 	*/
-	virtual size_t HashIndex(size_t idx) const
-		{return(GetName().HashIndex(idx));}
+	size_t HashCode(size_t max) const {return(GetName().HashCode(max));}
 
 	/**
 	* Get the type of the concept.

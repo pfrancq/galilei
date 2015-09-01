@@ -49,7 +49,6 @@ namespace GALILEI{
 * compute suggestions.
 *
 * See the documentation related to GPlugIn for more general information.
-* @author Pascal Francq
 * @short Generic Suggestions Computing Method.
 */
 class GComputeSugs : public GPlugIn

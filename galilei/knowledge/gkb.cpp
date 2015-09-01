@@ -56,8 +56,8 @@ GKB::GKB(GSession* session)
 	: Session(session), State(osLatest), Storage(0), SaveResults(true),
 	  TokenType(0), DCMIType(0), NamedEntity(0), URIType(0), TaxonomyType(0),
 	  Text(0), IsA(0), Synonym(0), PartOf(0),
-	  ConceptTypes(20), ConceptTypesByIds(20),
-	  ConceptsByIds(100000,50000),
+	  ConceptTypes(1,40,20),
+	  Concepts(1,200000,50000,150000,10,5),
 	  StatementsByIds(100000,50000)
 {
 }
@@ -199,7 +199,7 @@ void GKB::ClearIndex(tObjType type)
 	if(!Storage)
 		 mThrowGException("Storage is not a valid pointer");
 
-	RCursor<GConcept> Concept(ConceptsByIds);
+	RCursor<GConcept> Concept(Concepts.GetObjs());
 	for(Concept.Start();!Concept.End();Concept.Next())
 		Concept()->ClearIndex(type);
 	if(SaveResults)
@@ -216,7 +216,7 @@ GConceptType* GKB::GetObj(const GConceptType*,char id,bool null)
 	GConceptType* type(0);
 	try
 	{
-		type=ConceptTypesByIds[id];
+		type=ConceptTypes[id];
 	}
 	catch(...)
 	{
@@ -230,14 +230,7 @@ GConceptType* GKB::GetObj(const GConceptType*,char id,bool null)
 //-----------------------------------------------------------------------------
 GConceptType* GKB::GetObj(const GConceptType*,const RString& name,bool null)
 {
-	GConceptType* type(0);
-	try
-	{
-		type=ConceptTypes.GetPtr(name);
-	}
-	catch(...)
-	{
-	}
+	GConceptType* type(ConceptTypes.GetObj(name));
 	if((!type)&&(!null))
 		mThrowGException("Unknown concept type '"+name+"'");
 	return(type);
@@ -250,22 +243,18 @@ GConceptType* GKB::InsertObj(const GConceptType*,tConceptCat cat,size_t id,const
 	if(!Storage)
 		 mThrowGException("Storage is not a valid pointer");
 
-	GConceptType* type(0);
-	try
-	{
-		type=ConceptTypes.GetPtr(name);
-	}
-	catch(...)
-	{
-	}
+	GConceptType* type(ConceptTypes.GetObj(name));
 	if(!type)
 	{
 		type=new GConceptType(Session,cat,id,name,desc,5000);
 		if((!id)||(id==cNoRef))
+		{
 			Storage->AssignId(type);
-		ConceptTypes.InsertPtr(type);
-		ConceptTypesByIds.InsertPtrAt(type,type->GetId(),true);
-		newone=true;
+			newone=true;
+		}
+		else
+			newone=false;
+		ConceptTypes.InsertObj(type);
 	}
 	else
 		newone=false;
@@ -280,9 +269,7 @@ GConceptType* GKB::InsertObj(const GConceptType*,tConceptCat cat,size_t id,const
 //------------------------------------------------------------------------------
 GConcept* GKB::GetObj(const GConcept*,size_t id)
 {
-	if(id>ConceptsByIds.GetMaxPos())
-		mThrowGException("'"+RString::Number(id)+"' is not a valid concept identifier");
-	GConcept* concept(ConceptsByIds[id]);
+	GConcept* concept(Concepts[id]);
 	if(!concept)
 		mThrowGException("'"+RString::Number(id)+"' is not a valid concept identifier");
 	return(concept);
@@ -293,7 +280,8 @@ GConcept* GKB::GetObj(const GConcept*,size_t id)
 GConcept* GKB::GetObj(const GConcept*,GConceptType* type,const R::RString& concept,bool null)
 {
 	// Look if the data exists in the dictionary. If not, create and insert it.
-	GConcept* ptr(type->GetObj(pConcept,concept,true));
+	GConcept Search(Session,concept,type);
+	GConcept* ptr(Concepts.GetObj(Search));
 	if(!ptr)
 	{
 		if(null)
@@ -317,32 +305,23 @@ GConcept* GKB::InsertObj(const GConcept*,GConceptType* type,const R::RString& co
 	if(concept.IsEmpty())
 		mThrowGException("Cannot insert an empty concept");
 
-	bool InDirect(false);
-
 	// Look if the data exists in the dictionary. If not, create and insert it.
-	GConcept* ptr(type->GetObj(pConcept,concept,true));
+	GConcept Search(Session,concept,type);
+	GConcept* ptr(Concepts.GetObj(Search));
 	if(!ptr)
 	{
 		ptr=new GConcept(Session,concept,type);
+		if(ptr->GetId()==cNoRef)
+		{
+			Storage->AssignId(ptr);
+			newone=true;
+		}
+		else
+			newone=false;
 		type->InsertObj(ptr);
-		InDirect=true;
+		Concepts.InsertObj(ptr);
 	}
-
-	// Look if data has an identifier. If not, assign one.
-	if(ptr->GetId()==cNoRef)
-	{
-		Storage->AssignId(ptr);
-		InDirect=true;
-		newone=true;
-	}
-	else
-		newone=false;
-
-	// Finally, if an identifier has been assigned and/or a new one -> Direct
-	if(InDirect)
-	{
-		ConceptsByIds.InsertPtrAt(ptr,ptr->GetId(),true);
-	}
+	newone=false;
 
 	return(ptr);
 }
@@ -358,36 +337,28 @@ GConcept* GKB::InsertObj(const GConcept& concept,bool& newone)
 	if(!(Type=concept.GetType()))
 		mThrowGException("No concept type");
 
-	bool InDirect(false);
-
 	// Invalid concept are not inserted
 	if(concept.IsEmpty())
 		mThrowGException("Cannot insert an empty concept");
 
 	// Look if the data exists in the dictionary. If not, create and insert it.
-	GConcept* ptr(Type->GetObj(pConcept,concept.GetName(),true));
+	GConcept* ptr(Concepts.GetObj(concept));
 	if(!ptr)
 	{
-		ptr=concept.DeepCopy();
+		ptr=new GConcept(concept);
+		// Look if data has an identifier. If not, assign one.
+		if(ptr->GetId()==cNoRef)
+		{
+			Storage->AssignId(ptr);
+			newone=true;
+		}
+		else
+			newone=false;
 		Type->InsertObj(ptr);
-		InDirect=true;
-	}
-
-	// Look if data has an identifier. If not, assign one.
-	if(ptr->GetId()==cNoRef)
-	{
-		Storage->AssignId(ptr);
-		InDirect=true;
-		newone=true;
+		Concepts.InsertObj(ptr);
 	}
 	else
 		newone=false;
-
-	// Finally, if an identifier has been assigned and/or a new one -> Direct
-	if(InDirect)
-	{
-		ConceptsByIds.InsertPtrAt(ptr,ptr->GetId(),true);
-	}
 
 	return(ptr);
 }
@@ -434,7 +405,7 @@ void GKB::DeleteObj(GConcept* concept)
 		mThrowGException("Cannot delete concept");
 	Storage->DeleteObj(concept);
 	concept->GetType()->DeleteObj(concept);
-	ConceptsByIds.DeletePtrAt(concept->GetId(),false);
+	Concepts.DeleteObj(concept);
 }
 
 
@@ -484,7 +455,7 @@ GStatement* GKB::GetObj(const GStatement*,GObject* subject,GObject* predicate,GO
 
 
 //-----------------------------------------------------------------------------
-GStatement* GKB::InsertObj(const GStatement* obj,size_t id,GObject* subject,GObject* predicate,GObject* value,double weight,bool& newone)
+GStatement* GKB::InsertObj(const GStatement*,size_t id,GObject* subject,GObject* predicate,GObject* value,double weight,bool& newone)
 {
 	if(!Storage)
 		 mThrowGException("Storage is not a valid pointer");

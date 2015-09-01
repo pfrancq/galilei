@@ -53,7 +53,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 GConceptType::GConceptType(GSession* session,tConceptCat cat,size_t id,const RString& name,const RString& desc,size_t s)
-	: GObject(session,id,name,otConceptType), Category(cat), Neutral(0), Concepts(27,27,s,s/4),
+	: GObject(session,id,name,otConceptType), Category(cat), Neutral(0), Concepts(20000,10000),
 	  Description(desc)
 {
 }
@@ -92,7 +92,8 @@ GConcept* GConceptType::GetNeutral(void) const
 //------------------------------------------------------------------------------
 GConcept* GConceptType::GetObj(const GConcept*,const RString& name,bool null) const
 {
- 	GConcept* Concept(Concepts.GetPtr(name));
+	GConcept Search(Session,name,const_cast<GConceptType*>(this));
+ 	GConcept* Concept(Concepts.GetPtr(Search));
 	if(Concept)
 		return(Concept);
 	if(null)

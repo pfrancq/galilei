@@ -98,7 +98,7 @@ bool GSearchQuery::CreateToken(GSearchQueryNode* parent,const RString& str)
 			break;
 
 		// If we are outside quotes -> Treat non-alphanumerical characters
-		if((!InQuotes)&&((*Car)!=':')&&(!Car->IsAlNum()))
+		if((!InQuotes)&&((*Car)!=':')&&((*Car)!='-')&&(!Car->IsAlNum()))
 		{
 			OnlyKeyword=false;
 			if(!Car->IsSpace())
@@ -242,7 +242,7 @@ GSearchQueryNode* GSearchQuery::CreateToken(GSearchQueryNode* parent,const R::RS
 
 			// Look if the stem must be added
 			bool Find;
-			int Idx(Stems.GetIndex(Concept,Find));
+			int Idx(Stems.GetIndex(*Concept,Find));
 			if(!Find)
 				Stems.InsertPtrAt(Concept,Idx,false);
 		}
@@ -430,7 +430,7 @@ RCursor<GConcept> GSearchQuery::GetConcepts(size_t min,size_t max) const
 //------------------------------------------------------------------------------
 bool GSearchQuery::IsIn(GConcept* concept) const
 {
-	return(Concepts.IsIn(concept));
+	return(Concepts.IsIn(*concept));
 }
 
 

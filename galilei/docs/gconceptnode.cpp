@@ -50,34 +50,9 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GConceptNode::GConceptNode(GConceptTree* tree,tTokenType type,size_t conceptid,size_t synpos,size_t pos,size_t depth)
-	: RNode<GConceptTree,GConceptNode,false>(), Tree(tree), Type(type), ConceptId(conceptid),
-	  SyntacticPos(synpos), Pos(pos), SyntacticDepth(depth)
+GConceptNode::GConceptNode(GConceptTree* tree,tTokenType type,size_t conceptid,size_t synpos,size_t pos,size_t syndepth)
+	: RNode<GConceptTree,GConceptNode,false>(), GConceptRecord(type,conceptid,synpos,pos,syndepth,cNoRef), Tree(tree)
 {
-}
-
-
-//------------------------------------------------------------------------------
-int GConceptNode::Compare(const GConceptNode& node) const
-{
-	if(ConceptId!=node.ConceptId)
-		return(CompareIds(ConceptId,node.ConceptId));
-
-	if(Depth==node.Depth)
-	{
-		if(Pos==node.Pos)
-			return(0);
-		else if (Pos>node.Pos)
-			return(1);
-		else
-			return(-1);
-
-	}
-
-	if(Depth>node.Depth)
-		return(1);
-	else
-		return(-1);
 }
 
 

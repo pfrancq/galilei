@@ -46,7 +46,6 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 /**
 * The GUser class provides a representation for a user.
-* @author Pascal Francq
 * @short User.
 */
 class GUser : public GObject, public R::RContainer<GProfile,false,true>

@@ -51,7 +51,6 @@ namespace GALILEI{
 * profiles.
 *
 * See the documentation related to GPlugIn for more general information.
-* @author Pascal Francq
 * @short Generic Profiles Grouping Method.
 */
 class GGroupProfiles : public GPlugIn

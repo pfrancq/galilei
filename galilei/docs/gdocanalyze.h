@@ -35,7 +35,7 @@
 
 //------------------------------------------------------------------------------
 // include files for R
-#include <rdblhashcontainer.h>
+#include <rhashcontainer.h>
 #include <rstack.h>
 
 
@@ -81,7 +81,6 @@ namespace GALILEI{
  * To avoid the allocation and deallocation of multiple chucks of memory, all
  * tokens and occurrences are stored once created (in MemoryTokens and
  * MemoryOccurs) and then reused during the next analyzes.
- * @author Pascal Francq
  * @short Document Analysis.
  */
 class GDocAnalyze : R::RDownloadFile
@@ -149,7 +148,7 @@ class GDocAnalyze : R::RDownloadFile
 	/**
 	 * List of tokens currently added ordered.
 	 */
-	R::RDblHashContainer<GToken,false> OrderTokens;
+	R::RHashContainer<GToken,false> OrderTokens;
 
 	/**
 	 * List of tokens currently added.

@@ -48,7 +48,6 @@ namespace GALILEI{
 * The GFdbk class provides a representation for feedback on a document. It can
 * be an explicit assessment of a user on the relevance on a document, a
 * computed assessment or a relation.
-* @author Pascal Francq
 * @short Feedback on a Document.
 */
 class GFdbk
@@ -122,7 +121,7 @@ public:
 	* @return the date of the feedback on the document.
 	*/
 	R::RDate GetDone(void) const;
-	
+
 	/**
 	* Create an "erroneous feedback" with a given percentage. The percentage
 	* represents the number of feedbacks that will be changed in comparison to
