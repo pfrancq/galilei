@@ -91,7 +91,7 @@ public:
 	 * @param concept        Concept to compare with.
 	 * @return a value usable by RContainer.
 	 */
-	int Compare(const ConceptData& concept) const {return(Concept->Compare(concept.Concept));}
+	int Compare(const ConceptData& concept) const {return(Concept->Compare(*concept.Concept));}
 
 	/**
 	 * Compare two concept data
