@@ -105,6 +105,45 @@ public:
 
 
 
+//------------------------------------------------------------------------------
+//
+// Iterators
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class GProm::Iterator : public GConceptRecordIterator
+{
+	GProm* Prom;
+public:
+	Iterator(GDoc* doc,const GConceptRecord& rec,GProm* prom)
+		: GConceptRecordIterator(doc,rec), Prom(prom)
+		{}
+
+	virtual void Treat(GConceptRecord& child)
+	{
+		Prom->TmpOccurs.GetInsertPtr(child.GetConceptId())->Occur++;
+		Iterator(GetDoc(),child,Prom).Parse();
+	}
+};
+
+
+//------------------------------------------------------------------------------
+class GProm::Iterator2 : public GConceptRecordIterator
+{
+	double& Nb;
+public:
+	Iterator2(GDoc* doc,const GConceptRecord& rec,double& nb)
+		: GConceptRecordIterator(doc,rec), Nb(nb)
+		{}
+
+	virtual void Treat(GConceptRecord& child)
+	{
+		Nb+=GetDoc()->GetSession()->GetNbTotalChildRecords(GetDoc(),child);
+	}
+};
+
+
 //-----------------------------------------------------------------------------
 //
 // GProm
@@ -139,8 +178,8 @@ void GProm::Add(GDocFragment* node)
 {
 	// Create the solution
 	GPromSol* Sol;
-	if(node->GetNode())
-		Sol=new GPromSol(GetNbSols(),node->GetNode()->GetSyntacticPos(),node);
+	if(node->GetRecord())
+		Sol=new GPromSol(GetNbSols(),node->GetRecord()->GetSyntacticPos(),node);
 	else
 		Sol=new GPromSol(GetNbSols(),0,node);
 
@@ -212,14 +251,9 @@ double GProm::ComputeTfIdf(GDocFragment* node)
 
 
 //-----------------------------------------------------------------------------
-void GProm::CollectOccurs(const GConceptNode* node)
+void GProm::CollectOccurs(GDoc* doc,const GConceptRecord* rec)
 {
-	RNodeCursor<GConceptTree,GConceptNode> Child(node);
-	for(Child.Start();!Child.End();Child.Next())
-	{
-		TmpOccurs.GetInsertPtr(Child()->GetConceptId())->Occur++;
-		CollectOccurs(Child());
-	}
+	Iterator(doc,*rec,this).Parse();
 }
 
 //-----------------------------------------------------------------------------
@@ -234,7 +268,7 @@ double GProm::ComputeTfIff(GDocFragment* node)
 
 	// 1. Compute the number of occurrences of each different concept in the fragment
 
-	CollectOccurs(node->GetNode());
+	CollectOccurs(node->GetDoc(),node->GetRecord());
 
 	// 2. Compute the average weights multiply by the iff factor of each concept of the query
 	double Sum(0.0);
@@ -248,7 +282,7 @@ double GProm::ComputeTfIff(GDocFragment* node)
 
 		// Takes only the concepts of the query in account
 		if(Rank->Query->IsIn(Rank->GetSession()->GetObj(pConcept,Occur()->Id)))
-			Sum+=Weight*Rank->GetIff(Occur()->Id,node->GetNode()->GetConceptId());
+			Sum+=Weight*Rank->GetIff(Occur()->Id,node->GetRecord()->GetConceptId());
 	}
 
 	// 3. Divide it by the number of concepts in the fragment and the maximum weight
@@ -263,19 +297,18 @@ double GProm::ComputeSpecificity(GDocFragment* node)
 	// Spec(e)=1/|e| -> |e| number of child nodes
 	double Nb(0.0);
 
-	if(node->GetNode())
+	if(node->GetRecord())
 	{
-		// The child nodes depends from the selected concept nodes
-		RNodeCursor<GConceptTree,GConceptNode> Child(node->GetNode());
-		for(Child.Start();!Child.End();Child.Next())
-			Nb+=Child()->GetNbTotalNodes();
+		Iterator2(node->GetDoc(),*node->GetRecord(),Nb).Parse();
 	}
 	else
 	{
 		// The child nodes are those that select the concept node
-		RCursor<const GConceptNode> Child(node->GetChildren());
+		RCursor<const GConceptRecord> Child(node->GetChildren());
 		for(Child.Start();!Child.End();Child.Next())
-			Nb+=Child()->GetNbTotalNodes();
+		{
+			Iterator2(node->GetDoc(),*Child(),Nb).Parse();
+		}
 	}
 	return(Nb);
 }
@@ -289,7 +322,7 @@ double GProm::ComputeDistance(GDocFragment* node)
 		return(0.0);
 
 	// Compute the average distance
-	RCursor<const GConceptNode> Node(node->GetChildren());   // All child nodes
+	RCursor<const GConceptRecord> Node(node->GetChildren());   // All child nodes
 	size_t NbPairs(0);                                 // Number of keyword pairs
 	double Sum(0.0);                                   // Sum of distance
 	RCursor<GConcept> Concept(Rank->Query->GetConcepts(0,Rank->Query->GetNbConcepts()-2));
@@ -309,6 +342,7 @@ double GProm::ComputeDistance(GDocFragment* node)
 			NbPairs++;
 			size_t Min(cNoRef);
 			size_t Max(0);
+			//Iterator3(node->GetDoc(),const GConceptRecord& rec,GConcept* concept,GConcept* concept2,size_t& min,size_t& max)
 			for(Node.Start();!Node.End();Node.Next())
 			{
 				if((Node()->GetConceptId()!=Concept()->GetId())&&(Node()->GetConceptId()!=Concept2()->GetId()))
@@ -320,12 +354,12 @@ double GProm::ComputeDistance(GDocFragment* node)
 			}
 
 			// Compare with the root node if any
-			if(node->GetNode())
+			if(node->GetRecord())
 			{
-				if(node->GetNode()->GetSyntacticPos()>Max)
-					Max=node->GetNode()->GetSyntacticPos();
-				if(node->GetNode()->GetSyntacticPos()<Min)
-					Min=node->GetNode()->GetSyntacticPos();
+				if(node->GetRecord()->GetSyntacticPos()>Max)
+					Max=node->GetRecord()->GetSyntacticPos();
+				if(node->GetRecord()->GetSyntacticPos()<Min)
+					Min=node->GetRecord()->GetSyntacticPos();
 			}
 
 			// Distance is the size
@@ -344,9 +378,9 @@ double GProm::ComputeDistance(GDocFragment* node)
 double GProm::ComputeType(GDocFragment* node)
 {
 	double Ret;
-	if(!node->GetNode())
+	if(!node->GetRecord())
 		return(0);
-	switch(node->GetNode()->GetType())
+	switch(node->GetRecord()->GetType())
 	{
 		case ttLink:
 			Ret=1;

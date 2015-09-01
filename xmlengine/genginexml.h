@@ -78,6 +78,16 @@ class GEngineXML : public RObject, public GEngine
 	RContainer<cTreeRef,true,true> Trees;
 
 	/**
+	 * Container of records.
+	 */
+	RContainer<GConceptRecord,true,false> Recs;
+
+	/**
+	 * Number of records actually used.
+	 */
+	size_t NbRecsUsed;
+
+	/**
 	 * Maximum number of trees.
 	 */
 	size_t MaxNbTrees;
@@ -186,7 +196,13 @@ public:
 	 * @param docid          Identifier of the document.
 	 * @return a pointer to the tree.
 	 */
-	const GConceptTree* GetTree(size_t docid);
+	const GConceptTree* GetTree2(size_t docid);
+
+	/**
+	 * Get a pointer to a given concept record. A container manages all necessary
+	 * records. If necessary, the container is extended.
+	 */
+	GConceptRecord* GetRec(GConceptRecord& rec);
 
 	/**
 	 * Destructor.

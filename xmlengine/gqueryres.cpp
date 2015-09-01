@@ -44,6 +44,31 @@
 #include <gconcepttree.h>
 #include <gconcept.h>
 #include <gconcepttype.h>
+#include <gsession.h>
+
+
+
+//------------------------------------------------------------------------------
+//
+// class MyIterator
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class MyIterator : public GConceptRecordIterator
+{
+	GEngineXML* Engine;
+	GDocFragment* Fragment;
+public:
+	MyIterator(GDoc* doc,const GConceptRecord& rec,GEngineXML* engine,GDocFragment* fragment)
+		: GConceptRecordIterator(doc,rec), Engine(engine), Fragment(fragment)
+		{}
+
+	virtual void Treat(GConceptRecord& child)
+	{
+		Fragment->AddChild(Engine->GetRec(child));
+	}
+};
 
 
 
@@ -74,42 +99,57 @@ void GQueryRes::AddDoc(GEngineXML* engine,GDoc* doc,GConcept* concept)
 	GDocRef* Occurs(new GDocRef(doc));
 	InsertPtr(Occurs);
 
-	// Fill it by using the structure
-	const GConceptTree* Tree(engine->GetTree(doc->GetId()));
-	RCursor<GConceptNode> Cur(Tree->GetNodes(concept));
-	for(Cur.Start();!Cur.End();Cur.Next())
+	//cout<<doc->GetId()<<endl;
+
+	// Find the first occurrence of the concept
+	GConceptRecord Rec(concept->GetId());
+	if(!engine->GetSession()->FindDepthFirstRecord(doc,Rec,0))
+		mThrowGException("Big Problem");
+
+	// If only documents must be select -> Create one fragment
+	if(engine->OnlyDocs)
 	{
-		if(engine->OnlyDocs)
+		// Select the whole document --> add only one fragment containing the first occurrence of the concept
+		bool Exist;
+		Occurs->AddFragment(doc,engine->GetRec(Rec),0,engine->GetSession()->GetMaxPosRecord(doc,Rec,engine->EndWindowPos),Exist);
+
+		return;
+	}
+
+	// For each occurrence, a fragment must be created
+	do
+	{
+		if(Rec.GetType()==ttText)
 		{
-			// Select the whole document --> and only one fragment
 			bool Exist;
-			Occurs->AddFragment(doc,Cur(),0,Tree->GetMaxPos(Tree->GetNearestNode(0),engine->EndWindowPos),Exist);
-			return;
+
+			// If the text has a parent node, its parent must be the root node of the result
+			if(Rec.GetSyntacticDepth())
+			{
+				GConceptRecord Parent;
+				if(!engine->GetSession()->FindParentRecord(doc,Rec,Parent))
+					mThrowGException("Big Problem");
+				Occurs->AddFragment(engine->GetRec(Parent),engine->GetRec(Rec),Exist); // Insert a node and its parent
+			}
+			else
+			{
+				// Add a fragment with the text window
+				Occurs->AddFragment(engine->GetRec(Rec),
+										  Rec.GetPos(),
+										  Rec.GetSyntacticPos(),
+										  engine->GetSession()->GetMinPosRecord(doc,Rec,engine->BeginWindowPos),
+										  engine->GetSession()->GetMaxPosRecord(doc,Rec,engine->EndWindowPos),
+										  Exist);
+			}
 		}
 		else
 		{
-			if(Cur()->GetType()==ttText)
-			{
-				bool Exist;
-
-				// If the text has a parent node, its parent must be the root node of the result
-				if(Cur()->GetParent())
-					Occurs->AddFragment(Cur()->GetParent(),Cur(),Exist); // Insert a node and its parent
-				else
-				{
-					// Add a fragment with the text window
-					Occurs->AddFragment(Cur(),
-											  Cur()->GetPos(),
-											  Cur()->GetSyntacticPos(),
-											  Tree->GetMinPos(Cur(),engine->BeginWindowPos),
-											  Tree->GetMaxPos(Cur(),engine->EndWindowPos),
-											  false,Exist);
-				}
-			}
-			else
-				Occurs->AddFragment(Cur()); // Insert a node and its children
+			// Insert the node and its children
+			GDocFragment* Fragment(Occurs->AddFragment(engine->GetRec(Rec)));
+			MyIterator(doc,Rec,engine,Fragment).Parse();
 		}
 	}
+	while(engine->GetSession()->FindDepthFirstRecord(doc,Rec,Rec.GetIndex()+1));
 }
 
 

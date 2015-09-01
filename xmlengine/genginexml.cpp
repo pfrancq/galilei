@@ -97,7 +97,7 @@ public:
 //------------------------------------------------------------------------------
 GEngineXML::GEngineXML(GSession* session,GPlugInFactory* fac)
 	: RObject(fac->GetMng()->GetName()+"|"+fac->GetList()+"|"+fac->GetName()),
-	  GEngine(session,fac), NbResults(40), Trees(1000), MaxNbTrees(1000), DocIds(5000), Results(30)
+	  GEngine(session,fac), NbResults(40), Trees(1000), MaxNbTrees(1000), DocIds(5000), Results(30), Recs(10000,5000)
 {
 }
 
@@ -111,7 +111,7 @@ void GEngineXML::CreateConfig(void)
 	InsertParam(new RParamValue("OnlyDocs",false,"Retrieve only documents?"));
 	InsertParam(new RParamValue("BeginWindowPos",30,"Beginning synaptic position of a window (<=0)."));
 	InsertParam(new RParamValue("EndWindowPos",30,"Ending synaptic position of a window (>=0)."));
-	InsertParam(new RParamValue("MaxNbTrees",1000,"Maximum number of description to hold in memory (>=0)."));
+	InsertParam(new RParamValue("MaxNbTrees",100,"Maximum number of description to hold in memory (>=0)."));
 }
 
 
@@ -124,7 +124,7 @@ void GEngineXML::ApplyConfig()
 	OnlyDocs=FindParam<RParamValue>("OnlyDocs")->GetBool();
 	BeginWindowPos=FindParam<RParamValue>("BeginWindowPos")->GetUInt();
 	EndWindowPos=FindParam<RParamValue>("EndWindowPos")->GetUInt();
-	MaxNbTrees=FindParam<RParamValue>("MaxNbTrees")->GetUInt();
+	MaxNbTrees=FindParam<RParamValue>("MaxNbTrees")->GetUInt()*1000;
 	if((MaxNbTrees<1000)||(MaxNbTrees>1000000))
 		MaxNbTrees=1000;
 }
@@ -137,6 +137,9 @@ void GEngineXML::PerformRequest(GSearchQuery* query)
 	RCursor<cTreeRef> Tree(Trees);
 	for(Tree.Start();!Tree.End();Tree.Next())
 		Tree()->Use=false;
+
+	// Suppose no records are used
+	NbRecsUsed=0;
 
 	// Retrieve all relevant nodes and get the results
 	Results.Clear();
@@ -156,7 +159,7 @@ void GEngineXML::PerformRequest(GSearchQuery* query)
 		RCursor<GDocFragment> Fragment(Doc()->GetFragments());
 		for(Fragment.Start();!Fragment.End();Fragment.Next())
 			AddResult(Fragment()->GetDoc(),
-					  Fragment()->GetNode(),
+					  Fragment()->GetRecord(),
 					  Fragment()->GetPos(),
 					  Fragment()->GetSyntacticPos(),
 					  Fragment()->GetBegin(),
@@ -226,7 +229,7 @@ void GEngineXML::ApplyOperator(GSearchQueryNode::tOperator op,GDocRef* left,GDoc
 			mThrowGException("Big Problem");
 
 		// Tree of both nodes
-		const GConceptTree* Tree(GetTree(left->GetDoc()->GetId()));
+		//const GConceptTree* Tree(GetTree(left->GetDoc()->GetId()));
 
 		// For each pair of nodes of both query -> find the most top node containing both
 		RCursor<GDocFragment> Fragment(left->GetFragments());
@@ -250,19 +253,18 @@ void GEngineXML::ApplyOperator(GSearchQueryNode::tOperator op,GDocRef* left,GDoc
 						SyntacticPos=Fragment()->GetSyntacticPos()+((Fragment2()->GetSyntacticPos()-Fragment()->GetSyntacticPos())/2);
 					else
 						SyntacticPos=Fragment2()->GetSyntacticPos()+((Fragment()->GetSyntacticPos()-Fragment2()->GetSyntacticPos())/2);
-					const GConceptNode* Node(Tree->GetNearestNode(SyntacticPos));
+					GConceptRecord Node;
+					if(!Session->FindNearestRecord(left->GetDoc(),Node,SyntacticPos))
+						mThrowGException("Big Problem");
 
 					// Create a new fragment
 					bool Exist;
 					Res=res->AddFragment(0,
-												Node->GetPos(),
-											   Node->GetSyntacticPos(),
-												Tree->GetMinPos(Node,BeginWindowPos),
-												Tree->GetMaxPos(Node,EndWindowPos),
-												false,
+												Node.GetPos(),
+											   Node.GetSyntacticPos(),
+												Session->GetMinPosRecord(left->GetDoc(),Node,BeginWindowPos),
+												Session->GetMaxPosRecord(left->GetDoc(),Node,EndWindowPos),
 												Exist);
-
-					cout<<endl;
 				}
 				else
 				{
@@ -271,20 +273,20 @@ void GEngineXML::ApplyOperator(GSearchQueryNode::tOperator op,GDocRef* left,GDoc
 						continue;
 
 					// At least one fragment has a parent -> Find the root of both nodes
-					const GConceptNode* Root(Tree->GetRoot(Fragment()->GetNode(),Fragment2()->GetNode()));
-					if(!Root)
+					GConceptRecord Root;
+					if(!Session->FindRootRecord(left->GetDoc(),*Fragment()->GetRecord(),*Fragment2()->GetRecord(),Root))
 						continue;
 
 					// Create a new fragment
 					bool Exist;
-					Res=res->AddFragment(Root,Root->GetPos(),Root->GetSyntacticPos(),Root->GetPos(),Root->GetPos(),false,Exist);
+					Res=res->AddFragment(GetRec(Root),Root.GetPos(),Root.GetSyntacticPos(),Root.GetPos(),Root.GetPos(),Exist);
 				}
 
 				// Copy both children of Node() and Node2() in Res
-				RCursor<const GConceptNode> Cur(Fragment()->GetChildren());
+				RCursor<const GConceptRecord> Cur(Fragment()->GetChildren());
 				for(Cur.Start();!Cur.End();Cur.Next())
 					Res->AddChild(Cur());
-				RCursor<const GConceptNode> Cur2(Fragment2()->GetChildren());
+				RCursor<const GConceptRecord> Cur2(Fragment2()->GetChildren());
 				for(Cur2.Start();!Cur2.End();Cur2.Next())
 					Res->AddChild(Cur2());
 			}
@@ -471,7 +473,7 @@ int GEngineXML::sortOrderAccess(const void* a,const void* b)
 
 
 //------------------------------------------------------------------------------
-const GConceptTree* GEngineXML::GetTree(size_t docid)
+const GConceptTree* GEngineXML::GetTree2(size_t docid)
 {
 	// Look if the tree is already loaded
 	cTreeRef* Tree(Trees.GetPtr(docid));
@@ -489,7 +491,7 @@ const GConceptTree* GEngineXML::GetTree(size_t docid)
 		Trees.ReOrder(sortOrderAccess);
 
 		// Find the first tree not used
-		RCursor<cTreeRef> Cur(Trees);
+/*		RCursor<cTreeRef> Cur(Trees);
 		for(Cur.Start();!Cur.End();Cur.Next())
 			if(!Cur()->Use)
 				break;
@@ -498,14 +500,17 @@ const GConceptTree* GEngineXML::GetTree(size_t docid)
 		{
 			// Must increase the container
 			//Trees.InsertPtr(Tree=new cTreeRef(docid));
-			mThrowGException("Memory allocated ("+RString::Number(MaxNbTrees)+")from the trees is full");
+			mThrowGException("Memory allocated ("+RString::Number(MaxNbTrees)+") from the trees is full");
 		}
 		else
 		{
 			Tree=Cur();
 			Cur()->NbAccess=1;
 			Cur()->DocId=docid;
-		}
+		}*/
+		Tree=Trees[Trees.GetNb()-1];
+		Tree->NbAccess=1;
+		Tree->DocId=docid;
 
 		// Since a identifier was replaced, Cache must be re-ordered by identifiers
 		Trees.ReOrder();
@@ -518,6 +523,24 @@ const GConceptTree* GEngineXML::GetTree(size_t docid)
 
 	return(Tree->Tree);
 }
+
+
+//------------------------------------------------------------------------------
+GConceptRecord* GEngineXML::GetRec(GConceptRecord& rec)
+{
+	if(NbRecsUsed>=Recs.GetNb())
+	{
+		size_t NewSize(Recs.GetNb()+5000);
+		Recs.VerifyTab(NewSize);
+		while(Recs.GetNb()<NewSize)
+			Recs.InsertPtr(new GConceptRecord());
+	}
+	GConceptRecord* Rec(Recs[NbRecsUsed]);
+	NbRecsUsed++;
+	(*Rec)=rec;
+	return(Rec);
+}
+
 
 
 //------------------------------------------------------------------------------

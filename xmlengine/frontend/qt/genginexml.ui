@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>493</width>
-    <height>342</height>
+    <height>412</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -42,7 +42,7 @@
           <item>
            <widget class="QLabel" name="textLabel1_3">
             <property name="text">
-             <string>Number of trees in memory</string>
+             <string>Number of trees in memory (in thousand)</string>
             </property>
             <property name="wordWrap">
              <bool>false</bool>

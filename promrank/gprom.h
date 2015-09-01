@@ -79,6 +79,8 @@ class GProm : RPromKernel
 {
 	class cDocTfIdf;
 	class cOccur;
+	class Iterator;
+	class Iterator2;
 
 	/**
 	* Engine.
@@ -171,11 +173,12 @@ private:
 	double ComputeTfIdf(GDocFragment* node);
 
 	/**
-	 * Collect the occurrences of all concepts appearing in a node (and all its
+	 * Collect the occurrences of all concepts appearing in a record (and all its
 	 * child nodes).
-    * @param node           Node to scan.
+	 * @paral doc            Document.
+    * @param rec            Record to scan.
     */
-	void CollectOccurs(const GConceptNode* node);
+	void CollectOccurs(GDoc* doc,const GConceptRecord* rec);
 
 	/**
 	 * Compute the average iff factor for all keywords of the query contained in
