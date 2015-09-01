@@ -574,7 +574,7 @@ void GStorageMySQL::LoadObjs(const GConcept*)
 						dicts[5].ToSizeT(),
 						dicts[6].ToSizeT(),
 						dicts[7].ToSizeT());
-				Session->InsertObj(&w);
+				Session->InsertObj(w);
 		}
 	}
 	catch(RDbException e)
