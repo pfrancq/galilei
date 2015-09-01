@@ -51,7 +51,6 @@
 //-----------------------------------------------------------------------------
 // include files for current application
 #include <kviewmetaengine.h>
-#include <qsessionprogress.h>
 #include <qgalileiwin.h>
 
 
@@ -59,26 +58,6 @@
 // static sizes
 static int Width;
 static int Height;
-
-
-
-//-----------------------------------------------------------------------------
-//
-// class QQuery
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-class QQuery : public QSessionProgress
-{
-	RString Query;
-public:
-	QQuery(QGALILEIWin* win,const QString& query) : QSessionProgress(win,"Search: "+query), Query(FromQString(query)) {}
-	virtual void DoIt(void)
-	{
-		Win->getSession()->RequestMetaEngine(Query);
-	}
-};
 
 
 
@@ -96,6 +75,7 @@ KViewMetaEngine::KViewMetaEngine(QGALILEIWin* win)
 	setupUi(ptr);
 	setWidget(ptr);
 	setAttribute(Qt::WA_DeleteOnClose);
+	setAttribute(Qt::WA_AlwaysShowToolTips);
 	setWindowTitle("Query meta engine");
 	NbRes->setValue(100);
 	connect(Search,SIGNAL(clicked()),this,SLOT(QueryEngine()));
@@ -145,13 +125,35 @@ void KViewMetaEngine::QueryEngine(void)
 		ResLabel->setText("<b> Enter first a query!</b>");
 		return;
 	}
-	QQuery Task(Win,TxtQuery->text());
-	if(QSessionProgress::execute(Task))
+	ResLabel->setText("Searching...");
+	QApplication::processEvents();
+	QApplication::setOverrideCursor(Qt::WaitCursor);
+	try
 	{
-		QApplication::setOverrideCursor(Qt::WaitCursor);
+		Win->getSession()->RequestMetaEngine(FromQString(TxtQuery->text()));
 		GMetaEngine* Meta(GALILEIApp->GetCurrentPlugIn<GMetaEngine>("MetaEngine"));
 		Results->Set(QGObjectsList::Docs,Meta,NbRes->value());
 		ResLabel->setText("<b>"+QString::number(Meta->GetNbResults())+" Results displayed.</b>");
 		QApplication::setOverrideCursor(Qt::ArrowCursor);
+	}
+	catch(GException& e)
+	{
+		QApplication::setOverrideCursor(Qt::ArrowCursor);
+		ResLabel->setText("<b>Error:</b> "+ToQString(e.GetMsg()));
+	}
+	catch(RException& e)
+	{
+		QApplication::setOverrideCursor(Qt::ArrowCursor);
+		ResLabel->setText("<b>Error:</b> "+ToQString(e.GetMsg()));
+	}
+	catch(std::exception& e)
+	{
+		QApplication::setOverrideCursor(Qt::ArrowCursor);
+		ResLabel->setText("<b>Error:</b> "+QString(e.what()));
+	}
+	catch(...)
+	{
+		QApplication::setOverrideCursor(Qt::ArrowCursor);
+		ResLabel->setText("<b>Error</b>");
 	}
 }

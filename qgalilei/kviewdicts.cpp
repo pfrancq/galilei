@@ -271,32 +271,24 @@ void KViewDicts::selectDict(QTreeWidgetItem* item,int)
 	CurDict=ptr->Obj.Dict;
 
     // Parse the double hash table
-    RCursor<RDblHashContainer<GConcept,false>::Hash> Cur(CurDict->GetObjs(pConcept));
-    for(Cur.Start();!Cur.End();Cur.Next())
-    {
-       RCursor<RDblHashContainer<GConcept,false>::Hash2> Cur2(*Cur());
-       for(Cur2.Start();!Cur2.End();Cur2.Next())
-       {
-          RCursor<GConcept> Cur3(*Cur2());
-          for(Cur3.Start();!Cur3.End();Cur3.Next())
-          {
-				QString w(QString::number(Cur3()->GetId()));
-				while(w.length()<10)
-					w.prepend(' ');
-				if(Weighting)
-				{
-					double docs(NAN),profiles(NAN),communities(NAN),topics(NAN),classes(NAN);
-					Weighting->Measure(0,const_cast<GConcept*>(Cur3()),otDoc,&docs);
-					Weighting->Measure(0,const_cast<GConcept*>(Cur3()),otProfile,&profiles);
-					Weighting->Measure(0,const_cast<GConcept*>(Cur3()),otTopic,&topics);
-					Weighting->Measure(0,const_cast<GConcept*>(Cur3()),otClass,&classes);
-					Weighting->Measure(0,const_cast<GConcept*>(Cur3()),otCommunity,&communities);
-					new QGObject(Dict,const_cast<GConcept*>(Cur3()),docs,profiles,topics,classes,communities,w);
-				}
-				else
-					new QGObject(Dict,const_cast<GConcept*>(Cur3()),w);
-          }
-       }
+	 RCursor<GConcept> Cur(CurDict->GetObjs(pConcept));
+	 for(Cur.Start();!Cur.End();Cur.Next())
+	 {
+		QString w(QString::number(Cur()->GetId()));
+		while(w.length()<10)
+			w.prepend(' ');
+		if(Weighting)
+		{
+			double docs(NAN),profiles(NAN),communities(NAN),topics(NAN),classes(NAN);
+			Weighting->Measure(0,const_cast<GConcept*>(Cur()),otDoc,&docs);
+			Weighting->Measure(0,const_cast<GConcept*>(Cur()),otProfile,&profiles);
+			Weighting->Measure(0,const_cast<GConcept*>(Cur()),otTopic,&topics);
+			Weighting->Measure(0,const_cast<GConcept*>(Cur()),otClass,&classes);
+			Weighting->Measure(0,const_cast<GConcept*>(Cur()),otCommunity,&communities);
+			new QGObject(Dict,const_cast<GConcept*>(Cur()),docs,profiles,topics,classes,communities,w);
+		}
+		else
+			new QGObject(Dict,const_cast<GConcept*>(Cur()),w);
     }
 
 	 QApplication::setOverrideCursor(Qt::ArrowCursor);
