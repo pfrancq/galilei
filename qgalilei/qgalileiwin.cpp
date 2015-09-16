@@ -73,6 +73,7 @@
 #include <kviewprofile.h>
 #include <kviewusers.h>
 #include <kviewidealgroups.h>
+#include <qmodifydocsdlg.h>
 using namespace std;
 using namespace R;
 using namespace GALILEI;
@@ -158,6 +159,7 @@ void QGALILEIWin::connectMenus(void)
 	connect(aCompareIdealClasses,SIGNAL(triggered()),this,SLOT(compareIdealClasses()));
 	connect(aCompareIdealTopics,SIGNAL(triggered()),this,SLOT(compareIdealTopics()));
 	connect(aCompareIdealCommunities,SIGNAL(triggered()),this,SLOT(compareIdealCommunities()));
+	connect(aModifyDocuments,SIGNAL(triggered()),this,SLOT(modifyDocuments()));
 
 	// Menu 'Window'
 	connect(aCloseAll,SIGNAL(triggered()),Desktop,SLOT(closeAllSubWindows()));
@@ -883,6 +885,14 @@ void QGALILEIWin::compareIdealClasses(void)
 		QApplication::setOverrideCursor(Qt::ArrowCursor);
 		QMessageBox::critical(0,QWidget::tr("Unknown exception"),QWidget::trUtf8("Unknown problem"),QMessageBox::Ok);
 	}
+}
+
+
+//-----------------------------------------------------------------------------
+void QGALILEIWin::modifyDocuments(void)
+{
+	QModifyDocsDlg Dlg(this);
+	Dlg.exec();
 }
 
 

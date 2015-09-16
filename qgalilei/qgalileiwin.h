@@ -372,6 +372,11 @@ public slots :
 	void compareIdealClasses(void);
 
 	/**
+	 * Modify the documents.
+    */
+	void modifyDocuments(void);
+
+	/**
 	 * Set the preferences.
 	 */
 	void configQGALILEI(void);

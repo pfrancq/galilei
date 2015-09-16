@@ -1,6 +1,6 @@
 /*
 
-	KGALILEICenter
+	QGALILEI
 
 	Preferences.cpp
 

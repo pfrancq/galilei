@@ -132,8 +132,14 @@ void KViewMetaEngine::QueryEngine(void)
 	{
 		Win->getSession()->RequestMetaEngine(FromQString(TxtQuery->text()));
 		GMetaEngine* Meta(GALILEIApp->GetCurrentPlugIn<GMetaEngine>("MetaEngine"));
+
 		Results->Set(QGObjectsList::Docs,Meta,NbRes->value());
-		ResLabel->setText("<b>"+QString::number(Meta->GetNbResults())+" Results displayed.</b>");
+		if(Meta->GetNbResults()==0)
+			ResLabel->setText("<b>No results</b>");
+		else if(Meta->GetNbResults()>NbRes->value())
+			ResLabel->setText("<b>Display "+QString::number(NbRes->value())+" results from "+QString::number(Meta->GetNbResults())+" found</b>");
+		else
+			ResLabel->setText("<b>Display "+QString::number(Meta->GetNbResults())+" results found</b>");
 		QApplication::setOverrideCursor(Qt::ArrowCursor);
 	}
 	catch(GException& e)

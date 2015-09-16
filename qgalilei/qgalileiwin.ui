@@ -18,16 +18,7 @@
     <property name="spacing">
      <number>0</number>
     </property>
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
+    <property name="margin">
      <number>0</number>
     </property>
     <item>
@@ -41,7 +32,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>34</height>
+     <height>31</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSession">
@@ -131,6 +122,8 @@
     <addaction name="aCompareIdealClasses"/>
     <addaction name="aCompareIdealTopics"/>
     <addaction name="aCompareIdealCommunities"/>
+    <addaction name="separator"/>
+    <addaction name="aModifyDocuments"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
@@ -518,6 +511,11 @@
   <action name="aCompareIdealClasses">
    <property name="text">
     <string>Compar&amp;e Ideal Classes</string>
+   </property>
+  </action>
+  <action name="aModifyDocuments">
+   <property name="text">
+    <string>Modify Documents</string>
    </property>
   </action>
  </widget>

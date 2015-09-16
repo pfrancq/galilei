@@ -2,9 +2,9 @@
 
 	QGALILEI
 
-	Preferences.h
+	QModifyDocs.h
 
-	Preferences - Header.
+	Modify Documents Dialog - Header.
 
 	Copyright 2010-2015 by Pascal Francq (pascal@francq.info).
 
@@ -31,8 +31,8 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef PreferencesH
-#define PreferencesH
+#ifndef QModifyDocsDlgH
+#define QModifyDocsDlgH
 
 
 //-----------------------------------------------------------------------------
@@ -47,18 +47,16 @@
 
 //------------------------------------------------------------------------------
 // include files for current project
-#include <ui_preferences.h>
+#include <ui_qmodifydocsdlg.h>
 class QGALILEIWin;  // forward declaration
 
 
 //------------------------------------------------------------------------------
 /**
- * The Preferences provides a dialog box to configure KGALILEICenter (and the
- * underlying GGALILEIApp).
- * @short Preferences Dialog.
- * @author Pascal Francq
+ * The QModifyDocsDlg provides a dialog box to modify the documents.
+ * @short QModifyDocsDlg Dialog.
  */
-class Preferences : QDialog, Ui_Preferences
+class QModifyDocsDlg : public QDialog, Ui_QModifyDocsDlg
 {
 	Q_OBJECT
 
@@ -67,41 +65,57 @@ class Preferences : QDialog, Ui_Preferences
 	 */
 	QGALILEIWin* Win;
 
+	/**
+	 * Concept type was edited.
+	 */
+	bool EditType;
+
 public:
 
 	/**
 	 * Construct the dialog box.
 	 * @param win            Window.
 	 */
-	Preferences(QGALILEIWin* win);
+	QModifyDocsDlg(QGALILEIWin* win);
+
+private:
 
 	/**
-	 * Execute the dialog boxes. In practice, when the 'Apply' button is
-	 * pressed, the variables are applied.
-	 */
-	void exec(void);
+	 * Populate the concept types.
+    */
+	void populateConceptTypes(void);
+
+private slots:
+
+	/**
+	 * Populate the concepts.
+	 * @param index          Index of the concept type.
+    */
+	void populateConcepts(int index);
+
+	/**
+	 * The concept type was edited.
+	 * @param index          Index of the concept type.
+    */
+	void editConceptType(int index);
+
+	/**
+	 * The concept type was edited.
+    * @param text           New concept type.
+    */
+	void editConceptType(const QString& text);
 
 public slots:
 
 	/**
-	 * Slot called when the button to add a directory was pressed.
-	 */
-	void slotAddDir(void);
-
-	/**
-	 * Slot called when the button to delete a directory was pressed.
-	 */
-	void slotDelDir(void);
-
-	/**
-	 * Slot called when the index directory must be edited.
+	 * Add an expression to dictionary.
     */
-	void editIndexDir(void);
+	void addExpression(void);
 
 	/**
-	 * Slot called when the script directory must be edited.
-    */
-	void editScriptDir(void);
+	 * Modify the description of a document.
+	 */
+	void modifyDescription(void);
 };
 
 
