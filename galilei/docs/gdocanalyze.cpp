@@ -69,7 +69,7 @@ bool Debug=false;
 //------------------------------------------------------------------------------
 GDocAnalyze::GDocAnalyze(GSession* session)
 	: RDownloadFile(), Doc(0), Data(0),
-	  Session(session), Description(), Tree(0,20000,2000), Tokenizer(0),
+	  Session(session), Description(), Records(100000,50000), Tokenizer(0),
 	  MemoryTokens(500), MemoryOccurs(20000),
 	  OrderTokens(10000,20,10), Tokens(500), Occurs(20000), Top(200), Depths(100,50),
 	  SyntacticPos(20)
@@ -161,10 +161,7 @@ GTokenOccur* GDocAnalyze::AddToken(const RString& token,tTokenType type,double w
 	GTokenOccur* Occur;
 	if(MemoryOccurs.GetNb()<=NbMemoryOccursUsed)
 	{
-		size_t nb(0);
-		if(Session->DoCreateTree(pDoc))
-			nb=2000;
-		MemoryOccurs.InsertPtr(Occur=new GTokenOccur(Token,CurVector,CurPos,CurDepth,CurSyntacticPos,nb));
+		MemoryOccurs.InsertPtr(Occur=new GTokenOccur(Token,CurVector,CurPos,CurDepth,CurSyntacticPos,0));
 		NbMemoryOccursUsed++;
 	}
 	else
@@ -385,7 +382,7 @@ void GDocAnalyze::DeleteToken(GToken* token)
 	// Delete the occurrences and the token from the containers.
 	RCursor<GTokenOccur> TokenOccur(token->Occurs);
 	for(TokenOccur.StartFromEnd();!TokenOccur.Begin();TokenOccur.Prev())
-		Occurs.DeletePtrAt(TokenOccur()->Index,false);  // Don't shif them
+		Occurs.DeletePtrAt(TokenOccur()->Index,false);  // Don't shift them
 	token->Type=ttDeleted;
 	token->Occurs.Clear();
 }
@@ -404,18 +401,15 @@ void GDocAnalyze::ReplaceToken(GToken* token,RString value)
 	if(Token)
 	{
 		// Merge the two token occurrences.
-		GToken* NewToken(Token);
-		if(NewToken->Type==ttDeleted)
-			NewToken->Type=token->Type;
 		RCursor<GTokenOccur> Occur(token->Occurs);
 		for(Occur.Start();!Occur.End();Occur.Next())
 		{
-			NewToken->Occurs.InsertPtr(Occur());
-			Occur()->Token=NewToken;
+			Token->Occurs.InsertPtr(Occur());
+			Occur()->Token=Token;
 		}
 
 		// Ensure that the ascending order of index in Occurs is respected
-		NewToken->Occurs.ReOrder();
+		Token->Occurs.ReOrder();
 
 		// Considered it as deleted
 		token->Occurs.Clear();
@@ -598,7 +592,7 @@ void GDocAnalyze::BuildTensor(void)
 
 
 //------------------------------------------------------------------------------
-void GDocAnalyze::BuildTree(GConceptNode* parent,GTokenOccur* occur)
+void GDocAnalyze::BuildRecords(GTokenOccur* occur)
 {
 	// Never treat a deleted token
 	if(occur->Token->Type==ttDeleted)
@@ -609,13 +603,28 @@ void GDocAnalyze::BuildTree(GConceptNode* parent,GTokenOccur* occur)
 	if(!Concept)
 		return;
 
-	// Create a node
-	GConceptNode* Node(Tree.InsertNode(parent,occur->Token->Type,occur->Token->Concept->GetId(),occur->SyntacticPos,occur->Pos,occur->Depth));
+	// Create a record
+	if(NbRecords>=Records.GetNb())
+		Records.InsertPtr(new GConceptRecord(occur->Token->Type,occur->Token->Concept->GetId(),occur->SyntacticPos,occur->Pos,occur->Depth,cNoRef,occur->Children.GetNb()));
+	else
+	{
+		GConceptRecord* Rec(Records[NbRecords]);
+		Rec->Type=occur->Token->Type;
+		Rec->ConceptId=occur->Token->Concept->GetId();
+		Rec->SyntacticPos=occur->SyntacticPos;
+		Rec->Pos=occur->Pos;
+		Rec->SyntacticDepth=occur->Depth;
+		Rec->Index=cNoRef;
+		Rec->NbChildren=occur->Children.GetNb();
+	}
+	NbRecords++;
+	if(occur->Depth==0)
+		NbTopRecords++;
 
 	// Treat its children
 	RCursor<GTokenOccur> Occur(occur->Children);
 	for(Occur.Start();!Occur.End();Occur.Next())
-		BuildTree(Node,Occur());
+		BuildRecords(Occur());
 }
 
 
@@ -641,7 +650,7 @@ void GDocAnalyze::Analyze(GDoc* doc,bool force,bool download)
 	if(doc->GetId()!=cNoRef)
 		Session->GetLog().WriteLog("Analyze "+doc->GetName()+" ("+RString::Number(doc->GetId())+")",true);
 
-	// Prepare the analyze
+	// Prepare the analysis
 	NbMemoryTokensUsed=0;
 	NbMemoryOccursUsed=0;
 	CurSyntacticPos=0;
@@ -650,7 +659,7 @@ void GDocAnalyze::Analyze(GDoc* doc,bool force,bool download)
 	if((!Tokenizer)||(!Analyzers.GetNb()))
 		AssignPlugIns();
 	Description.Clear();
-	Tree.Clear();
+	NbRecords=NbTopRecords=NbRefs=0;
 	OrderTokens.Clear();
 	Tokens.Clear();
 	Occurs.Clear();
@@ -687,12 +696,28 @@ void GDocAnalyze::Analyze(GDoc* doc,bool force,bool download)
 		// Build only the tree if necessary
 		RCursor<GTokenOccur> Occur(Top);
 		for(Occur.Start();!Occur.End();Occur.Next())
-			BuildTree(0,Occur());
+			BuildRecords(Occur());
+		if(NbRecords)
+		{
+			Records.ReOrder(RContainer<GConceptRecord,false,true>::SortOrder,0,NbRecords-1);
+			if(Debug)
+			{
+				RCursor<GConceptRecord> Rec(Records,0,NbRecords-1);
+				for(Rec.Start();!Rec.End();Rec.Next())
+				{
+					Rec()->Index=Rec.GetPos();
+					Rec()->Print();
+				}
+			}
 
-		if(Debug)
-			Tree.Print();
+			// Compute the number of references
+			RCursor<GToken> Token(Tokens);
+			for(Token.Start();!Token.End();Token.Next())
+				if(Token()->Concept)
+					NbRefs++;
+		}
 	}
-	doc->Update(Lang,Description,Tree);
+	doc->Update(Lang,Description,Records,NbRecords,NbTopRecords,NbRefs);
 }
 
 

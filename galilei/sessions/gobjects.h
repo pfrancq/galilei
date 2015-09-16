@@ -263,6 +263,18 @@ public:
 	 */
 	void LoadTree(const C* obj,GConceptTree* &tree,size_t blockid,size_t id);
 
+	/**
+	 * Load the tree as a container of records.
+	 * @param obj            Obj for which the tree must be loaded.
+	 * @param records        Container of records (modified by the method).
+	 * @param nbrecords      Number of records used for the document tree
+	 *                       (modified by the method).
+	 * @param nbtoprecords   Number of top records (modified by the method).
+	 * @param nbrefs         Number of concepts referenced (modified by the
+	 *                       method).
+    */
+	void LoadTree(const C* obj,R::RContainer<GConceptRecord,false,true>& records,size_t& nbrecords,size_t& nbtoprecords,size_t& nbrefs);
+
 private:
 
 	/**
@@ -353,22 +365,25 @@ private:
 	void LoadNode(GConceptTree* tree,GConceptNode* parent);
 
 	/**
-	 * Save a node in the file. The method saves first the node information and
+	 * Save a record in the file. The method saves first the node information and
 	 * then calls the method for its children.
     * @param node           Node to save.
     */
-	void SaveNode(GConceptNode* node);
+	void SaveNode(GConceptRecord* rec);
 
 	/**
 	 * Save the concept tree of a given object. This method generates an
 	 * exception except for documents.
 	 * @param obj            Pseudo-parameter.
-	 * @param tree           Concept tree to save.
+	 * @param records        Container of records.
+	 * @param nbrecords      Number of records used for the document tree.
+	 * @param nbtoprecords   Number of top records.
+	 * @param nbrefs         Number of concepts referenced.
 	 * @param blockid        Identifier of the block of the document (0 means the
 	 *                       block will be found).
 	 * @param id             Identifier of the document.
 	 */
-	void SaveTree(const C* obj,const GConceptTree& tree,size_t& blockid,size_t id);
+	void SaveTree(const C* obj,const R::RContainer<GConceptRecord,false,true>& records,size_t nbrecords,size_t nbtoprecords,size_t nbrefs,size_t& blockid,size_t id);
 
 	/**
 	 * Flush the file storing the concept trees of the objects.
@@ -500,15 +515,6 @@ public:
     * @return a syntactic position.
     */
 	size_t GetMaxSyntacticPosRecord(const C* obj);
-
-	/**
-	 * Get the number of child records of a given record.
-    * @param obj            Pointer to the object.
-    * @param rec            Record that contains the record for which the
-	 *                       number must be found.
-    * @return a number.
-    */
-	size_t GetNbChildRecords(const C* obj,const GConceptRecord& rec);
 
 	/**
 	 * Get the total number of child records (including all the children) of a

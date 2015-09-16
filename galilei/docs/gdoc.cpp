@@ -143,6 +143,19 @@ void GDoc::LoadTree(GConceptTree* &tree) const
 
 
 //------------------------------------------------------------------------------
+void GDoc::LoadTree(R::RContainer<GConceptRecord,false,true>& records,size_t& nbrecords,size_t& nbtoprecords,size_t& nbrefs)
+{
+	if(!StructId)
+	{
+		records.Clear();
+		nbrecords=nbtoprecords=nbrefs=0;
+		return;
+	}
+	Session->LoadTree(this,records,nbrecords,nbtoprecords,nbrefs);
+}
+
+
+//------------------------------------------------------------------------------
 GConceptTree* GDoc::GetTree(void) const
 {
 	if(!Tree)
@@ -303,11 +316,10 @@ void GDoc::SetUpdated(RDate& date)
 
 
 //------------------------------------------------------------------------------
-void GDoc::Update(GLang* lang,GDescription& desc,GConceptTree& tree)
+void GDoc::Update(GLang* lang,GDescription& desc,R::RContainer<GConceptRecord,false,true>& records,size_t nbrecords,size_t nbtoprecords,size_t nbrefs)
 {
 	bool Save(Session->MustSaveResults());  // Must the results be saved on disk?
 	bool NullDesc;                          // The description must not stayed in memory?
-	bool NullTree;                          // The tree must not stayed in memory?
 
 	// Look if the document is internal one : Modify the references and indexes
 	GetVectors();  // Make sure the vectors are loaded
@@ -336,17 +348,14 @@ void GDoc::Update(GLang* lang,GDescription& desc,GConceptTree& tree)
 		NullDesc=true;
 	}
 
-	// The tree must be saved only for external documents or when a description is already loaded
-	if((Id==cNoRef)||Tree)
-	{
+	// If a tree is actually loaded -> Release it
+	if(Tree)
 		ReleaseTree();
-		Tree=new GConceptTree(tree);
-		NullTree=false;
-	}
-	else
+
+	// The tree must be saved only for external documents
+	if(Id==cNoRef)
 	{
-		Tree=&tree;
-		NullTree=true;
+		Tree=new GConceptTree(Id,records,nbrecords,nbrefs);
 	}
 
 	// Set the computed date and the status
@@ -369,7 +378,7 @@ void GDoc::Update(GLang* lang,GDescription& desc,GConceptTree& tree)
 				Session->SaveDesc(pDoc,*desc.Vectors,BlockId,Id);
 
 			if(Session->DoCreateTree(pDoc))
-				Session->SaveTree(pDoc,*Tree,StructId,Id);
+				Session->SaveTree(pDoc,records,nbrecords,nbtoprecords,nbrefs,StructId,Id);
 
 			Session->GetStorage()->SaveObj(this);
 		}
@@ -380,13 +389,10 @@ void GDoc::Update(GLang* lang,GDescription& desc,GConceptTree& tree)
 		// Verify if description and tree must stay in memory
 		if(NullDesc)
 			Vectors=0;
-		if(NullTree)
-			Tree=0;
 	}
 
 	// Clear the description
 	desc.Clear();
-	tree.Clear();
 }
 
 

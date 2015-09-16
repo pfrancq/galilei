@@ -136,7 +136,7 @@ void GMetaEngine::PostRequest(void)
 //------------------------------------------------------------------------------
 GSearchQuery* GMetaEngine::BuildQuery(const R::RString query)
 {
-	GSearchQuery* Query=new GSearchQuery(Session,true);
+	GSearchQuery* Query=new GSearchQuery(Session);
 	Query->Build(query);
 	return(Query);
 }

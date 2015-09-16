@@ -51,7 +51,7 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GConceptNode::GConceptNode(GConceptTree* tree,tTokenType type,size_t conceptid,size_t synpos,size_t pos,size_t syndepth)
-	: RNode<GConceptTree,GConceptNode,false>(), GConceptRecord(type,conceptid,synpos,pos,syndepth,cNoRef), Tree(tree)
+	: RNode<GConceptTree,GConceptNode,false>(), GConceptRecord(type,conceptid,synpos,pos,syndepth,cNoRef,0), Tree(tree)
 {
 }
 
@@ -59,6 +59,7 @@ GConceptNode::GConceptNode(GConceptTree* tree,tTokenType type,size_t conceptid,s
 //------------------------------------------------------------------------------
 void GConceptNode::Clear(void)
 {
+	GConceptRecord::Clear();
 	RNode<GConceptTree,GConceptNode,false>::Clear();
 }
 
@@ -103,7 +104,7 @@ void GConceptNode::Print(void) const
 {
 	for(size_t i=GetDepth()+1;--i;)
 		cout<<" ";
-	cout<<"Node "<<ConceptId<<","<<Pos<<","<<SyntacticPos<<SyntacticDepth<<endl;
+	cout<<"Node "<<ConceptId<<","<<Pos<<","<<SyntacticPos<<","<<SyntacticDepth<<" ("<<GetNbNodes()<<")"<<endl;
 	RNodeCursor<GConceptTree,GConceptNode> Children(this);
 	for(Children.Start();!Children.End();Children.Next())
 		Children()->Print();

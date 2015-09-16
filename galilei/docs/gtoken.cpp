@@ -46,14 +46,14 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GTokenOccur::GTokenOccur(size_t nb)
-	: Token(0), Vector(0), Children(nb,300), Pos(cNoRef), Depth(cNoRef), Index(cNoRef), Weight(0.0)
+	: Token(0), Vector(0), Children(nb,50), Pos(cNoRef), Depth(cNoRef), Index(cNoRef), Weight(0.0)
 {
 }
 
 
 //------------------------------------------------------------------------------
 GTokenOccur::GTokenOccur(GToken* token,GVector* vector,size_t pos,size_t depth,size_t spos,size_t nb)
-	: Token(token), Vector(vector), Children(nb,300), Pos(pos), Depth(depth), SyntacticPos(spos), Index(cNoRef), Weight(0.0)
+	: Token(token), Vector(vector), Children(nb,50), Pos(pos), Depth(depth), SyntacticPos(spos), Index(cNoRef), Weight(0.0)
 {
 }
 
@@ -81,7 +81,7 @@ GToken::Search::Search(R::RString token,tTokenType type)
 
 //------------------------------------------------------------------------------
 GToken::GToken(const RString& token)
-	: Token(token), Type(ttUnknown), Concept(0), Occurs(20,20), Index(cNoRef)
+	: Token(token), Type(ttUnknown), Concept(0), Occurs(200,50), Index(cNoRef)
 {
 }
 
@@ -89,9 +89,9 @@ GToken::GToken(const RString& token)
 //------------------------------------------------------------------------------
 int GToken::Compare(const GToken& token) const
 {
-	int Res(Token.Compare(token.Token));
+	int Res(Type-token.Type);
 	if(!Res)
-		return(Type-token.Type);
+		return(Token.Compare(token.Token));
 	return(Res);
 }
 
@@ -99,9 +99,9 @@ int GToken::Compare(const GToken& token) const
 //------------------------------------------------------------------------------
 int GToken::Compare(const Search& token) const
 {
-	int Res(Token.Compare(token.Token));
+	int Res(Type-token.Type);
 	if(!Res)
-		return(Type-token.Type);
+		return(Token.Compare(token.Token));
 	return(Res);
 }
 

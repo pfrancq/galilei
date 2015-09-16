@@ -178,7 +178,6 @@ public:
 	using GObjects<GDoc,hDocs>::GetMaxSyntacticPosRecord;
 	using GObjects<GDoc,hDocs>::GetMinPosRecord;
 	using GObjects<GDoc,hDocs>::GetMaxPosRecord;
-	using GObjects<GDoc,hDocs>::GetNbChildRecords;
 	using GObjects<GDoc,hDocs>::GetNbTotalChildRecords;
 
 	// Explicit use of methods from GObjects<GTopic,eCreateTopic>

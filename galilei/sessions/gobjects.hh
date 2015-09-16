@@ -30,7 +30,7 @@
 //------------------------------------------------------------------------------
 // Const
 const size_t SizeRecDesc=sizeof(size_t)+sizeof(double);
-const size_t SizeRecNode=sizeof(tTokenType)+sizeof(size_t)+sizeof(size_t)+sizeof(size_t)+sizeof(size_t)+sizeof(size_t);
+const size_t SizeRecNode=sizeof(tTokenType)+5*sizeof(size_t);
 const size_t SizeT=sizeof(size_t);
 const size_t SizeT2=2*sizeof(size_t);
 const size_t SizeT3=3*sizeof(size_t);
@@ -623,27 +623,15 @@ template<class C,const R::hNotification* hEvents>
 
 //------------------------------------------------------------------------------
 template<class C,const R::hNotification* hEvents>
-	void GObjects<C,hEvents>::SaveNode(GConceptNode* node)
+	void GObjects<C,hEvents>::SaveNode(GConceptRecord* rec)
 {
 	// Save the information concerning the current node
-	tTokenType type(node->GetType());
-	Tree->Write((char*)&type,sizeof(tTokenType));
-	size_t nb;
-	nb=node->GetConceptId();
-	Tree->Write((char*)&nb,sizeof(size_t));
-	nb=node->GetSyntacticPos();
-	Tree->Write((char*)&nb,sizeof(size_t));
-	nb=node->GetPos();
-	Tree->Write((char*)&nb,sizeof(size_t));
-	nb=node->GetSyntacticDepth();
-	Tree->Write((char*)&nb,sizeof(size_t));
-	nb=node->GetNbNodes();
-	Tree->Write((char*)&nb,sizeof(size_t));
-
-	// Save each of its children
-	R::RNodeCursor<GConceptTree,GConceptNode> Node(node);
-	for(Node.Start();!Node.End();Node.Next())
-		SaveNode(Node());
+	Tree->Write((char*)&rec->Type,sizeof(tTokenType));
+	Tree->Write((char*)&rec->ConceptId,sizeof(size_t));
+	Tree->Write((char*)&rec->SyntacticPos,sizeof(size_t));
+	Tree->Write((char*)&rec->Pos,sizeof(size_t));
+	Tree->Write((char*)&rec->SyntacticDepth,sizeof(size_t));
+	Tree->Write((char*)&rec->NbChildren,sizeof(size_t));
 }
 
 
@@ -665,6 +653,9 @@ template<class C,const R::hNotification* hEvents>
 		Tree->Read((char*)&nbnodes,sizeof(size_t));
 		Tree->Read((char*)&nbrefs,sizeof(size_t));
 		Tree->Read((char*)&topnodes,sizeof(size_t));
+		if(nbnodes<topnodes)
+			mThrowGException("File "+Tree->GetURI()()+" is corrupted");
+
 		if(!tree)
 			tree=new GConceptTree(id,nbnodes,nbrefs);
 		else
@@ -684,7 +675,53 @@ template<class C,const R::hNotification* hEvents>
 
 //------------------------------------------------------------------------------
 template<class C,const R::hNotification* hEvents>
-	void GObjects<C,hEvents>::SaveTree(const C*,const GConceptTree& tree,size_t& blockid,size_t id)
+	void GObjects<C,hEvents>::LoadTree(const C* obj,R::RContainer<GConceptRecord,false,true>& records,size_t& nbrecords,size_t& nbtoprecords,size_t& nbrefs)
+{
+	if(!Tree)
+		mThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
+	records.Clear();
+
+	try
+	{
+		// Position the file to correct block
+		R::RIntKey Key(obj->GetId());
+		Tree->Seek(obj->GetStructId(),Key);
+
+		// Read the number of nodes, references and top nodes.
+		Tree->Read((char*)&nbrecords,sizeof(size_t));
+		Tree->Read((char*)&nbrefs,sizeof(size_t));
+		Tree->Read((char*)&nbtoprecords,sizeof(size_t));
+		if(nbrecords<nbtoprecords)
+			mThrowGException("File "+Tree->GetURI()()+" is corrupted");
+
+		// Read the nodes
+		for(size_t i=0;i<nbrecords;i++)
+		{
+			tTokenType type;
+			Tree->Read((char*)&type,sizeof(tTokenType));
+			size_t children,concept,pos,synpos,depth;
+			Tree->Read((char*)&concept,sizeof(size_t));
+			Tree->Read((char*)&synpos,sizeof(size_t));
+			Tree->Read((char*)&pos,sizeof(size_t));
+			Tree->Read((char*)&depth,sizeof(size_t));
+			Tree->Read((char*)&children,sizeof(size_t));
+
+			// Create the node
+			GConceptRecord* Rec(new GConceptRecord(type,concept,synpos,pos,depth,i,children));
+			records.InsertPtrAt(Rec,i);
+		}
+	}
+	catch(R::RIOException e)
+	{
+		std::cerr<<e.GetMsg()<<std::endl;
+		mThrowGException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+template<class C,const R::hNotification* hEvents>
+	void GObjects<C,hEvents>::SaveTree(const C*,const R::RContainer<GConceptRecord,false,true>& records,size_t nbrecords,size_t nbtoprecords,size_t nbrefs,size_t& blockid,size_t id)
 {
 	if(!CreateTree)
 		return;
@@ -694,26 +731,25 @@ template<class C,const R::hNotification* hEvents>
 
 	try
 	{
-	    if(!tree.GetNbNodes())
+	    if(!nbrecords)
 			return;
 
 		// Position the file to the correct block and announce that a given number of bytes will be written
-	    size_t size(SizeT3+(tree.GetNbNodes()*SizeRecNode));
+	    size_t size(SizeT3+(nbrecords*SizeRecNode));
 		 R::RIntKey Key(id);
 	    Tree->Seek(blockid,Key,size);
 
 		// Save the number of nodes, references and top nodes.
-		size_t nb(tree.GetNbNodes());
-		Tree->Write((char*)&nb,sizeof(size_t));
-		nb=tree.GetNbRefs();
-		Tree->Write((char*)&nb,sizeof(size_t));
-		nb=tree.GetNbTopNodes();
-		Tree->Write((char*)&nb,sizeof(size_t));
+		Tree->Write((char*)&nbrecords,sizeof(size_t));
+		Tree->Write((char*)&nbrefs,sizeof(size_t));
+		Tree->Write((char*)&nbtoprecords,sizeof(size_t));
+		if(nbrecords<nbtoprecords)
+			mThrowGException("File "+Tree->GetURI()()+" will be corrupted");
 
 		// Save the nodes
-		R::RNodeCursor<GConceptTree,GConceptNode> Node(tree);
-		for(Node.Start();!Node.End();Node.Next())
-			SaveNode(Node());
+		R::RCursor<GConceptRecord> Rec(records,0,nbrecords-1);
+		for(Rec.Start();!Rec.End();Rec.Next())
+			SaveNode(Rec());
 	}
 	catch(R::RIOException e)
 	{
@@ -786,11 +822,7 @@ template<class C,const R::hNotification* hEvents>
 
 		if((!nbnodes)||(idx>=nbnodes))
 		{
-			rec.Type=ttUnknown;
-			rec.ConceptId=R::cNoRef;
-			rec.SyntacticPos=R::cNoRef;
-			rec.Pos=R::cNoRef;
-			rec.SyntacticDepth=R::cNoRef;
+			rec.Clear();
 			return(false);
 		}
 
@@ -801,13 +833,13 @@ template<class C,const R::hNotification* hEvents>
 		for(size_t i=idx;i<nbnodes;i++)
 		{
 			// Load the information concerning the current node
+			size_t concept;
 			Tree->Read((char*)&rec.Type,sizeof(tTokenType));
-			size_t children,concept;
 			Tree->Read((char*)&concept,sizeof(size_t));
 			Tree->Read((char*)&rec.SyntacticPos,sizeof(size_t));
 			Tree->Read((char*)&rec.Pos,sizeof(size_t));
 			Tree->Read((char*)&rec.SyntacticDepth,sizeof(size_t));
-			Tree->Read((char*)&children,sizeof(size_t));
+			Tree->Read((char*)&rec.NbChildren,sizeof(size_t));
 
 			if(concept==rec.ConceptId)
 			{
@@ -823,10 +855,7 @@ template<class C,const R::hNotification* hEvents>
 	}
 
 	// Nothing was found
-	rec.Type=ttUnknown;
-	rec.SyntacticPos=R::cNoRef;
-	rec.Pos=R::cNoRef;
-	rec.SyntacticDepth=R::cNoRef;
+	rec.Clear();
 	return(false);
 }
 
@@ -852,11 +881,7 @@ template<class C,const R::hNotification* hEvents>
 
 		if(!nbnodes)
 		{
-			rec.Type=ttUnknown;
-			rec.ConceptId=R::cNoRef;
-			rec.SyntacticPos=R::cNoRef;
-			rec.Pos=R::cNoRef;
-			rec.SyntacticDepth=R::cNoRef;
+			rec.Clear();
 			return(false);
 		}
 
@@ -884,12 +909,11 @@ template<class C,const R::hNotification* hEvents>
 
 			// Load the information concerning the current node
 			Tree->Read((char*)&rec.Type,sizeof(tTokenType));
-			size_t children;
 			Tree->Read((char*)&rec.ConceptId,sizeof(size_t));
 			Tree->Read((char*)&rec.SyntacticPos,sizeof(size_t));
 			Tree->Read((char*)&rec.Pos,sizeof(size_t));
 			Tree->Read((char*)&rec.SyntacticDepth,sizeof(size_t));
-			Tree->Read((char*)&children,sizeof(size_t));
+			Tree->Read((char*)&rec.NbChildren,sizeof(size_t));
 
 			if(synpos==rec.SyntacticPos)
 			{
@@ -907,11 +931,7 @@ template<class C,const R::hNotification* hEvents>
 	}
 
 	// Nothing was found
-	rec.Type=ttUnknown;
-	rec.ConceptId=R::cNoRef;
-	rec.SyntacticPos=R::cNoRef;
-	rec.Pos=R::cNoRef;
-	rec.SyntacticDepth=R::cNoRef;
+	rec.Clear();
 	return(false);
 }
 
@@ -925,11 +945,7 @@ template<class C,const R::hNotification* hEvents>
 
 	if((search.Index==0)||(search.SyntacticDepth==0))
 	{
-		rec.Type=ttUnknown;
-		rec.ConceptId=R::cNoRef;
-		rec.SyntacticPos=R::cNoRef;
-		rec.Pos=R::cNoRef;
-		rec.SyntacticDepth=R::cNoRef;
+		rec.Clear();
 		return(false);
 	}
 
@@ -947,11 +963,7 @@ template<class C,const R::hNotification* hEvents>
 
 		if((!nbnodes)||(search.Index>=nbnodes))
 		{
-			rec.Type=ttUnknown;
-			rec.ConceptId=R::cNoRef;
-			rec.SyntacticPos=R::cNoRef;
-			rec.Pos=R::cNoRef;
-			rec.SyntacticDepth=R::cNoRef;
+			rec.Clear();
 			return(false);
 		}
 
@@ -969,12 +981,11 @@ template<class C,const R::hNotification* hEvents>
 
 			// Load the information concerning the current node
 			Tree->Read((char*)&rec.Type,sizeof(tTokenType));
-			size_t children;
 			Tree->Read((char*)&rec.ConceptId,sizeof(size_t));
 			Tree->Read((char*)&rec.SyntacticPos,sizeof(size_t));
 			Tree->Read((char*)&rec.Pos,sizeof(size_t));
 			Tree->Read((char*)&rec.SyntacticDepth,sizeof(size_t));
-			Tree->Read((char*)&children,sizeof(size_t));
+			Tree->Read((char*)&rec.NbChildren,sizeof(size_t));
 
 			if(search.SyntacticDepth>rec.SyntacticDepth)
 			{
@@ -990,11 +1001,7 @@ template<class C,const R::hNotification* hEvents>
 	}
 
 	// Nothing was found
-	rec.Type=ttUnknown;
-	rec.ConceptId=R::cNoRef;
-	rec.SyntacticPos=R::cNoRef;
-	rec.Pos=R::cNoRef;
-	rec.SyntacticDepth=R::cNoRef;
+	rec.Clear();
 	return(false);
 }
 
@@ -1020,11 +1027,7 @@ template<class C,const R::hNotification* hEvents>
 
 		if((!nbnodes)||(search.Index>=nbnodes-1))
 		{
-			rec.Type=ttUnknown;
-			rec.ConceptId=R::cNoRef;
-			rec.SyntacticPos=R::cNoRef;
-			rec.Pos=R::cNoRef;
-			rec.SyntacticDepth=R::cNoRef;
+			rec.Clear();
 			return(false);
 		}
 
@@ -1033,19 +1036,14 @@ template<class C,const R::hNotification* hEvents>
 
 		// Load the information concerning the search node
 		Tree->Read((char*)&search.Type,sizeof(tTokenType));
-		size_t children;
 		Tree->Read((char*)&search.ConceptId,sizeof(size_t));
 		Tree->Read((char*)&search.SyntacticPos,sizeof(size_t));
 		Tree->Read((char*)&search.Pos,sizeof(size_t));
 		Tree->Read((char*)&search.SyntacticDepth,sizeof(size_t));
-		Tree->Read((char*)&children,sizeof(size_t));
-		if(idx>search.Index+children)
+		Tree->Read((char*)&search.NbChildren,sizeof(size_t));
+		if(idx>search.Index+search.NbChildren)
 		{
-			rec.Type=ttUnknown;
-			rec.ConceptId=R::cNoRef;
-			rec.SyntacticPos=R::cNoRef;
-			rec.Pos=R::cNoRef;
-			rec.SyntacticDepth=R::cNoRef;
+			rec.Clear();
 			return(false);
 		}
 
@@ -1054,12 +1052,11 @@ template<class C,const R::hNotification* hEvents>
 		{
 			// Load the information concerning the current node
 			Tree->Read((char*)&rec.Type,sizeof(tTokenType));
-			size_t children;
 			Tree->Read((char*)&rec.ConceptId,sizeof(size_t));
 			Tree->Read((char*)&rec.SyntacticPos,sizeof(size_t));
 			Tree->Read((char*)&rec.Pos,sizeof(size_t));
 			Tree->Read((char*)&rec.SyntacticDepth,sizeof(size_t));
-			Tree->Read((char*)&children,sizeof(size_t));
+			Tree->Read((char*)&rec.NbChildren,sizeof(size_t));
 
 			if(rec.SyntacticDepth==search.SyntacticDepth+1)
 			{
@@ -1081,11 +1078,7 @@ template<class C,const R::hNotification* hEvents>
 	}
 
 	// Nothing was found
-	rec.Type=ttUnknown;
-	rec.ConceptId=R::cNoRef;
-	rec.SyntacticPos=R::cNoRef;
-	rec.Pos=R::cNoRef;
-	rec.SyntacticDepth=R::cNoRef;
+	rec.Clear();
 	return(false);
 }
 
@@ -1136,12 +1129,11 @@ template<class C,const R::hNotification* hEvents>
 
 			// Load the information concerning the current node
 			Tree->Read((char*)&rec.Type,sizeof(tTokenType));
-			size_t children;
 			Tree->Read((char*)&rec.ConceptId,sizeof(size_t));
 			Tree->Read((char*)&rec.SyntacticPos,sizeof(size_t));
 			Tree->Read((char*)&rec.Pos,sizeof(size_t));
 			Tree->Read((char*)&rec.SyntacticDepth,sizeof(size_t));
-			Tree->Read((char*)&children,sizeof(size_t));
+			Tree->Read((char*)&rec.NbChildren,sizeof(size_t));
 
 			if(synpos==rec.SyntacticPos)
 			{
@@ -1163,12 +1155,11 @@ template<class C,const R::hNotification* hEvents>
 		// Read the next record after than
 		GConceptRecord rec2;
 		Tree->Read((char*)&rec2.Type,sizeof(tTokenType));
-		size_t children;
 		Tree->Read((char*)&rec2.ConceptId,sizeof(size_t));
 		Tree->Read((char*)&rec2.SyntacticPos,sizeof(size_t));
 		Tree->Read((char*)&rec2.Pos,sizeof(size_t));
 		Tree->Read((char*)&rec2.SyntacticDepth,sizeof(size_t));
-		Tree->Read((char*)&children,sizeof(size_t));
+		Tree->Read((char*)&rec2.NbChildren,sizeof(size_t));
 
 		if(synpos-rec.SyntacticPos<=rec2.SyntacticPos-synpos)
 		{
@@ -1195,11 +1186,7 @@ template<class C,const R::hNotification* hEvents>
 	}
 
 	// Nothing was found
-	rec.ConceptId=R::cNoRef;
-	rec.Type=ttUnknown;
-	rec.SyntacticPos=R::cNoRef;
-	rec.Pos=R::cNoRef;
-	rec.SyntacticDepth=R::cNoRef;
+	rec.Clear();
 	return(false);
 }
 
@@ -1250,12 +1237,11 @@ template<class C,const R::hNotification* hEvents>
 
 			// Load the information concerning the current node
 			Tree->Read((char*)&rec.Type,sizeof(tTokenType));
-			size_t children;
 			Tree->Read((char*)&rec.ConceptId,sizeof(size_t));
 			Tree->Read((char*)&rec.SyntacticPos,sizeof(size_t));
 			Tree->Read((char*)&rec.Pos,sizeof(size_t));
 			Tree->Read((char*)&rec.SyntacticDepth,sizeof(size_t));
-			Tree->Read((char*)&children,sizeof(size_t));
+			Tree->Read((char*)&rec.NbChildren,sizeof(size_t));
 
 			if(synpos==rec.SyntacticPos)
 			{
@@ -1284,12 +1270,11 @@ template<class C,const R::hNotification* hEvents>
 
 		// The next record must be taken
 		Tree->Read((char*)&rec.Type,sizeof(tTokenType));
-		size_t children;
 		Tree->Read((char*)&rec.ConceptId,sizeof(size_t));
 		Tree->Read((char*)&rec.SyntacticPos,sizeof(size_t));
 		Tree->Read((char*)&rec.Pos,sizeof(size_t));
 		Tree->Read((char*)&rec.SyntacticDepth,sizeof(size_t));
-		Tree->Read((char*)&children,sizeof(size_t));
+		Tree->Read((char*)&rec.NbChildren,sizeof(size_t));
 		rec.Index=i;
 		return(true);
 	}
@@ -1300,11 +1285,7 @@ template<class C,const R::hNotification* hEvents>
 	}
 
 	// Nothing was found
-	rec.ConceptId=R::cNoRef;
-	rec.Type=ttUnknown;
-	rec.SyntacticPos=R::cNoRef;
-	rec.Pos=R::cNoRef;
-	rec.SyntacticDepth=R::cNoRef;
+	rec.Clear();
 	return(false);
 }
 
@@ -1318,11 +1299,7 @@ template<class C,const R::hNotification* hEvents>
 
 	if((rec1.SyntacticDepth==0)||(rec2.SyntacticDepth==0))
 	{
-		rec.ConceptId=R::cNoRef;
-		rec.Type=ttUnknown;
-		rec.SyntacticPos=R::cNoRef;
-		rec.Pos=R::cNoRef;
-		rec.SyntacticDepth=R::cNoRef;
+		rec.Clear();
 		return(false);
 	}
 	if(rec1==rec2)
@@ -1356,12 +1333,11 @@ template<class C,const R::hNotification* hEvents>
 		{
 			// Read the record
 			Tree->Read((char*)&rec.Type,sizeof(tTokenType));
-			size_t children;
 			Tree->Read((char*)&rec.ConceptId,sizeof(size_t));
 			Tree->Read((char*)&rec.SyntacticPos,sizeof(size_t));
 			Tree->Read((char*)&rec.Pos,sizeof(size_t));
 			Tree->Read((char*)&rec.SyntacticDepth,sizeof(size_t));
-			Tree->Read((char*)&children,sizeof(size_t));
+			Tree->Read((char*)&rec.NbChildren,sizeof(size_t));
 			rec.Index=Idx;
 
 			if((rec.SyntacticDepth<rec1.SyntacticDepth)&&(rec.SyntacticDepth<rec2.SyntacticDepth))
@@ -1384,11 +1360,7 @@ template<class C,const R::hNotification* hEvents>
 		return(true);
 
 	// Nothing was found
-	rec.ConceptId=R::cNoRef;
-	rec.Type=ttUnknown;
-	rec.SyntacticPos=R::cNoRef;
-	rec.Pos=R::cNoRef;
-	rec.SyntacticDepth=R::cNoRef;
+	rec.Clear();
 	return(false);
 }
 
@@ -1517,35 +1489,6 @@ template<class C,const R::hNotification* hEvents>
 	return(0);
 }
 
-//------------------------------------------------------------------------------
-template<class C,const R::hNotification* hEvents>
-	size_t GObjects<C,hEvents>::GetNbChildRecords(const C* obj,const GConceptRecord& rec)
-{
-	if(!Tree)
-		mThrowGException(GetObjType(Type,true,true)+" do not have concept trees");
-
-	try
-	{
-		SeekRecord(obj,rec.GetIndex());
-
-		// Load the information concerning the current node
-		GConceptRecord read;
-		Tree->Read((char*)&read.Type,sizeof(tTokenType));
-		size_t children;
-		Tree->Read((char*)&read.ConceptId,sizeof(size_t));
-		Tree->Read((char*)&read.SyntacticPos,sizeof(size_t));
-		Tree->Read((char*)&read.Pos,sizeof(size_t));
-		Tree->Read((char*)&read.SyntacticDepth,sizeof(size_t));
-		Tree->Read((char*)&children,sizeof(size_t));
-		return(children);
-	}
-	catch(R::RIOException e)
-	{
-		std::cerr<<e.GetMsg()<<std::endl;
-		mThrowGException(e.GetMsg());
-	}
-}
-
 
 //------------------------------------------------------------------------------
 template<class C,const R::hNotification* hEvents>
@@ -1578,12 +1521,11 @@ template<class C,const R::hNotification* hEvents>
 			// Load the information concerning the current node
 			GConceptRecord read;
 			Tree->Read((char*)&read.Type,sizeof(tTokenType));
-			size_t children;
 			Tree->Read((char*)&read.ConceptId,sizeof(size_t));
 			Tree->Read((char*)&read.SyntacticPos,sizeof(size_t));
 			Tree->Read((char*)&read.Pos,sizeof(size_t));
 			Tree->Read((char*)&read.SyntacticDepth,sizeof(size_t));
-			Tree->Read((char*)&children,sizeof(size_t));
+			Tree->Read((char*)&read.NbChildren,sizeof(size_t));
 			if(read.SyntacticDepth>=rec.SyntacticDepth)
 				break;
 

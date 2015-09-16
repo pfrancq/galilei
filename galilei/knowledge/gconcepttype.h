@@ -61,7 +61,7 @@ namespace GALILEI{
 */
 class GConceptType : public GObject
 {
-   /**
+  /**
     * Category.
     */
    tConceptCat Category;
@@ -136,7 +136,7 @@ public:
 	GConcept* GetNeutral(void) const;
 
 	/**
-	* @return a cursor over the main hash table.
+	* @return a cursor over the concepts.
 	* @param obj             Pseudo-parameter.
 	*/
 	R::RCursor<GConcept> GetObjs(const GConcept* obj) const {return(R::RCursor<GConcept>(Concepts));}

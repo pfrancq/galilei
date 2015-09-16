@@ -83,7 +83,7 @@ int GConceptType::Compare(const R::RString& name) const
 //------------------------------------------------------------------------------
 GConcept* GConceptType::GetNeutral(void) const
 {
-	if(Neutral)
+	if(!Neutral)
 		const_cast<GConceptType*>(this)->Neutral=Session->InsertObj(pConcept,const_cast<GConceptType*>(this),"*");
 	return(Neutral);
 }
@@ -92,8 +92,7 @@ GConcept* GConceptType::GetNeutral(void) const
 //------------------------------------------------------------------------------
 GConcept* GConceptType::GetObj(const GConcept*,const RString& name,bool null) const
 {
-	GConcept Search(Session,name,const_cast<GConceptType*>(this));
- 	GConcept* Concept(Concepts.GetPtr(Search));
+ 	GConcept* Concept(Session->GetObj(pConcept,const_cast<GConceptType*>(this),name,true));
 	if(Concept)
 		return(Concept);
 	if(null)

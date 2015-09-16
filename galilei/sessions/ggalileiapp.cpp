@@ -614,7 +614,9 @@ GFilter* GGALILEIApp::FindScheme(GDoc* doc) const
 		mThrowGException("Invalid document passed");
 
 	cFilter* ptr=Schemes.GetPtr(RURI(doc->GetName()).GetScheme());
-	return(ptr->Filter);
+	if(ptr)
+		return(ptr->Filter);
+	return(0);
 }
 
 

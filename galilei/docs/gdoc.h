@@ -193,6 +193,17 @@ public:
 	GConceptTree* GetTree(void) const;
 
 	/**
+	 * Load the tree as a container of records.
+	* @param records         Container of records (modified by the method).
+	* @param nbrecords       Number of records used for the document tree
+	*                        (modified by the method).
+	* @param nbtoprecords    Number of top records (modified by the method).
+	* @param nbrefs          Number of concepts referenced (modified by the
+	*                        method).
+   */
+	void LoadTree(R::RContainer<GConceptRecord,false,true>& records,size_t& nbrecords,size_t& nbtoprecords,size_t& nbrefs);
+
+	/**
 	* Get the Title.
 	* @return the title.
 	*/
@@ -337,6 +348,8 @@ private:
 	*/
 	void ClearFdbks(void);
 
+public:
+
 	/**
 	* Update the representation of the document once a computation was done. The
 	* computed date and the status are updated.
@@ -352,12 +365,15 @@ private:
 	* replaced.
 	* @param lang            Language to assign.
 	* @param desc            Description to assign.
-	* @param tree            Tree to assign.
-	* \warning The description and the tree are cleared by this method.
+	* @param records         Container of records.
+	* @param nbrecords       Number of records used for the document tree.
+	* @param nbtoprecords    Number of top records.
+	* @param nbrefs          Number of concepts referenced.
+	* \warning The description is cleared by this method. This method must be
+	* used with caution because it can corrupt the whole
+	* database.
 	*/
-	void Update(GLang* lang,GDescription& desc,GConceptTree& tree);
-
-public:
+	void Update(GLang* lang,GDescription& desc,R::RContainer<GConceptRecord,false,true>& records,size_t nbrecords,size_t nbtoprecords,size_t nbrefs);
 
 	/**
 	* Destruct the document.

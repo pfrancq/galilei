@@ -91,6 +91,15 @@ public:
 	GConceptTree(const GConceptTree& tree);
 
 	/**
+	 * Construct a tree from a given set of records.
+	 * @param docid          Document identifier.
+	 * @param records        Container of records.
+	 * @param nbrecords      Number of records used for the document tree.
+	 * @param nbrefs         Number of concepts referenced.
+    */
+	GConceptTree(size_t docid,const R::RContainer<GConceptRecord,false,true>& records,size_t nbtoprecords,size_t nbrefs);
+
+	/**
 	 * constructor.
 	 * @param docid          Document identifier.
 	 * @param max            Maximum number of initial nodes to create.
@@ -108,6 +117,13 @@ public:
 	void Verify(size_t docid,size_t max,size_t nb);
 
 private:
+
+	/**
+	 * Treat the next elements in the cursor as possible children.
+    * @param record         Cursor.
+    * @param parent         Parent node.
+    */
+	void TreatChildNode(R::RCursor<GConceptRecord>& record,GConceptNode* parent);
 
 	/**
 	 * Copy a node from one tree to the other one.

@@ -206,7 +206,7 @@ public:
 	explicit GToken(const R::RString& token=R::RString::Null);
 
 	/**
-	 * Compare two tokens.
+	 * Compare two tokens. They must match the type and the token.
 	 * @param token          Token to compare with.
 	 * @return a number usable by R::RContainer.
 	 */
@@ -247,15 +247,6 @@ public:
 	 * @param concept        Concept to assign.
 	 */
 	void SetConcept(GConcept* concept) {Concept=concept;};
-
-	/**
-	 * Add an occurrence of the token.
-	 * @param vector         Vector associated to the occurrence.
-	 * @param pos            Position of the occurrence.
-	 * @param depth          Depth of the occurrence.
-	 * @return a pointer to the occurrence added.
-	 */
-	GTokenOccur* AddOccur(GVector* vector,size_t pos,size_t depth);
 
 	/**
 	 * Look if the token contains alphabetic characters only.

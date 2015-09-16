@@ -64,14 +64,13 @@ namespace GALILEI{
  * is a tree of query nodes, where each node is either an operator or a
  * keyword.
  *
- * A query can be expanded using the stems as alternatives to the keywords. Let
- * us suppose the original query "connects & accepting" passed as argument. If
- * expanded with stems, it query applied will be "(connects | connect) &
- * (accepting | accept)".
+ * A query may have multiple options as defined with tQueryOption.
  * @short Search Query.
  */
 class GSearchQuery : protected R::RTree<GSearchQuery,GSearchQueryNode,true>
 {
+	class cExpressions;
+
 	/**
 	 * Session launching the query.
 	 */
@@ -93,27 +92,31 @@ class GSearchQuery : protected R::RTree<GSearchQuery,GSearchQueryNode,true>
 	bool OnlyAND;
 
 	/**
-	 * Should query be expanded with the stems of the keywords ?
-    */
-	bool ExpandStems;
+	 * Options of the query.
+	 */
+	int Options;
 
 	/**
 	 * Temporary concepts.
 	 */
 	R::RContainer<GConcept,false,true> Stems;
 
+	/**
+	 * Languages used for the stemming if necessary.
+    */
+	R::RContainer<GLang,false,false>* Langs;
+
 public:
 
 	/**
 	 * Constructor of the query.
 	 * @param session        Session.
-	 * @param expandstems    Define if the query is expanded with the stems of
-	 *                       the keywords.
+	 * @param options        Options of the query.
     */
-	GSearchQuery(GSession* session,bool expandstems);
+	GSearchQuery(GSession* session,int options=qoStems|qoKeywords|qoExpressions,R::RContainer<GLang,false,false>* langs=0);
 
 	/**
-	 * Build the query based on a string. Bu default, it is analyzes the string
+	 * Build the query based on a string. By default, it is analyses the string
 	 * in order to create the tree. In practice, the query is parsed from left
 	 * to right.
     * @param query          Query submitted.
@@ -125,6 +128,24 @@ public:
 	 * @return true if it is the case.
 	 */
 	bool UseOnlyAND(void) const {return(OnlyAND);}
+
+private:
+
+	/**
+	 * Treat a node to find an AND that can create an expression.
+    * @param node           Node to treat.
+    */
+	void TreatNode(GSearchQueryNode* node);
+
+	/**
+	 * Build all the possible expressions that results from the combinations of
+	 * the keywords linked by AND operators.
+    * @param node           Node to treat.
+    * @param exprs
+    */
+	void TreatANDNode(GSearchQueryNode* node,cExpressions& exprs);
+
+public:
 
 	/**
 	 * Get the top node of a query.
@@ -149,15 +170,23 @@ public:
 	void InsertNode(GSearchQueryNode* parent,GSearchQueryNode* node);
 
 	/**
+	 * Move a token in the query tree.
+    * @param to             Future parent token.
+    * @param node           Token to add.
+    */
+	void MoveNode(GSearchQueryNode* to,GSearchQueryNode* node);
+
+	/**
 	 * Create a token and insert it in the query tree. Eventually, if the
 	 * keyword is a keyword, stems are used as alternatives and combine with the
 	 *  OR operator.
     * @param parent         Parent token.
     * @param token          String representing the keyword.
     * @param type           Type of the token
+	 * @param multiple       In the case of a keyword, are there multiple terms.
     * @return a pointer to the node  was inserted in the query tree.
     */
-	GSearchQueryNode* CreateToken(GSearchQueryNode* parent,const R::RString& token,GSearchToken::tType type);
+	GSearchQueryNode* CreateToken(GSearchQueryNode* parent,const R::RString& token,GSearchToken::tType type,bool multiple);
 
 	/**
 	 * Create a new node corresponding to a string.

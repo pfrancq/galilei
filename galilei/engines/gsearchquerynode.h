@@ -134,6 +134,13 @@ public :
 	GSearchQueryNode(GSession* session,const R::RString& token,GSearchToken::tType type);
 
 	/**
+	 * Compare two node. In practice, the method does nothing.
+	 * @param node           Node to compare with.
+    * @return always -1
+    */
+	int Compare(const GSearchQueryNode& node) const;
+
+	/**
     * @return the first child node. If null, the node has no children.
     */
 	GSearchQueryNode* GetFirst(void) const {return(R::RNode<GSearchQuery,GSearchQueryNode,true>::GetFirst());}
@@ -142,6 +149,11 @@ public :
     * @return the last child node. If null, the node has no children.
     */
 	GSearchQueryNode* GetLast(void) const {return(R::RNode<GSearchQuery,GSearchQueryNode,true>::GetLast());}
+
+	/**
+    * @return the parent node. If null, the node is a top node.
+    */
+	GSearchQueryNode* GetParent(void) const {return(R::RNode<GSearchQuery,GSearchQueryNode,true>::GetParent());}
 
 	/**
 	 * Get the type of the bode.
@@ -176,6 +188,11 @@ public :
 	 * token.
     */
 	GSearchToken* GetToken(void) const;
+
+	/**
+	 * Print the content of the node.
+    */
+	void Print(void);
 
 	/**
 	 * Look if a character correspond to a given operator.

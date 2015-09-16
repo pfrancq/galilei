@@ -73,6 +73,13 @@ GSearchQueryNode::GSearchQueryNode(GSession* session,const RString& token,GSearc
 
 
 //------------------------------------------------------------------------------
+int GSearchQueryNode::Compare(const GSearchQueryNode&) const
+{
+	return(-1);
+}
+
+
+//------------------------------------------------------------------------------
 GSearchQueryNode::tOperator GSearchQueryNode::GetOperator(void) const
 {
 	if(Type!=nOperator)
@@ -87,6 +94,60 @@ GSearchToken* GSearchQueryNode::GetToken(void) const
 	if(Type!=nToken)
 		mThrowGException("Query token is not a keyword");
 	return(Value.Token);
+}
+
+
+//------------------------------------------------------------------------------
+void GSearchQueryNode::Print(void)
+{
+	// Print spaces
+	RString Spaces;
+	if(GetDepth()!=cNoRef)
+		Spaces.SetLen(GetDepth()," ");
+	cout<<Spaces;
+
+	// Print node information
+	switch(GetType())
+	{
+		case GSearchQueryNode::nOperator:
+			switch(GetOperator())
+			{
+				case GSearchQueryNode::oNOP:
+					cout<<"NOP"<<endl;
+					break;
+				case GSearchQueryNode::oNOT:
+					cout<<"NOT"<<endl;
+					break;
+				case GSearchQueryNode::oOR:
+					cout<<"OR"<<endl;
+					break;
+				case GSearchQueryNode::oAND:
+					cout<<"AND"<<endl;
+					break;
+				case GSearchQueryNode::oINC:
+					cout<<"INC"<<endl;
+					break;
+				case GSearchQueryNode::oSIB:
+					cout<<"SIB"<<endl;
+					break;
+				case GSearchQueryNode::oNAND:
+					cout<<"NAND"<<endl;
+					break;
+				case GSearchQueryNode::oNINC:
+					cout<<"NINC"<<endl;
+					break;
+				case GSearchQueryNode::oNSIB:
+					cout<<"NSIB"<<endl;
+					break;
+			}
+			break;
+		case GSearchQueryNode::nToken:
+			cout<<"{";
+			if(GetToken()->GetConcept())
+				cout<<GetToken()->GetConcept()->GetName();
+			cout<<"}"<<endl;
+			break;
+	}
 }
 
 

@@ -81,6 +81,10 @@ protected:
 	 */
 	size_t Index;
 
+	/**
+	 * Number of children records	 */
+	size_t NbChildren;
+
 public:
 
 	/**
@@ -108,11 +112,14 @@ public:
 	 * @param pos            Position in the file.
 	 * @param syndepth       Syntactic depth of the record.
 	 * @param idx            Index of the record.
+	 * @param nbchildren     Number of children.
 	 */
-	GConceptRecord(tTokenType type,size_t conceptid,size_t synpos,size_t pos,size_t syndepth,size_t idx);
+	GConceptRecord(tTokenType type,size_t conceptid,size_t synpos,size_t pos,size_t syndepth,size_t idx,size_t nbchildren);
 
 	/**
-	 * Compare two nodes regarding their depths and positions
+	 * Compare two nodes regarding their positions (first the syntactic one) and
+	 * then their depths. The concept associated to the record is the last
+	 * criteria used.
     * @param node           Node to compare with.
     * @return a number compatible with R::RContainer.
     */
@@ -149,6 +156,11 @@ public:
 	size_t GetIndex(void) const {return(Index);}
 
 	/**
+	* @return the number of child records.
+	*/
+	size_t GetNbChildren(void) const {return(NbChildren);}
+
+	/**
 	 * Assignment record.
     * @param rec            Record which contain will be assign.
     * @return the record assigned.
@@ -171,6 +183,11 @@ public:
 	bool operator!=(const GConceptRecord& rec) const;
 
 	/**
+	 * Clear the information from the record.
+	 */
+	void Clear(void);
+
+	/**
 	 * Simply print the node information on the screen;
 	 */
 	void Print(void) const;
@@ -181,6 +198,8 @@ public:
 	virtual ~GConceptRecord(void);
 
 	friend class GObjects<GDoc,hDocs>;
+	friend class GDocAnalyze;
+	friend class GConceptTree;
 };
 
 

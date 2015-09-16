@@ -937,7 +937,7 @@ void GSession::RequestMetaEngine(const R::RString& query)
 	GMetaEngine* MetaEngine(GALILEIApp->GetCurrentPlugIn<GMetaEngine>("MetaEngine"));
 	if(!MetaEngine)
 		mThrowGException("No meta-engine selected");
-	GSearchQuery* Query(MetaEngine->BuildQuery(query));
+	GSearchQuery* Query(MetaEngine->BuildQuery(query.Trim()));
 	MetaEngine->Request(Query);
 	delete Query;
 }

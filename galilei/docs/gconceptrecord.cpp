@@ -48,7 +48,7 @@ using namespace std;
 //------------------------------------------------------------------------------
 GConceptRecord::GConceptRecord(void)
 	: Type(ttUnknown), ConceptId(cNoRef), SyntacticPos(cNoRef), Pos(cNoRef),
-	  SyntacticDepth(cNoRef), Index(cNoRef)
+	  SyntacticDepth(cNoRef), Index(cNoRef), NbChildren(0)
 {
 }
 
@@ -56,7 +56,7 @@ GConceptRecord::GConceptRecord(void)
 //------------------------------------------------------------------------------
 GConceptRecord::GConceptRecord(const GConceptRecord& rec)
 	: Type(rec.Type), ConceptId(rec.ConceptId), SyntacticPos(rec.SyntacticPos), Pos(rec.Pos),
-	  SyntacticDepth(rec.SyntacticDepth), Index(rec.Index)
+	  SyntacticDepth(rec.SyntacticDepth), Index(rec.Index), NbChildren(0)
 {
 }
 
@@ -64,15 +64,15 @@ GConceptRecord::GConceptRecord(const GConceptRecord& rec)
 //------------------------------------------------------------------------------
 GConceptRecord::GConceptRecord(size_t conceptid)
 	: Type(ttUnknown), ConceptId(conceptid), SyntacticPos(cNoRef), Pos(cNoRef),
-	  SyntacticDepth(cNoRef), Index(cNoRef)
+	  SyntacticDepth(cNoRef), Index(cNoRef), NbChildren(0)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GConceptRecord::GConceptRecord(tTokenType type,size_t conceptid,size_t synpos,size_t pos,size_t syndepth,size_t idx)
+GConceptRecord::GConceptRecord(tTokenType type,size_t conceptid,size_t synpos,size_t pos,size_t syndepth,size_t idx,size_t nbchildren)
 	: Type(type), ConceptId(conceptid), SyntacticPos(synpos), Pos(pos),
-	  SyntacticDepth(syndepth), Index(idx)
+	  SyntacticDepth(syndepth), Index(idx), NbChildren(nbchildren)
 {
 }
 
@@ -80,28 +80,17 @@ GConceptRecord::GConceptRecord(tTokenType type,size_t conceptid,size_t synpos,si
 //------------------------------------------------------------------------------
 int GConceptRecord::Compare(const GConceptRecord& node) const
 {
-	if(ConceptId!=node.ConceptId)
-		return(CompareIds(ConceptId,node.ConceptId));
-
-	if(SyntacticDepth==node.SyntacticDepth)
+	if(SyntacticPos==node.SyntacticPos)
 	{
 		if(Pos==node.Pos)
 		{
-			if(SyntacticPos==node.SyntacticPos)
-				return(0);
-			else if(SyntacticPos>node.SyntacticPos)
-				return(1);
-			else
-				return(-1);
+			if(SyntacticDepth==node.SyntacticDepth)
+				return(CompareIds(ConceptId,node.ConceptId));
+			return(CompareIds(SyntacticDepth,node.SyntacticDepth));
 		}
-		else if (Pos>node.Pos)
-			return(1);
-		else
-			return(-1);
-
+		return(CompareIds(Pos,node.Pos));
 	}
-
-	return(CompareIds(SyntacticDepth,node.SyntacticDepth));
+	return(CompareIds(SyntacticPos,node.SyntacticPos));
 }
 
 
@@ -148,6 +137,19 @@ bool GConceptRecord::operator!=(const GConceptRecord& rec) const
 	if(SyntacticDepth!=rec.SyntacticDepth)
 		return(true);
 	return(false);
+}
+
+
+//------------------------------------------------------------------------------
+void GConceptRecord::Clear(void)
+{
+	Type=ttUnknown;
+	ConceptId=cNoRef;
+	SyntacticPos=cNoRef;
+	Pos=cNoRef;
+	SyntacticDepth=cNoRef;
+	Index=cNoRef;
+	NbChildren=0;
 }
 
 

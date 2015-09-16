@@ -436,6 +436,44 @@ enum tStatementElement
 
 //------------------------------------------------------------------------------
 /**
+ * The tQueryOption enumerates how the entered keywords are treated. The value
+ * can be combined.
+ *
+ * If, for example, you want to consider that the keywords must be used as
+ * search criteria and that the query should be expanded with their stems, the
+ * options to use is:
+ * @code
+ * qoStem | qoKeywords
+ * @endcode
+ * @short Query Options.
+ */
+enum tQueryOption
+{
+	qoStems=0x1,            /**
+									 * A query can be expanded using the stems as
+									 * alternatives to the keywords. Let us suppose the
+									 * original query "connects & accepting" passed as
+									 * argument. If expanded with stems, the query
+									 * applied will be "(connects | connect) &
+									 * (accepting | accept)".*/
+	qoKeywords=0x2,         /**
+									 * The keywords used in the query are used for the
+									 * search as such. This can be useful if some
+									 * keywords are names.
+									 */
+	qoExpressions=0x4       /**
+									 * Try to detect expressions that are not delimited
+									 * by quotes by trying to combine different tokens
+									 * linked by AND operators. For example, for a query
+									 * defined as "genetic & algorithm", a verification
+									 * is done to see if "genetic algorithm" is a valid
+									 * concept.
+									 */
+};
+
+
+//------------------------------------------------------------------------------
+/**
 * The GException class provides a basic representation for an exception.
 * @short Basic Exception.
 */

@@ -54,8 +54,9 @@ using namespace std;
 //------------------------------------------------------------------------------
 GKB::GKB(GSession* session)
 	: Session(session), State(osLatest), Storage(0), SaveResults(true),
-	  TokenType(0), DCMIType(0), NamedEntity(0), URIType(0), TaxonomyType(0),
-	  Text(0), IsA(0), Synonym(0), PartOf(0),
+	  TokenType(0), DCMIType(0), NamedEntityType(0), URIType(0), TaxonomyType(0),
+	  Text(0), NamedEntity(0), URI(0),
+	  IsA(0), Synonym(0), PartOf(0),
 	  ConceptTypes(1,40,20),
 	  Concepts(1,200000,50000,150000,10,5),
 	  StatementsByIds(100000,50000)

@@ -36,9 +36,84 @@
 #include <rnodecursor.h>
 #include <gdocref.h>
 #include <gsearchquery.h>
+#include <gstatement.h>
 using namespace std;
 using namespace R;
 using namespace GALILEI;
+
+
+
+//------------------------------------------------------------------------------
+//
+// class cConcept
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class cConcept
+{
+public:
+	GConcept* Concept;
+	bool In;
+
+	cConcept(GConcept* concept) : Concept(concept), In(false) {}
+	int Compare(const cConcept& concept) const {return(Concept->Compare(*concept.Concept));}
+	int Compare(const GConcept* concept) const {return(Concept->Compare(*concept));}
+};
+
+
+
+//------------------------------------------------------------------------------
+//
+// class cExpression
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class cExpression
+{
+public:
+	GConcept* Concept;
+	RContainer<cConcept,true,true> Parts;
+
+	cExpression(GSession* session,GConcept* concept)
+		: Concept(concept), Parts(5)
+	{
+		RCursor<GStatement> Cur(Concept->GetObjs(pStatement,seValue));
+		for(Cur.Start();!Cur.End();Cur.Next())
+		{
+			if(Cur()->GetPredicate()!=session->GetPartOf())
+				continue;
+			Parts.InsertPtr(new cConcept(dynamic_cast<GConcept*>(Cur()->GetSubject())));
+		}
+	}
+
+	int Compare(const cExpression& exp) const
+	{
+		return(Concept->Compare(*exp.Concept));
+	}
+
+	int Compare(const GConcept* concept) const
+	{
+		return(Concept->Compare(*concept));
+	}
+};
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GSearchQuery::cExpressions
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class GSearchQuery::cExpressions : public RContainer<cExpression,true,false>
+{
+public:
+	cExpressions(void) : RContainer<cExpression,true,false>(10) {}
+	int Compare(const cExpressions&) const {return(-1);}
+};
 
 
 
@@ -49,10 +124,14 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSearchQuery::GSearchQuery(GSession* session,bool expandstems)
+GSearchQuery::GSearchQuery(GSession* session,int options,R::RContainer<GLang,false,false>* langs)
 	: RTree<GSearchQuery,GSearchQueryNode,true>(), Session(session), Tokens(30),
-	  Concepts(30), OnlyAND(true), ExpandStems(expandstems),Stems(20)
+	  Concepts(30), OnlyAND(true), Options(options), Stems(20), Langs(langs)
 {
+	if(Options==0)
+		mThrowGException("No query options are specified");
+	if(Options>7)
+		mThrowGException("No valid query options specified");
 }
 
 
@@ -61,6 +140,12 @@ void GSearchQuery::Build(const RString& query)
 {
 	OnlyAND=true;
 	CreateToken(0,query);
+	if(Options&qoExpressions)
+	{
+	   RNodeCursor<GSearchQuery,GSearchQueryNode> Cur(*this);
+		for(Cur.Start();!Cur.End();Cur.Next())
+			TreatNode(Cur());
+	}
 }
 
 
@@ -128,13 +213,18 @@ bool GSearchQuery::CreateToken(GSearchQueryNode* parent,const RString& str)
 			// Construct the keyword by removing the quotes
 			RString Keyword;
 			size_t NbQuotes(0);
+			bool Multiple(false);
 			Car=str();
 			while((*Car)!=0)
 			{
 				if((*Car)=='"')
 					NbQuotes++;
 				else
+				{
+					if(Car&&Car->IsSpace())
+						Multiple=true;
 					Keyword+=(*Car);
+				}
 				Car++;
 			}
 			if(NbQuotes>2)
@@ -142,9 +232,9 @@ bool GSearchQuery::CreateToken(GSearchQueryNode* parent,const RString& str)
 
 			GSearchQueryNode* Token;
 			if(Namespaces)
-				Token=CreateToken(parent,Keyword,GSearchToken::tRawConcept);
+				Token=CreateToken(parent,Keyword,GSearchToken::tRawConcept,false);
 			else
-				Token=CreateToken(parent,Keyword,GSearchToken::tTerm);
+				Token=CreateToken(parent,Keyword,GSearchToken::tTerm,Multiple);
 		}
 		else
 		{
@@ -198,6 +288,83 @@ bool GSearchQuery::CreateToken(GSearchQueryNode* parent,const RString& str)
 
 
 //------------------------------------------------------------------------------
+void GSearchQuery::TreatNode(GSearchQueryNode* node)
+{
+	if(node->GetType()!=GSearchQueryNode::nOperator)
+		return;
+
+	if(node->GetOperator()==GSearchQueryNode::oAND)
+	{
+		cExpressions Exprs;
+
+		TreatANDNode(node->GetFirst(),Exprs);
+		TreatANDNode(node->GetLast(),Exprs);
+		GSearchQueryNode* Ref(node);
+		RCursor<cExpression> Cur(Exprs);
+		for(Cur.Start();!Cur.End();Cur.Next())
+		{
+			bool Ok(true);
+			RCursor<cConcept> Concept(Cur()->Parts);
+			for(Concept.Start();!Concept.End();Concept.Next())
+			{
+				if(!Concept()->In)
+				{
+					Ok=false;
+					break;
+				}
+			}
+			if(Ok)
+			{
+				// Create a new parent node
+				GSearchQueryNode* OR(new GSearchQueryNode(GSearchQueryNode::oOR));
+				InsertNode(Ref->GetParent(),OR);
+				MoveNode(OR,Ref);
+				GSearchQueryNode* ExprAdded(new GSearchQueryNode(Cur()->Concept,GSearchToken::tRawConcept));
+				InsertNode(OR,ExprAdded);
+				Ref=OR;
+			}
+		}
+	}
+
+   RNodeCursor<GSearchQuery,GSearchQueryNode> Cur(node);
+   for(Cur.Start();!Cur.End();Cur.Next())
+		TreatNode(Cur());
+}
+
+
+//------------------------------------------------------------------------------
+void GSearchQuery::TreatANDNode(GSearchQueryNode* node,cExpressions& exprs)
+{
+	if(node->GetType()==GSearchQueryNode::nToken)
+	{
+		GConcept* Concept(node->GetToken()->GetConcept());
+		RCursor<GStatement> Cur(Concept->GetObjs(pStatement,seSubject));
+		for(Cur.Start();!Cur.End();Cur.Next())
+		{
+			if(Cur()->GetPredicate()!=Session->GetPartOf())
+				continue;
+			if(Cur()->GetValue()->GetObjType()!=otConcept)
+				continue;
+
+			bool Find;
+			GConcept* Main(dynamic_cast<GConcept*>(Cur()->GetValue()));
+			size_t idx(exprs.GetIndex(Main,Find));
+			if(!Find)
+				exprs.InsertPtrAt(new cExpression(Session,Main),idx);
+			cConcept* Part(exprs[idx]->Parts.GetPtr(Concept));
+			if(Part)
+				Part->In=true;
+		}
+	}
+	else if((node->GetOperator()==GSearchQueryNode::oAND)||(node->GetOperator()==GSearchQueryNode::oOR))
+	{
+		TreatANDNode(node->GetFirst(),exprs);
+		TreatANDNode(node->GetLast(),exprs);
+	}
+}
+
+
+//------------------------------------------------------------------------------
 void GSearchQuery::InsertNode(GSearchQueryNode* parent,GSearchQueryNode* node)
 {
 	R::RTree<GSearchQuery,GSearchQueryNode,true>::InsertNode(parent,node);
@@ -209,11 +376,40 @@ void GSearchQuery::InsertNode(GSearchQueryNode* parent,GSearchQueryNode* node)
 
 
 //------------------------------------------------------------------------------
-GSearchQueryNode* GSearchQuery::CreateToken(GSearchQueryNode* parent,const R::RString& token,GSearchToken::tType type)
+void GSearchQuery::MoveNode(GSearchQueryNode* to,GSearchQueryNode* node)
+{
+	R::RTree<GSearchQuery,GSearchQueryNode,true>::MoveNode(to,node);
+}
+
+
+//------------------------------------------------------------------------------
+template<class Cursor>
+	inline void ComputeStems(GSession* session,Cursor& lang,GConceptType* terms,const RString& token,R::RContainer<GConcept,false,true>& stems)
+{
+	for(lang.Start();!lang.End();lang.Next())
+	{
+		RString Stem(lang()->GetStemming(token));
+
+		// Look if the stem is defined in the system
+		GConcept* Concept(session->GetObj(pConcept,terms,Stem,true));
+		if(!Concept)
+			continue;  // No -> nothing to do
+
+		// Look if the stem must be added
+		bool Find;
+		int Idx(stems.GetIndex(*Concept,Find));
+		if(!Find)
+			stems.InsertPtrAt(Concept,Idx,false);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+GSearchQueryNode* GSearchQuery::CreateToken(GSearchQueryNode* parent,const R::RString& token,GSearchToken::tType type,bool multiple)
 {
 	GSearchQueryNode* pToken(0);
 
-	if((type==GSearchToken::tTerm)&&ExpandStems)
+	if(type==GSearchToken::tTerm)
 	{
 		// Expand the query with stems and the OR operator
 
@@ -225,68 +421,52 @@ GSearchQueryNode* GSearchQuery::CreateToken(GSearchQueryNode* parent,const R::RS
 		// Find the concept corresponding to the token
 		GConcept* cToken(Session->GetObj(pConcept,Terms,Token,true));
 
-		// Compute all possible stems
-		RCastCursor<GPlugIn,GLang> Langs(GALILEIApp->GetPlugIns<GLang>("Lang"));
-		for(Langs.Start();!Langs.End();Langs.Next())
+		// Compute all possible stems if necessary
+		if(Options&qoStems)
 		{
-			RString Stem(Langs()->GetStemming(Token));
-
-			// Look if the stemmed concept corresponds to the normal term
-			if(Token==Stem)
-				continue; // Yes -> nothing to do
-
-			// Look if the stem is defined in the system
-			GConcept* Concept(Session->GetObj(pConcept,Terms,Stem,true));
-			if(!Concept)
-				continue;  // No -> nothing to do
-
-			// Look if the stem must be added
-			bool Find;
-			int Idx(Stems.GetIndex(*Concept,Find));
-			if(!Find)
-				Stems.InsertPtrAt(Concept,Idx,false);
+			if(Langs)
+			{
+				RCursor<GLang> Lang(*Langs);
+				ComputeStems(Session,Lang,Terms,Token,Stems);
+			}
+			else
+			{
+				RCastCursor<GPlugIn,GLang> Lang(GALILEIApp->GetPlugIns<GLang>("Lang"));
+				ComputeStems(Session,Lang,Terms,Token,Stems);
+			}
 		}
 
-		// Look if there are alternative stems
-		if(Stems.GetNb()>0)
+		if((Options&qoKeywords)&&cToken)
 		{
-			size_t NbOR(Stems.GetNb()-1); // Number of OR operator to insert
+			bool Find;
+			int Idx(Stems.GetIndex(*cToken,Find));
+			if(!Find)
+				Stems.InsertPtrAt(cToken,Idx,false);
+		}
 
-			// Insert first the term if necessary
-			if(cToken)
+		size_t NbOR(Stems.GetNb()-1); // Number of OR operator to insert
+
+		// Add the stems
+		RCursor<GConcept> Stem(Stems); // Treat the last later
+		for(Stem.Start();!Stem.End();Stem.Next())
+		{
+			// Create a new OR operator
+			if(NbOR)
 			{
 				GSearchQueryNode* OR(NewNode(GSearchQueryNode::oOR));
 				bool Hold(OnlyAND);
 				InsertNode(parent,OR);
 				OnlyAND=Hold;
 				parent=OR;  // It will be the parent of the next token to insert
-				InsertNode(parent,pToken=NewNode(cToken,GSearchToken::tTerm));
+				NbOR--;
 			}
 
-			// Add the stems
-			RCursor<GConcept> Stem(Stems); // Treat the last later
-			for(Stem.Start();!Stem.End();Stem.Next())
-			{
-				// Create a new OR operator
-				if(NbOR)
-				{
-					GSearchQueryNode* OR(NewNode(GSearchQueryNode::oOR));
-					bool Hold(OnlyAND);
-					InsertNode(parent,OR);
-					OnlyAND=Hold;
-					parent=OR;  // It will be the parent of the next token to insert
-					NbOR--;
-				}
-
-				// Add a stem node
-				GSearchQueryNode* New;
-				InsertNode(parent,New=NewNode(Stem(),GSearchToken::tStem));
-				if(!pToken)
-					pToken=New;
-			}
+			// Add a stem node
+			GSearchQueryNode* New;
+			InsertNode(parent,New=NewNode(Stem(),GSearchToken::tStem));
+			if(!pToken)
+				pToken=New;
 		}
-		else
-			InsertNode(parent,pToken=NewNode(cToken,type));      // No stems -> simply insert the token
 	}
 	else
 		InsertNode(parent,pToken=NewNode(token,type));          // No stems or no keyword -> simply insert the token
@@ -358,54 +538,7 @@ void GSearchQuery::Print(GSearchQueryNode* node)
 {
 	if(!node)
 		node=GetTop();
-
-	// Print spaces
-	RString Spaces;
-	Spaces.SetLen(node->GetDepth()," ");
-	cout<<Spaces;
-
-	// Print node information
-	switch(node->GetType())
-	{
-		case GSearchQueryNode::nOperator:
-			switch(node->GetOperator())
-			{
-				case GSearchQueryNode::oNOP:
-					cout<<"NOP"<<endl;
-					break;
-				case GSearchQueryNode::oNOT:
-					cout<<"NOT"<<endl;
-					break;
-				case GSearchQueryNode::oOR:
-					cout<<"OR"<<endl;
-					break;
-				case GSearchQueryNode::oAND:
-					cout<<"AND"<<endl;
-					break;
-				case GSearchQueryNode::oINC:
-					cout<<"INC"<<endl;
-					break;
-				case GSearchQueryNode::oSIB:
-					cout<<"SIB"<<endl;
-					break;
-				case GSearchQueryNode::oNAND:
-					cout<<"NAND"<<endl;
-					break;
-				case GSearchQueryNode::oNINC:
-					cout<<"NINC"<<endl;
-					break;
-				case GSearchQueryNode::oNSIB:
-					cout<<"NSIB"<<endl;
-					break;
-			}
-			break;
-		case GSearchQueryNode::nToken:
-			cout<<"{";
-			if(node->GetToken()->GetConcept())
-				cout<<node->GetToken()->GetConcept()->GetName();
-			cout<<"}"<<endl;
-			break;
-	}
+	node->Print();
 
 	RNodeCursor<GSearchQuery,GSearchQueryNode> Top(node);
 	for(Top.Start();!Top.End();Top.Next())

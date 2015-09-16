@@ -64,6 +64,30 @@ GConceptTree::GConceptTree(const GConceptTree& tree)
 
 
 //------------------------------------------------------------------------------
+GConceptTree::GConceptTree(size_t docid,const RContainer<GConceptRecord,false,true>& records,size_t nbrecords,size_t nbrefs)
+	: RTree<GConceptTree,GConceptNode,false>(), RContainer<GConceptNode,true,false>(nbrecords),
+	  Pos(nbrecords), Refs(nbrefs), DocId(docid)
+{
+	GConceptNode* Parent(0);
+	RCursor<GConceptRecord> Record(records,0,nbrecords-1);
+	Record.Start();
+	while(!Record.End())
+	{
+		if(Record()->SyntacticDepth==0)
+		{
+			// Create a top node
+			Parent=InsertNode(0,Record()->Type,Record()->ConceptId,Record()->SyntacticPos,Record()->Pos,Record()->SyntacticDepth);
+		}
+		else
+		{
+			// Treat possible child nodes
+			TreatChildNode(Record,Parent);
+		}
+	}
+}
+
+
+//------------------------------------------------------------------------------
 GConceptTree::GConceptTree(size_t docid,size_t max,size_t nb)
 	: RTree<GConceptTree,GConceptNode,false>(), RContainer<GConceptNode,true,false>(max),
 	  Pos(max), Refs(nb), DocId(docid)
@@ -79,6 +103,31 @@ void GConceptTree::Verify(size_t docid,size_t max,size_t nb)
 	Pos.Clear(nb);
 	Refs.Clear(nb);
 	DocId=docid;
+}
+
+
+//------------------------------------------------------------------------------
+void GConceptTree::TreatChildNode(R::RCursor<GConceptRecord>& record,GConceptNode* parent)
+{
+	GConceptNode* Parent(0);
+
+	while(!record.End())
+	{
+		// If the record is in the same level as the parent record -> return
+		if(record()->SyntacticDepth==parent->SyntacticDepth)
+			return;
+
+		if(record()->SyntacticDepth==parent->SyntacticDepth+1)
+		{
+			// Create a top node
+			Parent=InsertNode(parent,record()->Type,record()->ConceptId,record()->SyntacticPos,record()->Pos,record()->SyntacticDepth);
+		}
+		else
+		{
+			// Treat possible child nodes
+			TreatChildNode(record,Parent);
+		}
+	}
 }
 
 
@@ -115,6 +164,8 @@ GConceptNode* GConceptTree::InsertNode(GConceptNode* parent,tTokenType type,size
 
 	// Insert the node
 	RTree<GConceptTree,GConceptNode,false>::InsertNode(parent,Node);
+	if(parent)
+		parent->NbChildren=parent->GetNbNodes();
 	GConceptNodes* Ref(Refs.GetInsertPtr(conceptid));
 	Ref->InsertPtr(Node);
 	Pos.VerifyTab(synpos);

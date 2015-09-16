@@ -86,12 +86,12 @@ namespace GALILEI{
 class GDocAnalyze : R::RDownloadFile
 {
 	/**
-	 * Current document analyzed.
+	 * Current document analysed.
 	 */
 	GDoc* Doc;
 
 	/**
-	 * Some data than can be assigned to the analyzer.
+	 * Some data than can be assigned to the analyser.
 	 */
 	void* Data;
 
@@ -101,14 +101,19 @@ class GDocAnalyze : R::RDownloadFile
 	GSession* Session;
 
 	/**
-	 * Description to build during the analyze.
+	 * Description to build during the analysis.
 	 */
    GDescription Description;
 
 	/**
-	 * Concept Tree corresponding to the document.
+	 * Records to build during the analysis.
 	 */
-	GConceptTree Tree;
+	R::RContainer<GConceptRecord,false,true> Records;
+
+	/**
+	 * Number of records really used for the represents the documents.
+	 */
+	size_t NbRecords;
 
 	/**
 	 * Language associated to the document.
@@ -210,6 +215,16 @@ class GDocAnalyze : R::RDownloadFile
 	 */
 	R::RContainer<R::RNumContainer<size_t,false>,true,false> SyntacticPos;
 
+	/**
+	 * Number of top records.
+	 */
+	size_t NbTopRecords;
+
+	/**
+	 * Number of valid concepts referenced.
+    */
+	size_t NbRefs;
+
 public:
 
 	/**
@@ -248,11 +263,6 @@ public:
 	 * @return the description that was just computed.
 	 */
    const GDescription& GetDescription(void) const {return(Description);}
-
-	/**
-	 * @return the tree that was just computed (if asked).
-    */
-	const GConceptTree& GetTree(void) const {return(Tree);}
 
 	/**
 	 * Inform the document analysis process that a potential token is skipped. In
@@ -537,11 +547,11 @@ private:
     void BuildTensor(void);
 
     /**
-     * Build the concept tree starting with a given token occurrence.
+     * Build the records starting with a given token occurrence.
 	  * @param parent        Parent node.
 	  * @param occur         Token occurrence.
      */
-    void BuildTree(GConceptNode* parent,GTokenOccur* occur);
+    void BuildRecords(GTokenOccur* occur);
 
     /**
      * Print the concept tree starting with a given token occurrence.
