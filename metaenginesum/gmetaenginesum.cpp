@@ -195,7 +195,7 @@ void GMetaEngineSum::CombineKeywords(GSearchQuery* query,size_t pos,size_t k)
 	{
 		RString Query;
 		Query.Concat(QueryWords,' ');
-		GSearchQuery TheQuery(GetSession(),true);
+		GSearchQuery TheQuery(GetSession());
 		TheQuery.Build(Query);
 		GMetaEngine::RequestEngines(&TheQuery);
 	}
