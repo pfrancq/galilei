@@ -722,6 +722,8 @@ void GStorageMySQL::SaveIndex(const GConcept* concept,tObjType what,size_t index
 	try
 	{
 		RString sSql;
+		sSql.SetLen(200);
+		sSql.SetLen(0);
 
 		switch(what)
 		{
