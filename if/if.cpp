@@ -191,6 +191,9 @@ void If::Alter(const GConcept* concept,bool add,eType idx,RVector* ref,RVector* 
 {
 	// Verify if the reference of the concept type must be altered
    // This must be done only once per description added or removed
+	if(!concept)
+		mThrowGException("Null concept not allowed");
+
 	GConceptType* type(concept->GetType());
 	size_t TypeId(type->GetId());
 	if(tmpTypes[TypeId])
@@ -283,6 +286,8 @@ void If::Del(R::RConstCursor<GVector> vectors,eType idx)
 //------------------------------------------------------------------------------
 double If::GetIf(const GConcept* concept,eType idx)
 {
+	if(!concept)
+		mThrowGException("Null concept not allowed");
 	if(concept->GetId()>=ConceptIf.GetNbCols())
 		return(0.0);
 	double& Val(ConceptIf(idx,concept->GetId()));
@@ -302,6 +307,9 @@ double If::GetIf(const GConcept* concept,eType idx)
 //------------------------------------------------------------------------------
 void If::ComputeTfIdf(GDescription* desc,eType idx)
 {
+	if(!desc)
+		mThrowGException("Null description not allowed");
+
 	RCursor<GVector> Vector(desc->GetVectors());
 	for(Vector.Start();!Vector.End();Vector.Next())
 	{
@@ -321,6 +329,9 @@ void If::ComputeTfIdf(GDescription* desc,eType idx)
 //------------------------------------------------------------------------------
 void If::ComputeTfIdf(GDescription* desc,GDescriptionSet* set,eType)
 {
+	if(!desc)
+		mThrowGException("Null description not allowed");
+
 	// If the description set is dirty -> recompute
 	if(!set->GetData())
 		set->SetData(new IfData(Session,this));
