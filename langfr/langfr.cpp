@@ -348,9 +348,12 @@ GLangFR::GLangFR(GSession* session,GPlugInFactory* fac)
 	Rules2.InsertPtr(new FrenchPorterRule("i","",0));
 
 	// Rules 3
-	Rules3.InsertPtr(new FrenchPorterRule("nn","n",0));
 	Rules3.InsertPtr(new FrenchPorterRule("ll","l",0));
+        Rules3.InsertPtr(new FrenchPorterRule("mm","m",0));
+        Rules3.InsertPtr(new FrenchPorterRule("nn","n",0));
+        Rules3.InsertPtr(new FrenchPorterRule("pp","p",0));
 	Rules3.InsertPtr(new FrenchPorterRule("tt","t",0));
+        Rules3.InsertPtr(new FrenchPorterRule("ss","s",0));        
 	Rules3.InsertPtr(new FrenchPorterRule("y","",0));
 	Rules3.InsertPtr(new FrenchPorterRule("t","",0));
 	Rules3.InsertPtr(new FrenchPorterRule("qu","c",0));
