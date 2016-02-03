@@ -131,7 +131,7 @@ void GEngineXML::ApplyConfig()
 
 
 //------------------------------------------------------------------------------
-void GEngineXML::PerformRequest(GSearchQuery* query)
+void GEngineXML::PerformRequest(GSearchQuery* query,size_t caller)
 {
 	// Make all the loaded trees unused
 	RCursor<cTreeRef> Tree(Trees);
@@ -144,8 +144,11 @@ void GEngineXML::PerformRequest(GSearchQuery* query)
 	// Retrieve all relevant nodes and get the results
 	Results.Clear();
 	Query=query;
-	Perform(0);
+	Perform(0,caller);
 
+	// Verify that there are some results
+	if(!Results.GetNb())
+		return;
 	const GQueryRes* Res(Results());
 	 if((!Res)||(!Res->GetNb()))
 		 return;
@@ -164,7 +167,7 @@ void GEngineXML::PerformRequest(GSearchQuery* query)
 					  Fragment()->GetSyntacticPos(),
 					  Fragment()->GetBegin(),
 					  Fragment()->GetEnd(),
-					  0.0);
+					  0.0,caller);
 	}
 }
 
@@ -433,10 +436,12 @@ void GEngineXML::ApplyOperator(GSearchQueryNode::tOperator op)
 
 
 //------------------------------------------------------------------------------
-void GEngineXML::Perform(GSearchQueryNode* node)
+void GEngineXML::Perform(GSearchQueryNode* node,size_t caller)
 {
 	if(!node)
 		node=Query->GetTop();
+	if(!node)
+		return;
 
 	switch(node->GetType())
 	{
@@ -444,10 +449,10 @@ void GEngineXML::Perform(GSearchQueryNode* node)
 			FindOccurrences(node->GetToken()->GetConcept());
 			break;
 		case GSearchQueryNode::nOperator:
-			Perform(node->GetFirst()); // Left operand
+			Perform(node->GetFirst(),caller); // Left operand
 			if((node->GetOperator()==GSearchQueryNode::oOR)||(Results()->GetNb()))
 			{
-				Perform(node->GetLast()); // Right operand
+				Perform(node->GetLast(),caller); // Right operand
 				ApplyOperator(node->GetOperator());
 			}
 			break;
@@ -473,56 +478,56 @@ int GEngineXML::sortOrderAccess(const void* a,const void* b)
 
 
 //------------------------------------------------------------------------------
-const GConceptTree* GEngineXML::GetTree2(size_t docid)
-{
-	// Look if the tree is already loaded
-	cTreeRef* Tree(Trees.GetPtr(docid));
-	if(Tree)
-	{
-		Tree->NbAccess++;
-		return(Tree->Tree);
-	}
-
-	// Look if the container is full and remove the less used structure
-	if(Trees.GetNb()>=MaxNbTrees)
-	{
-		// Cache is full -> The block must replace another one
-		// Select the less 10% used blocks in cache
-		Trees.ReOrder(sortOrderAccess);
-
-		// Find the first tree not used
-/*		RCursor<cTreeRef> Cur(Trees);
-		for(Cur.Start();!Cur.End();Cur.Next())
-			if(!Cur()->Use)
-				break;
-
-		if(Cur.End())
-		{
-			// Must increase the container
-			//Trees.InsertPtr(Tree=new cTreeRef(docid));
-			mThrowGException("Memory allocated ("+RString::Number(MaxNbTrees)+") from the trees is full");
-		}
-		else
-		{
-			Tree=Cur();
-			Cur()->NbAccess=1;
-			Cur()->DocId=docid;
-		}*/
-		Tree=Trees[Trees.GetNb()-1];
-		Tree->NbAccess=1;
-		Tree->DocId=docid;
-
-		// Since a identifier was replaced, Cache must be re-ordered by identifiers
-		Trees.ReOrder();
-	}
-	else
-		Trees.InsertPtr(Tree=new cTreeRef(docid));
-
-	// Load the tree
-	Session->GetObj(pDoc,docid)->LoadTree(Tree->Tree);
-
-	return(Tree->Tree);
-}
+//const GConceptTree* GEngineXML::GetTree2(size_t docid)
+//{
+//	// Look if the tree is already loaded
+//	cTreeRef* Tree(Trees.GetPtr(docid));
+//	if(Tree)
+//	{
+//		Tree->NbAccess++;
+//		return(Tree->Tree);
+//	}
+//
+//	// Look if the container is full and remove the less used structure
+//	if(Trees.GetNb()>=MaxNbTrees)
+//	{
+//		// Cache is full -> The block must replace another one
+//		// Select the less 10% used blocks in cache
+//		Trees.ReOrder(sortOrderAccess);
+//
+//		// Find the first tree not used
+///*		RCursor<cTreeRef> Cur(Trees);
+//		for(Cur.Start();!Cur.End();Cur.Next())
+//			if(!Cur()->Use)
+//				break;
+//
+//		if(Cur.End())
+//		{
+//			// Must increase the container
+//			//Trees.InsertPtr(Tree=new cTreeRef(docid));
+//			mThrowGException("Memory allocated ("+RString::Number(MaxNbTrees)+") from the trees is full");
+//		}
+//		else
+//		{
+//			Tree=Cur();
+//			Cur()->NbAccess=1;
+//			Cur()->DocId=docid;
+//		}*/
+//		Tree=Trees[Trees.GetNb()-1];
+//		Tree->NbAccess=1;
+//		Tree->DocId=docid;
+//
+//		// Since a identifier was replaced, Cache must be re-ordered by identifiers
+//		Trees.ReOrder();
+//	}
+//	else
+//		Trees.InsertPtr(Tree=new cTreeRef(docid));
+//
+//	// Load the tree
+//	Session->GetObj(pDoc,docid)->LoadTree(Tree->Tree);
+//
+//	return(Tree->Tree);
+//}
 
 
 //------------------------------------------------------------------------------

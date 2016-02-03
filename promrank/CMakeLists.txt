@@ -1,6 +1,5 @@
 PROJECT(promrank)
 INCLUDE_DIRECTORIES(.)
-INCLUDE_DIRECTORIES(../xmlengine)
 
 
 SET(SRC
@@ -22,5 +21,6 @@ ELSE(WIN32)
     ADD_SOURCE_FILE(promrank frontend xmlengine_INCLUDES)
     ADD_FRONTEND(promrank SHARED 2 2 2.0.0 lib "r/galilei" promrank_INCLUDES)
     TARGET_LINK_LIBRARIES(promrank galilei roptimization rcore rmath dl)
+	 TARGET_LINK_LIBRARIES(promrankqt roptimizationqt)
 ENDIF(WIN32)
 

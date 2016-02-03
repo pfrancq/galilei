@@ -49,11 +49,6 @@ using namespace GALILEI;
 
 
 //------------------------------------------------------------------------------
-// forward declaration
-class GEngineXML;
-
-
-//------------------------------------------------------------------------------
 /**
 * The GNoRank class provides a representation for a ranking method that does
 * nothing.
@@ -173,7 +168,7 @@ public:
 	virtual void Reset(void);
 
 	/**
-	 * Handle a notification that an object type must be reinitialized.
+	 * Handle a notification that an object type must be reinitialised.
     * @param notification   Notification.
     */
 	void HandleReInit(const R::RNotification& notification);
@@ -182,8 +177,9 @@ public:
 	 * Rank a set of document fragments.
 	 * @param engine         Engine which results must be ranked.
 	 * @param query          Query.
+	 * @param caller         Identifier of the caller (for example a thread).
 	 */
-	virtual void Rank(GEngine* engine,GSearchQuery* query);
+	virtual void Rank(GEngine* engine,GSearchQuery* query,size_t caller);
 
 	/**
 	* Create the parameters.

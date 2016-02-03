@@ -225,6 +225,7 @@ void GPromRank::Done(void)
 	}
 	File<<size_t(0); // End of the file
 	Iffs.Clear();
+	GComputeRank::Done();
 }
 
 
@@ -265,6 +266,8 @@ void GPromRank::HandleDelDoc(const RNotification& notification)
 //------------------------------------------------------------------------------
 void GPromRank::Reset(void)
 {
+	GComputeRank::Done();
+
 	// ForceReCompute IFF
 	IffsDirty=true;
 
@@ -289,9 +292,9 @@ void GPromRank::HandleReInit(const R::RNotification& notification)
 
 
 //------------------------------------------------------------------------------
-void GPromRank::Rank(GEngine* engine,GSearchQuery* query)
+void GPromRank::Rank(GEngine* engine,GSearchQuery* query,size_t caller)
 {
-	if(!engine->GetNbResults())
+	if(!engine->GetNbResults(caller))
 		return;
 
 	Weighting=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Features Evaluation",0);
@@ -307,7 +310,7 @@ void GPromRank::Rank(GEngine* engine,GSearchQuery* query)
 
 	// Create a PROMETHEE kernel and a solution for each fragment
  	GProm Prom(this,Weighting);
-	RCursor<GDocFragment> Fragment(engine->GetResults());
+	RCursor<GDocFragment> Fragment(engine->GetResults(caller));
 	for(Fragment.Start();!Fragment.End();Fragment.Next())
 		Prom.Add(Fragment());
 
@@ -503,4 +506,4 @@ double GPromRank::GetIff(size_t conceptid,size_t parentid)
 }
 
 //------------------------------------------------------------------------------
-CREATE_COMPUTERANK_FACTORY("Promethee Ranking","Promethee Ranking Method",GPromRank)
+CREATE_COMPUTERANK_FACTORY("Promethee Ranking","Promethee Ranking Algorithm",GPromRank)

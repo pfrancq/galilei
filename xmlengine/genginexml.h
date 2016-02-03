@@ -137,10 +137,11 @@ public:
 	virtual void ApplyConfig(void);
 
 	/**
-	* Request a query.
-	* @param query           Query.
+	 * Request a query.
+	 * @param query          Query.
+	 * @param caller         Identifier of the caller (for example a thread).
 	*/
-	virtual void PerformRequest(GSearchQuery* query);
+	virtual void PerformRequest(GSearchQuery* query,size_t caller);
 
 	/**
 	 * Push a list of all occurrences of a given concept. In practice, it
@@ -172,10 +173,11 @@ public:
 	 * corresponds to a concept, a list is filled with all its occurrences and
 	 * pushed if not empty. If it corresponds to an operator, two lists are
 	 * popped and a result is pushed.
-	 * @param node           Node to analyze. If null, the whole query is
+	 * @param node           Node to analyse. If null, the whole query is
 	 *                       performed.
+	 * @param caller         Identifier of the caller (for example a thread).
     */
-	void Perform(GSearchQueryNode* node);
+	void Perform(GSearchQueryNode* node,size_t caller);
 
 	/**
 	 * Get the last query executed.
@@ -196,7 +198,7 @@ public:
 	 * @param docid          Identifier of the document.
 	 * @return a pointer to the tree.
 	 */
-	const GConceptTree* GetTree2(size_t docid);
+	//const GConceptTree* GetTree2(size_t docid);
 
 	/**
 	 * Get a pointer to a given concept record. A container manages all necessary

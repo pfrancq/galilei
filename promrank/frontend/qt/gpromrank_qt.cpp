@@ -86,68 +86,19 @@ bool Configure(GPlugIn* fac)
 {
 	Config Dlg;
 
-	// Tf/Idf
-	Dlg.TfIdfActive->setChecked(fac->FindParam<RParamStruct>("TfIdf")->Get<RParamValue>("Active")->GetBool());
-	Dlg.TfIdfP->setValue(fac->FindParam<RParamStruct>("TfIdf")->Get<RParamValue>("P")->GetDouble());
-	Dlg.TfIdfQ->setValue(fac->FindParam<RParamStruct>("TfIdf")->Get<RParamValue>("Q")->GetDouble());
-	Dlg.TfIdfWeight->setValue(fac->FindParam<RParamStruct>("TfIdf")->Get<RParamValue>("Weight")->GetDouble());
-
-	// Distance
-	Dlg.DistanceActive->setChecked(fac->FindParam<RParamStruct>("Distance")->Get<RParamValue>("Active")->GetBool());
-	Dlg.DistanceP->setValue(fac->FindParam<RParamStruct>("Distance")->Get<RParamValue>("P")->GetDouble());
-	Dlg.DistanceQ->setValue(fac->FindParam<RParamStruct>("Distance")->Get<RParamValue>("Q")->GetDouble());
-	Dlg.DistanceWeight->setValue(fac->FindParam<RParamStruct>("Distance")->Get<RParamValue>("Weight")->GetDouble());
-
-	// Specificity
-	Dlg.SpecificityActive->setChecked(fac->FindParam<RParamStruct>("Specificity")->Get<RParamValue>("Active")->GetBool());
-	Dlg.SpecificityP->setValue(fac->FindParam<RParamStruct>("Specificity")->Get<RParamValue>("P")->GetDouble());
-	Dlg.SpecificityQ->setValue(fac->FindParam<RParamStruct>("Specificity")->Get<RParamValue>("Q")->GetDouble());
-	Dlg.SpecificityWeight->setValue(fac->FindParam<RParamStruct>("Specificity")->Get<RParamValue>("Weight")->GetDouble());
-
-	// Type
-	Dlg.TypeActive->setChecked(fac->FindParam<RParamStruct>("Type")->Get<RParamValue>("Active")->GetBool());
-	Dlg.TypeP->setValue(fac->FindParam<RParamStruct>("Type")->Get<RParamValue>("P")->GetDouble());
-	Dlg.TypeQ->setValue(fac->FindParam<RParamStruct>("Type")->Get<RParamValue>("Q")->GetDouble());
-	Dlg.TypeWeight->setValue(fac->FindParam<RParamStruct>("Type")->Get<RParamValue>("Weight")->GetDouble());
-
-	// Tf/Ief
-	Dlg.TfIffActive->setChecked(fac->FindParam<RParamStruct>("TfIff")->Get<RParamValue>("Active")->GetBool());
-	Dlg.TfIffP->setValue(fac->FindParam<RParamStruct>("TfIff")->Get<RParamValue>("P")->GetDouble());
-	Dlg.TfIffQ->setValue(fac->FindParam<RParamStruct>("TfIff")->Get<RParamValue>("Q")->GetDouble());
-	Dlg.TfIffWeight->setValue(fac->FindParam<RParamStruct>("TfIff")->Get<RParamValue>("Weight")->GetDouble());
+	Dlg.TfIdf->Set(fac->FindParam<RParamStruct>("TfIdf"));
+	Dlg.Distance->Set(fac->FindParam<RParamStruct>("Distance"));
+	Dlg.Specificity->Set(fac->FindParam<RParamStruct>("Specificity"));
+	Dlg.Type->Set(fac->FindParam<RParamStruct>("Type"));
+	Dlg.TfIff->Set(fac->FindParam<RParamStruct>("TfIff"));
 
 	if(Dlg.exec())
 	{
-		// Tf/Idf
-		fac->FindParam<RParamStruct>("TfIdf")->Get<RParamValue>("Active")->SetBool(Dlg.TfIdfActive->isChecked());
-		fac->FindParam<RParamStruct>("TfIdf")->Get<RParamValue>("P")->SetDouble(Dlg.TfIdfP->value());
-		fac->FindParam<RParamStruct>("TfIdf")->Get<RParamValue>("Q")->SetDouble(Dlg.TfIdfQ->value());
-		fac->FindParam<RParamStruct>("TfIdf")->Get<RParamValue>("Weight")->SetDouble(Dlg.TfIdfWeight->value());
-
-		// Distance
-		fac->FindParam<RParamStruct>("Distance")->Get<RParamValue>("Active")->SetBool(Dlg.DistanceActive->isChecked());
-		fac->FindParam<RParamStruct>("Distance")->Get<RParamValue>("P")->SetDouble(Dlg.DistanceP->value());
-		fac->FindParam<RParamStruct>("Distance")->Get<RParamValue>("Q")->SetDouble(Dlg.DistanceQ->value());
-		fac->FindParam<RParamStruct>("Distance")->Get<RParamValue>("Weight")->SetDouble(Dlg.DistanceWeight->value());
-
-		// Specificity
-		fac->FindParam<RParamStruct>("Specificity")->Get<RParamValue>("Active")->SetBool(Dlg.SpecificityActive->isChecked());
-		fac->FindParam<RParamStruct>("Specificity")->Get<RParamValue>("P")->SetDouble(Dlg.SpecificityP->value());
-		fac->FindParam<RParamStruct>("Specificity")->Get<RParamValue>("Q")->SetDouble(Dlg.SpecificityQ->value());
-		fac->FindParam<RParamStruct>("Specificity")->Get<RParamValue>("Weight")->SetDouble(Dlg.SpecificityWeight->value());
-
-		// Type
-		fac->FindParam<RParamStruct>("Type")->Get<RParamValue>("Active")->SetBool(Dlg.TypeActive->isChecked());
-		fac->FindParam<RParamStruct>("Type")->Get<RParamValue>("P")->SetDouble(Dlg.TypeP->value());
-		fac->FindParam<RParamStruct>("Type")->Get<RParamValue>("Q")->SetDouble(Dlg.TypeQ->value());
-		fac->FindParam<RParamStruct>("Type")->Get<RParamValue>("Weight")->SetDouble(Dlg.TypeWeight->value());
-
-		// Tf/Ief
-		fac->FindParam<RParamStruct>("TfIff")->Get<RParamValue>("Active")->SetBool(Dlg.TfIffActive->isChecked());
-		fac->FindParam<RParamStruct>("TfIff")->Get<RParamValue>("P")->SetDouble(Dlg.TfIffP->value());
-		fac->FindParam<RParamStruct>("TfIff")->Get<RParamValue>("Q")->SetDouble(Dlg.TfIffQ->value());
-		fac->FindParam<RParamStruct>("TfIff")->Get<RParamValue>("Weight")->SetDouble(Dlg.TfIffWeight->value());
-
+		Dlg.TfIdf->Get(fac->FindParam<RParamStruct>("TfIdf"));
+		Dlg.Distance->Get(fac->FindParam<RParamStruct>("Distance"));
+		Dlg.Specificity->Get(fac->FindParam<RParamStruct>("Specificity"));
+		Dlg.Type->Get(fac->FindParam<RParamStruct>("Type"));
+		Dlg.TfIff->Get(fac->FindParam<RParamStruct>("TfIff"));
 		return(true);
 	}
 	return(false);
