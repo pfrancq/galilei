@@ -150,6 +150,13 @@ private:
 	 */
 	void AddVar(const QString& var,const tObjState value);
 
+	/**
+	 * Add a variable.
+	 * @param var            Name of the variable.
+	 * @param value          Value of the variable.
+	 */
+	void AddVar(const QString& var,const R::RDate& value);
+
 public:
 
 	/**

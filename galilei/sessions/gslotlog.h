@@ -36,7 +36,7 @@
 //------------------------------------------------------------------------------
 // include files for R Project
 #include <rtextfile.h>
-
+#include <rmutex.h>
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
@@ -52,10 +52,17 @@ namespace GALILEI{
 /**
 * The GSlotLog class provides a receiver of signals of a GALILEI session using a
 * log file to store the outputs.
+*
+* GSlotLog is reentrant.
 * @short Log File Slot.
 */
-class GSlotLog : public GSlot, public R::RTextFile
+class GSlotLog : GSlot, R::RTextFile
 {
+	/**
+	 * Mutex on the log file.
+    */
+	R::RMutex mLog;
+
 	/**
 	* Internal Buffer.
 	*/

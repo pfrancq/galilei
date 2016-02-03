@@ -175,6 +175,13 @@ void QGObjectVars::AddVar(const QString& var,const tObjState value)
 
 
 //------------------------------------------------------------------------------
+void QGObjectVars::AddVar(const QString& var,const R::RDate& value)
+{
+	AddVar(var,value.ToString());
+}
+
+
+//------------------------------------------------------------------------------
 QGObjectVars::~QGObjectVars(void)
 {
 	delete static_cast<Ui_QGObjectVars*>(Ui);

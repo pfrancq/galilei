@@ -137,8 +137,9 @@ public:
 	 * @param type           Type of the list.
 	 * @param engine         Engine.
 	 * @param nbres          Number of results to show.
+	 * @param caller         Identifier of the caller (for example a thread).
 	 */
-	void Set(oType type,GMetaEngine* engine,size_t nbres);
+	void Set(oType type,GMetaEngine* engine,size_t nbres,size_t caller);
 
 	/**
 	 * Get the tree.

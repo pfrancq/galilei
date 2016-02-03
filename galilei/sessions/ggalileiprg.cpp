@@ -180,8 +180,10 @@ public:
 
 //------------------------------------------------------------------------------
 GInstSession::GInstSession(const RString& name,GSessionClass* c,RInterpreter* prg,RContainer<R::RPrgVar,true,false>& args,GInstGALILEIApp* app)
- : RPrgVarInst(name,c), Session(GALILEIApp->GetSession(args[0]->GetValue(prg),false)), App(app)
+ : RPrgVarInst(name,c), Session(0), App(app)
 {
+	bool Created(false);
+	Session=GALILEIApp->GetSession(args[0]->GetValue(prg),Created);
 	bool DoDocs=args[1]->GetValue(prg)=="1";
 	bool DoProfiles=args[2]->GetValue(prg)=="1";
 	bool DoCommunities=args[3]->GetValue(prg)=="1";

@@ -37,6 +37,7 @@
 // include files for R
 #include <rapplication.h>
 #include <rdownload.h>
+#include <rrwlock.h>
 
 
 //------------------------------------------------------------------------------
@@ -80,6 +81,11 @@ protected:
 	* The Sessions.
 	*/
 	R::RContainer<GSession,true,true> Sessions;
+
+	/**
+	 * Reader/writer lock on Session.
+	 */
+	R::RRWLock lSessions;
 
 	/**
 	 * The storages.
@@ -129,13 +135,15 @@ protected:
 public:
 
 	/**
-	* Construct the application.
-	* @param name            Name of the application.
-	* @param argc            Number of arguments.
-	* @param argv            Arguments.
-	* @param dlg             Dialog boxes must be loaded too?
-	*/
-	GGALILEIApp(const R::RString& name,int argc, char *argv[],bool dlg=false);
+	 * Construct the application.
+	 * @param name           Name of the application.
+	 * @param argc           Number of arguments.
+	 * @param argv           Arguments.
+	 * @param dlg            Dialog boxes must be loaded too? By default, no.
+	 * @param localconfig    Local configuration.
+	 * @param globalconfig   Local configuration.
+	 */
+	GGALILEIApp(const R::RString& name,int argc, char *argv[],bool dlg=false,const R::RString& localconfig=R::RString::Null,const R::RString& globalconfig=R::RString::Null);
 
 protected:
 
@@ -153,13 +161,16 @@ protected:
 public:
 
 	/**
-	* Get the session with a given name.
-	* @param name            Name of the session.
-	* @param created         Determine if the session must be created if not
-	*                        existing.
-	* @param slot            Slot to show progress.
-	*/
-	GSession* GetSession(const R::RString& name,bool created=false,GSlot* slot=0);
+	 * Get the session with a given name.
+	 * @param name           Name of the session.
+	 * @param created        Determine if the session must be created if not
+	 *                       existing. It is modified by the method if the
+	 *                       session was created.
+	 * @param slot           Slot to show progress.
+	 * @param configdir      Directory where to search for the configuration file
+	 *                       of the session.
+	 */
+	GSession* GetSession(const R::RString& name,bool& created,GSlot* slot=0,const R::RString& configdir=R::RString::Null);
 
 	/**
 	* Delete a session.

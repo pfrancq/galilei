@@ -341,6 +341,15 @@ public:
 	GSession(size_t id,const R::RString& name);
 
 	/**
+	* Constructor.
+	* @param id              Identifier.
+	* @param name            Name of the session.
+	* @param configdir       Directory where to search for the configuration file
+	*                        of the session.
+	*/
+	GSession(size_t id,const R::RString& name,const R::RString& configdir);
+
+	/**
 	* This method is call when no handler is founded for a notification send by
 	* the session. Actually, it does nothing.
 	* @param notification    Notification.
@@ -549,11 +558,24 @@ public:
 	void RunTool(const R::RString& name,const R::RString& list,GSlot* slot=0,bool need=true);
 
 	/**
-	* Send a query to the meta-engine selected. The documents are researched and
-	* ranked.
-	* @param query           String representing the query.
-	*/
-	void RequestMetaEngine(const R::RString& query);
+	 * Send a query to the meta-engine selected. The documents are researched and
+	 * ranked.
+	 *
+	 * Each time the meta-engine is called, it is associated with a given data
+	 * structure which is reserved by GSession. It is used to store the results.
+	 * To safe resources, it is a good practice that the developer calls the
+	 * GSession::ClearMetaEngine method to free the used data structure.
+	 * @param query          String representing the query.
+	 * @param caller         Identifier of the caller (for example a thread).
+	 */
+	void RequestMetaEngine(const R::RString& query,size_t caller);
+
+	/**
+	 * Clear the default meta engine by freeing the data structure reserved for
+	 * it.
+    * @param caller         Identifier of the caller (for example a thread).
+    */
+	void ClearMetaEngine(size_t caller);
 	//@}
 
 	/** @name Informational Methods

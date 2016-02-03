@@ -178,7 +178,7 @@ public:
 
 	/**
 	 * Create a token and insert it in the query tree. Eventually, if the
-	 * keyword is a keyword, stems are used as alternatives and combine with the
+	 * token is a keyword, stems are used as alternatives and combine with the
 	 *  OR operator.
     * @param parent         Parent token.
     * @param token          String representing the keyword.

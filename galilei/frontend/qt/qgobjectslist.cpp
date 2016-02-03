@@ -625,7 +625,7 @@ void QGObjectsList::Set(oType type,GCommunity* community)
 
 
 //-----------------------------------------------------------------------------
-void QGObjectsList::Set(oType type,GMetaEngine* engine,size_t nbres)
+void QGObjectsList::Set(oType type,GMetaEngine* engine,size_t nbres,size_t caller)
 {
 	if((!engine)||(type!=Docs))
 		return;
@@ -636,7 +636,7 @@ void QGObjectsList::Set(oType type,GMetaEngine* engine,size_t nbres)
 	{
 		QTreeWidgetItem* DocItem;
 		GDoc* Doc(0);
-		RCursor<GDocFragment> Cur(engine->GetResults());
+		RCursor<GDocFragment> Cur(engine->GetResults(caller));
 		size_t i;
 		for(Cur.Start(),i=0;(!Cur.End())&&(i<nbres);Cur.Next(),i++)
 		{

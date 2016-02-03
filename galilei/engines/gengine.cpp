@@ -73,7 +73,7 @@ void GEngine::ApplyConfig(void)
 
 
 //------------------------------------------------------------------------------
-void GEngine::Clear(GMetaEngine* metaengine,GSearchQuery*)
+void GEngine::Clear(GMetaEngine* metaengine,GSearchQuery*,size_t caller)
 {
 	Results.Clear();
 	MetaEngine=metaengine;
@@ -81,54 +81,55 @@ void GEngine::Clear(GMetaEngine* metaengine,GSearchQuery*)
 
 
 //------------------------------------------------------------------------------
-GDocFragment* GEngine::AddResult(GDoc* doc,const GConceptRecord* rec,size_t pos,size_t spos,size_t first,size_t last,double ranking)
+GDocFragment* GEngine::AddResult(GDoc* doc,const GConceptRecord* rec,size_t pos,size_t spos,size_t first,size_t last,double ranking,size_t caller)
 {
 	if(!MetaEngine)
 		mThrowGException("Cannot call this method because no meta-engine valid");
-	return(MetaEngine->AddResult(doc,rec,pos,spos,first,last,ranking,this));
+	return(MetaEngine->AddResult(doc,rec,pos,spos,first,last,ranking,this,caller));
 }
 
 
 //------------------------------------------------------------------------------
-GDocFragment* GEngine::AddResult(size_t docid,const GConceptRecord* rec,size_t pos,size_t spos,size_t first,size_t last,double ranking)
+GDocFragment* GEngine::AddResult(size_t docid,const GConceptRecord* rec,size_t pos,size_t spos,size_t first,size_t last,double ranking,size_t caller)
 {
 	if(!MetaEngine)
 		mThrowGException("Cannot call this method because no meta-engine valid");
- 	return(MetaEngine->AddResult(docid,rec,pos,spos,first,last,ranking,this));
+ 	return(MetaEngine->AddResult(docid,rec,pos,spos,first,last,ranking,this,caller));
 }
 
+
 //------------------------------------------------------------------------------
-void GEngine::Request(GSearchQuery* query)
+void GEngine::Request(GSearchQuery* query,size_t caller)
 {
-	PerformRequest(query);
+	PerformRequest(query,caller);
 	if(Ranking)
-		Ranking->Rank(this,query);
+		Ranking->Rank(this,query,caller);
 }
 
 
 //-----------------------------------------------------------------------------
-R::RCursor<GDocFragment> GEngine::GetResults(void)
+R::RCursor<GDocFragment> GEngine::GetResults(size_t caller)
 {
 	return(R::RCursor<GDocFragment>(Results));
 }
 
 
 //-----------------------------------------------------------------------------
-size_t GEngine::GetNbResults(void) const
+size_t GEngine::GetNbResults(size_t caller) const
 {
 	return(Results.GetNb());
 }
 
 
 //-----------------------------------------------------------------------------
-size_t GEngine::GetTabResults(const GDocFragment** tab) const
+size_t GEngine::GetTabResults(const GDocFragment** tab,size_t caller) const
 {
 	return(Results.GetTab(tab));
 }
 
 
 //-----------------------------------------------------------------------------
-size_t GEngine::GetTabResults(GDocFragment** tab)
+size_t GEngine::GetTabResults(GDocFragment** tab,size_t caller)
 {
 	return(Results.GetTab(tab));
 }

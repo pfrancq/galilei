@@ -89,6 +89,8 @@ template<class C,const R::hNotification* hEvents>
 template<class C,const R::hNotification* hEvents>
 	void GObjects<C,hEvents>::Clear(const C* obj,bool del)
 {
+	lObjects.WriteLock();
+
 	// Clear the references and the index
 	if(C::HasDesc())
 		ClearIndex(C::GetType());
@@ -127,6 +129,8 @@ template<class C,const R::hNotification* hEvents>
 				Storage->SaveObj(Obj());
 		}
 	}
+
+	lObjects.WriteUnLock();
 }
 
 
@@ -216,6 +220,7 @@ template<class C,const R::hNotification* hEvents>
 template<class C,const R::hNotification* hEvents>
 	size_t GObjects<C,hEvents>::GetNbObjs(const C*) const
 {
+	R::RSmartRLockPtr l(&const_cast<GObjects<C,hEvents>*>(this)->lObjects);
 	return(R::RObjectContainer<C,true>::GetNbObjs());
 }
 
@@ -224,6 +229,7 @@ template<class C,const R::hNotification* hEvents>
 template<class C,const R::hNotification* hEvents>
 	size_t GObjects<C,hEvents>::GetMaxObjId(const C*) const
 {
+	R::RSmartRLockPtr l(&const_cast<GObjects<C,hEvents>*>(this)->lObjects);
 	return(R::RObjectContainer<C,true>::GetMaxObjId());
 }
 
@@ -232,6 +238,7 @@ template<class C,const R::hNotification* hEvents>
 template<class C,const R::hNotification* hEvents>
 	size_t GObjects<C,hEvents>::GetMaxObjPos(const C*) const
 {
+	R::RSmartRLockPtr l(&const_cast<GObjects<C,hEvents>*>(this)->lObjects);
 	return(R::RObjectContainer<C,true>::GetMaxObjPos());
 }
 
@@ -240,6 +247,7 @@ template<class C,const R::hNotification* hEvents>
 template<class C,const R::hNotification* hEvents>
 	R::RCursor<C> GObjects<C,hEvents>::GetObjs(const C*) const
 {
+	R::RSmartRLockPtr l(&const_cast<GObjects<C,hEvents>*>(this)->lObjects);
 	return(R::RObjectContainer<C,true>::GetObjs(1));
 }
 
@@ -248,6 +256,7 @@ template<class C,const R::hNotification* hEvents>
 template<class C,const R::hNotification* hEvents>
 	size_t GObjects<C,hEvents>::GetObjs(C** &tab,bool alloc)
 {
+	R::RSmartRLockPtr l(&const_cast<GObjects<C,hEvents>*>(this)->lObjects);
 	return(R::RObjectContainer<C,true>::GetObjs(tab,alloc,1));
 }
 
@@ -256,14 +265,20 @@ template<class C,const R::hNotification* hEvents>
 template<class C,const R::hNotification* hEvents>
 	C* GObjects<C,hEvents>::GetObj(const C*,size_t id,bool load,bool null)
 {
-	C* Obj(R::RObjectContainer<C,true>::operator[](id));
-	if(Obj)
-		return(Obj);
+	C* Obj(0);
+	{
+		R::RSmartRLockPtr lock(&lObjects);
+		if(id<=R::RObjectContainer<C,true>::GetMaxObjPos())
+			Obj=R::RObjectContainer<C,true>::operator[](id);
+		if(Obj)
+			return(Obj);
+	}
 
 	// Look, if necessary, in the database
 	if(load&&(!Storage->IsAllInMemory()))
 	{
 		// Load it and put in the list
+		R::RSmartWLockPtr lock(&lObjects);
 		State=osOnDemand;
 		Storage->LoadObj(Obj,id);
 		if(Obj)
@@ -287,11 +302,18 @@ template<class C,const R::hNotification* hEvents>
 template<class C,const R::hNotification* hEvents>
 	C* GObjects<C,hEvents>::GetObj(const C*,const R::RString& name,bool load,bool null)
 {
-	C* Obj(R::RObjectContainer<C,true>::GetObj(name));
+	C* Obj(0);
+	{
+		R::RSmartRLockPtr lock(&lObjects);
+		Obj=R::RObjectContainer<C,true>::GetObj(name);
+		if(Obj)
+			return(Obj);
+	}
 
 	if(load&&(!Storage->IsAllInMemory()))
 	{
 		// Load it and put in the list
+		R::RSmartWLockPtr lock(&lObjects);
 		State=osOnDemand;
 		C* Obj(0);
 		Storage->LoadObj(Obj,name);
@@ -322,6 +344,7 @@ template<class C,const R::hNotification* hEvents>
 		return;
 	}
 
+	R::RSmartWLockPtr lock(&lObjects);
 	R::RObjectContainer<C,true>::AssignId(obj);
 }
 
@@ -332,10 +355,14 @@ template<class C,const R::hNotification* hEvents>
 {
 	if(Loaded)
 		return;
+	lObjects.WriteLock();
 	State=osOnDemand;
+	lObjects.WriteUnLock();
 	Storage->LoadObjs(obj);
+	lObjects.WriteLock();
 	Loaded=true;
 	State=osLatest;
+	lObjects.WriteUnLock();
 }
 
 

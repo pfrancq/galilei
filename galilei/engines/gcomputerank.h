@@ -67,8 +67,9 @@ public:
 	 * Rank a set of document fragments.
 	 * @param engine         Engine which results must be ranked.
 	 * @param query          Query.
+	 * @param caller         Identifier of the caller (for example a thread).
 	 */
-	virtual void Rank(GEngine* engine,GSearchQuery* query)=0;
+	virtual void Rank(GEngine* engine,GSearchQuery* query,size_t caller)=0;
 
 	/**
 	* Destructor of the ranking method.

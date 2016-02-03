@@ -138,8 +138,8 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
-	: RApplication(name,argc,argv), RContainer<GPlugInManager,true,false>(20,10),
+GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg,const RString& localconfig,const RString& globalconfig)
+	: RApplication(name,argc,argv,localconfig,globalconfig), RContainer<GPlugInManager,true,false>(20,10),
 	  Sessions(10), LoadDialogs(dlg), PlugInsPaths(10), MIMES(50,25),
 	  Exts(50,25), Schemes(50,25), Log("/var/log/galilei/galilei.log")
 {
@@ -189,11 +189,11 @@ GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
 	}
 	catch(RException& e)
 	{
-		cerr<<e.GetMsg()<<endl;
+		Log<<e.GetMsg()<<endl;
 	}
 	catch(...)
 	{
-		cerr<<"Cannot load '/etc/galilei/galilei.mimes'"<<endl;
+		Log<<"Cannot load '/etc/galilei/galilei.mimes'"<<endl;
 	}
 
 	GALILEIApp=this;
@@ -218,7 +218,9 @@ void GGALILEIApp::Init(void)
 	IndexDir=Config.Get("IndexDir");
 	RCursor<RString> Cur(Config.GetList("PlugIns Path"));
 	for(Cur.Start();!Cur.End();Cur.Next())
+	{
 		PlugInsPaths.InsertPtr(new RString(*Cur()));
+	}
 
 	// Load the plug-in factories.
 	Load(PlugInsPaths,LoadDialogs);
@@ -229,10 +231,12 @@ void GGALILEIApp::Init(void)
 
 
 //------------------------------------------------------------------------------
-GSession* GGALILEIApp::GetSession(const R::RString& name,bool created,GSlot* slot)
+GSession* GGALILEIApp::GetSession(const R::RString& name,bool& created,GSlot* slot,const R::RString& configdir)
 {
 	// If the session exist -> return it
+	lSessions.ReadLock();
 	GSession* Session(Sessions.GetPtr(name));
+	lSessions.ReadUnLock();
 	if(Session)
 		return(Session);
 	else if(!created)
@@ -241,8 +245,14 @@ GSession* GGALILEIApp::GetSession(const R::RString& name,bool created,GSlot* slo
 	// Create and load the session
 	try
 	{
+		lSessions.WriteLock();
+
 		// A new session must be created and its configuration read
-		Sessions.InsertPtr(Session=new GSession(Sessions.GetNb(),name));
+		created=false;  // Suppose it was not created
+		if(configdir.IsEmpty())
+			Sessions.InsertPtr(Session=new GSession(Sessions.GetNb(),name));
+		else
+			Sessions.InsertPtr(Session=new GSession(Sessions.GetNb(),name,configdir));
 		Session->State=osOnDemand;
 		RCursor<GPlugInManager> Cur(*this);
 		for(Cur.Start();!Cur.End();Cur.Next())
@@ -289,24 +299,29 @@ GSession* GGALILEIApp::GetSession(const R::RString& name,bool created,GSlot* slo
 
 		// Return the session
 		Session->State=osLatest;
+		created=true;
+		lSessions.WriteUnLock();
 		return(Session);
 	}
 	catch(RException& e)
 	{
 		if(Session)
 			Sessions.DeletePtr(*Session);
+		lSessions.WriteUnLock();
 		throw GException(e.GetMsg());
 	}
 	catch(std::exception& e)
 	{
 		if(Session)
 			Sessions.DeletePtr(*Session);
+		lSessions.WriteUnLock();
 		throw GException(e.what());
 	}
 	catch(...)
 	{
 		if(Session)
 			Sessions.DeletePtr(*Session);
+		lSessions.WriteUnLock();
 		throw GException("Undefined Error");
 	}
 }
@@ -317,10 +332,12 @@ void GGALILEIApp::DeleteSession(GSession* session)
 {
 	if(!session)
 		return;
+	lSessions.WriteLock();
 	RCursor<GPlugInManager> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->Disconnect(session);
 	Sessions.DeletePtr(*session);
+	lSessions.WriteUnLock();
 }
 
 
@@ -360,7 +377,7 @@ void GGALILEIApp::FindPlugins(const RString dir,RContainer<RString,true,false>& 
 	if(!dp) return;
 	while((ep=readdir(dp)))
 	{
-		// Name og the 'file"
+		// Name of the 'file"
 		Name=ep->d_name;
 
 		// Open file

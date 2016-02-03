@@ -39,6 +39,7 @@
 #include <rdir.h>
 #include <robjectcontainer.h>
 #include <rnodecursor.h>
+#include <rrwlock.h>
 
 
 //------------------------------------------------------------------------------
@@ -96,7 +97,7 @@ namespace GALILEI{
  * @short Stored Objects.
  */
 template<class C,const R::hNotification* hEvents>
-	class GObjects : virtual GKB, protected R::RObjectContainer<C,true>
+	class GObjects : virtual GKB, R::RObjectContainer<C,true>
 {
 	// Explicit use of methods from GKB
 	using GKB::InsertObj;
@@ -154,6 +155,26 @@ template<class C,const R::hNotification* hEvents>
 	 * Temporary vector of references.
 	 */
 	R::RNumContainer<size_t,true> tmpRefs;
+
+	/**
+	 * Reader/writer lock on the objects.
+	 */
+	R::RRWLock lObjects;
+
+	/**
+	 * Reader/writer lock on the descriptions.
+	 */
+	R::RRWLock lDesc;
+
+	/**
+	 * Reader/writer lock on the index.
+	 */
+	R::RRWLock lIndex;
+
+	/**
+	 * Reader/writer lock on the trees.
+	 */
+	R::RRWLock lTree;
 
 public:
 

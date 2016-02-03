@@ -71,20 +71,37 @@ namespace GALILEI{
 */
 class GMetaEngine : public GPlugIn, R::RDownloadFile
 {
-	/**
-	* All fragments classified by documents.
-	*/
-	R::RContainer<GDocRef,true,true> ResultsByDocs;
-
-	/**
-	* All document fragments.
-	*/
-	R::RContainer<GDocFragment,false,false> Results;
-
-	/**
-	 * All the rankings for each document fragments.
+	/*
+	 * Internal structure for the results.
 	 */
-	R::RContainer<GDocFragmentRanks,true,true> Rankings;
+	class Internal
+	{
+	public:
+		/**
+		* All fragments classified by documents.
+		*/
+		R::RContainer<GDocRef,true,true> ResultsByDocs;
+
+		/**
+		* All document fragments.
+		*/
+		R::RContainer<GDocFragment,false,false> Results;
+
+		/**
+		 * All the rankings for each document fragments.
+		 */
+		R::RContainer<GDocFragmentRanks,true,true> Rankings;
+
+		/**
+		 * Constructor.
+       */
+		Internal(void);
+	};
+
+	/**
+	 * Data used to store the results.
+	 */
+	R::RThreadLocalStorage<Internal> Data;
 
 public:
 
@@ -98,38 +115,44 @@ public:
 private:
 
 	/**
-	* Add a fragment from a known document as result to the meta-engine. In
-	* practice, it adds an entry to the container of results.
-	* @param doc             Document.
-	* @param rec             Concept record
-	* @param pos             Position to the fragment to extract.
-	* @param spos            Syntactic position of the fragment centre.
-	* @param first           First concept found.
-	* @param last            Last concept found.
-	* @param ranking         Ranking of the document given by the engine
-	*                        (\f$0\leq ranking \leq 1\f$).
-	* @param engine          Engine from which the result come.
-	* @warning The deallocation of the record must be managed by the caller.
-	* @return a pointer to a GDocFragment.
-	*/
-	GDocFragment* AddResult(GDoc* doc,const GConceptRecord* rec,size_t pos,size_t spos,size_t first,size_t last,double ranking,GEngine* engine);
+	 * Add a fragment from a known document as result to the meta-engine. In
+	 * practice, it adds an entry to the container of results.
+	 * @param doc            Document.
+	 * @param rec            Concept record
+	 * @param pos            Position to the fragment to extract.
+	 * @param spos           Syntactic position of the fragment centre.
+	 * @param first          First concept found.
+	 * @param last           Last concept found.
+	 * @param ranking        Ranking of the document given by the engine
+	 *                       (\f$0\leq ranking \leq 1\f$). When a ranking
+	 *                       algorithm is associated to the engine, it will
+	 *                       overwrite this ranking.
+	 * @param engine         Engine from which the result come.
+	 * @param caller         Identifier of the caller (for example a thread).
+	 * @warning The deallocation of the record must be managed by the caller.
+	 * @return a pointer to a GDocFragment.
+	 */
+	GDocFragment* AddResult(GDoc* doc,const GConceptRecord* rec,size_t pos,size_t spos,size_t first,size_t last,double ranking,GEngine* engine,size_t caller);
 
 	/**
-	* Add a fragment from a known document as result to the meta-engine. In
-	* practice, it adds an entry to the container of results.
-	* @param docid           Identifier of the document.
-	* @param rec             Concept record
-	* @param pos             Position to the fragment to extract.
-	* @param spos            Syntactic position of the fragment centre.
-	* @param first           First concept found.
-	* @param last            Last concept found.
-	* @param ranking         Ranking of the document given by the engine
-	*                        (\f$0\leq ranking \leq 1\f$).
-	* @param engine          Engine from which the result come.
-	* @warning The deallocation of the record must be managed by the caller.
-	* @return a pointer to a GDocFragment.
-	*/
-	GDocFragment* AddResult(size_t docid,const GConceptRecord* rec,size_t spos,size_t pos,size_t first,size_t last,double ranking,GEngine* engine);
+	 * Add a fragment from a known document as result to the meta-engine. In
+	 * practice, it adds an entry to the container of results.
+	 * @param docid          Identifier of the document.
+	 * @param rec            Concept record
+	 * @param pos            Position to the fragment to extract.
+	 * @param spos           Syntactic position of the fragment centre.
+	 * @param first          First concept found.
+	 * @param last           Last concept found.
+	 * @param ranking        Ranking of the document given by the engine
+	 *                       (\f$0\leq ranking \leq 1\f$). When a ranking
+	 *                       algorithm is associated to the engine, it will
+	 *                       overwrite this ranking.
+	 * @param engine         Engine from which the result come.
+	 * @param caller         Identifier of the caller (for example a thread).
+	 * @warning The deallocation of the record must be managed by the caller.
+	 * @return a pointer to a GDocFragment.
+	 */
+	GDocFragment* AddResult(size_t docid,const GConceptRecord* rec,size_t spos,size_t pos,size_t first,size_t last,double ranking,GEngine* engine,size_t caller);
 
 protected:
 
@@ -138,34 +161,39 @@ protected:
 	 * result. By default, the method does nothing.
     * @param rank           Document fragment added.
 	 * @param engine         Engine from which the result come.
+	 * @param caller         Identifier of the caller (for example a thread).
     */
-	virtual void FragmentRankAdded(GDocFragmentRank* rank,GEngine* engine);
+	virtual void FragmentRankAdded(GDocFragmentRank* rank,GEngine* engine,size_t caller);
 
 	/**
 	 * Initialise the query. The containers are cleared and the method
 	 * GEngine::Clear(GMetaEngine*) is called for each enabled engine.
-    * @param query
+    * @param query          Query.
+	 * @param caller         Identifier of the caller (for example a thread).
     */
-	virtual void PrepareRequest(GSearchQuery* query);
+	virtual void PrepareRequest(GSearchQuery* query,size_t caller);
 
 	/**
 	* Send a query to the engines. By default, it is send to all
 	* enabled engines.
 	* @param query           Query.
+	* @param caller         Identifier of the caller (for example a thread).
 	*/
-	virtual void RequestEngines(GSearchQuery* query);
+	virtual void RequestEngines(GSearchQuery* query,size_t caller);
 
 	/**
 	* This function is used to compute the global ranking
 	* for documents extracted from different search engines.
 	* Results are then sort using this global ranking
+	* @param caller         Identifier of the caller (for example a thread).
 	*/
-	virtual void ComputeGlobalRanking(void);
+	virtual void ComputeGlobalRanking(size_t caller);
 
 	/**
 	 * Perform some tasks once the request was treated.
+	 * @param caller         Identifier of the caller (for example a thread).
     */
-	virtual void PostRequest(void);
+	virtual void PostRequest(size_t caller);
 
 public:
 
@@ -179,33 +207,38 @@ public:
 	virtual GSearchQuery* BuildQuery(const R::RString query);
 
 	/**
-	* Send a query to the meta-search engine. It call GMetaEngine::PerformRequest
-	* and order then all the document fragments.
-	* @param query           Query.
-	*/
-	void Request(GSearchQuery* query);
+	 * Send a query to the meta-search engine. It call GMetaEngine::PerformRequest
+	 * and order then all the document fragments.
+	 * @param query          Query.
+	 * @param caller         Identifier of the caller (for example a thread).
+	 */
+	void Request(GSearchQuery* query,size_t caller);
 
 	/**
-	* Get all the fragments retrieved by documents.
-	* @return a cursor on GDocRef.
-	*/
-	R::RCursor<GDocRef> GetResultsByDocs(void);
+	 * Get all the fragments retrieved by documents.
+	 * @param caller         Identifier of the caller (for example a thread).
+	 * @return a cursor on GDocRef.
+	 */
+	R::RCursor<GDocRef> GetResultsByDocs(size_t caller);
 
 	/**
-	* Get all the fragments retrieved by documents.
-	* @return a cursor on GDocRef.
-	*/
-	R::RCursor<GDocFragment> GetResults(void);
+	 * Get all the fragments retrieved by documents.
+	 * @param caller         Identifier of the caller (for example a thread).
+	 * @return a cursor on GDocRef.
+	 */
+	R::RCursor<GDocFragment> GetResults(size_t caller);
 
 	/**
-	* @return a cursor of the rankings retrieved by the meta-search engine.
-	*/
-	R::RCursor<GDocFragmentRanks> GetRankings(void);
+	 * @return a cursor of the rankings retrieved by the meta-search engine.
+	 * @param caller         Identifier of the caller (for example a thread).
+	 */
+	R::RCursor<GDocFragmentRanks> GetRankings(size_t caller);
 
 	/**
 	 * @return the number of results.
+	 * @param caller         Identifier of the caller (for example a thread).
     */
-	size_t GetNbResults(void) const;
+	size_t GetNbResults(size_t caller);
 
 	/**
 	* Destructor of the meta-engine.
@@ -213,6 +246,7 @@ public:
 	virtual ~GMetaEngine(void);
 
 	friend class GEngine;
+	friend class GSession;
 };
 
 

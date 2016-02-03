@@ -412,6 +412,7 @@ GSearchQueryNode* GSearchQuery::CreateToken(GSearchQueryNode* parent,const R::RS
 	if(type==GSearchToken::tTerm)
 	{
 		// Expand the query with stems and the OR operator
+		cout<<token<<"Creat : "<<multiple<<endl;
 
 		// Some initialization
 		RString Token(token.Trim().ToLower());

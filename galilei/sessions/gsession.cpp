@@ -76,6 +76,8 @@ using namespace R;
 #include <gstatement.h>
 #include <gclass.h>
 #include <gsearchquery.h>
+#include <gdocref.h>
+#include <gdocfragmentranks.h>
 using namespace GALILEI;
 using namespace std;
 
@@ -175,7 +177,7 @@ GSession::GSession(size_t id,const RString& name)
 	:
 	  RObject(name),
 	  GKB(this),
-	  RConfig("lib/galilei/sessions",name),
+	  RConfig(false,name,"lib/galilei/sessions"),
 	  GObjects<GDoc,hDocs>(this,20000,"Documents",otDoc),
 	  GObjects<GTopic,hTopics>(this,200,"Topics",otTopic),
 	  GObjects<GUser,hUsers>(this,1000,"Users",otUser),
@@ -189,12 +191,34 @@ GSession::GSession(size_t id,const RString& name)
 	  ExternBreak(false),
 	  Simulator(0), DocAnalyze(this),
 	  AnalyzerReserved(false)
-
 {
 	// Log files
 	Log.Open(RIO::Append);
+}
 
-	//reinterpret_cast<RString*>(-1)
+
+//------------------------------------------------------------------------------
+GSession::GSession(size_t id,const RString& name,const RString& configdir)
+	:
+	  RObject(name),
+	  GKB(this),
+	  RConfig(true,configdir+RDir::GetDirSeparator()+name+".config"),
+	  GObjects<GDoc,hDocs>(this,20000,"Documents",otDoc),
+	  GObjects<GTopic,hTopics>(this,200,"Topics",otTopic),
+	  GObjects<GUser,hUsers>(this,1000,"Users",otUser),
+	  GObjects<GProfile,hProfiles>(this,5000,"Profiles",otProfile),
+	  GObjects<GCommunity,hCommunities>(this,100,"Communities",otCommunity),
+	  GClasses(this,300),
+	  GSubjects(this),
+	  Id(id), Name(name),
+	  ValidConfigFile(false), Log("/var/log/galilei/"+name+".log"),
+	  CurrentRandom(1), Random(RRandom::Good,1),
+	  ExternBreak(false),
+	  Simulator(0), DocAnalyze(this),
+	  AnalyzerReserved(false)
+{
+	// Log files
+	Log.Open(RIO::Append);
 }
 
 
@@ -932,14 +956,25 @@ bool GSession::InsertFdbk(size_t profid,size_t docid,tFdbkType fdbk,R::RDate don
 
 
 //------------------------------------------------------------------------------
-void GSession::RequestMetaEngine(const R::RString& query)
+void GSession::RequestMetaEngine(const R::RString& query,size_t caller)
 {
 	GMetaEngine* MetaEngine(GALILEIApp->GetCurrentPlugIn<GMetaEngine>("MetaEngine"));
 	if(!MetaEngine)
 		mThrowGException("No meta-engine selected");
+	MetaEngine->Data.Reserve(caller);
 	GSearchQuery* Query(MetaEngine->BuildQuery(query.Trim()));
-	MetaEngine->Request(Query);
+	MetaEngine->Request(Query,caller);
 	delete Query;
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::ClearMetaEngine(size_t caller)
+{
+	GMetaEngine* MetaEngine(GALILEIApp->GetCurrentPlugIn<GMetaEngine>("MetaEngine"));
+	if(!MetaEngine)
+		mThrowGException("No meta-engine selected");
+	MetaEngine->Data.Release(caller);
 }
 
 
