@@ -36,10 +36,17 @@
 
 
 //------------------------------------------------------------------------------
+// Debug mode
+static bool Debug=true;
+
+
+//------------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <iostream>
+#include <fstream>
 #include <cstdlib>
 #include <stdexcept>
+#include <unistd.h>
 using namespace std;
 
 
@@ -57,7 +64,6 @@ using namespace R;
 using namespace GALILEI;
 
 
-
 //------------------------------------------------------------------------------
 // include files for current project
 #include <rungalileiprogram.h>
@@ -73,8 +79,18 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-	setlocale(LC_CTYPE,"");
-	RunGALILEIProgram App(argc,argv);
-	App.Run();
+	try
+	{
+		RunGALILEIProgram App(argc,argv,"/home/pfrancq/upgalilei.txt");
+		App.Execute();
+	}
+	catch(RException& msg)
+	{
+		printf("content-type: text/html\r\n\r\n%s\r\n",msg.GetMsg().ToLatin1());
+	}
+	catch(...)
+	{
+		printf("content-type: text/html\r\n\r\nError\r\n");
+	}
 	return(EXIT_SUCCESS);
 }

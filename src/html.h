@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	RunGALILEIProgram.h
+	HTML.h
 
-	Command - Header.
+	HTML Result - Header.
 
 	Copyright 2009-2011 by Pascal Francq (pascal@francq.info).
 	This library is free software; you can redistribute it and/or
@@ -27,70 +27,38 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef RunGALILEIProgramH
-#define RunGALILEIProgramH
+#ifndef HTMLH
+#define HTMLH
 
 
 //------------------------------------------------------------------------------
 // include files for R/GALILEI Project
-#include <ggalileiapp.h>
+#include <rstring.h>
 
 
 //------------------------------------------------------------------------------
-// include files for current project
-#include <cgithread.h>
+// forward declaration
+struct FCGX_Request;
 
 
 //------------------------------------------------------------------------------
-// Constant
-const size_t NbThreads=20;
-
-
-//------------------------------------------------------------------------------
-class RunGALILEIProgram : public GALILEI::GGALILEIApp
+class HTML
 {
-	/**
-	 * Threads.
-	 */
-	CGIThread* Threads[NbThreads];
-
-	/**
-	 * Debug file.
-	 */
-	R::RTextFile Debug;
-
-	/**
-	 * Mutex on the debug file.
-    */
-	R::RMutex mDebug;
+	FCGX_Request& Request;
 
 public:
-
-	/**
-	 * Constructor of the application.
-    * @param argc           Number of arguments.
-    * @param argv           Arguments.
-    */
-	RunGALILEIProgram(int argc, char *argv[],const R::RURI& debug=R::RString::Null);
-
-	/**
-	 * Write some string in the debug file if it is open.
-    * @param str
-    */
-	void Write(const R::RString& str);
-
-	/**
-	 * Initialise the application.
-    */
-	virtual void Init(void);
-
-	/**
-	 * Run the application
-    */
-	virtual void Run(void);
+	HTML(FCGX_Request& request);
+	FCGX_Request& GetRequest(void) const {return(Request);}
+	void WriteTitle(const R::RString& title);
+	void WriteForm(const R::RString& session,const R::RString& query);
+	void WriteH1(const R::RString& what);
+	void WriteP(int level,const R::RString& what,const R::RString& style=R::RString::Null);
+	void WriteDiv(int level,const R::RString& what,const R::RString& style=R::RString::Null);
+	void Write(int level,const R::RString& what);
+	~HTML(void);
 };
-
 
 
 //------------------------------------------------------------------------------
 #endif
+
