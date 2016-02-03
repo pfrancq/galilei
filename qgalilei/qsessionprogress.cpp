@@ -278,7 +278,8 @@ void QSessionProgress::Interact(void)
 void QCreateSession::DoIt(void)
 {
 	WriteStr("Load Concepts, Predicates and Statements ...");
-	Session=GALILEIApp->GetSession(Name,true,this);
+	bool Create(true);
+	Session=GALILEIApp->GetSession(Name,Create,this);
 	if(Win->getSession()->MustBreak())
 		return;
 	WriteStr("Load Classes ...");

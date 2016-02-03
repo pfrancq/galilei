@@ -49,6 +49,7 @@
 #include <qsessionprogress.h>
 #include <qgalileiwin.h>
 #include <rstringbuilder.h>
+using namespace std;
 
 
 //-----------------------------------------------------------------------------

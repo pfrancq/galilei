@@ -130,16 +130,16 @@ void KViewMetaEngine::QueryEngine(void)
 	QApplication::setOverrideCursor(Qt::WaitCursor);
 	try
 	{
-		Win->getSession()->RequestMetaEngine(FromQString(TxtQuery->text()));
+		Win->getSession()->RequestMetaEngine(FromQString(TxtQuery->text()),0);
 		GMetaEngine* Meta(GALILEIApp->GetCurrentPlugIn<GMetaEngine>("MetaEngine"));
 
-		Results->Set(QGObjectsList::Docs,Meta,NbRes->value());
-		if(Meta->GetNbResults()==0)
+		Results->Set(QGObjectsList::Docs,Meta,NbRes->value(),0);
+		if(Meta->GetNbResults(0)==0)
 			ResLabel->setText("<b>No results</b>");
-		else if(Meta->GetNbResults()>NbRes->value())
-			ResLabel->setText("<b>Display "+QString::number(NbRes->value())+" results from "+QString::number(Meta->GetNbResults())+" found</b>");
+		else if(Meta->GetNbResults(0)>NbRes->value())
+			ResLabel->setText("<b>Display "+QString::number(NbRes->value())+" results from "+QString::number(Meta->GetNbResults(0))+" found</b>");
 		else
-			ResLabel->setText("<b>Display "+QString::number(Meta->GetNbResults())+" results found</b>");
+			ResLabel->setText("<b>Display "+QString::number(Meta->GetNbResults(0))+" results found</b>");
 		QApplication::setOverrideCursor(Qt::ArrowCursor);
 	}
 	catch(GException& e)
