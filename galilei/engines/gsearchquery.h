@@ -116,116 +116,22 @@ public:
 	GSearchQuery(GSession* session,int options=qoStems|qoKeywords|qoExpressions,R::RContainer<GLang,false,false>* langs=0);
 
 	/**
-	 * Build the query based on a string. By default, it is analyses the string
-	 * in order to create the tree. In practice, the query is parsed from left
-	 * to right.
-    * @param query          Query submitted.
-    */
-	virtual void Build(const R::RString& query);
-
-	/**
-	 * Look if only the AND operator is used.
-	 * @return true if it is the case.
-	 */
-	bool UseOnlyAND(void) const {return(OnlyAND);}
-
-private:
-
-	/**
-	 * Treat a node to find an AND that can create an expression.
-    * @param node           Node to treat.
-    */
-	void TreatNode(GSearchQueryNode* node);
-
-	/**
-	 * Build all the possible expressions that results from the combinations of
-	 * the keywords linked by AND operators.
-    * @param node           Node to treat.
-    * @param exprs
-    */
-	void TreatANDNode(GSearchQueryNode* node,cExpressions& exprs);
-
-public:
-
-	/**
 	 * Get the top node of a query.
     * @return a pointer to a GSearchQueryNode.
     */
 	GSearchQueryNode* GetTop(void) {return(R::RTree<GSearchQuery,GSearchQueryNode,true>::GetTop());}
 
 	/**
-	 * Create the nodes appearing in a given string. The method is called
-	 * recursively to obtain the whole query.
-    * @param parent         Parent node (if null, it is the top node).
-    * @param str            String to analyze.
-    * @return true if a node was created for the string passed.
+	 * Get the top node of a query.
+    * @return a pointer to a GSearchQueryNode.
     */
-	bool CreateToken(GSearchQueryNode* parent,const R::RString& str);
+	const GSearchQueryNode* GetTop(void) const {return(R::RTree<GSearchQuery,GSearchQueryNode,true>::GetTop());}
 
 	/**
-	 * Insert a token in the query tree.
-    * @param parent         Parent token.
-    * @param node           Token to add.
-    */
-	void InsertNode(GSearchQueryNode* parent,GSearchQueryNode* node);
-
-	/**
-	 * Move a token in the query tree.
-    * @param to             Future parent token.
-    * @param node           Token to add.
-    */
-	void MoveNode(GSearchQueryNode* to,GSearchQueryNode* node);
-
-	/**
-	 * Create a token and insert it in the query tree. Eventually, if the
-	 * token is a keyword, stems are used as alternatives and combine with the
-	 *  OR operator.
-    * @param parent         Parent token.
-    * @param token          String representing the keyword.
-    * @param type           Type of the token
-	 * @param multiple       In the case of a keyword, are there multiple terms.
-    * @return a pointer to the node  was inserted in the query tree.
-    */
-	GSearchQueryNode* CreateToken(GSearchQueryNode* parent,const R::RString& token,GSearchToken::tType type,bool multiple);
-
-	/**
-	 * Create a new node corresponding to a string.
-    * @param token          String containing the token.
-	 * @param type           Type of the token.
-    * @return a pointer that will be inserted in the query tree.
-    */
-	virtual GSearchQueryNode* NewNode(const R::RString& token,GSearchToken::tType type);
-
-	/**
-	 * Create a new node corresponding to a given concept.
-    * @param concept        Concept.
-	 * @param type           Type of the token.
-    * @return a pointer that will be inserted in the query tree.
-    */
-	virtual GSearchQueryNode* NewNode(GConcept* concept,GSearchToken::tType type);
-
-	/**
-	 * Create a new node corresponding to an operator.
-    * @param op             Operator.
-    * @return a pointer that will be inserted in the query tree.
-    */
-	virtual GSearchQueryNode* NewNode(GSearchQueryNode::tOperator op);
-
-	/**
-	 * Clear a string. In practice, the leading and ending spaces are removed. If
-	 * the string is an expression, the corresponding parentheses are removed.
-    * @param str            String to clear.
-    * @return the string cleared.
-    */
-	R::RString ClearString(const R::RString& str);
-
-	/**
-	 * Print a node to the console. A number of spaces corresponding to its
-	 * depth in the tree is inserted before. After that, the method is called for
-	 * its children.
-    * @param node           Node to print. If null, the top node is taken.
-    */
-	void Print(GSearchQueryNode* node);
+	 * Look if only the AND operator is used.
+	 * @return true if it is the case.
+	 */
+	bool UseOnlyAND(void) const {return(OnlyAND);}
 
 	/**
 	 * Get the list of tokens.
@@ -261,6 +167,105 @@ public:
 	bool IsIn(GConcept* concept) const;
 
 	/**
+	 * Build the query based on a string. By default, it is analyses the string
+	 * in order to create the tree. In practice, the query is parsed from left
+	 * to right.
+    * @param query          Query submitted.
+    */
+	virtual void Build(const R::RString& query);
+
+	/**
+	 * Insert a token in the query tree.
+    * @param parent         Parent token.
+    * @param node           Token to add.
+    */
+	void InsertNode(GSearchQueryNode* parent,GSearchQueryNode* node);
+
+	/**
+	 * Move a token in the query tree.
+    * @param to             Future parent token.
+    * @param node           Token to add.
+    */
+	void MoveNode(GSearchQueryNode* to,GSearchQueryNode* node);
+
+	/**
+	 * Create a new node corresponding to a string.
+    * @param token          String containing the token.
+	 * @param type           Type of the token.
+    * @return a pointer that will be inserted in the query tree.
+    */
+	virtual GSearchQueryNode* NewNode(const R::RString& token,GSearchToken::tType type);
+
+	/**
+	 * Create a new node corresponding to a given concept.
+    * @param concept        Concept.
+	 * @param type           Type of the token.
+    * @return a pointer that will be inserted in the query tree.
+    */
+	virtual GSearchQueryNode* NewNode(GConcept* concept,GSearchToken::tType type);
+
+	/**
+	 * Create a new node corresponding to an operator.
+    * @param op             Operator.
+    * @return a pointer that will be inserted in the query tree.
+    */
+	virtual GSearchQueryNode* NewNode(GSearchQueryNode::tOperator op);
+
+	/**
+	 * Clear a string. In practice, the leading and ending spaces are removed. If
+	 * the string is an expression, the corresponding parentheses are removed.
+    * @param str            String to clear.
+    * @return the string cleared.
+    */
+	R::RString ClearString(const R::RString& str);
+
+	/**
+	 * Create the nodes appearing in a given string. The method is called
+	 * recursively to obtain the whole query.
+    * @param parent         Parent node (if null, it is the top node).
+    * @param str            String to analyze.
+    * @return true if a node was created for the string passed.
+    */
+	bool CreateToken(GSearchQueryNode* parent,const R::RString& str);
+
+	/**
+	 * Create a token and insert it in the query tree. Eventually, if the
+	 * token is a keyword, stems are used as alternatives and combine with the
+	 *  OR operator.
+    * @param parent         Parent token.
+    * @param token          String representing the keyword.
+    * @param type           Type of the token
+	 * @param multiple       In the case of a keyword, are there multiple terms.
+    * @return a pointer to the node  was inserted in the query tree.
+    */
+	GSearchQueryNode* CreateToken(GSearchQueryNode* parent,const R::RString& token,GSearchToken::tType type,bool multiple);
+
+private:
+
+	/**
+	 * Find all the expressions for which a given concept is a part of.
+	 * @param concept        Concept which must be contained in the expression.
+	 * @param exprs          Container of expressions.
+	 */
+	void FindExpressions(GConcept* concept,cExpressions& exprs);
+
+	/**
+	 * Treat a node to find an AND that can create an expression.
+    * @param node           Node to treat.
+    */
+	void TreatNode(GSearchQueryNode* node);
+
+	/**
+	 * Build all the possible expressions that results from the combinations of
+	 * the keywords linked by AND operators.
+    * @param node           Node to treat.
+    * @param exprs          Expression that represent a concept.
+    */
+	void TreatANDNode(GSearchQueryNode* node,cExpressions& exprs);
+
+public:
+
+	/**
 	 * Destructor.
 	 */
 	~GSearchQuery(void);
@@ -273,6 +278,33 @@ public:
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------
+
+
+//------------------------------------------------------------------------------
+namespace std{
+//------------------------------------------------------------------------------
+
+
+#ifndef __APPLE__
+extern "C++"
+{
+#endif
+
+//------------------------------------------------------------------------------
+/**
+ * Print a query.
+ * @param os                Output stream.
+ * @param query             Query to print.
+ * @return the stream.
+ */
+extern std::ostream& operator<<(std::ostream& os,const GALILEI::GSearchQuery& query);
+
+#ifndef __APPLE__
+}
+#endif
+
+
+}  //-------- End of namespace std ---------------------------------------------
 
 
 //------------------------------------------------------------------------------

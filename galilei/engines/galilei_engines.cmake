@@ -12,6 +12,7 @@ SET(galilei_engines_INST_INCLUDES
 	gsearchtoken.h
 	gsearchquery.h
 	gsearchquerynode.h
+	gconceptextractor.h
 )
 
 SET(galilei_engines_TARGET_SOURCES
@@ -28,4 +29,5 @@ SET(galilei_engines_TARGET_SOURCES
 	gsearchtoken.cpp
 	gsearchquery.cpp
 	gsearchquerynode.cpp
+	gconceptextractor.cpp
 )

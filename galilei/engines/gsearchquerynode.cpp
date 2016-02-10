@@ -98,56 +98,46 @@ GSearchToken* GSearchQueryNode::GetToken(void) const
 
 
 //------------------------------------------------------------------------------
-void GSearchQueryNode::Print(void)
+RString GSearchQueryNode::GetOperatorName(void) const
 {
-	// Print spaces
-	RString Spaces;
-	if(GetDepth()!=cNoRef)
-		Spaces.SetLen(GetDepth()," ");
-	cout<<Spaces;
-
-	// Print node information
-	switch(GetType())
+	RString Ret;
+	if(Type!=nOperator)
+		mThrowGException("Query token is not an operator");
+	switch(Value.Operator)
 	{
-		case GSearchQueryNode::nOperator:
-			switch(GetOperator())
-			{
-				case GSearchQueryNode::oNOP:
-					cout<<"NOP"<<endl;
-					break;
-				case GSearchQueryNode::oNOT:
-					cout<<"NOT"<<endl;
-					break;
-				case GSearchQueryNode::oOR:
-					cout<<"OR"<<endl;
-					break;
-				case GSearchQueryNode::oAND:
-					cout<<"AND"<<endl;
-					break;
-				case GSearchQueryNode::oINC:
-					cout<<"INC"<<endl;
-					break;
-				case GSearchQueryNode::oSIB:
-					cout<<"SIB"<<endl;
-					break;
-				case GSearchQueryNode::oNAND:
-					cout<<"NAND"<<endl;
-					break;
-				case GSearchQueryNode::oNINC:
-					cout<<"NINC"<<endl;
-					break;
-				case GSearchQueryNode::oNSIB:
-					cout<<"NSIB"<<endl;
-					break;
-			}
+		case oNOT:
+			Ret="NOT";
 			break;
-		case GSearchQueryNode::nToken:
-			cout<<"{";
-			if(GetToken()->GetConcept())
-				cout<<GetToken()->GetConcept()->GetName();
-			cout<<"}"<<endl;
+
+		case oOR:
+			Ret="OR";
+			break;
+
+		case oAND:
+			Ret="AND";
+			break;
+
+		case oINC:
+			Ret="INCLUDE";
+			break;
+
+		case oSIB:
+			Ret="SIBLING";
+			break;
+
+		case oNAND:
+			Ret="NOT AND";
+			break;
+
+		case oNINC:
+			Ret="NOT INCLUDE";
+			break;
+
+		case oNSIB:
+			Ret="NOT SIBLING";
 			break;
 	}
+	return(Ret);
 }
 
 
@@ -188,4 +178,43 @@ GSearchQueryNode::~GSearchQueryNode(void)
 {
 	if(Type==nToken)
 		delete Value.Token;
+}
+
+
+
+//------------------------------------------------------------------------------
+//
+// Operators
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+ostream& std::operator<<(ostream& os, const GSearchQueryNode& node)
+{
+	if(node.GetDepth())
+	{
+		if(node.GetDepth()>1)
+		{
+			for(size_t i=0;i<node.GetDepth();i++)
+				os<<" ";
+		}
+		os<<"┕";
+		if(node.GetDepth()>1)
+			os<<"╼";
+		os<<" ";
+	}
+	if(node.GetType()==GSearchQueryNode::nOperator)
+	{
+		os<<node.GetOperatorName();
+	}
+	else
+	{
+		GConcept* Concept(node.GetToken()->GetConcept());
+		os<<Concept->GetName()<<" ["<<Concept->GetId()<<"]";
+	}
+	os<<endl;
+	RNodeCursor<GSearchQuery,GSearchQueryNode> Cur(&node);
+   for(Cur.Start();!Cur.End();Cur.Next())
+		os<<(*Cur());
+   return(os);
 }

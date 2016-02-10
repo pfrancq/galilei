@@ -144,6 +144,11 @@ protected:
 	GConcept* PartOf;
 
 	/**
+	 * "Unknown" concept.
+	 */
+	GConcept* Unknown;
+
+	/**
 	 *  Types of Concepts.
 	 */
 	R::RObjectContainer<GConceptType,true> ConceptTypes;
@@ -227,6 +232,16 @@ public:
     * @return a concept.
     */
 	GConcept* GetText(void) const;
+
+	/**
+	 * Get the default "unknown" concept. This concept can be useful when, for
+	 * example, a query is formulated with terms that don't exist in the
+	 * dictionaries (i.e. no document contains them). This terms can then be
+	 * assimilated to a "unknown" concept.
+	 * @remark The "Unknown" concept is associated to the default "text" type.
+    * @return a concept.
+    */
+	GConcept* GetUnknown(void) const;
 
 	/**
 	 * Get the meta-concept representing the default URI content.

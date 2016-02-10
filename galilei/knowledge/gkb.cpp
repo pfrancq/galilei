@@ -56,7 +56,7 @@ GKB::GKB(GSession* session)
 	: Session(session), State(osLatest), Storage(0), SaveResults(true),
 	  TokenType(0), DCMIType(0), NamedEntityType(0), URIType(0), TaxonomyType(0),
 	  Text(0), NamedEntity(0), URI(0),
-	  IsA(0), Synonym(0), PartOf(0),
+	  IsA(0), Synonym(0), PartOf(0), Unknown(0),
 	  ConceptTypes(1,40,20),
 	  Concepts(1,200000,50000,150000,10,5),
 	  StatementsByIds(100000,50000)
@@ -140,6 +140,15 @@ GConcept* GKB::GetText(void) const
 	if(!Text)
 		const_cast<GKB*>(this)->Text=const_cast<GKB*>(this)->InsertObj(pConcept,Session->InsertObj(pConceptType,ccText,"Text blocks","Blocks of text"),"*");
 	return(Text);
+}
+
+
+//------------------------------------------------------------------------------
+GConcept* GKB::GetUnknown(void) const
+{
+	if(!Unknown)
+		const_cast<GKB*>(this)->Unknown=const_cast<GKB*>(this)->InsertObj(pConcept,Session->InsertObj(pConceptType,ccText,"Text blocks","Blocks of text"),"[Unknown Concept]");
+	return(Unknown);
 }
 
 

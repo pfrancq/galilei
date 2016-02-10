@@ -156,6 +156,18 @@ public :
 	GSearchQueryNode* GetParent(void) const {return(R::RNode<GSearchQuery,GSearchQueryNode,true>::GetParent());}
 
 	/**
+	 * Get the depth of the node.
+	 * @return the depth.
+	 */
+	size_t GetDepth (void) const {return(R::RNode<GSearchQuery,GSearchQueryNode,true>::GetDepth());}
+
+	/**
+	 * Get the number of child nodes.
+	 * @return the number of child nodes.
+	 */
+	size_t GetNbNodes(void) const {return(R::RNode<GSearchQuery,GSearchQueryNode,true>::GetNbNodes()); }
+
+	/**
 	 * Get the type of the bode.
     * @return the type of the node.
     */
@@ -182,17 +194,20 @@ public :
 	tOperator GetOperator(void) const;
 
 	/**
+	 * Get the name of the operator.
+	 * @return a R::RString.
+	 * @exception an exception is generated if the node doesn't contain an
+	 * operator.
+	 */
+	R::RString GetOperatorName(void) const;
+
+	/**
 	 * Get the token corresponding to the node.
     * @return a string.
 	 * @exception an exception is generated if the node doesn't contain a
 	 * token.
     */
 	GSearchToken* GetToken(void) const;
-
-	/**
-	 * Print the content of the node.
-    */
-	void Print(void);
 
 	/**
 	 * Look if a character correspond to a given operator.
@@ -222,6 +237,33 @@ public :
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------
+
+
+//------------------------------------------------------------------------------
+namespace std{
+//------------------------------------------------------------------------------
+
+
+#ifndef __APPLE__
+extern "C++"
+{
+#endif
+
+//------------------------------------------------------------------------------
+/**
+ * Print the element if the node query.
+ * @param os                Output stream.
+ * @param node              Query node to print.
+ * @return the stream.
+ */
+extern std::ostream& operator<<(std::ostream& os,const GALILEI::GSearchQueryNode& node);
+
+#ifndef __APPLE__
+}
+#endif
+
+
+}  //-------- End of namespace std ---------------------------------------------
 
 
 //------------------------------------------------------------------------------

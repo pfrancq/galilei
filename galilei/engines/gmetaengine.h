@@ -199,7 +199,7 @@ public:
 
 	/**
 	 * Build a search query. By default, it creates an object of the class
-	 * QSearchQuery and build it. Moreover , the stems are used to expand the
+	 * QSearchQuery and build it. Moreover, the stems are used to expand the
 	 * query.
     * @param query          String representing the query.
     * @return a pointer to a QSearchQuery.
