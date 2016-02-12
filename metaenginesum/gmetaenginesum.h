@@ -129,21 +129,24 @@ public:
 	virtual void FragmentRankAdded(GDocFragmentRank* rank,GEngine* engine);
 
 	/**
-	* Send a query to the meta-search engine.
-	* @param query           Query.
-	*/
-	virtual void RequestEngines(GSearchQuery* query);
+	 * Send a query to the meta-search engine.
+	 * @param query          Query.
+	 * @param caller         Identifier of the caller (for example a thread).
+	 */
+	virtual void RequestEngines(GSearchQuery* query,size_t caller);
 
 	/**
 	 * Perform some tasks once the request was treated.
+	 * @param caller         Identifier of the caller (for example a thread).
     */
-	virtual void PostRequest(void);
+	virtual void PostRequest(size_t caller);
 
 	/**
 	 * Start the combinations.
-	 * @param query           Query.
+	 * @param query          Query.
+	 * @param caller         Identifier of the caller (for example a thread).
     */
-	void StartCombinations(GSearchQuery* query);
+	void StartCombinations(GSearchQuery* query,size_t caller);
 
 	/**
 	* A recursive method that combines all the words of the query. In practice,
@@ -152,15 +155,17 @@ public:
 	 *                       recursion).
 	* @param k               The k parameter.
 	* @param query           Query.
+	* @param caller         Identifier of the caller (for example a thread).
 	*/
-	void CombineKeywords(GSearchQuery* query,size_t pos,size_t k);
+	void CombineKeywords(GSearchQuery* query,size_t pos,size_t k,size_t caller);
 
 	/**
 	* This function is used to compute the global ranking
 	* for documents extracted from different search engines.
 	* Results are then sort using this global ranking
+	* @param caller         Identifier of the caller (for example a thread).
 	*/
-	virtual void ComputeGlobalRanking(void);
+	virtual void ComputeGlobalRanking(size_t caller);
 
 	/**
 	* Function used by "qsort" to sort the results

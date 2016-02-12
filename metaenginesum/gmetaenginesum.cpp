@@ -115,26 +115,26 @@ void GMetaEngineSum::FragmentRankAdded(GDocFragmentRank* rank,GEngine* engine)
 
 
 //------------------------------------------------------------------------------
-void GMetaEngineSum::RequestEngines(GSearchQuery* query)
+void GMetaEngineSum::RequestEngines(GSearchQuery* query,size_t caller)
 {
 	switch(Type)
 	{
 		case Single:
-			GMetaEngine::RequestEngines(query);
+			GMetaEngine::RequestEngines(query,caller);
 			break;
 		case kCombinations:
-			StartCombinations(query);
+			StartCombinations(query,caller);
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void GMetaEngineSum::PostRequest(void)
+void GMetaEngineSum::PostRequest(size_t caller)
 {
 	if(Debug)
 	{
 		// Print the results.
-		R::RCursor<GDocFragmentRanks> Ranks(GetRankings());
+		R::RCursor<GDocFragmentRanks> Ranks(GetRankings(caller));
 		for(Ranks.Start();!Ranks.End();Ranks.Next())
 		{
 			cout<<Ranks()->GetFragment()->GetDoc()->GetName()<<endl;
@@ -147,7 +147,7 @@ void GMetaEngineSum::PostRequest(void)
 
 
 //------------------------------------------------------------------------------
-void GMetaEngineSum::StartCombinations(GSearchQuery* query)
+void GMetaEngineSum::StartCombinations(GSearchQuery* query,size_t caller)
 {
 	if(!query->UseOnlyAND())
 		mThrowGException("Query does not contain only AND operators.");
@@ -183,21 +183,21 @@ void GMetaEngineSum::StartCombinations(GSearchQuery* query)
 	if(mink>maxk)
 		maxk=mink;
 	for(;mink<=maxk;mink++)
-		CombineKeywords(query,0,mink);
+		CombineKeywords(query,0,mink,caller);
 }
 
 
 
 //------------------------------------------------------------------------------
-void GMetaEngineSum::CombineKeywords(GSearchQuery* query,size_t pos,size_t k)
+void GMetaEngineSum::CombineKeywords(GSearchQuery* query,size_t pos,size_t k,size_t caller)
 {
 	if(QueryWords.GetNb()==k)
 	{
 		RString Query;
 		Query.Concat(QueryWords,' ');
-		GSearchQuery TheQuery(GetSession());
+		GSearchQuery TheQuery(GetSession(),caller);
 		TheQuery.Build(Query);
-		GMetaEngine::RequestEngines(&TheQuery);
+		GMetaEngine::RequestEngines(&TheQuery,caller);
 	}
 	else
 	{
@@ -205,7 +205,7 @@ void GMetaEngineSum::CombineKeywords(GSearchQuery* query,size_t pos,size_t k)
 		for(cur.GoTo(pos);!cur.End();cur.Next())
 		{
 			QueryWords.InsertPtr(cur());
-			CombineKeywords(query,pos+1,k);
+			CombineKeywords(query,pos+1,k,caller);
 			QueryWords.DeletePtr(*cur());
 			if(query->GetNbTokens()-pos-1<k-QueryWords.GetNb())
 				break;
@@ -216,10 +216,10 @@ void GMetaEngineSum::CombineKeywords(GSearchQuery* query,size_t pos,size_t k)
 
 
 //------------------------------------------------------------------------------
-void GMetaEngineSum::ComputeGlobalRanking(void)
+void GMetaEngineSum::ComputeGlobalRanking(size_t caller)
 {
 	// Go trough each document fragment retrieved
-	RCursor<GDocFragmentRanks> Ranks(GetRankings());
+	RCursor<GDocFragmentRanks> Ranks(GetRankings(caller));
 	for(Ranks.Start();!Ranks.End();Ranks.Next())
 	{
 		double Rank(0.0);

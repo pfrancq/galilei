@@ -51,7 +51,7 @@ GNoRank::GNoRank(GSession* session,GPlugInFactory* fac)
 
 
 //------------------------------------------------------------------------------
-void GNoRank::Rank(GEngine*,GSearchQuery*)
+void GNoRank::Rank(GEngine*,GSearchQuery*,size_t)
 {
 
 }
