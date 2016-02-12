@@ -148,9 +148,9 @@ void GMetaEngine::PostRequest(size_t caller)
 
 
 //------------------------------------------------------------------------------
-GSearchQuery* GMetaEngine::BuildQuery(const R::RString query)
+GSearchQuery* GMetaEngine::BuildQuery(const R::RString query,size_t caller)
 {
-	GSearchQuery* Query=new GSearchQuery(Session);
+	GSearchQuery* Query=new GSearchQuery(Session,caller);
 	Query->Build(query);
 	return(Query);
 }

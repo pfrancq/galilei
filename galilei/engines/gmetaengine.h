@@ -202,9 +202,10 @@ public:
 	 * QSearchQuery and build it. Moreover, the stems are used to expand the
 	 * query.
     * @param query          String representing the query.
+	 * @param caller         Identifier of the caller (for example a thread).
     * @return a pointer to a QSearchQuery.
     */
-	virtual GSearchQuery* BuildQuery(const R::RString query);
+	virtual GSearchQuery* BuildQuery(const R::RString query,size_t caller);
 
 	/**
 	 * Send a query to the meta-search engine. It call GMetaEngine::PerformRequest

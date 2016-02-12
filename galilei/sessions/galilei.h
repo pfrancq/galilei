@@ -451,9 +451,9 @@ enum tQueryOption
 {
 	qoStems=0x1,            /**
 									 * A query can be expanded using the stems as
-									 * alternatives to the keywords. Let us suppose the
-									 * original query "connects & accepting" passed as
-									 * argument. If expanded with stems, the query
+									 * alternatives to the keywords. Let us suppose that
+									 * the original query passed as argument is "connects
+									 * & accepting" . If expanded with stems, the query
 									 * applied will be "(connects | connect) &
 									 * (accepting | accept)".*/
 	qoKeywords=0x2,         /**

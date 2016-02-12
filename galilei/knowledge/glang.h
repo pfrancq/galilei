@@ -159,12 +159,21 @@ public:
 	void SkipSequence(const R::RString& word);
 
 	/**
-	* Function that computes the stem of a word. Of course, this method must be
-	* overloaded by the child classes.
-	* @param kwd            Word for which the stem must be computed.
-	* @return A R::RString representing the stem of the word.
-	*/
+	 * Compute the stem of a word. Of course, this method must be overloaded by
+	 * the child classes.
+	 * @param kwd            Word for which the stem must be computed.
+	 * @return A R::RString representing the stem of the word.
+	 */
 	virtual R::RString GetStemming(const R::RString& kwd)=0;
+
+	/**
+	 * Compute the stems of a list of tokens. Tokens that corresponds to
+	 * stopwords are ignored.
+	 * @param tokens         Initial container of tokens.
+	 * @param stems          List of stems for each token, except soptwords that
+	 *                       are not represented anymore.
+	 */
+	void GetStemming(const R::RContainer<R::RString,true,false>& tokens,R::RContainer<R::RString,true,false>& stems);
 
 	/**
 	 * Get the name of the language (aka the plug-in).

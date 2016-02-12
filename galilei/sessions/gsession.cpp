@@ -962,7 +962,7 @@ void GSession::RequestMetaEngine(const R::RString& query,size_t caller)
 	if(!MetaEngine)
 		mThrowGException("No meta-engine selected");
 	MetaEngine->Data.Reserve(caller);
-	GSearchQuery* Query(MetaEngine->BuildQuery(query.Trim()));
+	GSearchQuery* Query(MetaEngine->BuildQuery(query.Trim(),caller));
 	MetaEngine->Request(Query,caller);
 	delete Query;
 }

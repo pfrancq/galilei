@@ -183,6 +183,19 @@ bool GLang::MustSkipSequence(const RChar* seq)
 
 
 //------------------------------------------------------------------------------
+void GLang::GetStemming(const R::RContainer<R::RString,true,false>& tokens,R::RContainer<R::RString,true,false>& stems)
+{
+	stems.Clear();
+	RCursor<RString> Token(tokens);
+	for(Token.Start();!Token.End();Token.Next())
+	{
+		if(GetStop()->GetObj(pConcept,*Token(),true))
+			continue;
+		stems.InsertPtr(new RString(GetStemming(*Token())));
+	}
+}
+
+//------------------------------------------------------------------------------
 GLang::~GLang(void)
 {
 }

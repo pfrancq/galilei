@@ -51,6 +51,7 @@ using namespace std;
 #include <glang.h>
 #include <gsearchquerynode.h>
 #include <gsearchtoken.h>
+#include <gconceptextractor.h>
 
 
 //------------------------------------------------------------------------------
@@ -69,8 +70,6 @@ namespace GALILEI{
  */
 class GSearchQuery : protected R::RTree<GSearchQuery,GSearchQueryNode,true>
 {
-	class cExpressions;
-
 	/**
 	 * Session launching the query.
 	 */
@@ -85,6 +84,16 @@ class GSearchQuery : protected R::RTree<GSearchQuery,GSearchQueryNode,true>
 	 * Container of all concepts.
 	 */
 	R::RContainer<GConcept,false,true> Concepts;
+
+	/**
+	 * Temporary container of strings.
+	 */
+	R::RContainer<R::RString,true,false> Tmp;
+
+	/**
+	 * Container to store some concepts found in the query.
+	 */
+	R::RContainer<GConceptRef,true,true> Found;
 
 	/**
 	 * AND is the only operator used in the query.
@@ -106,14 +115,25 @@ class GSearchQuery : protected R::RTree<GSearchQuery,GSearchQueryNode,true>
     */
 	R::RContainer<GLang,false,false>* Langs;
 
+	/**
+	 * Extractor.
+	 */
+	GConceptExtractor Extractor;
+
+	/**
+	 * Caller.
+	 */
+	size_t Caller;
+
 public:
 
 	/**
 	 * Constructor of the query.
 	 * @param session        Session.
+	 * @param caller         Caller.
 	 * @param options        Options of the query.
     */
-	GSearchQuery(GSession* session,int options=qoStems|qoKeywords|qoExpressions,R::RContainer<GLang,false,false>* langs=0);
+	GSearchQuery(GSession* session,size_t caller,int options=qoStems|qoKeywords|qoExpressions,R::RContainer<GLang,false,false>* langs=0);
 
 	/**
 	 * Get the top node of a query.
@@ -242,12 +262,7 @@ public:
 
 private:
 
-	/**
-	 * Find all the expressions for which a given concept is a part of.
-	 * @param concept        Concept which must be contained in the expression.
-	 * @param exprs          Container of expressions.
-	 */
-	void FindExpressions(GConcept* concept,cExpressions& exprs);
+	GSearchQueryNode* AddORs(GSearchQueryNode* parent);
 
 	/**
 	 * Treat a node to find an AND that can create an expression.
@@ -259,9 +274,9 @@ private:
 	 * Build all the possible expressions that results from the combinations of
 	 * the keywords linked by AND operators.
     * @param node           Node to treat.
-    * @param exprs          Expression that represent a concept.
+    * @param str            String containing thz different concepts.
     */
-	void TreatANDNode(GSearchQueryNode* node,cExpressions& exprs);
+	void TreatANDNode(GSearchQueryNode* node,R::RString& str);
 
 public:
 

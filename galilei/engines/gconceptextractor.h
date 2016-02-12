@@ -57,7 +57,9 @@ class GConceptExtractorData
 	/**
 	 * Stems extracted from the search string.
 	 */
-	R::RContainer<GConcept,false,false> Stems;
+	R::RContainer<R::RString,true,false> Stems;
+
+	R::RString Aggregate;
 
 public:
 
@@ -86,7 +88,7 @@ public:
  * concepts related to a given string.
  *
  * @remark It will be used by GSearchQuery in the future to build a query.
- * 
+ *
  * @short Concept Extractor.
  */
 class GConceptExtractor
@@ -112,28 +114,42 @@ public:
 private:
 
 	/**
-	 * Compute the stems corresponding to a set of tokens for a given language.
-	 * @param data           Data.
-	 * @param lang           Language.
-	 * @return true if a stem exists in the dictionaries for all tokens.
+	 * Add a result in the container by verifying that it is not already there.
+	 * Moreover, the highest weight is retain.
+	 * @param concept        Concept to add.
+	 * @param results        Container to which concepts must be added.
+	 * @param weight         Weight associated to each concept found.
 	 */
-	bool ComputeStems(GConceptExtractorData* data,GLang* lang);
+	void AddResult(GConcept* concept,R::RContainer<GConceptRef,true,true>& results,double weight);
+
+	/**
+	 * Look for an expression for each concept type that doesn't contains only
+	 * single token.
+	 * @param expr           Expression to search for.
+	 * @param results        Container to which concepts must be added.
+	 * @param weight         Weight associated to each concept found.
+	 */
+	void AddExpression(const R::RString& expr,R::RContainer<GConceptRef,true,true>& results,double weight);
 
 public:
 
 	/**
-	 * Find a set of concepts related to a given string.
-	 * @param str            String to search for.
-	 * @param multiple       Can the string contains several parts (such as
-	 *                       multiple term).
-	 * @param results        Container of vectors representing the possible
-	 *                       concepts. A given vector stores equivalent or
-	 *                       similar concepts, while each vector represents a
-	 *                       different meaning. Each vector is cleared, but no
-	 *                       the container (i.e. some vectors may be empty).
+	 * Find a set of concepts related to a given set of tokens. For each possible
+	 * concept, a weight is associated (through the GConceptRef class) that
+	 * represents a sort of probability.
+	 *
+	 * When there is only one token, all the different existing stems are added
+	 * with a weight of 1.0.
+	 *
+	 * For expressions, the extractor searches for a matching once stopwords are
+	 * removed and stemming is done.
+	 * @param tokens         Tokens to search for.
+	 * @param results        Container of concept references representing the
+	 *                       possible concepts. It is cleared by the method.
 	 * @param caller         Identifier of the caller (for example a thread).
+	 * @return the number of concepts found.
 	 */
-	virtual void Search(R::RString& str,bool multiple,R::RContainer<GVector,true,false>& results,size_t caller);
+	virtual size_t Search(R::RContainer<R::RString,true,false>& tokens,R::RContainer<GConceptRef,true,true>& results,size_t caller);
 };
 
 }  //-------- End of namespace GALILEI -----------------------------------------

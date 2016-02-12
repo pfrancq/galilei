@@ -80,73 +80,112 @@ GConceptExtractor::GConceptExtractor(GSession* session)
 
 
 //------------------------------------------------------------------------------
-bool GConceptExtractor::ComputeStems(GConceptExtractorData* data,GLang* lang)
+void GConceptExtractor::AddResult(GConcept* concept,R::RContainer<GConceptRef,true,true>& results,double weight)
 {
-	data->Stems.Clear();
-
-	RCursor<RString> Token(data->Tokens);
-	for(Token.Start();!Token.End();Token.Next())
+	if(!concept)
+		return;
+	bool Find;
+	size_t Idx(results.GetIndex(concept,Find));
+	if(Find)
 	{
-		RString Stem(lang->GetStemming(*Token()));
-
-		// Look if the stem is defined in the system
-		GConcept* Concept(Session->GetObj(pConcept,Session->GetTokenType(),Stem,true));
-		if(!Concept)
-			return(false);  // No -> nothing to do
-
-		// Look if the stem must be added
-		bool Find;
-		int Idx(data->Stems.GetIndex(*Concept,Find));
-		if(!Find)
-			data->Stems.InsertPtrAt(Concept,Idx,false);
+		GConceptRef* Ref(results[Idx]);
+		if(Ref->GetWeight()<weight)
+			Ref->SetWeight(weight);
 	}
-	return(true);
+	else
+		results.InsertPtrAt(new GConceptRef(concept,weight),Idx);
 }
 
 
 //------------------------------------------------------------------------------
-void GConceptExtractor::Search(RString& str,bool multiple,RContainer<GVector,true,false>& results,size_t caller)
+void GConceptExtractor::AddExpression(const RString& expr,RContainer<GConceptRef,true,true>& results,double weight)
+{
+	RCursor<GConceptType> Type(Session->GetObjs(pConceptType));
+	for(Type.Start();!Type.End();Type.Next())
+	{
+		if((Type()==Session->GetTokenType())||(Type()->GetName().Mid(2)=="Stopwords"))
+			continue;
+
+		AddResult(Session->GetObj(pConcept,Type(),expr,true),results,weight);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+size_t GConceptExtractor::Search(RContainer<RString,true,false>& tokens,RContainer<GConceptRef,true,true>& results,size_t caller)
 {
 	// Clear the results
-	RCursor<GVector> Vector(results);
-	for(Vector.Start();!Vector.End();Vector.Next())
-		Vector()->Clear();
+	results.Clear();
 
 	// Get an internal structure
 	GConceptExtractorData* Data(Datas.Reserve(caller));
 	Data->Reset();
 
-	// Treat the search string
-	if(multiple)
-		str.Split(Data->Tokens,' ');
-	else
-		Data->Tokens.InsertPtr(new RString(str));
+	// Compute the lower version of each tokens and an aggregate version
+	Data->Aggregate.Clear();
+	RCursor<RString> Token(tokens);
+	int nb(0);
+	for(Token.Start();!Token.End();Token.Next())
+	{
+		if(Token()->IsEmpty())
+			continue;
+
+		if(nb++)
+			Data->Aggregate+=" ";
+
+		RString* Str(new RString(Token()->ToLower().Trim()));
+		Data->Aggregate+=(*Str);
+		Data->Tokens.InsertPtr(Str);
+	}
+
+	if(!Data->Tokens.GetNb())
+	{
+		Datas.Release(caller);
+		return(0);
+	}
 
 	// Look first for the raw version of the concept
-
-
+	if(Data->Tokens.GetNb()==1)
+	{
+		// Simply look in the token types
+		AddResult(Session->GetObj(pConcept,Session->GetTokenType(),Data->Aggregate,true),results,1.0);
+	}
+	else
+		AddExpression(Data->Aggregate,results,1.0);
 
 	// Go through all languages
 	RCastCursor<GPlugIn,GLang> Lang(GALILEIApp->GetPlugIns<GLang>("Lang"));
-	for(Lang.Begin();!Lang.End();Lang.Next())
+	for(Lang.Start();!Lang.End();Lang.Next())
 	{
 		// Compute the stems
-		if(ComputeStems(Data,Lang()))
-		{
-			if(Data->Tokens.GetNb()==1)
-			{
-				// Single token -> simply add it to the first vector
-				if(results.GetNb()==0)
-					results.InsertPtr(new GVector(Session->GetUnknown()));
-				results[0]->InsertRef(new GConceptRef(Data->Stems[0]));
-			}
-			else
-			{
+		Lang()->GetStemming(Data->Tokens,Data->Stems);
 
+		// If nothing found -> next language
+		if(!Data->Stems.GetNb())
+			continue;
+
+		if(Data->Stems.GetNb()==1)
+		{
+			// Simply look in the token types
+			AddResult(Session->GetObj(pConcept,Session->GetTokenType(),*Data->Stems[0],true),results,1.0);
+		}
+		else
+		{
+			// Build the complete expression and search for it
+			Data->Aggregate.Clear();
+			RCursor<RString> Stem(Data->Stems);
+			int nb(0);
+			for(Stem.Start();!Stem.End();Stem.Next())
+			{
+				if(nb++)
+					Data->Aggregate+=" ";
+				Data->Aggregate+=(*Stem());
 			}
+			AddExpression(Data->Aggregate,results,1.0);
 		}
 	}
 
-	// Release the internal structure
+	// Release the internal structure and return
 	Datas.Release(caller);
+	return(results.GetNb());
 }
