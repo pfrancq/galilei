@@ -378,14 +378,7 @@ GSearchQueryNode* GSearchQuery::CreateToken(GSearchQueryNode* parent,const R::RS
 	if(type==GSearchToken::tTerm)
 	{
 		// Extract the different tokens
-		Tmp.Clear();
-		if(multiple)
-			token.Split(Tmp,' ');
-		else
-			Tmp.InsertPtr(new RString(token.Trim()));
-
-		// Find all the concepts
-		Extractor.Search(Tmp,Found,Caller);
+		Extractor.Search(token,Found,Caller);
 
 		// Build the OR nodes
 		if(Found.GetNb())
@@ -418,9 +411,7 @@ void GSearchQuery::TreatNode(GSearchQueryNode* node)
 			return;
 
 		// Look for expression
-		Tmp.Clear();
-		Str.Split(Tmp,' ');
-		Extractor.Search(Tmp,Found,Caller);
+		Extractor.Search(Str,Found,Caller);
 		if(!Found.GetNb())
 			return;
 

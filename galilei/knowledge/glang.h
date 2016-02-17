@@ -176,6 +176,16 @@ public:
 	void GetStemming(const R::RContainer<R::RString,true,false>& tokens,R::RContainer<R::RString,true,false>& stems);
 
 	/**
+	 * Create a new expression of a given type. Each token composing the
+	 * expression is identified (eventually added to the dictionary of tokens)
+	 * excluded the stopwords. These tokens are lowered and stemmed.
+	 * @param expr           String containing the expression. It is trimmed.
+	 * @param type           Type of the expression to create.
+	 * @return the concept created to represent the token.
+	 */
+	GConcept* CreateExpression(const R::RString& expr,GConceptType* type);
+
+	/**
 	 * Get the name of the language (aka the plug-in).
     * @return a R::RString.
     */

@@ -49,6 +49,8 @@ namespace GALILEI{
  */
 class GConceptExtractorData
 {
+	class cComplexConcept;
+
 	/**
 	 * Tokens extracted from the search string.
 	 */
@@ -59,7 +61,10 @@ class GConceptExtractorData
 	 */
 	R::RContainer<R::RString,true,false> Stems;
 
-	R::RString Aggregate;
+	/**
+	 * Complex concepts found.
+	 */
+	R::RContainer<cComplexConcept,true,true> Complex;
 
 public:
 
@@ -122,35 +127,37 @@ private:
 	 */
 	void AddResult(GConcept* concept,R::RContainer<GConceptRef,true,true>& results,double weight);
 
-	/**
-	 * Look for an expression for each concept type that doesn't contains only
-	 * single token.
-	 * @param expr           Expression to search for.
-	 * @param results        Container to which concepts must be added.
-	 * @param weight         Weight associated to each concept found.
+
+	/***
+	 * Search all complex concepts containing a given token.
+	 * @param token          Token to search for.
+	 * @param data           Data containing the results.
 	 */
-	void AddExpression(const R::RString& expr,R::RContainer<GConceptRef,true,true>& results,double weight);
+	void SearchComplexConcept(const R::RString& token,GConceptExtractorData* data);
 
 public:
 
 	/**
-	 * Find a set of concepts related to a given set of tokens. For each possible
+	 * Find a set of concepts related to a given string. For each possible
 	 * concept, a weight is associated (through the GConceptRef class) that
 	 * represents a sort of probability.
 	 *
-	 * When there is only one token, all the different existing stems are added
-	 * with a weight of 1.0.
+	 * When the string contains only one token, all the different existing
+	 * stems are added with a weight of 1.0.
 	 *
 	 * For expressions, the extractor searches for a matching once stopwords are
-	 * removed and stemming is done.
-	 * @param tokens         Tokens to search for.
+	 * removed and stemming is done. A weight corresponds to the amount of
+	 * tokens defining the corresponding expression that are contained in the
+	 * string.
+	 * @param str            String to search for.
 	 * @param results        Container of concept references representing the
 	 *                       possible concepts. It is cleared by the method.
 	 * @param caller         Identifier of the caller (for example a thread).
 	 * @return the number of concepts found.
 	 */
-	virtual size_t Search(R::RContainer<R::RString,true,false>& tokens,R::RContainer<GConceptRef,true,true>& results,size_t caller);
+	virtual size_t Search(const R::RString& str,R::RContainer<GConceptRef,true,true>& results,size_t caller);
 };
+
 
 }  //-------- End of namespace GALILEI -----------------------------------------
 

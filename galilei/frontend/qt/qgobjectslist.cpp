@@ -646,7 +646,15 @@ void QGObjectsList::Set(oType type,GMetaEngine* engine,size_t nbres,size_t calle
 				DocItem=new QGObject(List,Cur()->GetDoc());
 			}
 			QTreeWidgetItem* Item(new QTreeWidgetItem(DocItem));
-			QString Text(PrintExtract(Cur()->GetFragment()));
+			QString Text;
+			try
+			{
+				Text=PrintExtract(Cur()->GetFragment());
+			}
+			catch(...)
+			{
+				Text="!!!Extract not found in the document!!!";
+			}
 			Item->setText(0,Text);
 			Item->setToolTip(0,Text);
 		}

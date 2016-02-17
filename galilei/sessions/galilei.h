@@ -289,11 +289,16 @@ extern const R::hNotification hCurrentPlugIn;
  */
 enum tConceptCat
 {
-	ccText                   /** Text.*/,
-	ccMetadata               /** Metadata.*/,
-	ccSemantic               /** Semantic rules.*/,
-	ccLink                   /** Links. */,
-	ccPredicate              /** Predicate.*/
+	ccToken=0                  /** Simple tokens (typically words or named
+										 *  entities.*/,
+	ccMetadata=1               /** Metadata. It can represent descriptive
+										 * metadata (such as author or date of a
+										 * document), or technical metadata (typically
+										 * expressions from an ontology).*/,
+	ccStructure=2              /** Structure elements (such XML tags or text
+										 *  divisions.*/,
+	ccLink=3                   /** Links. */,
+	ccPredicate=4              /** Predicates.*/
 };
 
 

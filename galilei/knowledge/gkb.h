@@ -114,9 +114,9 @@ protected:
 	GConceptType* TaxonomyType;
 
 	/**
-    * Meta-concept representing the default textual content.
+    * Meta-concept representing the content of a document.
     */
-   GConcept* Text;
+   GConcept* Content;
 
 	/**
 	 * Concepts related to named entities.
@@ -228,10 +228,10 @@ public:
 	GConceptType* GetTaxonomyType(void) const;
 
 	/**
-	 * Get the default meta-concept representing the default text content.
+	 * Get the default meta-concept representing the default content.
     * @return a concept.
     */
-	GConcept* GetText(void) const;
+	GConcept* GetContent(void) const;
 
 	/**
 	 * Get the default "unknown" concept. This concept can be useful when, for

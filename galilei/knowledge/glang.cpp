@@ -195,6 +195,33 @@ void GLang::GetStemming(const R::RContainer<R::RString,true,false>& tokens,R::RC
 	}
 }
 
+
+//------------------------------------------------------------------------------
+GConcept* GLang::CreateExpression(const R::RString& expr,GConceptType* type)
+{
+	// Add the expression
+	RString Expr(expr.Trim());
+	GConcept* New(Session->InsertObj(pConcept,type,Expr));
+
+	// Treat the separate tokens
+	GConceptType* Text(Session->GetObj(pConceptType,"Tokens",false));
+	RContainer<RString,true,false> Tokens(5);
+	Expr.Split(Tokens,' ');
+	RCursor<RString> Token(Tokens);
+	for(Token.Start();!Token.End();Token.Next())
+	{
+		// Exclude stopwords
+		if(GetStop()->GetObj(pConcept,*Token(),true))
+			continue;
+
+		GConcept* Ptr(Session->InsertObj(pConcept,Text,GetStemming(Token()->ToLower())));
+		Session->InsertObj(pStatement,cNoRef,Ptr,Session->GetPartOf(),New,1.0);
+	}
+
+	return(New);
+}
+
+
 //------------------------------------------------------------------------------
 GLang::~GLang(void)
 {

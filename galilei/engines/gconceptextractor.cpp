@@ -32,9 +32,47 @@
 #include <gconceptextractor.h>
 #include <gvector.h>
 #include <gsession.h>
+
+#include "gstatement.h"
 using namespace std;
 using namespace R;
 using namespace GALILEI;
+
+
+//------------------------------------------------------------------------------
+//
+// class GConceptExtractorData::cComplexConcept
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class GConceptExtractorData::cComplexConcept
+{
+public:
+
+	GConcept* Master;
+
+	RContainer<GConcept,false,true> Members;
+
+	cComplexConcept(GConcept* master)
+		: Master(master), Members(5)
+	{
+
+	}
+
+
+	int Compare(const cComplexConcept& concept) const
+	{
+		return(Master->Compare(concept.Master->GetId()));
+	}
+
+	int Compare(const GConcept* concept) const
+	{
+		if(!concept)
+			return(-1);
+		return(Master->Compare(*concept));
+	}
+};
 
 
 
@@ -46,7 +84,7 @@ using namespace GALILEI;
 
 //------------------------------------------------------------------------------
 GConceptExtractorData::GConceptExtractorData(void)
-	: Tokens(10), Stems(10)
+	: Tokens(10), Stems(10), Complex(10)
 {
 }
 
@@ -98,21 +136,41 @@ void GConceptExtractor::AddResult(GConcept* concept,R::RContainer<GConceptRef,tr
 
 
 //------------------------------------------------------------------------------
-void GConceptExtractor::AddExpression(const RString& expr,RContainer<GConceptRef,true,true>& results,double weight)
+void GConceptExtractor::SearchComplexConcept(const R::RString& token,GConceptExtractorData* data)
 {
-	RCursor<GConceptType> Type(Session->GetObjs(pConceptType));
-	for(Type.Start();!Type.End();Type.Next())
+	GConcept* Token(Session->GetObj(pConcept,Session->GetTokenType(),token,true));
+	if(!Token)
+		return;
+
+	// Go trough each predicate of the type PartOf
+	RCursor<GStatement> Statement(Token->GetObjs(pStatement,seSubject));
+	for(Statement.Start();!Statement.End();Statement.Next())
 	{
-		if((Type()==Session->GetTokenType())||(Type()->GetName().Mid(2)=="Stopwords"))
+		if(Statement()->GetPredicate()!=Session->GetPartOf())
 			continue;
 
-		AddResult(Session->GetObj(pConcept,Type(),expr,true),results,weight);
+		GConcept* Value(dynamic_cast<GConcept*>(Statement()->GetValue()));
+		if(!Value)
+			continue;
+
+		// Add the concept in data->Complex
+		GConceptExtractorData::cComplexConcept* Complex;
+		bool Find;
+		size_t idx(data->Complex.GetIndex(Value,Find));
+		if(Find)
+			Complex=data->Complex[idx];
+		else
+			data->Complex.InsertPtr(Complex=new GConceptExtractorData::cComplexConcept(Value),idx,false);
+
+		idx=Complex->Members.GetIndex(*Token,Find);
+		if(!Find)
+			Complex->Members.InsertPtrAt(Token,idx,false);
 	}
 }
 
 
 //------------------------------------------------------------------------------
-size_t GConceptExtractor::Search(RContainer<RString,true,false>& tokens,RContainer<GConceptRef,true,true>& results,size_t caller)
+size_t GConceptExtractor::Search(const RString& str,RContainer<GConceptRef,true,true>& results,size_t caller)
 {
 	// Clear the results
 	results.Clear();
@@ -121,39 +179,32 @@ size_t GConceptExtractor::Search(RContainer<RString,true,false>& tokens,RContain
 	GConceptExtractorData* Data(Datas.Reserve(caller));
 	Data->Reset();
 
-	// Compute the lower version of each tokens and an aggregate version
-	Data->Aggregate.Clear();
-	RCursor<RString> Token(tokens);
-	int nb(0);
+	// Get the individual tokens of the string if lower case
+	RString Str(str.Trim());
+	Str.ToLower().Split(Data->Tokens,' ');
+	RCursor<RString> Token(Data->Tokens);
 	for(Token.Start();!Token.End();Token.Next())
-	{
-		if(Token()->IsEmpty())
-			continue;
+		(*Token())=Token()->Trim();
 
-		if(nb++)
-			Data->Aggregate+=" ";
-
-		RString* Str(new RString(Token()->ToLower().Trim()));
-		Data->Aggregate+=(*Str);
-		Data->Tokens.InsertPtr(Str);
-	}
-
-	if(!Data->Tokens.GetNb())
-	{
-		Datas.Release(caller);
+	// If no tokens -> No results, of course!
+	if(Data->Tokens.GetNb()==0)
 		return(0);
-	}
 
-	// Look first for the raw version of the concept
-	if(Data->Tokens.GetNb()==1)
+	// Search first for the string as such
 	{
-		// Simply look in the token types
-		AddResult(Session->GetObj(pConcept,Session->GetTokenType(),Data->Aggregate,true),results,1.0);
-	}
-	else
-		AddExpression(Data->Aggregate,results,1.0);
+		RCursor<GConceptType> Type(Session->GetObjs(pConceptType));
+		for(Type.Start();!Type.End();Type.Next())
+		{
+			// If the string is made of one token -> Look in the tokens dictionaries
+			// If the string is made of multiple tokens -> Look in the metadata dictionaries
+			if( ((Data->Tokens.GetNb()>1)&&(Type()->GetCategory()!=ccMetadata)) || ((Data->Tokens.GetNb()==1)&&(Type()->GetCategory()!=ccToken)) )
+				continue;
 
-	// Go through all languages
+			AddResult(Session->GetObj(pConcept,Type(),Str,true),results,1.0);
+		}
+	}
+
+	// Go through all languages to find the concepts containing some of the tokens
 	RCastCursor<GPlugIn,GLang> Lang(GALILEIApp->GetPlugIns<GLang>("Lang"));
 	for(Lang.Start();!Lang.End();Lang.Next())
 	{
@@ -171,21 +222,31 @@ size_t GConceptExtractor::Search(RContainer<RString,true,false>& tokens,RContain
 		}
 		else
 		{
-			// Build the complete expression and search for it
-			Data->Aggregate.Clear();
+			// Look for all concepts containing these stems
+			Data->Complex.Clear();
 			RCursor<RString> Stem(Data->Stems);
-			int nb(0);
 			for(Stem.Start();!Stem.End();Stem.Next())
+				SearchComplexConcept(*Stem(),Data);
+
+			// Add all the concepts found
+			RCursor<GConceptExtractorData::cComplexConcept> Found(Data->Complex);
+			for(Found.Start();!Found.End();Found.Next())
 			{
-				if(nb++)
-					Data->Aggregate+=" ";
-				Data->Aggregate+=(*Stem());
+				// Count number of parts
+				double NbParts(0.0);
+				R::RCursor< GStatement>	Statement(Found()->Master->GetObjs(pStatement,seValue));
+				for(Statement.Start();!Statement.End();Statement.Next())
+					if(Statement()->GetPredicate()==Session->GetPartOf())
+						NbParts++;
+				NbParts=static_cast<double>(Found()->Members.GetNb())/NbParts;
+				if(NbParts>0.1)
+					AddResult(Found()->Master,results,NbParts);
 			}
-			AddExpression(Data->Aggregate,results,1.0);
 		}
 	}
 
 	// Release the internal structure and return
 	Datas.Release(caller);
 	return(results.GetNb());
+	return(0);
 }

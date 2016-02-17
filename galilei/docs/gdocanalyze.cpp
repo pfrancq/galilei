@@ -355,7 +355,7 @@ void GDocAnalyze::ExtractDefaultText(const R::RString& content,size_t pos,size_t
 void GDocAnalyze::ExtractDefaultText(const R::RString& content,tTokenType type,double weight,size_t pos,size_t depth,size_t spos)
 {
 	// Find the vector corresponding to the concept
-	ExtractText(content.ToLower(),type,weight,Session->GetText(),pos,depth,spos);
+	ExtractText(content.ToLower(),type,weight,Session->GetContent(),pos,depth,spos);
 }
 
 

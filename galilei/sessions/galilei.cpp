@@ -316,14 +316,16 @@ RString GALILEI::GetConceptCat(tConceptCat cat,bool upper,bool plural)
 {
 	switch(cat)
 	{
-		case ccText:
-			return(Str("text",upper));
+		case ccToken:
+			if(plural)
+				return(Str("tokens",upper));
+			return(Str("token",upper));
 		case ccMetadata:
 			return(Str("metadata",upper));
-		case ccSemantic:
+		case ccStructure:
 			if(plural)
-				return(Str("semantic rules",upper));
-			return(Str("semantic rule",upper));
+				return(Str("structures",upper));
+			return(Str("structure",upper));
 		case ccLink:
 			if(plural)
 				return(Str("links",upper));
@@ -332,7 +334,6 @@ RString GALILEI::GetConceptCat(tConceptCat cat,bool upper,bool plural)
 			if(plural)
 				return(Str("predicates",upper));
 			return(Str("predicate",upper));
-
 	}
 	mThrowGException("'"+RString::Number(cat)+"' is not a valid concept category value");
 }

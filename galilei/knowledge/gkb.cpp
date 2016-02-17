@@ -55,7 +55,7 @@ using namespace std;
 GKB::GKB(GSession* session)
 	: Session(session), State(osLatest), Storage(0), SaveResults(true),
 	  TokenType(0), DCMIType(0), NamedEntityType(0), URIType(0), TaxonomyType(0),
-	  Text(0), NamedEntity(0), URI(0),
+	  Content(0), NamedEntity(0), URI(0),
 	  IsA(0), Synonym(0), PartOf(0), Unknown(0),
 	  ConceptTypes(1,40,20),
 	  Concepts(1,200000,50000,150000,10,5),
@@ -72,7 +72,7 @@ GKB::GKB(GSession* session)
 GConceptType* GKB::GetTokenType(void) const
 {
 	if(!TokenType)
-		const_cast<GKB*>(this)->TokenType=const_cast<GKB*>(this)->InsertObj(pConceptType,ccText,"Tokens","Tokens");
+		const_cast<GKB*>(this)->TokenType=const_cast<GKB*>(this)->InsertObj(pConceptType,ccToken,"Tokens","Tokens");
 	return(TokenType);
 }
 
@@ -118,7 +118,7 @@ GConceptType* GKB::GetURIType(void) const
 GConceptType* GKB::GetNamedEntityType(void) const
 {
 	if(!NamedEntityType)
-		const_cast<GKB*>(this)->NamedEntityType=const_cast<GKB*>(this)->InsertObj(pConceptType,ccText,"Named Entities","Named Entities");
+		const_cast<GKB*>(this)->NamedEntityType=const_cast<GKB*>(this)->InsertObj(pConceptType,ccToken,"Named Entities","Named Entities");
 	return(NamedEntityType);
 }
 
@@ -128,18 +128,18 @@ GConceptType* GKB::GetTaxonomyType(void) const
 {
 	if(!TaxonomyType)
 	{
-		const_cast<GKB*>(this)->TaxonomyType=const_cast<GKB*>(this)->InsertObj(pConceptType,ccPredicate,"Taxonomy","Taxonomy relations");
+		const_cast<GKB*>(this)->TaxonomyType=const_cast<GKB*>(this)->InsertObj(pConceptType,ccPredicate,"Taxonomy predicates","Taxonomy predicates");
 	}
 	return(TaxonomyType);
 }
 
 
 //------------------------------------------------------------------------------
-GConcept* GKB::GetText(void) const
+GConcept* GKB::GetContent(void) const
 {
-	if(!Text)
-		const_cast<GKB*>(this)->Text=const_cast<GKB*>(this)->InsertObj(pConcept,Session->InsertObj(pConceptType,ccText,"Text blocks","Blocks of text"),"*");
-	return(Text);
+	if(!Content)
+		const_cast<GKB*>(this)->Content=const_cast<GKB*>(this)->InsertObj(pConcept,Session->InsertObj(pConceptType,ccStructure,"Document Content","Document Content"),"*");
+	return(Content);
 }
 
 
@@ -147,7 +147,7 @@ GConcept* GKB::GetText(void) const
 GConcept* GKB::GetUnknown(void) const
 {
 	if(!Unknown)
-		const_cast<GKB*>(this)->Unknown=const_cast<GKB*>(this)->InsertObj(pConcept,Session->InsertObj(pConceptType,ccText,"Text blocks","Blocks of text"),"[Unknown Concept]");
+		const_cast<GKB*>(this)->Unknown=const_cast<GKB*>(this)->InsertObj(pConcept,GetTokenType(),"[Unknown Concept]");
 	return(Unknown);
 }
 

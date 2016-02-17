@@ -50,25 +50,27 @@ namespace GALILEI{
 * first element represents the subject, the second element is the predicate and
 * the third element represents the value.
 *
-* It can be used, for example, to represent a herarchical relation between two
+* It can be used, for example, to represent a hierarchical relation between two
 * concepts. Suppose that the two concepts "car" and "electric car" are defined.
 * It is then possible to define a third concept "IsA" and a new statement
 * ("electric car","IsA","car").
 *
-* In the case that two concepts are linked by a symetric relation (such as a
+* In the case that two concepts are linked by a symmetric relation (such as a
 * synonym), it is the responsible of the developer to take this into account.
 * In practice, two solutions exist. First, two statements can be created where
 * each concept is first a subject and then a value. Second, a coherent
 * convention is adopted for naming concepts that are predicates in order to help
-* the developer to determine if a given predicate is birectionnal or not. The
-* first solution is simplier but consumes more memory.
+* the developer to determine if a given predicate is bidirectional or not. The
+* first solution is easier but consumes more memory.
 *
 * The statements can be seen as a directed graph with a weighted edge
 * representing an object between nodes also representing objects.
 *
-* The GKB class maintains two lists of statements: "normal" ones that are
-* stored, and "internal" ones that are just created in memory (for example
-* between a GConceptList and its GConcept).
+* Most of the time, the objects of a statement are concepts. It is therefore
+* necessary to cast the pointer to manipulate a concept :
+* @code
+	GConcept* Value(dynamic_cast<GConcept*>(Statement->GetValue()));
+*  @endcode
 * @short Statement
 */
 class GStatement
