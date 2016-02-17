@@ -329,13 +329,13 @@ double GProm::ComputeDistance(GDocFragment* node)
 	for(Concept.Start();!Concept.End();Concept.Next())
 	{
 		// Only textual concept
-		if(Concept()->GetType()->GetCategory()!=ccText)
+		if(Concept()->GetType()->GetCategory()!=ccToken)
 			continue;
 		RCursor<GConcept> Concept2(Rank->Query->GetConcepts(Concept.GetPos()+1));
 		for(Concept2.Start();!Concept2.End();Concept2.Next())
 		{
 			// Only textual concept
-			if(Concept2()->GetType()->GetCategory()!=ccText)
+			if(Concept2()->GetType()->GetCategory()!=ccToken)
 				continue;
 
 			// A new pair to compare -> Find the minimum and maximum syntactic position of the keywords
