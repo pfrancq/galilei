@@ -901,7 +901,7 @@ void GStorageMySQL::LoadObjs(const GStatement*)
 
 
 		//                                0          1          2            3           4          5       6        7
-		RQuery Statements(Db,"SELECT statementid,subjectid,subjecttype,predicateid,predicatetype,valueid,valuetype,weight FROM statements");
+		RQuery Statements(Db,"SELECT statementid,subjectid,subjecttype,predicateid,predicatetype,valueid,valuetype,weight FROM statements ORDER by statementid");
 		for(Statements.Start();!Statements.End();Statements.Next())
 		{
 			GObject* Subject(Session->GetObj(static_cast<tObjType>(Statements[2].ToSizeT()),Statements[1].ToSizeT(),true));
