@@ -52,7 +52,7 @@ GSimPlugIn::GSimPlugIn(GSession* session,GPlugInFactory* fac,tObjType lines,tObj
 	: GMatrixMeasure(session,fac,lines,cols,lines==cols), Weighting(0)
 {
 	Sims=new GComputeSim*[GetNbConceptCats()];
-	Sims[ccText]=Sims[ccSemantic]=new GComputeSimCos(this);
+	Sims[ccToken]=Sims[ccStructure]=new GComputeSimCos(this);
 	Sims[ccMetadata]=new GComputeSimMeta(this);
 	Sims[ccLink]=new GComputeSimLink(this);
 }
@@ -79,7 +79,7 @@ double GSimPlugIn::GetIF(GConcept* concept) const
 {
 	if(!Weighting)
 		mThrowGException("No plug-in selected for \"Features Evaluation\"");
-	
+
 	double IF;
 	Weighting->Measure(0,concept,GetLinesType(),&IF);
 	if(GetLinesType()!=GetColsType())
@@ -95,8 +95,9 @@ double GSimPlugIn::GetIF(GConcept* concept) const
 //------------------------------------------------------------------------------
 GSimPlugIn::~GSimPlugIn(void)
 {
-	delete Sims[ccText];
+	delete Sims[ccToken];
 	delete Sims[ccLink];
 	delete Sims[ccMetadata];
+	delete Sims[ccStructure];
 	delete[] Sims;
 }

@@ -200,7 +200,7 @@ public:
 	 * @param cat            Concept category used as filter.
 	 * @return true if something could be computed.
 	 */
-	bool ComputeSims(bool filter,tConceptCat cat=ccText);
+	bool ComputeSims(bool filter,tConceptCat cat=ccToken);
 
 	/**
 	 * Compute a similarity between description using the integral of Choquet as

@@ -101,16 +101,16 @@ void GGenericSimsDlg::Init(GPlugIn* plugin)
 	SimType->setCurrentIndex(SimType->findText(ToQString(plugin->FindParam<RParamValue>("SimType")->Get())));
 	simTypeChanged(ToQString(plugin->FindParam<RParamValue>("SimType")->Get()));
 	Factor->setValue(plugin->FindParam<RParamValue>("Product Factor")->GetDouble());
-	Text->setValue(plugin->FindParam<RParamValue>("Text")->GetDouble());
-	Semantic->setValue(plugin->FindParam<RParamValue>("Semantic")->GetDouble());
+	Token->setValue(plugin->FindParam<RParamValue>("Token")->GetDouble());
+	Structure->setValue(plugin->FindParam<RParamValue>("Structure")->GetDouble());
 	Metadata->setValue(plugin->FindParam<RParamValue>("Metadata")->GetDouble());
 	Link->setValue(plugin->FindParam<RParamValue>("Link")->GetDouble());
-	TextMetadata->setValue(plugin->FindParam<RParamValue>("Text/Metadata")->GetDouble());
-	TextSemantic->setValue(plugin->FindParam<RParamValue>("Text/Semantic")->GetDouble());
-	TextLink->setValue(plugin->FindParam<RParamValue>("Text/Link")->GetDouble());
-	MetadataSemantic->setValue(plugin->FindParam<RParamValue>("Metadata/Semantic")->GetDouble());
+	TokenMetadata->setValue(plugin->FindParam<RParamValue>("Token/Metadata")->GetDouble());
+	TokenStructure->setValue(plugin->FindParam<RParamValue>("Token/Structure")->GetDouble());
+	TokenLink->setValue(plugin->FindParam<RParamValue>("Token/Link")->GetDouble());
+	MetadataStructure->setValue(plugin->FindParam<RParamValue>("Metadata/Structure")->GetDouble());
 	MetadataLink->setValue(plugin->FindParam<RParamValue>("Metadata/Link")->GetDouble());
-	SemanticLink->setValue(plugin->FindParam<RParamValue>("Semantic/Link")->GetDouble());
+	StructureLink->setValue(plugin->FindParam<RParamValue>("Structure/Link")->GetDouble());
 }
 
 
@@ -120,16 +120,16 @@ void GGenericSimsDlg::Done(GPlugIn* plugin)
 	plugin->FindParam<RParamValue>("NbHops")->SetUInt(NbHops->value());
 	plugin->FindParam<RParamValue>("SimType")->Set(FromQString(SimType->currentText()));
 	plugin->FindParam<RParamValue>("Product Factor")->SetDouble(Factor->value());
-	plugin->FindParam<RParamValue>("Text")->SetDouble(Text->value());
-	plugin->FindParam<RParamValue>("Semantic")->SetDouble(Semantic->value());
+	plugin->FindParam<RParamValue>("Token")->SetDouble(Token->value());
+	plugin->FindParam<RParamValue>("Structure")->SetDouble(Structure->value());
 	plugin->FindParam<RParamValue>("Metadata")->SetDouble(Metadata->value());
 	plugin->FindParam<RParamValue>("Link")->SetDouble(Link->value());
-	plugin->FindParam<RParamValue>("Text/Metadata")->SetDouble(TextMetadata->value());
-	plugin->FindParam<RParamValue>("Text/Semantic")->SetDouble(TextSemantic->value());
-	plugin->FindParam<RParamValue>("Text/Link")->SetDouble(TextLink->value());
-	plugin->FindParam<RParamValue>("Metadata/Semantic")->SetDouble(MetadataSemantic->value());
+	plugin->FindParam<RParamValue>("Token/Metadata")->SetDouble(TokenMetadata->value());
+	plugin->FindParam<RParamValue>("Token/Structure")->SetDouble(TokenStructure->value());
+	plugin->FindParam<RParamValue>("Token/Link")->SetDouble(TokenLink->value());
+	plugin->FindParam<RParamValue>("Metadata/Structure")->SetDouble(MetadataStructure->value());
 	plugin->FindParam<RParamValue>("Metadata/Link")->SetDouble(MetadataLink->value());
-	plugin->FindParam<RParamValue>("Semantic/Link")->SetDouble(SemanticLink->value());
+	plugin->FindParam<RParamValue>("Structure/Link")->SetDouble(StructureLink->value());
 	QGMatrixMeasureDlg::Done(plugin);
 }
 
@@ -142,16 +142,16 @@ bool GGenericSimsDlg::IsDlgOK(void)
 	{
 		// The sum of the capacities should be equals to 1.
 		double Sum(0.0);
-		Sum+=Text->value();
+		Sum+=Token->value();
 		Sum+=Metadata->value();
-		Sum+=Semantic->value();
+		Sum+=Structure->value();
 		Sum+=Link->value();
-		Sum+=TextMetadata->value();
-		Sum+=TextSemantic->value();
-		Sum+=TextLink->value();
-		Sum+=MetadataSemantic->value();
+		Sum+=TokenMetadata->value();
+		Sum+=TokenStructure->value();
+		Sum+=TokenLink->value();
+		Sum+=MetadataStructure->value();
 		Sum+=MetadataLink->value();
-		Sum+=SemanticLink->value();
+		Sum+=StructureLink->value();
 		if(fabs(Sum-1.0)>=0.0000000001)
 		{
 			QMessageBox::critical(this,"Error in Weights","When the 2-Additive Choquet Integral is used, the sum of the weights should 1 and not "+QString::number(Sum));

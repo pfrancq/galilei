@@ -67,16 +67,16 @@ template<class cObj1,class cObj2>
 	GMatrixMeasure::ApplyConfig();
 	RString type=FindParam<RParamValue>("SimType")->Get();
 	ProductFactor=FindParam<RParamValue>("Product Factor")->GetDouble();
-	ComputeChoquet.SetCriteria(0,FindParam<RParamValue>("Text")->GetDouble());
+	ComputeChoquet.SetCriteria(0,FindParam<RParamValue>("Token")->GetDouble());
 	ComputeChoquet.SetCriteria(1,FindParam<RParamValue>("Metadata")->GetDouble());
-	ComputeChoquet.SetCriteria(2,FindParam<RParamValue>("Semantic")->GetDouble());
+	ComputeChoquet.SetCriteria(2,FindParam<RParamValue>("Structure")->GetDouble());
 	ComputeChoquet.SetCriteria(3,FindParam<RParamValue>("Link")->GetDouble());
-	ComputeChoquet.SetInteraction(0,1,FindParam<RParamValue>("Text/Metadata")->GetDouble());
-	ComputeChoquet.SetInteraction(0,2,FindParam<RParamValue>("Text/Semantic")->GetDouble());
-	ComputeChoquet.SetInteraction(0,3,FindParam<RParamValue>("Text/Link")->GetDouble());
-	ComputeChoquet.SetInteraction(1,2,FindParam<RParamValue>("Metadata/Semantic")->GetDouble());
+	ComputeChoquet.SetInteraction(0,1,FindParam<RParamValue>("Token/Metadata")->GetDouble());
+	ComputeChoquet.SetInteraction(0,2,FindParam<RParamValue>("Token/Structure")->GetDouble());
+	ComputeChoquet.SetInteraction(0,3,FindParam<RParamValue>("Token/Link")->GetDouble());
+	ComputeChoquet.SetInteraction(1,2,FindParam<RParamValue>("Metadata/Structure")->GetDouble());
 	ComputeChoquet.SetInteraction(1,3,FindParam<RParamValue>("Metadata/Link")->GetDouble());
-	ComputeChoquet.SetInteraction(2,3,FindParam<RParamValue>("Semantic/Link")->GetDouble());
+	ComputeChoquet.SetInteraction(2,3,FindParam<RParamValue>("Structure/Link")->GetDouble());
 	NbHops=FindParam<RParamValue>("NbHops")->GetUInt();
 	tSimType sim(Undefined);
 	if(type=="Product")
@@ -103,9 +103,9 @@ template<class cObj1,class cObj2>
 	bool GGenericSims<cObj1,cObj2>::ComputeSims(bool filter,tConceptCat cat)
 {
 	// Initialize all the similarities
-	Cats[ccText].Sim  = Cats[ccText].Nb  = 0.0;
+	Cats[ccToken].Sim  = Cats[ccToken].Nb  = 0.0;
 	Cats[ccMetadata].Sim = Cats[ccMetadata].Nb = 0.0;
-	Cats[ccSemantic].Sim = Cats[ccSemantic].Nb = 0.0;
+	Cats[ccStructure].Sim = Cats[ccStructure].Nb = 0.0;
 	Cats[ccLink].Sim = Cats[ccLink].Nb = 0.0;
 
 	// Get two cursors over the vectors
@@ -135,18 +135,18 @@ template<class cObj1,class cObj2>
 			Cats[Cat1].Nb+=Nb;
 		}
 	}
-	if(Cats[ccText].Nb>0.1)
-		Cats[ccText].Sim/=Cats[ccText].Nb;
+	if(Cats[ccToken].Nb>0.1)
+		Cats[ccToken].Sim/=Cats[ccToken].Nb;
 	else
-		Cats[ccText].Sim=0.5;
+		Cats[ccToken].Sim=0.5;
 	if(Cats[ccMetadata].Nb>0.1)
 		Cats[ccMetadata].Sim/=Cats[ccMetadata].Nb;
 	else
 		Cats[ccMetadata].Sim=0.5;
-	if(Cats[ccSemantic].Nb>0.1)
-		Cats[ccSemantic].Sim/=Cats[ccSemantic].Nb;
+	if(Cats[ccStructure].Nb>0.1)
+		Cats[ccStructure].Sim/=Cats[ccStructure].Nb;
 	else
-		Cats[ccSemantic].Sim=0.5;
+		Cats[ccStructure].Sim=0.5;
 	if(Cats[ccLink].Nb>0.1)
 		Cats[ccLink].Sim/=Cats[ccLink].Nb;
 	else
@@ -155,13 +155,13 @@ template<class cObj1,class cObj2>
 	{
 
 		sInfo Info;
-		Info.Text=Cats[ccText].Sim;
+		Info.Text=Cats[ccToken].Sim;
 		Info.Metadata=Cats[ccMetadata].Sim;
-		Info.Semantic=Cats[ccSemantic].Sim;
+		Info.Semantic=Cats[ccStructure].Sim;
 		Info.Link=Cats[ccLink].Sim;
 		PostNotification(Notification,Info);
 	}
-	return((Cats[ccText].Sim!=0.0)||(Cats[ccMetadata].Sim!=0.0)||(Cats[ccSemantic].Sim!=0.0)||(Cats[ccLink].Sim!=0.0));
+	return((Cats[ccToken].Sim!=0.0)||(Cats[ccMetadata].Sim!=0.0)||(Cats[ccStructure].Sim!=0.0)||(Cats[ccLink].Sim!=0.0));
 }
 
 
@@ -173,9 +173,9 @@ template<class cObj1,class cObj2>
 		return(0.0);
 
 	// Prepare the vector and compute the value
-	Values[0]=Cats[ccText].Sim;
+	Values[0]=Cats[ccToken].Sim;
 	Values[1]=Cats[ccMetadata].Sim;
-	Values[2]=Cats[ccSemantic].Sim;
+	Values[2]=Cats[ccStructure].Sim;
 	Values[3]=Cats[ccLink].Sim;
 	return(ComputeChoquet.Compute(Values));
 }
@@ -187,10 +187,10 @@ template<class cObj1,class cObj2>
 {
 	if(!ComputeSims(false))
 		return(0.0);
-	double Num( (Cats[ccText].Sim*ComputeChoquet.GetCriteria(0))+
+	double Num( (Cats[ccToken].Sim*ComputeChoquet.GetCriteria(0))+
 	            (Cats[ccMetadata].Sim*ComputeChoquet.GetCriteria(1))+
-	            (Cats[ccSemantic].Sim*ComputeChoquet.GetCriteria(2))+
-	            (Cats[ccSemantic].Sim*ComputeChoquet.GetCriteria(3)) );
+	            (Cats[ccStructure].Sim*ComputeChoquet.GetCriteria(2))+
+	            (Cats[ccLink].Sim*ComputeChoquet.GetCriteria(3)) );
 	double Den(ComputeChoquet.GetCriteria(0)+ComputeChoquet.GetCriteria(1)+ComputeChoquet.GetCriteria(2)+ComputeChoquet.GetCriteria(3));
 	return(Num/Den);
 }
@@ -207,10 +207,11 @@ template<class cObj1,class cObj2>
 	NbComps=ProductFactor*NbComps*(NbComps-1);
 
 	// Makes the product of the similarity (a null similarity is replaced by ProductFactor).
-	Sim+=log10(Cats[ccText].Sim+ProductFactor);
-	Sim+=log10(Cats[ccSemantic].Sim+ProductFactor);
+	Sim+=log10(Cats[ccToken].Sim+ProductFactor);
+	Sim+=log10(Cats[ccStructure].Sim+ProductFactor);
 	Sim+=log10(Cats[ccMetadata].Sim+ProductFactor);
-	return(pow(10,Sim-3.0*log10(NbComps)));
+	Sim+=log10(Cats[ccLink].Sim+ProductFactor);
+	return(pow(10,Sim-4.0*log10(NbComps)));
 }
 
 
@@ -218,9 +219,9 @@ template<class cObj1,class cObj2>
 template<class cObj1,class cObj2>
 	double GGenericSims<cObj1,cObj2>::SimilarityTextOnly(void)
 {
-	if(!ComputeSims(true,ccText))
+	if(!ComputeSims(true,ccToken))
 		return(0.0);
-   double d(Cats[ccText].Sim);
+   double d(Cats[ccToken].Sim);
 	if(fabs(d)<GetCutoffFrequency())
 		return(0.0);
 	return(d);
@@ -285,16 +286,16 @@ template<class cObj1,class cObj2>
 	GMatrixMeasure::CreateConfig();
 	InsertParam(new RParamValue("SimType","Text Only"));
 	InsertParam(new RParamValue("Product Factor",0.01));
-	InsertParam(new RParamValue("Text",0.1));
+	InsertParam(new RParamValue("Token",0.1));
 	InsertParam(new RParamValue("Metadata",0.1));
-	InsertParam(new RParamValue("Semantic",0.1));
+	InsertParam(new RParamValue("Structure",0.1));
 	InsertParam(new RParamValue("Link",0.1));
-	InsertParam(new RParamValue("Text/Metadata",0.1));
-	InsertParam(new RParamValue("Text/Semantic",0.1));
-	InsertParam(new RParamValue("Text/Link",0.1));
-	InsertParam(new RParamValue("Metadata/Semantic",0.1));
+	InsertParam(new RParamValue("Token/Metadata",0.1));
+	InsertParam(new RParamValue("Token/Structure",0.1));
+	InsertParam(new RParamValue("Token/Link",0.1));
+	InsertParam(new RParamValue("Metadata/Structure",0.1));
 	InsertParam(new RParamValue("Metadata/Link",0.1));
-	InsertParam(new RParamValue("Semantic/Link",0.1));
+	InsertParam(new RParamValue("Structure/Link",0.1));
 	InsertParam(new RParamValue("NbHops",3));
 	InsertParam(new RParamValue("EmitSignal",false));
 }

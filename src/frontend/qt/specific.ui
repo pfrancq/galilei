@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>553</width>
+    <width>674</width>
     <height>450</height>
    </rect>
   </property>
@@ -117,12 +117,12 @@
            <item>
             <widget class="QLabel" name="label_3">
              <property name="text">
-              <string>Text</string>
+              <string>Token</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QDoubleSpinBox" name="Text"/>
+            <widget class="QDoubleSpinBox" name="Token"/>
            </item>
           </layout>
          </item>
@@ -171,12 +171,12 @@
            <item>
             <widget class="QLabel" name="label_5">
              <property name="text">
-              <string>Semantic</string>
+              <string>Structure</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QDoubleSpinBox" name="Semantic"/>
+            <widget class="QDoubleSpinBox" name="Structure"/>
            </item>
           </layout>
          </item>
@@ -220,13 +220,25 @@
           <layout class="QHBoxLayout" name="horizontalLayout_6">
            <item>
             <widget class="QLabel" name="label_7">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>110</width>
+               <height>0</height>
+              </size>
+             </property>
              <property name="text">
-              <string>Text/Metadata</string>
+              <string>Token/Metadata</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QDoubleSpinBox" name="TextMetadata"/>
+            <widget class="QDoubleSpinBox" name="TokenMetadata"/>
            </item>
           </layout>
          </item>
@@ -234,13 +246,25 @@
           <layout class="QHBoxLayout" name="horizontalLayout_7">
            <item>
             <widget class="QLabel" name="label_8">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>110</width>
+               <height>0</height>
+              </size>
+             </property>
              <property name="text">
-              <string>Text/Semantic</string>
+              <string>Token/Structure</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QDoubleSpinBox" name="TextSemantic"/>
+            <widget class="QDoubleSpinBox" name="TokenStructure"/>
            </item>
           </layout>
          </item>
@@ -248,13 +272,25 @@
           <layout class="QHBoxLayout" name="horizontalLayout_9">
            <item>
             <widget class="QLabel" name="label_9">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>110</width>
+               <height>0</height>
+              </size>
+             </property>
              <property name="text">
-              <string>Text/Link</string>
+              <string>Token/Link</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QDoubleSpinBox" name="TextLink"/>
+            <widget class="QDoubleSpinBox" name="TokenLink"/>
            </item>
           </layout>
          </item>
@@ -262,13 +298,25 @@
           <layout class="QHBoxLayout" name="horizontalLayout_10">
            <item>
             <widget class="QLabel" name="label_10">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>110</width>
+               <height>0</height>
+              </size>
+             </property>
              <property name="text">
-              <string>Metadata/Semantic</string>
+              <string>Metadata/Structure</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QDoubleSpinBox" name="MetadataSemantic"/>
+            <widget class="QDoubleSpinBox" name="MetadataStructure"/>
            </item>
           </layout>
          </item>
@@ -276,6 +324,18 @@
           <layout class="QHBoxLayout" name="horizontalLayout_11">
            <item>
             <widget class="QLabel" name="label_11">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>110</width>
+               <height>0</height>
+              </size>
+             </property>
              <property name="text">
               <string>Metadata/Link</string>
              </property>
@@ -303,13 +363,25 @@
           <layout class="QHBoxLayout" name="horizontalLayout_12">
            <item>
             <widget class="QLabel" name="label_12">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>110</width>
+               <height>0</height>
+              </size>
+             </property>
              <property name="text">
-              <string>Semantic/Link</string>
+              <string>Structure/Link</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QDoubleSpinBox" name="SemanticLink"/>
+            <widget class="QDoubleSpinBox" name="StructureLink"/>
            </item>
           </layout>
          </item>
