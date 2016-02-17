@@ -115,7 +115,7 @@ void QCreateDB::DoIt(void)
  		Factory->CreateStopWords(Stops,Code,Name);
 
  		// Create the concept types
- 		RString TypeId(GetConceptType(ccText,Code+"Stopwords",Name+" Stopwords",&Db));
+ 		RString TypeId(GetConceptType(ccToken,Code+"Stopwords",Name+" Stopwords",&Db));
 
  		RCursor<RString> Cur(Stops);
  		for(Cur.Start();!Cur.End();Cur.Next())

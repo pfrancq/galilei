@@ -48,13 +48,15 @@
 //------------------------------------------------------------------------------
 // include files for current project
 #include <ui_qmodifydocsdlg.h>
+#include <ui_qaddexprdlg.h>
 class QGALILEIWin;  // forward declaration
+
 
 
 //------------------------------------------------------------------------------
 /**
  * The QModifyDocsDlg provides a dialog box to modify the documents.
- * @short QModifyDocsDlg Dialog.
+ * @short Document Modification Dialog.
  */
 class QModifyDocsDlg : public QDialog, Ui_QModifyDocsDlg
 {

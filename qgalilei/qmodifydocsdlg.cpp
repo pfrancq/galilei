@@ -98,9 +98,15 @@ void QModifyDocsDlg::populateConceptTypes(void)
 	int i;
 	for(Type.Start(),i=0;!Type.End();Type.Next(),i++)
 	{
-		Dictionary->insertItem(i,ToQString(Type()->GetDescription()),QVariant(ToQString(Type()->GetName())));
+		if((Type()->GetName().Mid(2)!="Stopwords")&&(Type()->GetName()!="Tokens"))
+			Dictionary->insertItem(i,ToQString(Type()->GetDescription()),QVariant(ToQString(Type()->GetName())));
 		Dictionary2->insertItem(i,ToQString(Type()->GetDescription()),QVariant(ToQString(Type()->GetName())));
 	}
+
+	// Go through all languages
+	RCastCursor<GPlugIn,GLang> cLang(GALILEIApp->GetPlugIns<GLang>("Lang"));
+	for(cLang.Start();!cLang.End();cLang.Next())
+		Lang->addItem(ToQString(cLang()->GetDesc()),QVariant(ToQString(cLang()->GetName())));
 }
 
 
@@ -145,27 +151,16 @@ void QModifyDocsDlg::addExpression(void)
 		if(QMessageBox::question(this,"Add Concept Type","Insert new type '"+Dictionary->currentText()+"'?",QMessageBox::Ok|QMessageBox::Cancel)!=QMessageBox::Ok)
 			return;
 		RString Text(FromQString(Dictionary->currentText()));
-		Type=Win->getSession()->InsertObj(pConceptType,ccText,cNoRef,Text,Text);
+		Type=Win->getSession()->InsertObj(pConceptType,ccMetadata,cNoRef,Text,Text);
 		populateConceptTypes();
 	}
 	else
 		Type=Win->getSession()->GetObj(pConceptType,FromQString(Dictionary->itemData(Dictionary->currentIndex()).toString()),false);
 
 	// Treat the expression
-	RString Expr(FromQString(Expression->text()));
-	GConcept* New(Win->getSession()->InsertObj(pConcept,Type,Expr));
-
-	// Treat the separate tokens
-	GConceptType* Text(Win->getSession()->GetObj(pConceptType,"Tokens",false));
-	RContainer<RString,true,false> Concepts(5);
-	Expr.Split(Concepts,' ');
-	RCursor<RString> Concept(Concepts);
-	for(Concept.Start();!Concept.End();Concept.Next())
-	{
-		RString Label(Concept()->ToLower());
-		GConcept* Ptr(Win->getSession()->InsertObj(pConcept,Text,Label));
-		Win->getSession()->InsertObj(pStatement,cNoRef,Ptr,Win->getSession()->GetPartOf(),New,1.0);
-	}
+	Lang->currentIndex();
+	GLang* pLang(GALILEIApp->GetPlugIn<GLang>("Lang",FromQString(Lang->itemData(Lang->currentIndex()).toString())));
+	pLang->CreateExpression(FromQString(Expression->text()),Type);
 }
 
 
@@ -197,7 +192,7 @@ void QModifyDocsDlg::modifyDescription(void)
 
 	// Modify the document
 	Doc->Update(Doc->GetLang(),Desc,Recs,NbRecords,NbTopRecords,NbRefs);
-	
+
 	// Cleaning stuff
 	Recs.Clear(0,0,true);
 }

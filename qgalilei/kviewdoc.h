@@ -54,6 +54,65 @@ using namespace GALILEI;
 class QGALILEIWin;  // forward declaration
 
 
+//-----------------------------------------------------------------------------
+/**
+ * Dialog box used to choose a feedback of a given profile of a particular
+ * user.
+ * @short Adding Feedback
+ * @author Pascal Francq.
+ */
+class AddFdbkDlg : public QDialog, public Ui_AddFdbkDlg
+{
+	Q_OBJECT
+
+	/**
+	 * The session.
+	 */
+	GSession* Session;
+
+	/**
+	 * Current user.
+	 */
+	GUser* User;
+
+	/**
+	 * Current profile.
+	 */
+	GProfile* Prof;
+
+public:
+
+	/**
+	 * Construct the dialog box.
+	 * @param session        Session.
+	 * @param parent         Parent widget.
+	 */
+	AddFdbkDlg(GSession* session,QWidget* parent);
+
+private:
+
+	/**
+	 * Build the list of all profiles for the current user.
+	 */
+	void FillProfiles(void);
+
+private slots:
+
+	/**
+	 * The current user was changed.
+	 */
+	void slotChangeUser(const QString& string);
+
+	/**
+	 * The current profile was changed.
+	 * @param string
+	 */
+	void slotChangeProfile(const QString& string);
+
+	friend class KViewDoc;
+};
+
+
 //---------------------------------------------------------------------------
 /**
 * The KViewDoc class represents the window to describe a specific document.
@@ -149,65 +208,6 @@ public:
 	* Destruct the widget.
 	*/
 	~KViewDoc(void);
-};
-
-
-//-----------------------------------------------------------------------------
-/**
- * Dialog box used to choose a feedback of a given profile of a particular
- * user.
- * @short Adding Feedback
- * @author Pascal Francq.
- */
-class AddFdbkDlg : public QDialog, public Ui_AddFdbkDlg
-{
-	Q_OBJECT
-
-	/**
-	 * The session.
-	 */
-	GSession* Session;
-
-	/**
-	 * Current user.
-	 */
-	GUser* User;
-
-	/**
-	 * Current profile.
-	 */
-	GProfile* Prof;
-
-public:
-
-	/**
-	 * Construct the dialog box.
-	 * @param session        Session.
-	 * @param parent         Parent wisget.
-	 */
-	AddFdbkDlg(GSession* session,QWidget* parent);
-
-private:
-
-	/**
-	 * Build the list of all profiles for the current user.
-	 */
-	void FillProfiles(void);
-
-private slots:
-
-	/**
-	 * The current user was changed.
-	 */
-	void slotChangeUser(const QString& string);
-
-	/**
-	 * The current profile was changed.
-	 * @param string
-	 */
-	void slotChangeProfile(const QString& string);
-
-	friend class KViewDoc;
 };
 
 
