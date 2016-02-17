@@ -30,8 +30,8 @@
 
 //------------------------------------------------------------------------------
 // include files for wvWare Project
-#include <wv2/ustring.h>
-#include <wv2/word97_generated.h>
+//#include <wv2/ustring.h>
+//#include <wv2/word97_generated.h>
 
 
 //------------------------------------------------------------------------------

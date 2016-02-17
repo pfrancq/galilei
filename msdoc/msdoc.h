@@ -49,13 +49,15 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 // include files for wvWare Project
-#include <wv2/parser.h>
+/*#include <wv2/parser.h>
 #include <wv2/parserfactory.h>
 #include <wv2/handlers.h>
 #include <wv2/functor.h>
 #include <wv2/associatedstrings.h>
 #include <wv2/paragraphproperties.h>
-#include <wv2/fields.h>
+#include <wv2/fields.h>*/
+//#include <libgsf-1/gsf/gsf-input.h>
+#include <wv/wv.h>
 
 
 //-----------------------------------------------------------------------------
