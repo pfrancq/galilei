@@ -48,7 +48,6 @@
 //------------------------------------------------------------------------------
 // include files for current project
 #include <ui_qmodifydocsdlg.h>
-#include <ui_qaddexprdlg.h>
 class QGALILEIWin;  // forward declaration
 
 
