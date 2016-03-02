@@ -95,9 +95,8 @@ double GSimPlugIn::GetIF(GConcept* concept) const
 //------------------------------------------------------------------------------
 GSimPlugIn::~GSimPlugIn(void)
 {
-	delete Sims[ccToken];
+	delete Sims[ccToken]; // It also deletes Sims[ccStructure] since it this the same operator
 	delete Sims[ccLink];
 	delete Sims[ccMetadata];
-	delete Sims[ccStructure];
 	delete[] Sims;
 }
