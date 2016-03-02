@@ -92,12 +92,14 @@ public:
  * The GConceptExtractor class provides a mechanism to search for a set of
  * concepts related to a given string.
  *
- * @remark It will be used by GSearchQuery in the future to build a query.
+ * It is be used by GSearchQuery in the future to build a query.
  *
  * @short Concept Extractor.
  */
 class GConceptExtractor
 {
+protected:
+
 	/**
 	 * Session.
 	 */
@@ -156,6 +158,23 @@ public:
 	 * @return the number of concepts found.
 	 */
 	virtual size_t Search(const R::RString& str,R::RContainer<GConceptRef,true,true>& results,size_t caller);
+
+	/**
+	 * Look if another concept better replace a given concept in a query. For
+	 * example, one may decide that a given thesaurus should be preferred, and
+	 * that other concepts should be replace if possible.
+	 *
+	 * By default, this methods just returns the original concept.
+	 * @param original       Original concept.
+	 * @param caller         Identifier of the caller (for example a thread).
+	 * @return a pointer to another concept that should replace the original one.
+	 */
+	virtual GConcept* BestReplace(GConcept* original,size_t caller) const;
+
+	/**
+	 * Destructor.
+	 */
+	virtual ~GConceptExtractor(void);
 };
 
 

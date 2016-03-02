@@ -118,10 +118,10 @@ class GSearchQuery : protected R::RTree<GSearchQuery,GSearchQueryNode,true>
 	/**
 	 * Extractor.
 	 */
-	GConceptExtractor Extractor;
+	GConceptExtractor* Extractor;
 
 	/**
-	 * Caller.
+	 * Identifier of the caller.
 	 */
 	size_t Caller;
 
@@ -130,10 +130,15 @@ public:
 	/**
 	 * Constructor of the query.
 	 * @param session        Session.
-	 * @param caller         Caller.
-	 * @param options        Options of the query.
+	 * @param extractor      Extractor.
+	 * @param caller         Identifier of the caller (for example a thread).
+	 * @param options        Options of the query. By default, all options are
+	 *                       active.
+	 * @param langs          Pointer to a container of languages that must be
+	 *                       use for the search. When null (default value), all
+	 *                       languages are used.
     */
-	GSearchQuery(GSession* session,size_t caller,int options=qoStems|qoKeywords|qoExpressions,R::RContainer<GLang,false,false>* langs=0);
+	GSearchQuery(GSession* session,GConceptExtractor* extractor,size_t caller,int options=qoStems|qoKeywords|qoExpressions|qoReplace,R::RContainer<GLang,false,false>* langs=0);
 
 	/**
 	 * Get the top node of a query.
@@ -262,6 +267,12 @@ public:
 
 private:
 
+	/**
+	 * Insert different alternatives (OR operator) to a given node based on the
+	 * container Found.
+	 * @param parent         parent node.
+	 * @return a pointer to the last created search node.
+	 */
 	GSearchQueryNode* AddORs(GSearchQueryNode* parent);
 
 	/**

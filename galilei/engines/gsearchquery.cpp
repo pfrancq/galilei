@@ -50,14 +50,14 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSearchQuery::GSearchQuery(GSession* session,size_t caller,int options,R::RContainer<GLang,false,false>* langs)
+GSearchQuery::GSearchQuery(GSession* session,GConceptExtractor* extractor,size_t caller,int options,R::RContainer<GLang,false,false>* langs)
 	: RTree<GSearchQuery,GSearchQueryNode,true>(), Session(session), Tokens(30),
 	  Concepts(30), Tmp(30), Found(30), OnlyAND(true), Options(options), Stems(20), Langs(langs),
-	  Extractor(session), Caller(caller)
+	  Extractor(extractor), Caller(caller)
 {
 	if(Options==0)
 		mThrowGException("No query options are specified");
-	if(Options>7)
+	if(Options>(qoStems|qoKeywords|qoExpressions|qoReplace))
 		mThrowGException("No valid query options specified");
 }
 
@@ -164,12 +164,14 @@ void GSearchQuery::Build(const RString& query)
 {
 	OnlyAND=true;
 	CreateToken(0,query);
-	if(Options&qoExpressions)
+	cout<<(*this)<<endl;
+	if((Options&qoExpressions)&&(Options&qoReplace))
 	{
 	   RNodeCursor<GSearchQuery,GSearchQueryNode> Cur(*this);
 		for(Cur.Start();!Cur.End();Cur.Next())
 			TreatNode(Cur());
 	}
+	cout<<(*this)<<endl;
 }
 
 
@@ -364,6 +366,9 @@ GSearchQueryNode* GSearchQuery::AddORs(GSearchQueryNode* parent)
 		InsertNode(parent,New=NewNode(Node()->GetConcept(),GSearchToken::tStem));
 		if(!pToken)
 			pToken=New;
+
+		if(Options&qoReplace)
+			New->Value.Token->Concept=Extractor->BestReplace(New->Value.Token->Concept,Caller);
 	}
 
 	return(pToken);
@@ -378,7 +383,7 @@ GSearchQueryNode* GSearchQuery::CreateToken(GSearchQueryNode* parent,const R::RS
 	if(type==GSearchToken::tTerm)
 	{
 		// Extract the different tokens
-		Extractor.Search(token,Found,Caller);
+		Extractor->Search(token,Found,Caller);
 
 		// Build the OR nodes
 		if(Found.GetNb())
@@ -397,7 +402,11 @@ GSearchQueryNode* GSearchQuery::CreateToken(GSearchQueryNode* parent,const R::RS
 void GSearchQuery::TreatNode(GSearchQueryNode* node)
 {
 	if(node->GetType()!=GSearchQueryNode::nOperator)
+	{
+		if(Options&qoReplace)
+			node->Value.Token->Concept=Extractor->BestReplace(node->Value.Token->Concept,Caller);
 		return;
+	}
 
 	if(node->GetOperator()==GSearchQueryNode::oAND)
 	{
@@ -411,7 +420,7 @@ void GSearchQuery::TreatNode(GSearchQueryNode* node)
 			return;
 
 		// Look for expression
-		Extractor.Search(Str,Found,Caller);
+		Extractor->Search(Str,Found,Caller);
 		if(!Found.GetNb())
 			return;
 
@@ -438,7 +447,7 @@ void GSearchQuery::TreatANDNode(GSearchQueryNode* node,RString& str)
 {
 	if(node->GetType()==GSearchQueryNode::nToken)
 	{
-		// Can not treat unknown concepts
+		// Cannot treat unknown concepts
 		if(node->GetToken()->GetConcept()==Session->GetUnknown())
 		{
 			str.Clear();
@@ -448,6 +457,9 @@ void GSearchQuery::TreatANDNode(GSearchQueryNode* node,RString& str)
 		if(!str.IsEmpty())
 			str+=" ";
 		str+=node->GetToken()->GetConcept()->GetName();
+
+		if(Options&qoReplace)
+			node->Value.Token->Concept=Extractor->BestReplace(node->Value.Token->Concept,Caller);
 	}
 	else if((node->GetOperator()==GSearchQueryNode::oAND))
 	{
@@ -455,7 +467,14 @@ void GSearchQuery::TreatANDNode(GSearchQueryNode* node,RString& str)
 		TreatANDNode(node->GetLast(),str);
 	}
 	else
+	{
 		str.Clear();
+		if(Options&qoReplace)
+		{
+			TreatNode(node->GetFirst());
+			TreatNode(node->GetLast());
+		}
+	}
 }
 
 

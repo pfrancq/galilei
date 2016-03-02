@@ -466,13 +466,18 @@ enum tQueryOption
 									 * search as such. This can be useful if some
 									 * keywords are names.
 									 */
-	qoExpressions=0x4       /**
+	qoExpressions=0x4,      /**
 									 * Try to detect expressions that are not delimited
 									 * by quotes by trying to combine different tokens
 									 * linked by AND operators. For example, for a query
 									 * defined as "genetic & algorithm", a verification
 									 * is done to see if "genetic algorithm" is a valid
 									 * concept.
+									 */
+	qoReplace=0x8           /**
+									 * Look if some concepts should be replace by other
+									 * ones that the GConceptExtractor used estimates
+									 * more appropriated.
 									 */
 };
 
@@ -565,6 +570,7 @@ class GMetaEngine;
 class GComputeRank;
 class GSearchQuery;
 class GSearchQueryNode;
+class GConceptExtractor;
 
 
 //------------------------------------------------------------------------------

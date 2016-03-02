@@ -48,7 +48,7 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 GPlugInFactory::GPlugInFactory(GPlugInManager* mng,const R::RString& name,const R::RString& desc,const R::RString& lib,const R::RString& list)
-		: Name(name), Desc(desc),Level(0), Mng(mng), Plugin(0), Lib(lib),
+		: Name(name), Desc(desc),Level(0), Mng(mng), Session(0), Plugin(0), Lib(lib),
 	      AboutDlg(0), ConfigDlg(0), Handle(0), HandleDlg(0), List(list)
 {
 	RString Cat(mng->GetName());
@@ -83,6 +83,7 @@ int GPlugInFactory::Compare(const size_t level) const
 //-----------------------------------------------------------------------------
 void GPlugInFactory::Create(GSession* session)
 {
+	Session=session;
 	if(Plugin)
 	{
 		Plugin->Session=session;
@@ -121,6 +122,16 @@ void GPlugInFactory::Configure(void)
 		if(Plugin&&config(Plugin))
 			Plugin->ApplyConfig();
 	}
+}
+
+
+//------------------------------------------------------------------------------
+void GPlugInFactory::InsertParam(RParam* param)
+{
+	if(Mng->GetPlugInType()==GPlugInManager::ptListSelect)
+		Session->InsertParam(param,Mng->GetName(),List,Name);
+	else
+		Session->InsertParam(param,Mng->GetName(),Name);
 }
 
 
@@ -241,6 +252,7 @@ void GPlugIn::GetCategories(RContainer<RString,true,false>& cats)
 //------------------------------------------------------------------------------
 void GPlugIn::CreateConfig(void)
 {
+
 }
 
 

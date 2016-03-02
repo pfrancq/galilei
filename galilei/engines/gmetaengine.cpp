@@ -41,6 +41,7 @@
 #include <gdocfragmentranks.h>
 #include <gdocref.h>
 #include <gsearchquery.h>
+#include <gconceptextractor.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -69,8 +70,16 @@ GMetaEngine::Internal::Internal(void)
 
 //------------------------------------------------------------------------------
 GMetaEngine::GMetaEngine(GSession* session,GPlugInFactory* fac)
-	: GPlugIn(session,fac), RDownloadFile()//, ResultsByDocs(200), Results(200), Rankings(200)
+	: GPlugIn(session,fac), RDownloadFile(), Extractor(0)//, ResultsByDocs(200), Results(200), Rankings(200)
 {
+}
+
+
+//------------------------------------------------------------------------------
+void GMetaEngine::Init(void)
+{
+	GPlugIn::Init();
+	Extractor=CreateConceptExtractor();
 }
 
 
@@ -103,6 +112,13 @@ GDocFragment* GMetaEngine::AddResult(size_t docid,const GConceptRecord* rec,size
 	// Find the document reference
 	GDoc* Doc(Session->GetObj(pDoc,docid));
 	return(AddResult(Doc,rec,pos,spos,first,last,ranking,engine,caller));
+}
+
+
+//------------------------------------------------------------------------------
+GConceptExtractor* GMetaEngine::CreateConceptExtractor(void)
+{
+	return(new GConceptExtractor(Session));
 }
 
 
@@ -150,7 +166,7 @@ void GMetaEngine::PostRequest(size_t caller)
 //------------------------------------------------------------------------------
 GSearchQuery* GMetaEngine::BuildQuery(const R::RString query,size_t caller)
 {
-	GSearchQuery* Query=new GSearchQuery(Session,caller);
+	GSearchQuery* Query=new GSearchQuery(Session,Extractor,caller);
 	Query->Build(query);
 	return(Query);
 }
@@ -204,6 +220,16 @@ R::RCursor<GDocFragmentRanks> GMetaEngine::GetRankings(size_t caller)
 size_t GMetaEngine::GetNbResults(size_t caller)
 {
 	return(Data.Get(caller)->Results.GetNb());
+}
+
+//------------------------------------------------------------------------------
+void GMetaEngine::Done(void)
+{
+	if(Extractor)
+	{
+		delete Extractor;
+		Extractor=0;
+	}
 }
 
 

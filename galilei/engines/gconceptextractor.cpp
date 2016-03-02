@@ -32,11 +32,11 @@
 #include <gconceptextractor.h>
 #include <gvector.h>
 #include <gsession.h>
-
-#include "gstatement.h"
+#include <gstatement.h>
 using namespace std;
 using namespace R;
 using namespace GALILEI;
+
 
 
 //------------------------------------------------------------------------------
@@ -249,4 +249,18 @@ size_t GConceptExtractor::Search(const RString& str,RContainer<GConceptRef,true,
 	Datas.Release(caller);
 	return(results.GetNb());
 	return(0);
+}
+
+
+//------------------------------------------------------------------------------
+GConcept* GConceptExtractor::BestReplace(GConcept* original,size_t caller) const
+{
+	return(original);
+}
+
+
+
+//------------------------------------------------------------------------------
+GConceptExtractor::~GConceptExtractor(void)
+{
 }

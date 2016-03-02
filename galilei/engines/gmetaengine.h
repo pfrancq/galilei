@@ -103,6 +103,11 @@ class GMetaEngine : public GPlugIn, R::RDownloadFile
 	 */
 	R::RThreadLocalStorage<Internal> Data;
 
+	/**
+	 * Extractor used.
+	 */
+	GConceptExtractor* Extractor;
+
 public:
 
 	/**
@@ -111,6 +116,11 @@ public:
 	* @param fac             Factory.
 	*/
 	GMetaEngine(GSession* session,GPlugInFactory* fac);
+
+	/**
+	 * Initialize the plug-in.
+	 */
+	virtual void Init(void);
 
 private:
 
@@ -155,6 +165,18 @@ private:
 	GDocFragment* AddResult(size_t docid,const GConceptRecord* rec,size_t spos,size_t pos,size_t first,size_t last,double ranking,GEngine* engine,size_t caller);
 
 protected:
+
+	/**
+	 * Create an extractor.
+	 * @return a pointer to an extractor.
+	 */
+	virtual GConceptExtractor* CreateConceptExtractor(void);
+
+	/**
+	 * Get the extractor used.
+	 * @return a pointer to an extractor.
+	 */
+	GConceptExtractor* GetExtractor(void) const {return(Extractor);}
 
 	/**
 	 * method called each time an engine  add a given document fragment as a
@@ -240,6 +262,11 @@ public:
 	 * @param caller         Identifier of the caller (for example a thread).
     */
 	size_t GetNbResults(size_t caller);
+
+	/**
+	 * The method is called each time a session is closed.
+	 */
+	virtual void Done(void);
 
 	/**
 	* Destructor of the meta-engine.

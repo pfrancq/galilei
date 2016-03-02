@@ -108,6 +108,11 @@ protected:
 	GPlugInManager* Mng;
 
 	/**
+	* Current session.
+	*/
+	GSession* Session;
+
+	/**
 	* Pointer to the plug-in.
 	*/
 	GPlugIn* Plugin;
@@ -257,6 +262,13 @@ public:
 	* Configure the parameters.
 	*/
 	void Configure(void);
+
+	/**
+	* Declare a new parameter. If it exist, the parameter passed as argument is
+	* deleted.
+	* @param param           Parameter.
+	*/
+	void InsertParam(R::RParam* param);
 
 	/**
 	* Apply the configuration eventually to the plug-in.
