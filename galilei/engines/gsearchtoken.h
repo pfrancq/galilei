@@ -122,6 +122,12 @@ public:
 	GConcept* GetConcept(void) const {return(Concept);}
 
 	/**
+	 * Set the concept corresponding to the token.
+	 * @param concept        Concept to set.
+    */
+	void SetConcept(GConcept* concept) {Concept=concept;}
+
+	/**
 	 * Get the type of the token.
     * @return the token type.
     */

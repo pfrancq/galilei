@@ -253,9 +253,8 @@ size_t GConceptExtractor::Search(const RString& str,RContainer<GConceptRef,true,
 
 
 //------------------------------------------------------------------------------
-GConcept* GConceptExtractor::BestReplace(GConcept* original,size_t caller) const
+void GConceptExtractor::Expand(GSearchQuery*,GSearchQueryNode*,size_t)
 {
-	return(original);
 }
 
 

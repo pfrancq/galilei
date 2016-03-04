@@ -164,14 +164,12 @@ void GSearchQuery::Build(const RString& query)
 {
 	OnlyAND=true;
 	CreateToken(0,query);
-	cout<<(*this)<<endl;
 	if((Options&qoExpressions)&&(Options&qoReplace))
 	{
 	   RNodeCursor<GSearchQuery,GSearchQueryNode> Cur(*this);
 		for(Cur.Start();!Cur.End();Cur.Next())
 			TreatNode(Cur());
 	}
-	cout<<(*this)<<endl;
 }
 
 
@@ -368,7 +366,7 @@ GSearchQueryNode* GSearchQuery::AddORs(GSearchQueryNode* parent)
 			pToken=New;
 
 		if(Options&qoReplace)
-			New->Value.Token->Concept=Extractor->BestReplace(New->Value.Token->Concept,Caller);
+			Extractor->Expand(this,New,Caller);
 	}
 
 	return(pToken);
@@ -404,7 +402,7 @@ void GSearchQuery::TreatNode(GSearchQueryNode* node)
 	if(node->GetType()!=GSearchQueryNode::nOperator)
 	{
 		if(Options&qoReplace)
-			node->Value.Token->Concept=Extractor->BestReplace(node->Value.Token->Concept,Caller);
+			Extractor->Expand(this,node,Caller);
 		return;
 	}
 
@@ -459,7 +457,7 @@ void GSearchQuery::TreatANDNode(GSearchQueryNode* node,RString& str)
 		str+=node->GetToken()->GetConcept()->GetName();
 
 		if(Options&qoReplace)
-			node->Value.Token->Concept=Extractor->BestReplace(node->Value.Token->Concept,Caller);
+			Extractor->Expand(this,node,Caller);
 	}
 	else if((node->GetOperator()==GSearchQueryNode::oAND))
 	{

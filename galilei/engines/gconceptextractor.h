@@ -160,16 +160,16 @@ public:
 	virtual size_t Search(const R::RString& str,R::RContainer<GConceptRef,true,true>& results,size_t caller);
 
 	/**
-	 * Look if another concept better replace a given concept in a query. For
-	 * example, one may decide that a given thesaurus should be preferred, and
-	 * that other concepts should be replace if possible.
+	 * Look if a query node can be expand with better options (or a set of better
+	 * options). For example, one may decide that a given thesaurus should be
+	 * preferred, and that other concepts should be replace if possible.
 	 *
-	 * By default, this methods just returns the original concept.
-	 * @param original       Original concept.
+	 * By default, this methods does nothing.
+	 * @param query          Query.
+	 * @param node           Node to analyse.
 	 * @param caller         Identifier of the caller (for example a thread).
-	 * @return a pointer to another concept that should replace the original one.
 	 */
-	virtual GConcept* BestReplace(GConcept* original,size_t caller) const;
+	virtual void Expand(GSearchQuery* query,GSearchQueryNode* node,size_t caller);
 
 	/**
 	 * Destructor.
