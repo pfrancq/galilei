@@ -41,6 +41,7 @@
 #include <gsession.h>
 #include <gdoc.h>
 #include <gmetaengine.h>
+#include <gdocfragmentranks.h>
 
 
 //------------------------------------------------------------------------------
@@ -235,7 +236,7 @@ void CGIThread::Search(HTML& html,const R::RString& session,const R::RString& qu
 		Session->RequestMetaEngine(query,GetId());
 		GMetaEngine* Meta(GALILEIApp->GetCurrentPlugIn<GMetaEngine>("MetaEngine"));
 
-		RCursor<GDocFragment> Cur(Meta->GetResults(GetId()));
+		RCursor<GDocFragmentRanks> Cur(Meta->GetResults(GetId()));
 		size_t i;
 		if(Cur.GetNb()==0)
 			html.WriteP(0,"No Results");
@@ -247,12 +248,23 @@ void CGIThread::Search(HTML& html,const R::RString& session,const R::RString& qu
 		for(Cur.Start(),i=0;(!Cur.End())&&(i<20);Cur.Next(),i++)
 		{
 			html.Write(0,"<p>");
-			html.WriteDiv(1,Cur()->GetDoc()->GetTitle(),"color: blue;");
-			html.WriteDiv(1,Cur()->GetDoc()->GetName(),"font-size: 90%; color: green;");
-			RString Fragment(Cur()->GetFragment());
-			if(Fragment[Fragment.GetLen()-1]!='.')
-				Fragment+=" ...";
+			html.WriteDiv(1,Cur()->GetFragment()->GetDoc()->GetTitle(),"color: blue;");
+			html.WriteDiv(1,Cur()->GetFragment()->GetDoc()->GetName(),"font-size: 90%; color: green;");
+			RString Fragment;
+			try
+			{
+				Fragment=Cur()->GetFragment()->GetFragment(200);
+				if(Fragment[Fragment.GetLen()-1]!='.')
+					Fragment+=" ...";
+			}
+			catch(...)
+			{
+				Fragment="!!!Extract not found in the document!!!";
+			}
 			html.WriteDiv(1,Fragment,"font-size: 70%;");
+			RString Info("Patient Age: "+RString::Number(rand()%(80-10)+10)+" ; Hospital Stay: "+RString::Number(rand()%(10-1)+1)+"d");
+			html.WriteDiv(2,Info,"color: red; font-size: 90%");
+			html.Write(1,"</div>");
 			html.Write(0,"</p>");
 		}
 		Session->ClearMetaEngine(GetId());
