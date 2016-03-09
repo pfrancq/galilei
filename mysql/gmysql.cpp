@@ -1845,10 +1845,10 @@ void GStorageMySQL::SaveDocs(const GCommunityDocs& docs)
 	RQuery Del(Db,"DELETE FROM docsbycommunities WHERE communityid="+Num(docs.GetCommunityId()));
 
 	// Save the new documents
-	RCursor<GDocFragment> Doc(docs);
+	RCursor<GDocFragmentRank> Doc(docs);
 	for(Doc.Start();!Doc.End();Doc.Next())
 		RQuery Ins(Db,"INSERT INTO docsbycommunities(communityid,docid,ranking) VALUES("+
-				Num(docs.GetCommunityId())+","+Num(Doc()->GetDoc()->GetId())+","+Num(Doc()->GetRanking())+")");
+			Num(docs.GetCommunityId())+","+Num(Doc()->GetFragment()->GetDoc()->GetId())+","+Num(Doc()->GetRanking())+")");
 }
 
 
@@ -1860,7 +1860,7 @@ void GStorageMySQL::LoadDocs(GCommunityDocs& docs)
 	{
 		GDoc* Doc(Session->GetObj(pDoc,Get[0].ToSizeT()));
 		bool Exist;
-		docs.InsertPtr(new GDocFragment(Doc,0,0,Get[1].ToDouble()));
+		docs.InsertPtr(new GDocFragmentRank(new GDocFragment(Doc,0,0),Get[1].ToDouble(),"",true));
 	}
 }
 
@@ -2060,9 +2060,9 @@ void GStorageMySQL::SaveSugs(const GSugs& sugs,size_t max)
 	}
 	RQuery Del(Db,"DELETE FROM "+Table+" WHERE "+Id+"="+Num(sugs.GetAddresseeId()));
 	RString InsSql("INSERT INTO "+Table+"("+Id+",docid,ranking,proposed,info) VALUES("+Num(sugs.GetAddresseeId())+",");
-	RCursor<GDocFragment> Cur(sugs,0,max);
+	RCursor<GDocFragmentRank> Cur(sugs,0,max);
 	for(Cur.Start();!Cur.End();Cur.Next())
-		RQuery Ins(Db,InsSql+Num(Cur()->GetDoc()->GetId())+","+Num(Cur()->GetRanking())+","+RQuery::SQLValue(Cur()->GetProposed())+RQuery::SQLValue(Cur()->GetInfo())+")");
+		RQuery Ins(Db,InsSql+Num(Cur()->GetFragment()->GetDoc()->GetId())+","+Num(Cur()->GetRanking())+","+RQuery::SQLValue(Cur()->GetFragment()->GetProposed())+RQuery::SQLValue(Cur()->GetInfo())+")");
 }
 
 
@@ -2092,7 +2092,7 @@ void GStorageMySQL::LoadSugs(GSugs& sugs)
 		for(Load.Start();!Load.End();Load.Next())
 		{
 			GDoc* Doc(Session->GetObj(pDoc,Load[0].ToSizeT()));
-			sugs.InsertPtr(new GDocFragment(Doc,0,0,Load[1].ToDouble(),Load[2],Load[3]));
+			sugs.InsertPtr(new GDocFragmentRank(new GDocFragment(Doc,0,0,Load[2]),Load[1].ToDouble(),Load[3],true));
 		}
 	}
 	catch(RDbException e)
