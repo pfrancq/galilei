@@ -187,7 +187,7 @@ void GFilterPDF::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 
 
 //------------------------------------------------------------------------------
-R::RString GFilterPDF::GetTextFragment(GDocFragment*)
+R::RString GFilterPDF::GetTextFragment(GDoc*,size_t,size_t)
 {
 	return("Cannot extract text fragment");
 }

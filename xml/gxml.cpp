@@ -483,13 +483,6 @@ void GXML::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 
 
 //------------------------------------------------------------------------------
-RString GXML::GetTextFragment(GDocFragment* fragment)
-{
-	return(GetFragment(fragment));
-}
-
-
-//------------------------------------------------------------------------------
 void GXML::CreateConfig(void)
 {
 	InsertParam(new RParamValue("ExtractSemantic",true,"Extract the semantic information?"));

@@ -80,13 +80,6 @@ void GFilterHTML::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 
 
 //------------------------------------------------------------------------------
-RString GFilterHTML::GetTextFragment(GDocFragment* fragment)
-{
-	return(GetFragment(fragment));
-}
-
-
-//------------------------------------------------------------------------------
 void GFilterHTML::BeginTag(const RString&,const RString& lName,const RString&)
 {
 	// Find the depth (if any)

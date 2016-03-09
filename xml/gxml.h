@@ -437,14 +437,6 @@ public:
 	virtual void Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file);
 
 	/**
-	 * Extract a text fragment from a file with a given URI. This method should
-	 * be re-implemented by filters.
-	 * @param fragment       Fragment to extract.
-    * @return a string containing the text fragment.
-    */
-	virtual R::RString GetTextFragment(GDocFragment* fragment);
-
-	/**
 	* Create the parameters.
 	*/
 	virtual void CreateConfig(void);

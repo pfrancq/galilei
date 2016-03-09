@@ -360,7 +360,7 @@ void GFilterPS::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 
 
 //------------------------------------------------------------------------------
-R::RString GFilterPS::GetTextFragment(GDocFragment*)
+R::RString GFilterPS::GetTextFragment(GDoc*,size_t,size_t)
 {
 	return("Cannot extract text fragment");
 }
