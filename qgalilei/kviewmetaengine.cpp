@@ -33,6 +33,7 @@
 // include files for R Project
 #include <rstring.h>
 #include <rtextfile.h>
+using namespace std;
 
 
 //-----------------------------------------------------------------------------
@@ -132,8 +133,7 @@ void KViewMetaEngine::QueryEngine(void)
 	{
 		Win->getSession()->RequestMetaEngine(FromQString(TxtQuery->text()),0);
 		GMetaEngine* Meta(GALILEIApp->GetCurrentPlugIn<GMetaEngine>("MetaEngine"));
-
-		Results->Set(QGObjectsList::Docs,Meta,NbRes->value(),0);
+		Results->Set(QGObjectsList::Docs,Meta,NbRes->value(),200,0);
 		if(Meta->GetNbResults(0)==0)
 			ResLabel->setText("<b>No results</b>");
 		else if(Meta->GetNbResults(0)>NbRes->value())
