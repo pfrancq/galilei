@@ -54,8 +54,8 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GDocFragmentRank::GDocFragmentRank(GDocFragment* fragment,double ranking,const R::RString info)
-	: Fragment(fragment), Ranking(ranking), Info(info)
+GDocFragmentRank::GDocFragmentRank(GDocFragment* fragment,double ranking,const R::RString info,bool delfragment)
+	: Fragment(fragment), DelFragment(delfragment), Ranking(ranking), Info(info)
 {
  	if(!Fragment)
 		mThrowGException("Cannot have a null document fragment reference");
@@ -73,9 +73,17 @@ int GDocFragmentRank::Compare(const GDocFragmentRank& ranking) const
 
 
 //------------------------------------------------------------------------------
+int GDocFragmentRank::Compare(const GDocFragment::Search& search) const
+{
+	int Comp(Fragment->Compare(search));
+	return(Comp);
+}
+
+
+//------------------------------------------------------------------------------
 int GDocFragmentRank::Compare(const R::RString& info) const
 {
- 	return(Info.Compare(info));
+	return(Info.Compare(info));
 }
 
 
@@ -90,4 +98,15 @@ int GDocFragmentRank::SortOrderRanking(const void* a,const void* b)
 		return(-1);
 	else
 		return(1);
+}
+
+
+//------------------------------------------------------------------------------
+GDocFragmentRank::~GDocFragmentRank(void)
+{
+	if(DelFragment)
+	{
+		delete Fragment;
+		Fragment=0;
+	}
 }

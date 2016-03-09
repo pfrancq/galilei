@@ -77,43 +77,42 @@ R::RURI GFilter::GetValidURI(const R::RURI& uri,bool& mustdelete)
 
 
 //------------------------------------------------------------------------------
-RString GFilter::GetTextFragment(GDocFragment* fragment)
+RString GFilter::GetTextFragment(GDoc* doc,size_t begin,size_t end)
 {
-	//cout<<"Extract at "<<fragment->GetPos()<<" in ["<<fragment->GetBegin()<<","<<fragment->GetEnd()<<"]"<<endl;
+	if(begin>end)
+		mThrowGException("Text fragment problem begin ("+RString::Number(begin)+") is greater than end ("+RString::Number(end));
 
 	// Look the size to print
-	size_t Begin(fragment->GetBegin());
-	size_t End(fragment->GetEnd());
-	size_t Size(End-Begin+1);
+	size_t Size(end-begin+1);
 
 	// Extract maximum 205 characters
 	RString Fragment;
-	Fragment.SetLen(205);
+	Fragment.SetLen(Size);
 	Fragment.SetLen(0);
 
 	// Open the file and put it at the beginning of the window position
-	GFilter* Filter(GALILEIApp->FindScheme(fragment->GetDoc()));
+	GFilter* Filter(GALILEIApp->FindScheme(doc));
 	bool Delete,ToManage;
 	RURI URI;
 	if(Filter)
 	{
 		ToManage=true;
-		URI=Filter->GetValidURI(fragment->GetDoc()->GetName(),Delete);
+		URI=Filter->GetValidURI(doc->GetName(),Delete);
 	}
 	else
 	{
 		ToManage=false;
-		URI=fragment->GetDoc()->GetName();
+		URI=doc->GetName();
 	}
 	RTextFile File(URI,"utf-8");
 	File.Open(RIO::Read);
-	File.Seek(Begin);
+	File.Seek(begin);
 
 	// Extract the fragment
 	while(!File.End())
 	{
 		RChar c(File.GetChar());
-		if(File.GetPos()>End)
+		if(File.GetPos()>end)
 			break;
 		Fragment+=c;
 	}

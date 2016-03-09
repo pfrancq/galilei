@@ -49,7 +49,6 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <gdocfragmentrank.h>
 
 
 //------------------------------------------------------------------------------
@@ -59,25 +58,35 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GDocFragment class provides a representation for a fragment of a document.
-* In practice, a fragment is centred at a given record (for example the
-* position of word) and is defined by a window (such as a sentence).
-*
-* What exactly a window is depends from the type of document and the search
-* engine. In particular, the GFilter class provides a method that builds a
-* string representation of a given fragment.
-*
-* A fragment can be associated with a selected record that defines it (such as
-* a XML tag) and by a list of child records that select the main concept. But a
-* fragment can define a whole document. In this case, the selected record is
-* null.
-*
-* Two document fragments are considered as identical if they are related to the
-* same document and if they start at the same position
-* @warning The GDdocFragment class manages pointers to GConceptRecord. It is
-* never responsible for their deallocation.
-* @short Document Fragment.
-*/
+ * The GDocFragment class provides a representation for a document fragment. In
+ * practice, a fragment is anchored at a position and is defined by a text
+ * window.
+ *
+ * Each fragment is associated to different (concept) nodes that are responsible
+ * for its selection in a query:
+ * - a root node (Root).
+ * - a set of child nodes (Children).
+ *
+ * There are three kinds of fragments :
+ * -# A fragment that represents a whole document. The root node is always null,
+ *    and the child nodes are those responsible for the selection.
+ * -# A fragment that represents a single node (the root node). This is the case
+ *    of a fragment in a flat document selected by a given word.
+ * -# A fragment that is rooted in a node (the root one) and was selected by a
+ *    set of child nodes. This can be the case of a XML fragment selected by two
+ *    tags. The root node is then the deepest common parent of those child
+ *    nodes.
+ *
+ * Each search engine defines, eventually based on the document type, what a
+ * window is. To extract the text fragment of the document, the corresponding
+ * filter (GFilter class) is used.
+ *
+ * Two document fragments are considered as identical if they are related to the
+ * same document and if they start at the same position
+ * @warning The GDdocFragment class manages pointers to GConceptRecord. It is
+ * never responsible for their deallocation.
+ * @short Document Fragment.
+ */
 class GDocFragment
 {
 public:
@@ -119,9 +128,9 @@ private:
 	GDoc* Doc;
 
 	/**
-	 * Concept record.
+	 * Root concept record.
 	 */
-	const GConceptRecord* Rec;
+	const GConceptRecord* Root;
 
 	/**
 	* The fragment.
@@ -149,19 +158,9 @@ private:
 	size_t End;
 
 	/**
-	* The global ranking for the document fragment.
-	*/
-	double Ranking;
-
-	/**
 	 * Date where the fragment was proposed.
 	 */
 	R::RDate Proposed;
-
-	/**
-	 * An information about the fragment.
-	 */
-	R::RString Info;
 
 	/**
 	 * Does the fragment correspond to the whole document ?
@@ -169,7 +168,7 @@ private:
 	bool WholeDoc;
 
 	/**
-	 * Child records used by the query to select the node.
+	 * Child concept records used by the query to select the node.
     */
 	R::RContainer<const GConceptRecord,false,false> Children;
 
@@ -178,15 +177,14 @@ public:
 	/**
 	* Constructor of a document fragment.
 	* @param doc             Document.
-	* @param rec             Concept record.
+	* @param root            Root concept record.
 	* @param pos             Position in the fragment centre.
 	* @param spos            Syntactic position of the fragment centre.
 	* @param begin           Beginning position of the window.
 	* @param end             End position of the window.
-	* @param ranking         Ranking of the fragment.
 	* @param info            Information.
 	*/
-	GDocFragment(GDoc* doc,const GConceptRecord* rec,size_t pos,size_t spos,size_t begin,size_t end,double ranking=0.0,const R::RString& info=R::RString::Null,const R::RDate& proposed=R::RDate::Null);
+	GDocFragment(GDoc* doc,const GConceptRecord* root,size_t pos,size_t spos,size_t begin,size_t end,const R::RDate& proposed=R::RDate::Null);
 
 	/**
 	* Constructor of a document fragment representing the whole document. A
@@ -194,10 +192,9 @@ public:
 	* @param doc             Document.
 	* @param begin           Beginning position of the window.
 	* @param end             End position of the window.
-	* @param ranking         Ranking of the fragment.
 	* @param info            Information.
 	*/
-	GDocFragment(GDoc* doc,size_t begin,size_t end,double ranking=0.0,const R::RString& info=R::RString::Null,const R::RDate& proposed=R::RDate::Null);
+	GDocFragment(GDoc* doc,size_t begin,size_t end,const R::RDate& proposed=R::RDate::Null);
 
 	/**
 	* Method to compare document fragments.
@@ -229,12 +226,12 @@ public:
 	bool IsFlat(void) const;
 
 	/**
-	* Get the selected concept record corresponding to the fragment.
+	* Get the root concept node corresponding to the fragment.
 	* @return a pointer to a GConceptRecord.
 	* @warning The pointer may be null if the fragment corresponds to the whole
 	* document or if the structure trees are not built during the analysis.
 	*/
-	const GConceptRecord* GetRecord(void) const {return(Rec);}
+	const GConceptRecord* GetRoot(void) const {return(Root);}
 
 	/**
     * @return the number of children.
@@ -277,26 +274,12 @@ public:
 	size_t GetEnd(void) const {return(End);}
 
 	/**
-	* Get the text fragment. If necessary, it is extracted from the file.
-	* @return a R::RString.
-	*/
-	R::RString GetFragment(void);
-
-	/**
-	 * @return the information associated with a suggestion.
+	 * Get the text fragment. If necessary, it is extracted from the file.
+	 * @param max            Maximum number of character to extract. If zero,
+	 *                       the whole fragment is extracted.
+	 * @return a R::RString.
 	 */
-	R::RString GetInfo(void) const {return(Info);}
-
-	/**
-	 * Set the global ranking of the document fragment.
-    * @param ranking        Value to assign.
-    */
-	void SetRanking(double ranking);
-
-	/**
-	* Get the global ranking associated to this document.
-	*/
-	double GetRanking(void) const {return(Ranking);}
+	R::RString GetFragment(size_t max=0);
 
 	/**
 	 * Add a child record to the document fragment. The interval of the fragment
@@ -330,15 +313,6 @@ public:
 	 * Print some information related to the document fragment.
     */
 	void Print(void) const;
-
-	/**
-	* Static function used to order the document fragments by ranking (the
-	* highest first). This function can be used with the RContainer::ReOrder
-	* method.
-	* @param a              Pointer to the first object.
-	* @param b              Pointer to the second object.
-	*/
-	static int SortOrderRanking(const void* a,const void* b);
 
 	/**
 	* Destruct.

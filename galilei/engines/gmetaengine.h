@@ -48,27 +48,30 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 /**
 * The GMetaEngine class provides a representation for a generic meta-search
-* engine. In practice, it manages a set of results (document fragments) for a
-* given query passed by the user.
-*
-* In practice, a meta-engine does the following thinks
-* -# It calls the method PrepareRequest(GSearchQuery*). By default, it
-*    clears the old results and call GEngine::Clear(GMetaEngine*,GSearchQuery*)
+ * engine. In practice, it manages the document fragments retrieved by the
+ * different engines. Internally, it maintains two containers:
+ * -# A container of document references, each document reference containing
+ *    the document fragments retrieved.
+ * -# A global list of document fragments retrieved and ranked.
+ *
+ * In practice, a meta-engine does the following thinks
+ * -# It calls the method PrepareRequest(GSearchQuery*). By default, it
+ *    clears the old results and call GEngine::Clear(GMetaEngine*,GSearchQuery*)
  *   for each enabled engine.
-* -# It calls the method RequestEngines(GSearchQuery*). By default, the
-*    method forwards the query passed to each enabled engine. Inheriting classes
-*    may redefine this method to adapt the query to each engine or to select
-*    specific engines. Each time a engine add a fragment as a result, the
-*    method FragmentRankAdded(GDocFragmentRank*,GEngine*) is called.
-* -# It calls the method ComputeGlobalRanking(void) to compute a global ranking.
-*    This method should be overloaded by inheriting classes.
-* -# The results are ranked by ascending ranking.
-* -# It calls the method PostRequest(void). By default, this method does
-*    nothing.
-*
-* See the documentation related to GPlugIn for more general information.
-* @short Meta-search Engine
-*/
+ * -# It calls the method RequestEngines(GSearchQuery*). By default, the
+ *    method forwards the query passed to each enabled engine. Inheriting
+ *    classes may redefine this method to adapt the query to each engine or to
+ *    select specific engines. Each time a engine add a fragment as a result,
+ *    the method FragmentRankAdded(GDocFragmentRank*,GEngine*) is called.
+ * -# It calls the method ComputeGlobalRanking(void) to compute a global ranking.
+ *    This method should be overloaded by inheriting classes.
+ * -# The results are ranked by ascending ranking.
+ * -# It calls the method PostRequest(void). By default, this method does
+ *    nothing.
+ *
+ * See the documentation related to GPlugIn for more general information.
+ * @short Meta-search Engine
+ */
 class GMetaEngine : public GPlugIn, R::RDownloadFile
 {
 	/*
@@ -83,14 +86,9 @@ class GMetaEngine : public GPlugIn, R::RDownloadFile
 		R::RContainer<GDocRef,true,true> ResultsByDocs;
 
 		/**
-		* All document fragments.
-		*/
-		R::RContainer<GDocFragment,false,false> Results;
-
-		/**
 		 * All the rankings for each document fragments.
 		 */
-		R::RContainer<GDocFragmentRanks,true,true> Rankings;
+		R::RContainer<GDocFragmentRanks,true,true> Results;
 
 		/**
 		 * Constructor.
@@ -140,9 +138,9 @@ private:
 	 * @param engine         Engine from which the result come.
 	 * @param caller         Identifier of the caller (for example a thread).
 	 * @warning The deallocation of the record must be managed by the caller.
-	 * @return a pointer to a GDocFragment.
+	 * @return a pointer to a GDocFragmentRank.
 	 */
-	GDocFragment* AddResult(GDoc* doc,const GConceptRecord* rec,size_t pos,size_t spos,size_t first,size_t last,double ranking,GEngine* engine,size_t caller);
+	GDocFragmentRank* AddResult(GDoc* doc,const GConceptRecord* rec,size_t pos,size_t spos,size_t first,size_t last,double ranking,GEngine* engine,size_t caller);
 
 	/**
 	 * Add a fragment from a known document as result to the meta-engine. In
@@ -160,9 +158,9 @@ private:
 	 * @param engine         Engine from which the result come.
 	 * @param caller         Identifier of the caller (for example a thread).
 	 * @warning The deallocation of the record must be managed by the caller.
-	 * @return a pointer to a GDocFragment.
+	 * @return a pointer to a GDocFragmentRank.
 	 */
-	GDocFragment* AddResult(size_t docid,const GConceptRecord* rec,size_t spos,size_t pos,size_t first,size_t last,double ranking,GEngine* engine,size_t caller);
+	GDocFragmentRank* AddResult(size_t docid,const GConceptRecord* rec,size_t spos,size_t pos,size_t first,size_t last,double ranking,GEngine* engine,size_t caller);
 
 protected:
 
@@ -179,7 +177,7 @@ protected:
 	GConceptExtractor* GetExtractor(void) const {return(Extractor);}
 
 	/**
-	 * method called each time an engine  add a given document fragment as a
+	 * Method called each time an engine adds a given document fragment as a
 	 * result. By default, the method does nothing.
     * @param rank           Document fragment added.
 	 * @param engine         Engine from which the result come.
@@ -249,13 +247,7 @@ public:
 	 * @param caller         Identifier of the caller (for example a thread).
 	 * @return a cursor on GDocRef.
 	 */
-	R::RCursor<GDocFragment> GetResults(size_t caller);
-
-	/**
-	 * @return a cursor of the rankings retrieved by the meta-search engine.
-	 * @param caller         Identifier of the caller (for example a thread).
-	 */
-	R::RCursor<GDocFragmentRanks> GetRankings(size_t caller);
+	R::RCursor<GDocFragmentRanks> GetResults(size_t caller);
 
 	/**
 	 * @return the number of results.

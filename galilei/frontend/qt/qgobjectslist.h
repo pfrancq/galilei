@@ -137,9 +137,10 @@ public:
 	 * @param type           Type of the list.
 	 * @param engine         Engine.
 	 * @param nbres          Number of results to show.
+	 * @param fragsize       Maximum number of characters of shown fragments.
 	 * @param caller         Identifier of the caller (for example a thread).
 	 */
-	void Set(oType type,GMetaEngine* engine,size_t nbres,size_t caller);
+	void Set(oType type,GMetaEngine* engine,size_t nbres,size_t fragsize,size_t caller);
 
 	/**
 	 * Get the tree.

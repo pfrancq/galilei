@@ -49,7 +49,7 @@ namespace GALILEI{
 /**
  * The GDocFragmentRanks class provides a list of ranking for a given document
  * fragment. Each ranking is identified by an information.
- * @short Document Fragment's Rankings
+ * @short Document Fragments Rankings
  */
 class GDocFragmentRanks : R::RContainer<GDocFragmentRank,true,true>
 {
@@ -57,6 +57,11 @@ class GDocFragmentRanks : R::RContainer<GDocFragmentRank,true,true>
 	 * Document Fragment.
 	 */
 	GDocFragment* Fragment;
+
+	/**
+	 * Global ranking of the fragment.
+	 */
+	double Ranking;
 
 public:
 
@@ -98,6 +103,25 @@ public:
 	* @return a cursor on the rankings of the document fragment.
 	*/
 	R::RCursor<GDocFragmentRank> GetRankings(void) const;
+
+	/**
+	 * @return the global ranking of the document fragment.
+	 */
+	double GetRanking(void) {return(Ranking);}
+
+	/**
+	 * Set the global ranking for the document fragment.
+	 * @param ranking        Ranking.
+	 */
+	void SetRanking(double ranking) {Ranking=ranking;}
+
+	/**
+	* Static function used to order the ranking (the highest first). This
+	* function can be used with the RContainer::ReOrder method.
+	* @param a              Pointer to the first object.
+	* @param b              Pointer to the second object.
+	*/
+	static int SortOrderRanking(const void* a,const void* b);
 };
 
 

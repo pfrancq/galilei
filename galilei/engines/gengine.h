@@ -89,7 +89,7 @@ class GEngine : public GPlugIn
 	/**
 	* All document fragments.
 	*/
-	R::RContainer<GDocFragment,false,false> Results;
+	R::RContainer<GDocFragmentRank,false,false> Results;
 
 	/**
 	 * Ranking method associated to the engine.
@@ -149,12 +149,11 @@ public:
 	 *                       (\f$0\leq ranking \leq 1\f$). When a ranking
 	 *                       algorithm is associated to the engine, it will
 	 *                       overwrite this ranking.
-	 * @param engine         Engine from which the result come.
 	 * @param caller         Identifier of the caller (for example a thread).
 	 * @warning The deallocation of the record must be managed by the caller.
 	 * @return a pointer to a GDocFragment.
 	 */
-	GDocFragment* AddResult(GDoc* doc,const GConceptRecord* rec,size_t pos,size_t spos,size_t first,size_t last,double ranking,size_t caller);
+	GDocFragmentRank* AddResult(GDoc* doc,const GConceptRecord* rec,size_t pos,size_t spos,size_t first,size_t last,double ranking,size_t caller);
 
 	/**
  	 * Add a fragment from a known document as result to the meta-engine. In
@@ -169,12 +168,34 @@ public:
 	 *                       (\f$0\leq ranking \leq 1\f$). When a ranking
 	 *                       algorithm is associated to the engine, it will
 	 *                       overwrite this ranking.
-	 * @param engine         Engine from which the result come.
 	 * @param caller         Identifier of the caller (for example a thread).
 	 * @warning The deallocation of the record must be managed by the caller.
 	 * @return a pointer to a GDocFragment.
 	 */
-	GDocFragment* AddResult(size_t docid,const GConceptRecord* rec,size_t spos,size_t pos,size_t first,size_t last,double ranking,size_t caller);
+	GDocFragmentRank* AddResult(size_t docid,const GConceptRecord* rec,size_t spos,size_t pos,size_t first,size_t last,double ranking,size_t caller);
+
+	/**
+ 	 * Add a fragment from a known document as result to the meta-engine. In
+	 * practice, it adds an entry to the container of results.
+	 * @param fragment       Fragment to add.
+	 * @param ranking        Ranking of the document given by the engine
+	 *                       (\f$0\leq ranking \leq 1\f$). When a ranking
+	 *                       algorithm is associated to the engine, it will
+	 *                       overwrite this ranking.
+	 * @param caller         Identifier of the caller (for example a thread).
+	 * @warning The deallocation of the record must be managed by the caller.
+	 * @return a pointer to a GDocFragment.
+	 */
+	inline GDocFragmentRank* AddResult(GDocFragment* fragment,double ranking,size_t caller)
+	{
+		AddResult(fragment->GetDoc(),
+					 fragment->GetRoot(),
+					 fragment->GetPos(),
+					 fragment->GetSyntacticPos(),
+					 fragment->GetBegin(),
+				    fragment->GetEnd(),
+				    ranking,caller);
+	}
 
 private:
 
@@ -208,11 +229,11 @@ public:
 	double GetWeight(void) const {return(Weight);}
 
 	/**
-	* Get all the fragments retrieved by documents.
+	* Get all the fragments retrieved by the engine.
 	* @param caller         Identifier of the caller (for example a thread).
-	* @return a cursor on GDocRef.
+	* @return a cursor on GDocFragmentRank.
 	*/
-	R::RCursor<GDocFragment> GetResults(size_t caller);
+	R::RCursor<GDocFragmentRank> GetResults(size_t caller);
 
 	/**
 	 * Get the number of document fragments selected by the engine.
@@ -227,7 +248,7 @@ public:
 	 * @param caller         Identifier of the caller (for example a thread).
     * @return the number of document fragments.
     */
-	size_t GetTabResults(const GDocFragment** tab,size_t caller) const;
+	size_t GetTabResults(const GDocFragmentRank** tab,size_t caller) const;
 
 	/**
 	 * Get an array of the document fragments selected by the engine.
@@ -235,7 +256,7 @@ public:
 	 * @param caller         Identifier of the caller (for example a thread).
     * @return the number of document fragments.
     */
-	size_t GetTabResults(GDocFragment** tab,size_t caller);
+	size_t GetTabResults(GDocFragmentRank** tab,size_t caller);
 
 	/**
 	 * Create the configuration (attached to the session).

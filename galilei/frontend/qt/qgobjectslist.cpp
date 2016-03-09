@@ -53,6 +53,7 @@
 #include <gsugs.h>
 #include <gfdbk.h>
 #include <gclass.h>
+#include <gdocfragmentranks.h>
 using namespace std;
 using namespace R;
 using namespace GALILEI;
@@ -579,10 +580,10 @@ void QGObjectsList::Set(oType type,GProfile* profile)
 			GSugs Sugs(otProfile,profile->GetId(),40);
 			Session->GetStorage()->LoadSugs(Sugs);
 			Sugs.ReOrder(GDocFragmentRank::SortOrderRanking);
-			RCursor<GDocFragment> Cur(Sugs);
+			RCursor<GDocFragmentRank> Cur(Sugs);
 			for(Cur.Start();!Cur.End();Cur.Next())
 			{
-				new QGObject(List,Cur()->GetDoc(),Cur()->GetInfo(),Cur()->GetRanking(),Cur()->GetProposed());
+				new QGObject(List,Cur()->GetFragment()->GetDoc(),Cur()->GetInfo(),Cur()->GetRanking(),Cur()->GetFragment()->GetProposed());
 			}
 			break;
 		}
@@ -625,7 +626,7 @@ void QGObjectsList::Set(oType type,GCommunity* community)
 
 
 //-----------------------------------------------------------------------------
-void QGObjectsList::Set(oType type,GMetaEngine* engine,size_t nbres,size_t caller)
+void QGObjectsList::Set(oType type,GMetaEngine* engine,size_t nbres,size_t fragsize,size_t caller)
 {
 	if((!engine)||(type!=Docs))
 		return;
@@ -636,20 +637,20 @@ void QGObjectsList::Set(oType type,GMetaEngine* engine,size_t nbres,size_t calle
 	{
 		QTreeWidgetItem* DocItem;
 		GDoc* Doc(0);
-		RCursor<GDocFragment> Cur(engine->GetResults(caller));
+		RCursor<GDocFragmentRanks> Cur(engine->GetResults(caller));
 		size_t i;
 		for(Cur.Start(),i=0;(!Cur.End())&&(i<nbres);Cur.Next(),i++)
 		{
-			if(Cur()->GetDoc()!=Doc)
+			if(Cur()->GetFragment()->GetDoc()!=Doc)
 			{
-				Doc=Cur()->GetDoc();
-				DocItem=new QGObject(List,Cur()->GetDoc());
+				Doc=Cur()->GetFragment()->GetDoc();
+				DocItem=new QGObject(List,Cur()->GetFragment()->GetDoc());
 			}
 			QTreeWidgetItem* Item(new QTreeWidgetItem(DocItem));
 			QString Text;
 			try
 			{
-				Text=PrintExtract(Cur()->GetFragment());
+				Text=PrintExtract(Cur()->GetFragment()->GetFragment(fragsize));
 			}
 			catch(...)
 			{

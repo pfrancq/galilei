@@ -304,28 +304,27 @@ void GSimulator::ShareDocuments(void)
 			Session->GetStorage()->LoadSugs(Sugs);
 			Sugs.ReOrder(GDocFragmentRank::SortOrderRanking);
 
-			RCursor<GDocFragment> Cur(Sugs);
+			RCursor<GDocFragmentRank> Cur(Sugs);
 			for(Cur.Start(),i=NbDocsAssess+1;(!Cur.End())&&(--i);Cur.Next())
 			{
-				GDoc* doc=Session->GetObj(pDoc,Cur()->GetDoc()->GetId());
-				if(!doc) continue;
+				GDoc* Doc(Cur()->GetFragment()->GetDoc());
 
 				// Look if 'OK'
-				if(Session->IsFromSubject(Session->GetObj(pDoc,Cur()->GetDoc()->GetId()),Session->GetObj(pSubject,Profile())))
+				if(Session->IsFromSubject(Doc,Session->GetObj(pSubject,Profile())))
 				{
-					Session->InsertFdbk(Profile()->GetId(),Cur()->GetDoc()->GetId(),GFdbk::ErrorFdbk(ftRelevant,PercErr,Session->GetRandom()),RDate::GetToday());
+					Session->InsertFdbk(Profile()->GetId(),Doc->GetId(),GFdbk::ErrorFdbk(ftRelevant,PercErr,Session->GetRandom()),RDate::GetToday());
 				}
 				else
 				{
 					// Look If 'KO'
-					if(Session->IsFromParentSubject(Session->GetObj(pDoc,Cur()->GetDoc()->GetId()),Session->GetObj(pSubject,Profile())))
+					if(Session->IsFromParentSubject(Session->GetObj(pDoc,Doc->GetId()),Session->GetObj(pSubject,Profile())))
 					{
-						Session->InsertFdbk(Profile()->GetId(),Cur()->GetDoc()->GetId(),GFdbk::ErrorFdbk(ftFuzzyRelevant,PercErr,Session->GetRandom()),RDate::GetToday());
+						Session->InsertFdbk(Profile()->GetId(),Doc->GetId(),GFdbk::ErrorFdbk(ftFuzzyRelevant,PercErr,Session->GetRandom()),RDate::GetToday());
 					}
 					else
 					{
 						// Must be H
-						Session->InsertFdbk(Profile()->GetId(),Cur()->GetDoc()->GetId(),GFdbk::ErrorFdbk(ftIrrelevant,PercErr,Session->GetRandom()),RDate::GetToday());
+						Session->InsertFdbk(Profile()->GetId(),Doc->GetId(),GFdbk::ErrorFdbk(ftIrrelevant,PercErr,Session->GetRandom()),RDate::GetToday());
 					}
 				}
 			}

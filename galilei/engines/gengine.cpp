@@ -42,6 +42,7 @@
 #include <gmetaengine.h>
 #include <ggalileiapp.h>
 #include <gcomputerank.h>
+#include <gdocfragmentrank.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -81,7 +82,7 @@ void GEngine::Clear(GMetaEngine* metaengine,GSearchQuery*,size_t caller)
 
 
 //------------------------------------------------------------------------------
-GDocFragment* GEngine::AddResult(GDoc* doc,const GConceptRecord* rec,size_t pos,size_t spos,size_t first,size_t last,double ranking,size_t caller)
+GDocFragmentRank* GEngine::AddResult(GDoc* doc,const GConceptRecord* rec,size_t pos,size_t spos,size_t first,size_t last,double ranking,size_t caller)
 {
 	if(!MetaEngine)
 		mThrowGException("Cannot call this method because no meta-engine valid");
@@ -90,7 +91,7 @@ GDocFragment* GEngine::AddResult(GDoc* doc,const GConceptRecord* rec,size_t pos,
 
 
 //------------------------------------------------------------------------------
-GDocFragment* GEngine::AddResult(size_t docid,const GConceptRecord* rec,size_t pos,size_t spos,size_t first,size_t last,double ranking,size_t caller)
+GDocFragmentRank* GEngine::AddResult(size_t docid,const GConceptRecord* rec,size_t pos,size_t spos,size_t first,size_t last,double ranking,size_t caller)
 {
 	if(!MetaEngine)
 		mThrowGException("Cannot call this method because no meta-engine valid");
@@ -108,9 +109,9 @@ void GEngine::Request(GSearchQuery* query,size_t caller)
 
 
 //-----------------------------------------------------------------------------
-R::RCursor<GDocFragment> GEngine::GetResults(size_t caller)
+R::RCursor<GDocFragmentRank> GEngine::GetResults(size_t caller)
 {
-	return(R::RCursor<GDocFragment>(Results));
+	return(R::RCursor<GDocFragmentRank>(Results));
 }
 
 
@@ -122,14 +123,14 @@ size_t GEngine::GetNbResults(size_t caller) const
 
 
 //-----------------------------------------------------------------------------
-size_t GEngine::GetTabResults(const GDocFragment** tab,size_t caller) const
+size_t GEngine::GetTabResults(const GDocFragmentRank** tab,size_t caller) const
 {
 	return(Results.GetTab(tab));
 }
 
 
 //-----------------------------------------------------------------------------
-size_t GEngine::GetTabResults(GDocFragment** tab,size_t caller)
+size_t GEngine::GetTabResults(GDocFragmentRank** tab,size_t caller)
 {
 	return(Results.GetTab(tab));
 }

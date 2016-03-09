@@ -47,8 +47,7 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
- * The GDocRef class provides a reference on a document. It manages a container
- * of GDocFragment.
+ * The GDocRef class provides a reference of a document and a set of fragments.
  * @short Document Reference.
  */
 class GDocRef

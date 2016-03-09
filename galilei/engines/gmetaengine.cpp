@@ -56,7 +56,7 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GMetaEngine::Internal::Internal(void)
-	: ResultsByDocs(200), Results(200), Rankings(200)
+	: ResultsByDocs(200), Results(200)
 {
 }
 
@@ -84,7 +84,7 @@ void GMetaEngine::Init(void)
 
 
 //------------------------------------------------------------------------------
-GDocFragment* GMetaEngine::AddResult(GDoc* doc,const GConceptRecord* rec,size_t pos,size_t spos,size_t first,size_t last,double ranking,GEngine* engine,size_t caller)
+GDocFragmentRank* GMetaEngine::AddResult(GDoc* doc,const GConceptRecord* rec,size_t pos,size_t spos,size_t first,size_t last,double ranking,GEngine* engine,size_t caller)
 {
 	if(!doc)
 		mThrowGException("Unknown document");
@@ -95,19 +95,18 @@ GDocFragment* GMetaEngine::AddResult(GDoc* doc,const GConceptRecord* rec,size_t 
 	bool Exist;
 	GDocRef* Ref(Data.Get(caller)->ResultsByDocs.GetInsertPtr(doc));
 	GDocFragment* Fragment(Ref->AddFragment(rec,pos,spos,first,last,Exist));
-	if(!Exist)
-		engine->Results.InsertPtr(Fragment);
 
 	// Insert a ranking for that fragment
-	GDocFragmentRanks* Ranks(Data.Get(caller)->Rankings.GetInsertPtr(Fragment));
+	GDocFragmentRanks* Ranks(Data.Get(caller)->Results.GetInsertPtr(Fragment));
 	GDocFragmentRank* Rank(Ranks->AddRanking(ranking,engine->GetName()));
+	engine->Results.InsertPtr(Rank);
 	FragmentRankAdded(Rank,engine,caller);
-	return(Fragment);
+	return(Rank);
 }
 
 
 //------------------------------------------------------------------------------
-GDocFragment* GMetaEngine::AddResult(size_t docid,const GConceptRecord* rec,size_t pos,size_t spos,size_t first,size_t last,double ranking,GEngine* engine,size_t caller)
+GDocFragmentRank* GMetaEngine::AddResult(size_t docid,const GConceptRecord* rec,size_t pos,size_t spos,size_t first,size_t last,double ranking,GEngine* engine,size_t caller)
 {
 	// Find the document reference
 	GDoc* Doc(Session->GetObj(pDoc,docid));
@@ -123,7 +122,7 @@ GConceptExtractor* GMetaEngine::CreateConceptExtractor(void)
 
 
 //------------------------------------------------------------------------------
-void GMetaEngine::FragmentRankAdded(GDocFragmentRank*s,GEngine*,size_t caller)
+void GMetaEngine::FragmentRankAdded(GDocFragmentRank*,GEngine*,size_t caller)
 {
 }
 
@@ -134,7 +133,6 @@ void GMetaEngine::PrepareRequest(GSearchQuery* query,size_t caller)
 	// Clear the previous results
 	Data.Get(caller)->ResultsByDocs.Clear();
 	Data.Get(caller)->Results.Clear();
-	Data.Get(caller)->Rankings.Clear();
 	RCastCursor<GPlugIn,GEngine> Cur(GALILEIApp->GetPlugIns<GEngine>("Engine"));
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->Clear(this,query,caller);
@@ -182,14 +180,14 @@ void GMetaEngine::Request(GSearchQuery* query,size_t caller)
 
 	// Compute the global rankings and Sort the results by rankings
 	ComputeGlobalRanking(caller);
-	RCursor<GDocRef> Refs(GetResultsByDocs(caller));
+/*	RCursor<GDocRef> Refs(GetResultsByDocs(caller));
 	for(Refs.Start();!Refs.End();Refs.Next())
 	{
 		RCursor<GDocFragment> Fragment(Refs()->GetFragments());
 		for(Fragment.Start();!Fragment.End();Fragment.Next())
-		Data.Get(caller)->Results.InsertPtr(Fragment());
-	}
-	Data.Get(caller)->Rankings.ReOrder(GDocFragment::SortOrderRanking);
+			Data.Get(caller)->Results.InsertPtr(Fragment());
+	}*/
+	Data.Get(caller)->Results.ReOrder(GDocFragmentRanks::SortOrderRanking);
 
 	PostRequest(caller);
 }
@@ -203,16 +201,9 @@ R::RCursor<GDocRef> GMetaEngine::GetResultsByDocs(size_t caller)
 
 
 //-----------------------------------------------------------------------------
-R::RCursor<GDocFragment> GMetaEngine::GetResults(size_t caller)
+R::RCursor<GDocFragmentRanks> GMetaEngine::GetResults(size_t caller)
 {
-	return(R::RCursor<GDocFragment>(Data.Get(caller)->Results));
-}
-
-
-//-----------------------------------------------------------------------------
-R::RCursor<GDocFragmentRanks> GMetaEngine::GetRankings(size_t caller)
-{
-	return(R::RCursor<GDocFragmentRanks>(Data.Get(caller)->Rankings));
+	return(R::RCursor<GDocFragmentRanks>(Data.Get(caller)->Results));
 }
 
 

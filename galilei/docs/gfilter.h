@@ -104,12 +104,12 @@ public:
 	/**
 	 * Extract a text fragment. This method can be re-implemented by filters.
 	 *
-	 * By default, it opens a simple text file in utf-8 and extract the text
-	 * window defined.
-	 * @param fragment       Fragment to extract.
+	 * @param doc            Document to extract from.
+	 * @param begin          Beginning position.
+	 * @param end            Ending position.
     * @return a string containing the text fragment.
     */
-	virtual R::RString GetTextFragment(GDocFragment* fragment);
+	virtual R::RString GetTextFragment(GDoc* doc,size_t begin,size_t end);
 
 	/**
 	* Destruct the filter.

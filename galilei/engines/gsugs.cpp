@@ -47,14 +47,14 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 GSugs::GSugs(size_t max)
-	: RContainer<GDocFragment,true,false>(max), Type(otCommunity), Id(0)
+	: RContainer<GDocFragmentRank,true,false>(max), Type(otCommunity), Id(0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
 GSugs::GSugs(tObjType type,size_t id,size_t max)
-	: RContainer<GDocFragment,true,false>(max), Type(type), Id(id)
+	: RContainer<GDocFragmentRank,true,false>(max), Type(type), Id(id)
 {
 	if((Type!=otProfile)&&(Type!=otCommunity))
 		mThrowGException("Suggestions only for profiles or groups");
@@ -75,5 +75,5 @@ void GSugs::SetAddresseeId(tObjType type,size_t id)
 {
 	Id=id;
 	Type=type;
-	RContainer<GDocFragment,true,false>::Clear();
+	RContainer<GDocFragmentRank,true,false>::Clear();
 }

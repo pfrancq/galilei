@@ -90,7 +90,7 @@ public:
 //------------------------------------------------------------------------------
 /**
  * The GConceptExtractor class provides a mechanism to search for a set of
- * concepts related to a given string.
+ * concepts related to a given string or concept.
  *
  * It is be used by GSearchQuery in the future to build a query.
  *
@@ -160,9 +160,10 @@ public:
 	virtual size_t Search(const R::RString& str,R::RContainer<GConceptRef,true,true>& results,size_t caller);
 
 	/**
-	 * Look if a query node can be expand with better options (or a set of better
-	 * options). For example, one may decide that a given thesaurus should be
-	 * preferred, and that other concepts should be replace if possible.
+	 * Look if a query node can be expanded with better options (or a set of
+	 * better options). For example, one may decide that a given thesaurus 
+	 * should be preferred, and that other concepts should be replace if 
+	 * possible.
 	 *
 	 * By default, this methods does nothing.
 	 * @param query          Query.

@@ -92,7 +92,7 @@ GCommunity::GCommunity(GSession* session,size_t id,size_t blockid,const RString&
 void GCommunity::GetRelevantDocs(GCommunityDocs& docs)
 {
 	//RContainer<GDocFragmentRank,false,true> RelevantDocs(100);       // Container of relevant documents.
-	RContainer<GDocFragment,false,true> RelevantDocs(100);       // Container of relevant documents.
+	RContainer<GDocFragmentRank,false,true> RelevantDocs(100);       // Container of relevant documents.
 	docs.SetCommunityId(GetId());
 
 	// Go through the profiles
@@ -113,13 +113,13 @@ void GCommunity::GetRelevantDocs(GCommunityDocs& docs)
 				bool Find;
 				size_t idx(RelevantDocs.GetIndex(GDocFragment::Search(Doc->GetId(),0,true),Find));
 				if(!Find)
-					RelevantDocs.InsertPtrAt(new GDocFragment(Doc,0,0),idx,false);
+					RelevantDocs.InsertPtrAt(new GDocFragmentRank(new GDocFragment(Doc,0,0),0.0,"",true),idx,false);
 			}
 		}
 	}
 
 	// Copy all the documents in docs
-	RCursor<GDocFragment> Cur(RelevantDocs);
+	RCursor<GDocFragmentRank> Cur(RelevantDocs);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		docs.InsertPtr(Cur());
 }
@@ -206,7 +206,7 @@ GCommunity::~GCommunity(void)
 
 //------------------------------------------------------------------------------
 GCommunityDocs::GCommunityDocs(size_t size,size_t communityid)
-	: RContainer<GDocFragment,true,false>(size), CommunityId(communityid)
+	: RContainer<GDocFragmentRank,true,false>(size), CommunityId(communityid)
 {
 }
 
@@ -215,5 +215,5 @@ GCommunityDocs::GCommunityDocs(size_t size,size_t communityid)
 void GCommunityDocs::SetCommunityId(size_t communityid)
 {
 	CommunityId=communityid;
-	RContainer<GDocFragment,true,false>::Clear();
+	RContainer<GDocFragmentRank,true,false>::Clear();
 }

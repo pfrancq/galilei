@@ -179,7 +179,7 @@ GDocFragment* GDocRef::CopyFragment(const GDocFragment* tocopy,bool& exist)
 	}
 	else
 		Fragments.InsertPtrAt(Fragment=new GDocFragment(tocopy->GetDoc(),
-																	   tocopy->GetRecord(),
+																	   tocopy->GetRoot(),
 																	   tocopy->GetPos(),
 																	   tocopy->GetSyntacticPos(),
 																	   tocopy->GetBegin(),
@@ -200,7 +200,7 @@ void GDocRef::CopyFragments(const GDocRef* tocopy)
 		size_t idx(Fragments.GetIndex(GDocFragment::Search(Fragment()->GetDoc()->GetId(),Fragment()->GetPos(),Fragment()->WholeDoc),Find));
 		if(!Find)
 			Fragments.InsertPtrAt(new GDocFragment(Fragment()->GetDoc(),
-															   Fragment()->GetRecord(),
+															   Fragment()->GetRoot(),
 															   Fragment()->GetPos(),
 																Fragment()->GetSyntacticPos(),
 																Fragment()->GetBegin(),
@@ -224,7 +224,7 @@ bool GDocRef::FindSibling(GDocFragment* fragment) const
 		return(false);
 
 	// If the fragment is the whole document, it has a sibling of course
-	const GConceptRecord* Child(fragment->GetRecord());
+	const GConceptRecord* Child(fragment->GetRoot());
 	if(!Child)
 		return(true);
 
@@ -234,7 +234,7 @@ bool GDocRef::FindSibling(GDocFragment* fragment) const
 	RCursor<GDocFragment> Recs(Fragments);
 	for(Recs.Start();!Recs.End();Recs.Next())
 	{
-		const GConceptRecord* Child2(Recs()->GetRecord());
+		const GConceptRecord* Child2(Recs()->GetRoot());
 		if(!Child2)
 			return(true);
 		GConceptRecord Parent2;
@@ -251,18 +251,18 @@ bool GDocRef::FindChild(GDocFragment* fragment) const
 {
 	if(fragment->GetDoc()!=Doc)
 		return(false);
-	const GConceptRecord* Rec(fragment->GetRecord());
+	const GConceptRecord* Rec(fragment->GetRoot());
 	if(!Rec)
 		return(true);
 
-	size_t Depth(fragment->GetRecord()->GetSyntacticDepth());
+	size_t Depth(fragment->GetRoot()->GetSyntacticDepth());
 	RCursor<GDocFragment> Recs(Fragments);
 	for(Recs.Start();!Recs.End();Recs.Next())
 	{
-		if(Recs()->GetRecord()->GetSyntacticDepth()>Depth)
+		if(Recs()->GetRoot()->GetSyntacticDepth()>Depth)
 		{
 			// Search the if one of the parent is node
-			const GConceptRecord* Child(Recs()->GetRecord());
+			const GConceptRecord* Child(Recs()->GetRoot());
 			if(!Child)
 				return(true);
 
@@ -306,8 +306,8 @@ void GDocRef::Reduce(bool force)
 				continue;
 
 			// Verify if the two fragment are force to be merged if they have the same node or if they overlap
-			const GConceptRecord* Rec(Fragment()->GetRecord());
-			const GConceptRecord* Rec2(Fragment2()->GetRecord());
+			const GConceptRecord* Rec(Fragment()->GetRoot());
+			const GConceptRecord* Rec2(Fragment2()->GetRoot());
 			if((force&&(((!Rec)&&(!Rec2))||(Rec&&Rec2&&((*Rec)==(*Rec2)))))||((!force)&&Fragment()->Overlap(Fragment2())))
 			{
 				Fragment()->Merge(Fragment2());
@@ -330,8 +330,8 @@ void GDocRef::Print(void)
 	RCursor<GDocFragment> Fragment(Fragments);
 	for(Fragment.Start();!Fragment.End();Fragment.Next())
 	{
-		if(Fragment()->GetRecord())
-			cout<<"\t"<<Fragment()->GetRecord()->GetSyntacticPos()<<" ("<<Fragment()->GetRecord()->GetConceptId()<<")"<<endl;
+		if(Fragment()->GetRoot())
+			cout<<"\t"<<Fragment()->GetRoot()->GetSyntacticPos()<<" ("<<Fragment()->GetRoot()->GetConceptId()<<")"<<endl;
 		else
 			cout<<"\tWhole document"<<endl;
 		RCursor<const GConceptRecord> Child(Fragment()->GetChildren());

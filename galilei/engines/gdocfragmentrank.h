@@ -38,6 +38,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI Project
 #include <galilei.h>
+#include <gdocfragment.h>
 
 
 //-----------------------------------------------------------------------------
@@ -50,7 +51,7 @@ namespace GALILEI{
  * The GDocFragmentRank class provides a triplet (document fragment,ranking,info) that
  * represents the ranking of a document in a given situation (search,
  * suggestion, etc.).
-  * @short Document Fragment's Ranking
+  * @short Document Fragments Ranking
  */
 class GDocFragmentRank
 {
@@ -60,6 +61,11 @@ protected:
 	 * Document fragment.
 	 */
 	GDocFragment* Fragment;
+
+	/**
+	 * Should the fragment be free by the class?
+	 */
+	bool DelFragment;
 
 	/**
 	 * Ranking of the document.
@@ -78,8 +84,10 @@ public:
 	 * @param fragment       Document fragment.
 	 * @param ranking        Ranking of the document.
 	 * @param info           Information.
+	 * @param delfragment    Define if the fragment is deleted by the destructor.
+	 *                       By default, it is false.
 	 */
-	GDocFragmentRank(GDocFragment* fragment,double ranking=0.0,const R::RString info=R::RString::Null);
+	GDocFragmentRank(GDocFragment* fragment,double ranking=0.0,const R::RString info=R::RString::Null,bool delfragment=false);
 
 	/**
 	 * Compare two rankings by using first the fragment and then the information.
@@ -89,11 +97,16 @@ public:
 	int Compare(const GDocFragmentRank& ranking) const;
 
 	/**
-	 * Compare a ranking with an information.
+	 * Compare two rankings by using the fragment.
+	 * @param ranking        Ranking to compare with.
+	 * @return -1,0 or +1 depending of the comparison.
+	 */
+	int Compare(const GDocFragment::Search& search) const;
+
+	/**
+	 * Compare two rankings by using the information.
 	 * @param info           Information to compare with.
 	 * @return -1,0 or +1 depending of the comparison.
-	 * @warning This method works only to search for a ranking in a container
-	 * that contains only ranking related to the same document fragment.
 	 */
 	int Compare(const R::RString& info) const;
 
@@ -104,7 +117,7 @@ public:
 	GDocFragment* GetFragment(void) const {return(Fragment);}
 
 	/**
-	 * @return the ranking of the document.
+	 * @return the ranking of the document fragment.
 	 */
 	double GetRanking(void) {return(Ranking);}
 
@@ -114,7 +127,7 @@ public:
 	R::RString GetInfo(void) const {return(Info);}
 
 	/**
-	 * Set the ranking of a document.
+	 * Set the ranking of a document fragment.
 	 * @param ranking        Ranking.
 	 */
 	void SetRanking(double ranking) {Ranking=ranking;}
@@ -126,6 +139,11 @@ public:
 	* @param b              Pointer to the second object.
 	*/
 	static int SortOrderRanking(const void* a,const void* b);
+
+	/**
+	 * Destructor.
+	 */
+	~GDocFragmentRank(void);
 };
 
 

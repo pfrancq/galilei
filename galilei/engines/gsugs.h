@@ -47,9 +47,9 @@ namespace GALILEI{
 /**
 * This class provides a representation for a list of suggestions for a given
 * addressee.
-* @short Suggestions
+* @short Suggestions.
 */
-class GSugs : public R::RContainer<GDocFragment,true,false>
+class GSugs : public R::RContainer<GDocFragmentRank,true,false>
 {
 	/**
 	* Type of the addressee of the suggestions (otProfile or otCommunity).

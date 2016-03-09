@@ -71,8 +71,8 @@ GDocFragment::Search::Search(size_t docid,size_t pos,bool wholedoc)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocFragment::GDocFragment(GDoc* doc,const GConceptRecord* rec,size_t pos,size_t spos,size_t begin,size_t end,double ranking,const R::RString& info,const R::RDate& proposed)
-	: Doc(doc), Rec(rec), Pos(pos), SyntacticPos(spos), Begin(begin), End(end), Ranking(ranking), Proposed(proposed), Info(info), WholeDoc(false), Children(5,5)
+GDocFragment::GDocFragment(GDoc* doc,const GConceptRecord* root,size_t pos,size_t spos,size_t begin,size_t end,const R::RDate& proposed)
+	: Doc(doc), Root(root), Pos(pos), SyntacticPos(spos), Begin(begin), End(end), Proposed(proposed), WholeDoc(false), Children(5,5)
 {
 	if(!Doc)
 		mThrowGException("Cannot have a null document reference");
@@ -82,8 +82,8 @@ GDocFragment::GDocFragment(GDoc* doc,const GConceptRecord* rec,size_t pos,size_t
 
 
 //------------------------------------------------------------------------------
-GDocFragment::GDocFragment(GDoc* doc,size_t begin,size_t end,double ranking,const R::RString& info,const R::RDate& proposed)
-	: Doc(doc), Rec(0), Pos(0), SyntacticPos(0), Begin(begin), End(end), Ranking(ranking), Proposed(proposed), Info(info), WholeDoc(true), Children(5,5)
+GDocFragment::GDocFragment(GDoc* doc,size_t begin,size_t end,const R::RDate& proposed)
+	: Doc(doc), Root(0), Pos(0), SyntacticPos(0), Begin(begin), End(end), Proposed(proposed), WholeDoc(true), Children(5,5)
 {
 	if(!Doc)
 		mThrowGException("Cannot have a null document reference");
@@ -124,10 +124,10 @@ bool GDocFragment::IsFlat(void) const
 	if(WholeDoc)
 		return(true);
 
-	if(!Rec)
+	if(!Root)
 		return(true);
 
-	if(!Rec->GetSyntacticDepth())
+	if(!Root->GetSyntacticDepth())
 		return(true);
 
 	return(false);
@@ -142,22 +142,22 @@ R::RCursor<const GConceptRecord> GDocFragment::GetChildren(void) const
 
 
 //------------------------------------------------------------------------------
-R::RString GDocFragment::GetFragment(void)
+R::RString GDocFragment::GetFragment(size_t max)
 {
 	if(Fragment.IsEmpty())
 	{
 		GFilter* Filter(GALILEIApp->FindMIMEType(Doc));
 		if(Filter)
-			Fragment=Filter->GetTextFragment(this);
+		{
+			size_t size(End-Begin+1);
+			if((!size)||(size<=max))
+				size=End;
+			else
+				size=Begin+max-1;
+			Fragment=Filter->GetTextFragment(Doc,Begin,size);
+		}
 	}
 	return(Fragment);
-}
-
-
-//------------------------------------------------------------------------------
-void GDocFragment::SetRanking(double ranking)
-{
-	Ranking=ranking;
 }
 
 
@@ -197,7 +197,7 @@ bool GDocFragment::Overlap(const GDocFragment* fragment) const
 		return(false);
 
 	// If at least one fragment represents the whole document -> they overlap
-	if((!Rec)||(!fragment->Rec))
+	if((!Root)||(!fragment->Root))
 		return(true);
 
 	if(WholeDoc||fragment->WholeDoc)
@@ -205,8 +205,8 @@ bool GDocFragment::Overlap(const GDocFragment* fragment) const
 
  	// Verify if the two fragments have the same selected node
 	GConceptRecord Parent,Parent2;
-	bool HasParent(Doc->GetSession()->FindParentRecord(Doc,*Rec,Parent));
-	bool HasParent2(Doc->GetSession()->FindParentRecord(Doc,*fragment->GetRecord(),Parent2));
+	bool HasParent(Doc->GetSession()->FindParentRecord(Doc,*Root,Parent));
+	bool HasParent2(Doc->GetSession()->FindParentRecord(Doc,*fragment->GetRoot(),Parent2));
 	if(HasParent||HasParent2&&(Parent!=Parent2))
 		return(false);
 
@@ -260,8 +260,8 @@ void GDocFragment::Merge(const GDocFragment* fragment)
 void GDocFragment::Print(void) const
 {
 	cout<<"Fragment : Doc="<<Doc->GetId()<<" ; Node=";
-	if(Rec)
-		cout<<Rec->GetConceptId()<<endl;
+	if(Root)
+		cout<<Root->GetConceptId()<<endl;
 	else
 		cout<<"Null"<<endl;
 	cout<<"\t"<<Pos<<" in ["<<Begin<<","<<End<<"]"<<endl<<"\tChildren: ";
@@ -269,20 +269,6 @@ void GDocFragment::Print(void) const
 	for(Child.Start();!Child.End();Child.Next())
 		cout<<Child()->GetConceptId();
 	cout<<endl;
-}
-
-
-//------------------------------------------------------------------------------
-int GDocFragment::SortOrderRanking(const void* a,const void* b)
-{
-	double af=(*((GDocFragment**)(a)))->Ranking;
-	double bf=(*((GDocFragment**)(b)))->Ranking;
-
-	if(af==bf) return(0);
-	if(af>bf)
-		return(-1);
-	else
-		return(1);
 }
 
 
