@@ -134,13 +134,14 @@ void GMetaEngineSum::PostRequest(size_t caller)
 	if(Debug)
 	{
 		// Print the results.
-		R::RCursor<GDocFragmentRanks> Ranks(GetRankings(caller));
+		R::RCursor<GDocFragmentRanks> Ranks(GetResults(caller));
 		for(Ranks.Start();!Ranks.End();Ranks.Next())
 		{
 			cout<<Ranks()->GetFragment()->GetDoc()->GetName()<<endl;
 			RCursor<GDocFragmentRank> Cur(Ranks()->GetRankings());
 			for(Cur.Start();!Cur.End();Cur.Next())
-				cout<<"\t\t"<<Cur()->GetRanking()<<" : "<<Cur()->GetInfo()<<"  ";
+				cout<<"  "<<Cur()->GetRanking()<<" : "<<Cur()->GetInfo()<<"  ";
+			cout<<endl;
 		}
 	}
 }
@@ -219,30 +220,16 @@ void GMetaEngineSum::CombineKeywords(GSearchQuery* query,size_t pos,size_t k,siz
 void GMetaEngineSum::ComputeGlobalRanking(size_t caller)
 {
 	// Go trough each document fragment retrieved
-	RCursor<GDocFragmentRanks> Ranks(GetRankings(caller));
+	RCursor<GDocFragmentRanks> Ranks(GetResults(caller));
 	for(Ranks.Start();!Ranks.End();Ranks.Next())
 	{
 		double Rank(0.0);
 		R::RCursor<GDocFragmentRank> Cur(Ranks()->GetRankings());
 		for(Cur.Start();!Cur.End();Cur.Next())
 			Rank+=Cur()->GetRanking();
-		Ranks()->GetFragment()->SetRanking(Rank);
+		Ranks()->SetRanking(Rank);
 	}
 }
-
-
-//------------------------------------------------------------------------------
-int GMetaEngineSum::sortOrder(const void* a, const void* b)
-{
-	double ar=(*((GDocFragment**)(a)))->GetRanking();
-	double br=(*((GDocFragment**)(b)))->GetRanking();
-	if(ar>br)
-		return(-1);
-	else if(ar<br)
-		return(1);
-	return(0);
-}
-
 
 
 //------------------------------------------------------------------------------

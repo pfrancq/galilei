@@ -166,11 +166,6 @@ public:
 	* @param caller         Identifier of the caller (for example a thread).
 	*/
 	virtual void ComputeGlobalRanking(size_t caller);
-
-	/**
-	* Function used by "qsort" to sort the results
-	*/
-	static int sortOrder(const void* a, const void* b);
 };
 
 
