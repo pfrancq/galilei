@@ -161,13 +161,7 @@ void GEngineXML::PerformRequest(GSearchQuery* query,size_t caller)
 		// Determine Min and Max
 		RCursor<GDocFragment> Fragment(Doc()->GetFragments());
 		for(Fragment.Start();!Fragment.End();Fragment.Next())
-			AddResult(Fragment()->GetDoc(),
-					  Fragment()->GetRecord(),
-					  Fragment()->GetPos(),
-					  Fragment()->GetSyntacticPos(),
-					  Fragment()->GetBegin(),
-					  Fragment()->GetEnd(),
-					  0.0,caller);
+			AddResult(Fragment(),0.0,caller);
 	}
 }
 
@@ -277,7 +271,7 @@ void GEngineXML::ApplyOperator(GSearchQueryNode::tOperator op,GDocRef* left,GDoc
 
 					// At least one fragment has a parent -> Find the root of both nodes
 					GConceptRecord Root;
-					if(!Session->FindRootRecord(left->GetDoc(),*Fragment()->GetRecord(),*Fragment2()->GetRecord(),Root))
+					if(!Session->FindRootRecord(left->GetDoc(),*Fragment()->GetRoot(),*Fragment2()->GetRoot(),Root))
 						continue;
 
 					// Create a new fragment

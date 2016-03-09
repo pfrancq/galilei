@@ -41,6 +41,7 @@
 #include <gsession.h>
 #include <gmeasure.h>
 #include <gconceptnode.h>
+#include <gdocfragmentrank.h>
 
 
 //-----------------------------------------------------------------------------
@@ -174,12 +175,12 @@ GProm::GProm(GPromRank* rank,GMeasure* weighting)
 
 
 //-----------------------------------------------------------------------------
-void GProm::Add(GDocFragment* node)
+void GProm::Add(GDocFragmentRank* node)
 {
 	// Create the solution
 	GPromSol* Sol;
-	if(node->GetRecord())
-		Sol=new GPromSol(GetNbSols(),node->GetRecord()->GetSyntacticPos(),node);
+	if(node->GetFragment()->GetRoot())
+		Sol=new GPromSol(GetNbSols(),node->GetFragment()->GetRoot()->GetSyntacticPos(),node);
 	else
 		Sol=new GPromSol(GetNbSols(),0,node);
 
@@ -187,15 +188,15 @@ void GProm::Add(GDocFragment* node)
 
 	// Assign the criteria
 	if(TfIdf->IsActive())
-		Assign(Sol,TfIdf,ComputeTfIdf(node));
+		Assign(Sol,TfIdf,ComputeTfIdf(node->GetFragment()));
 	if(TfIff->IsActive())
-		Assign(Sol,TfIff,ComputeTfIff(node));
+		Assign(Sol,TfIff,ComputeTfIff(node->GetFragment()));
 	if(Specificity->IsActive())
-		Assign(Sol,Specificity,ComputeSpecificity(node));
+		Assign(Sol,Specificity,ComputeSpecificity(node->GetFragment()));
 	if(Distance->IsActive())
-		Assign(Sol,Distance,ComputeDistance(node));
+		Assign(Sol,Distance,ComputeDistance(node->GetFragment()));
 	if(Type->IsActive())
-		Assign(Sol,Type,ComputeType(node));
+		Assign(Sol,Type,ComputeType(node->GetFragment()));
 }
 
 
@@ -256,6 +257,7 @@ void GProm::CollectOccurs(GDoc* doc,const GConceptRecord* rec)
 	Iterator(doc,*rec,this).Parse();
 }
 
+
 //-----------------------------------------------------------------------------
 double GProm::ComputeTfIff(GDocFragment* node)
 {
@@ -268,7 +270,7 @@ double GProm::ComputeTfIff(GDocFragment* node)
 
 	// 1. Compute the number of occurrences of each different concept in the fragment
 
-	CollectOccurs(node->GetDoc(),node->GetRecord());
+	CollectOccurs(node->GetDoc(),node->GetRoot());
 
 	// 2. Compute the average weights multiply by the iff factor of each concept of the query
 	double Sum(0.0);
@@ -282,7 +284,7 @@ double GProm::ComputeTfIff(GDocFragment* node)
 
 		// Takes only the concepts of the query in account
 		if(Rank->Query->IsIn(Rank->GetSession()->GetObj(pConcept,Occur()->Id)))
-			Sum+=Weight*Rank->GetIff(Occur()->Id,node->GetRecord()->GetConceptId());
+			Sum+=Weight*Rank->GetIff(Occur()->Id,node->GetRoot()->GetConceptId());
 	}
 
 	// 3. Divide it by the number of concepts in the fragment and the maximum weight
@@ -297,9 +299,9 @@ double GProm::ComputeSpecificity(GDocFragment* node)
 	// Spec(e)=1/|e| -> |e| number of child nodes
 	double Nb(0.0);
 
-	if(node->GetRecord())
+	if(node->GetRoot())
 	{
-		Iterator2(node->GetDoc(),*node->GetRecord(),Nb).Parse();
+		Iterator2(node->GetDoc(),*node->GetRoot(),Nb).Parse();
 	}
 	else
 	{
@@ -354,12 +356,12 @@ double GProm::ComputeDistance(GDocFragment* node)
 			}
 
 			// Compare with the root node if any
-			if(node->GetRecord())
+			if(node->GetRoot())
 			{
-				if(node->GetRecord()->GetSyntacticPos()>Max)
-					Max=node->GetRecord()->GetSyntacticPos();
-				if(node->GetRecord()->GetSyntacticPos()<Min)
-					Min=node->GetRecord()->GetSyntacticPos();
+				if(node->GetRoot()->GetSyntacticPos()>Max)
+					Max=node->GetRoot()->GetSyntacticPos();
+				if(node->GetRoot()->GetSyntacticPos()<Min)
+					Min=node->GetRoot()->GetSyntacticPos();
 			}
 
 			// Distance is the size
@@ -378,9 +380,9 @@ double GProm::ComputeDistance(GDocFragment* node)
 double GProm::ComputeType(GDocFragment* node)
 {
 	double Ret;
-	if(!node->GetRecord())
+	if(!node->GetRoot())
 		return(0);
-	switch(node->GetRecord()->GetType())
+	switch(node->GetRoot()->GetType())
 	{
 		case ttLink:
 			Ret=1;

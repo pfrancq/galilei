@@ -95,9 +95,19 @@ GQueryRes::GQueryRes(size_t size)
 //------------------------------------------------------------------------------
 void GQueryRes::AddDoc(GEngineXML* engine,GDoc* doc,GConcept* concept)
 {
-	// Create the list of nodes
-	GDocRef* Occurs(new GDocRef(doc));
-	InsertPtr(Occurs);
+	// Create the list of nodes if necessary
+	bool Exist;
+	size_t Idx(GetIndex(doc,Exist));
+	GDocRef* Occurs(0);
+	if(Exist)
+	{
+		Occurs=(*this)[Idx];
+	}
+	else
+	{
+		Occurs=new GDocRef(doc);
+		InsertPtrAt(Occurs,Idx,false);
+	}
 
 	//cout<<doc->GetId()<<endl;
 
@@ -111,8 +121,12 @@ void GQueryRes::AddDoc(GEngineXML* engine,GDoc* doc,GConcept* concept)
 	{
 		// Select the whole document --> add only one fragment containing the first occurrence of the concept
 		bool Exist;
-		Occurs->AddFragment(doc,engine->GetRec(Rec),0,engine->GetSession()->GetMaxPosRecord(doc,Rec,engine->EndWindowPos),Exist);
-
+		Occurs->AddFragment(engine->GetRec(Rec),
+								  Rec.GetPos(),
+								  Rec.GetSyntacticPos(),
+								  engine->GetSession()->GetMinPosRecord(doc,Rec,engine->BeginWindowPos),
+								  engine->GetSession()->GetMaxPosRecord(doc,Rec,engine->EndWindowPos),
+								  Exist);
 		return;
 	}
 

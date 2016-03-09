@@ -217,7 +217,6 @@ private:
     */
 	void RecomputeRefs(void);
 
-
 public:
 
 	/**

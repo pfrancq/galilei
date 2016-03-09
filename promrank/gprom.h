@@ -65,9 +65,9 @@ public:
 	/**
 	 * Fragment to rank.
 	 */
-	GDocFragment* Fragment;
+	GDocFragmentRank* Fragment;
 
-	GPromSol(const size_t id,size_t pos,GDocFragment* fragment)
+	GPromSol(const size_t id,size_t pos,GDocFragmentRank* fragment)
 		: RPromSol(id,RString::Number(pos),5), Fragment(fragment)
 	{}
 };
@@ -139,7 +139,7 @@ public:
 	/**
 	 * Add a node (document fragment) to the PROMETHEE kernel.
 	 */
-	void Add(GDocFragment* node);
+	void Add(GDocFragmentRank* node);
 
 	/**
 	 * @return the number of solutions managed by the kernel.

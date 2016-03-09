@@ -40,6 +40,7 @@
 #include <rbinaryfile.h>
 #include <gmeasure.h>
 #include <gengine.h>
+#include <gdocfragmentrank.h>
 
 
 //-----------------------------------------------------------------------------
@@ -310,7 +311,7 @@ void GPromRank::Rank(GEngine* engine,GSearchQuery* query,size_t caller)
 
 	// Create a PROMETHEE kernel and a solution for each fragment
  	GProm Prom(this,Weighting);
-	RCursor<GDocFragment> Fragment(engine->GetResults(caller));
+	RCursor<GDocFragmentRank> Fragment(engine->GetResults(caller));
 	for(Fragment.Start();!Fragment.End();Fragment.Next())
 		Prom.Add(Fragment());
 
@@ -322,7 +323,7 @@ void GPromRank::Rank(GEngine* engine,GSearchQuery* query,size_t caller)
 	double Max(Prom.GetMaxFi());
 	for(Sol.Start();!Sol.End();Sol.Next())
 	{
-		GDocFragment* Fragment(dynamic_cast<GPromSol*>(Sol())->Fragment);
+		GDocFragmentRank* Fragment(dynamic_cast<GPromSol*>(Sol())->Fragment);
 		double Ranking((Sol()->GetFi()-Min)/(Max-Min));
 		Fragment->SetRanking(Ranking);
 	}
