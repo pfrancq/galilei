@@ -38,7 +38,7 @@ using namespace GALILEI;
 
 
 //------------------------------------------------------------------------------
-extern "C"void About(void)
+extern "C" void About(void)
 {
 	QRAboutDialog dlg("Log Entropy","1.0");
 	dlg.setDescription("Log/Entropy Weighting Methods for the Features.");
