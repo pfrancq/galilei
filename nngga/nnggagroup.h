@@ -67,6 +67,8 @@ public:
 	* @param data           Data needed for the group.
 	*/
 	NNGGAGroupDoc(NNGGAChromoDoc* owner,const size_t id);
+
+	friend class R::RGroups<NNGGAGroupDoc,GDoc,NNGGAChromoDoc>;
 };
 
 
@@ -93,6 +95,8 @@ public:
 	* @param data           Data needed for the group.
 	*/
 	NNGGAGroupProfile(NNGGAChromoProfile* owner,const size_t id);
+
+	friend class R::RGroups<NNGGAGroupProfile,GProfile,NNGGAChromoProfile>;
 };
 
 

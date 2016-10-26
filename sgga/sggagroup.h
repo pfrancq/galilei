@@ -67,6 +67,10 @@ public:
 	* @param data           Data needed for the group.
 	*/
 	SGGAGroupDoc(SGGAChromoDoc* owner,const size_t id);
+
+	friend class R::RGroup<SGGAGroupDoc,GDoc,SGGAChromoDoc>;
+	friend class R::RGroups<SGGAGroupDoc,GDoc,SGGAChromoDoc>;
+	friend class SGGAChromoDoc;
 };
 
 
@@ -93,6 +97,10 @@ public:
 	* @param data           Data needed for the group.
 	*/
 	SGGAGroupProfile(SGGAChromoProfile* owner,const size_t id);
+
+	friend class R::RGroup<SGGAGroupProfile,GProfile,SGGAChromoProfile>;
+	friend class R::RGroups<SGGAGroupProfile,GProfile,SGGAChromoProfile>;
+	friend class SGGAChromoProfile;
 };
 
 
