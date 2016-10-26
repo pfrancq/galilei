@@ -57,19 +57,21 @@ GConcept::GConcept(const GConcept& concept)
 	  IndexProfiles(concept.IndexProfiles),
 	  IndexCommunities(concept.IndexCommunities),
 	  IndexTopics(concept.IndexTopics),
-	  IndexClasses(concept.IndexClasses)
+	  IndexClasses(concept.IndexClasses),
+	  Note(concept.Note)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GConcept::GConcept(GSession* session,const RString& name,GConceptType* type)
+GConcept::GConcept(GSession* session,const RString& name,GConceptType* type,const R::RString& note)
 	: GObject(session,cNoRef,name,otConcept), Type(type),
 	  IndexDocs(0),
 	  IndexProfiles(0),
 	  IndexCommunities(0),
 	  IndexTopics(0),
-	  IndexClasses(0)
+	  IndexClasses(0),
+	  Note(note)
 {
 	if(!type)
 		mThrowGException("Cannot create a concept no type");
@@ -82,13 +84,15 @@ GConcept::GConcept(GSession* session,size_t id, const R::RString& name, GConcept
 		size_t idxprofiles,
 		size_t idxcommunities,
 		size_t idxtopics,
-		size_t idxclasses)
+		size_t idxclasses,
+	   const R::RString& note)
 	: GObject(session,id,name,otConcept), Type(type),
 	  IndexDocs(idxdocs),
 	  IndexProfiles(idxprofiles),
 	  IndexCommunities(idxcommunities),
 	  IndexTopics(idxtopics),
-	  IndexClasses(idxclasses)
+	  IndexClasses(idxclasses),
+	  Note(note)
 {
 }
 

@@ -83,6 +83,11 @@ protected:
 	 */
 	size_t IndexClasses;
 
+	/**
+	 * Note attached to the concept.
+	 */
+	R::RString Note;
+
 public:
 
 	/**
@@ -96,8 +101,9 @@ public:
 	* @param session         Session.
 	* @param name            Name of the concept.
 	* @param type            Type of the concept.
+	* @param note            Note of the concept.
 	*/
-	GConcept(GSession* session,const R::RString& name,GConceptType* type);
+	GConcept(GSession* session,const R::RString& name,GConceptType* type,const R::RString& note=R::RString::Null);
 
 	/**
 	* Constructor of a generic concept.
@@ -115,9 +121,10 @@ public:
 	*                        to the topics.
 	* @param idxclasses      Identifier of the block the inverted file related
 	*                        to the classes.
+	* @param note            Note of the concept.
 	*/
 	GConcept(GSession* session,size_t id, const R::RString& name, GConceptType* type,
-			size_t idxdocs,size_t idxprofiles,size_t idxcommunities,	size_t idxtopics,size_t idxclasses);
+			size_t idxdocs,size_t idxprofiles,size_t idxcommunities,	size_t idxtopics,size_t idxclasses,const R::RString& note=R::RString::Null);
 
 	/**
     * @return the class name.
@@ -150,6 +157,12 @@ public:
 	* @param id              Identifier.
 	*/
 	void SetId(size_t id);
+
+	/**
+	 * Get the note attached to the concept.
+    * @return the note.
+    */
+	R::RString GetNote(void) const {return(Note);}
 
 	/**
 	 * @return the block index of the concept for a given object type.
