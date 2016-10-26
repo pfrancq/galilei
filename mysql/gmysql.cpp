@@ -564,7 +564,8 @@ void GStorageMySQL::LoadObjs(const GConcept*)
 				"indexprofiles,"
 				"indexcommunities,"
 				"indextopics,"
-				"indexclasses FROM concepts");
+				"indexclasses,"
+				"note FROM concepts");
 		for(dicts.Start();!dicts.End();dicts.Next())
 		{
 			GConceptType* Type(Session->GetObj(pConceptType,dicts[2].ToSizeT(),false));
@@ -573,7 +574,8 @@ void GStorageMySQL::LoadObjs(const GConcept*)
 						dicts[4].ToSizeT(),
 						dicts[5].ToSizeT(),
 						dicts[6].ToSizeT(),
-						dicts[7].ToSizeT());
+						dicts[7].ToSizeT(),
+						dicts[8]);
 				Session->InsertObj(w);
 		}
 	}
@@ -695,7 +697,8 @@ void GStorageMySQL::SaveObj(GConcept* concept)
 				 "indexprofiles,"
 				 "indexcommunities,"
 				 "indextopics,"
-				 "indexclasses) "
+				 "indexclasses,"
+				 "note) "
 		    "VALUES("+
 		       Num(concept->GetId())+","+
 			    RQuery::SQLValue(concept->GetName())+","+
@@ -705,6 +708,7 @@ void GStorageMySQL::SaveObj(GConcept* concept)
 			    Num(concept->GetIndex(otCommunity))+
 			    Num(concept->GetIndex(otTopic))+
 			    Num(concept->GetIndex(otClass))+
+				 ","+RQuery::SQLValue(concept->GetNote())+
 			 ")";
 		RQuery Insert(Db,Sql);
 	}
