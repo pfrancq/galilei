@@ -338,6 +338,10 @@ GLangFR::GLangFR(GSession* session,GPlugInFactory* fac)
 	Rules1.InsertPtr(new FrenchPorterRule("eau","",0));
 	Rules1.InsertPtr(new FrenchPorterRule("au","",0));
 
+	// Additionnal rules proposed by Aymeric Maloisel
+	Rules1.InsertPtr(new FrenchPorterRule("aire","",0));
+	Rules1.InsertPtr(new FrenchPorterRule("ien","i",0));
+
 
 	// Rules 2
 	Rules2.InsertPtr(new FrenchPorterRule("ent","",1));
