@@ -1,0 +1,5 @@
+IF(QT4_FOUND)
+    SET(topicseval_AVAILABLE_FRONTENDS qt)
+    SET(topicseval_qt_DEPENDENCY rcoreqt galileiqt ${QT_LIBRARIES})
+    ADD_FRONTEND_SOURCE_FILE(topicseval_frontend topicseval qt topicseval_INCLUDES)
+ENDIF(QT4_FOUND)

@@ -1,0 +1,5 @@
+IF(QT4_FOUND)
+    SET(communitieseval_AVAILABLE_FRONTENDS qt)
+    SET(communitieseval_qt_DEPENDENCY rcoreqt galileiqt ${QT_LIBRARIES})
+    ADD_FRONTEND_SOURCE_FILE(communitieseval_frontend communitieseval qt communitieseval_INCLUDES)
+ENDIF(QT4_FOUND)
