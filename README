@@ -1,0 +1,140 @@
+
+The GALILEI_PLUGINS Project
+===========================
+
+
+The GALILEI_PLUGINS Project is composed of ten different kind of plugins:
+
+ -o- docs
+ -o- filters
+ -o- groupings
+ -o- groups
+ -o- langs
+ -o- linking
+ -o- postdoc
+ -o- postgroups
+ -o- profiling
+ -o- stats
+
+Each category of plugins must at least contain one plugin.
+The folowing section explains shortly each category of Plugins
+
+HOWTO Configure plugins
+=======================
+
+To Install non default plugins you must have Python installed on your machine.
+
+To run the configuration script just excecute :
+
+" python PluginsConfig.py "
+
+The configuration application is written in python Tk
+Choose the differents plugins you want to add or to remove and the
+click on "Save configuration"
+
+You can then run
+./configure
+make
+make install (as root)
+
+Note for CVS Checkout:
+----------------------
+
+If you get the galilei_plugins via CVS you must first run
+
+make -f Makefile.cvs
+
+You can then run the plugins configuration srcipt:
+python PluginsConfig.py
+
+and then after the configuration was saved, run :
+
+./configure
+make
+make install (as root)
+
+Plugins Overview
+================
+
+  -o- DOCS
+  ========
+  	the plugin type is used to analyse some text and understand its contents
+  	Only one plugin is available for these analyse.
+
+  	DEFAULT PLUGIN = textanalyse
+  	OTHERS =
+
+  -o- FILTERS
+  ===========
+  	these plugins are used to transform documents of différents MIME TYPE
+	into a specific format for GALILEI application.
+
+	All the plugins of this section should be available some lots of differents
+	kind of documents can be used
+
+  	DEFAULT PLUGIN = email html txt ps pdf msdoc txt
+  	OTHERS = reu sgml xml
+
+  -o- GROUPING
+  ============
+  	these plugins are used to cluster users into virtual communities
+
+  	DEFAULT PLUGIN = gvca supkmeans
+  	OTHERS = cure firstfit kmeanscos kprotos random
+
+
+  -o- GROUPS
+  ==========
+	these plugins are used to make descriptions of the groups
+
+  	DEFAULT PLUGIN = relevant
+  	OTHERS = gravitation
+
+
+  -o- LANGS
+  =========
+  	These plugins contains rules to understand specific langages and are
+	needed to enable the system to use the selected langages.
+
+  	DEFAULT PLUGIN = langen langfr langnl
+  	OTHERS =
+
+
+  -o- LINKING
+  ===========
+  	These plugins adds differents method to use the information contained
+  	in the links of the documents. these information can help the final
+  	clustering .
+
+  	DEFAULT PLUGIN =
+  	OTHERS = hits hybrid salsa
+
+
+  -o- POSTDOC
+  ===========
+  	These plugins are used to globally treat documents. (Use the notion of "concepts" )
+
+  	DEFAULT PLUGIN =
+  	OTHERS = CSCNC ICSC
+
+  -o- POSTGROUPS
+  ==============
+  	These plugins are used to apply treatment on groups after clustering
+
+  	DEFAULT PLUGIN = sugs
+  	OTHERS = pointofview
+
+  -o- PROFILING
+  =============
+  	These plugins are used to describe profiles according to the documents they assed
+
+  	DEFAULT PLUGIN = feedback
+  	OTHERS = statistical
+
+  -o- STATS
+  =========
+  	These plugins are used to make some statistics on different part of the system
+	like on groups, on documents, ...
+	
+  	DEFAULT PLUGIN =
+  	OTHERS = evalgroups querysimulation statssims
