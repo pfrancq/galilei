@@ -1,0 +1,23 @@
+PROJECT(if)
+INCLUDE_DIRECTORIES(.)
+
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+
+IF(WIN32)
+
+	# Create plug-ins
+	ADD_LIBRARY(if SHARED if.cpp)
+	ADD_SOURCE_FILE(if frontend if_INCLUDES)
+	ADD_FRONTEND(if SHARED 2 2 2.0.0 lib "r/galilei" if_INCLUDES)
+	SET_TARGET_PROPERTIES(if PROPERTIES LINK_FLAGS "/NODEFAULTLIB:MSVCRTD;MSVCRT;LIBCMT;LIBCMTD")
+	TARGET_LINK_LIBRARIES(if galilei roptimization rcore rmath)
+
+ELSE(WIN32)
+
+	# Create plug-ins
+	ADD_LIBRARY(if SHARED if.cpp)
+	ADD_SOURCE_FILE(if frontend if_INCLUDES)
+	ADD_FRONTEND(if SHARED 2 2 2.0.0 lib "r/galilei" if_INCLUDES)
+	TARGET_LINK_LIBRARIES(if galilei roptimization rcore rmath dl)
+
+ENDIF(WIN32)

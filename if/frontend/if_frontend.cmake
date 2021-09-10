@@ -1,0 +1,5 @@
+IF(QT4_FOUND)
+    SET(if_AVAILABLE_FRONTENDS qt)
+    SET(if_qt_DEPENDENCY rcoreqt galileiqt ${QT_LIBRARIES})
+    ADD_FRONTEND_SOURCE_FILE(if_frontend if qt if_INCLUDES)
+ENDIF(QT4_FOUND)
