@@ -1,0 +1,5 @@
+IF(QT4_FOUND)
+    SET(feedback_AVAILABLE_FRONTENDS qt)
+    SET(feedback_qt_DEPENDENCY rcoreqt ${QT_LIBRARIES})
+    ADD_FRONTEND_SOURCE_FILE(feedback_frontend feedback qt feedback_INCLUDES)
+ENDIF(QT4_FOUND)
