@@ -1,0 +1,5 @@
+IF(QT4_FOUND)
+    SET(langsv_AVAILABLE_FRONTENDS qt)
+    SET(langsv_qt_DEPENDENCY rcoreqt ${QT_LIBRARIES})
+    ADD_FRONTEND_SOURCE_FILE(langsv_frontend langsv qt langsv_INCLUDES)
+ENDIF(QT4_FOUND)

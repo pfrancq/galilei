@@ -1,0 +1,5 @@
+IF(QT4_FOUND)
+    SET(langen_AVAILABLE_FRONTENDS qt)
+    SET(langen_qt_DEPENDENCY rcoreqt ${QT_LIBRARIES})
+    ADD_FRONTEND_SOURCE_FILE(langen_frontend langen qt langen_INCLUDES)
+ENDIF(QT4_FOUND)

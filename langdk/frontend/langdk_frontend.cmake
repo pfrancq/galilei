@@ -1,0 +1,5 @@
+IF(QT4_FOUND)
+    SET(langdk_AVAILABLE_FRONTENDS qt)
+    SET(langdk_qt_DEPENDENCY rcoreqt ${QT_LIBRARIES})
+    ADD_FRONTEND_SOURCE_FILE(langdk_frontend langdk qt langdk_INCLUDES)
+ENDIF(QT4_FOUND)

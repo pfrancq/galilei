@@ -1,0 +1,5 @@
+IF(QT4_FOUND)
+    SET(langhu_AVAILABLE_FRONTENDS qt)
+    SET(langhu_qt_DEPENDENCY rcoreqt ${QT_LIBRARIES})
+    ADD_FRONTEND_SOURCE_FILE(langhu_frontend langhu qt langhu_INCLUDES)
+ENDIF(QT4_FOUND)
