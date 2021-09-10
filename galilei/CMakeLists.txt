@@ -1,37 +1,37 @@
-PROJECT(galilei)
-INCLUDE_DIRECTORIES(.)
+cmake_minimum_required(VERSION 2.6)
 
-ADD_SOURCE_FILE(galilei knowledge galilei_INCLUDES)
-ADD_SOURCE_FILE(galilei docs galilei_INCLUDES)
-ADD_SOURCE_FILE(galilei engines galilei_INCLUDES)
-ADD_SOURCE_FILE(galilei profiles galilei_INCLUDES)
-ADD_SOURCE_FILE(galilei groups galilei_INCLUDES)
-ADD_SOURCE_FILE(galilei sessions galilei_INCLUDES)
-ADD_SOURCE_FILE(galilei plugins galilei_INCLUDES)
-ADD_SOURCE_FILE(galilei tools galilei_INCLUDES)
-ADD_SOURCE_FILE(galilei frontend galilei_INCLUDES)
+CONFIGURE_FILE(
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+  IMMEDIATE @ONLY)
 
-INCLUDE_DIRECTORIES(${galilei_INCLUDES})
+ADD_CUSTOM_TARGET(uninstall
+  "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
 
-IF(WIN32)
-    ADD_LIBRARY(galilei STATIC ${galilei_TARGET_SOURCES})
-    ADD_FRONTEND(galilei STATIC 2 2 2.0.0 lib "r/galilei" galilei_INCLUDES)
-    SET_TARGET_PROPERTIES(galilei PROPERTIES LINK_FLAGS "/NODEFAULTLIB:MSVCRTD;MSVCRT;LIBCMT;LIBCMTD")
-    TARGET_LINK_LIBRARIES(galilei roptimization rmath rcore)
-    INSTALL(TARGETS galilei ARCHIVE DESTINATION lib)
-ELSE(WIN32)
-    ADD_LIBRARY(galilei SHARED ${galilei_TARGET_SOURCES})   
-    ADD_FRONTEND(galilei SHARED 2 2 2.0.0 lib "r/galilei" galilei_INCLUDES)
-    TARGET_LINK_LIBRARIES(galilei roptimization rcore rmath dl)
-    SET_TARGET_PROPERTIES(galilei PROPERTIES LT_VERSION_CURRENT 2
-                                               VERSION 2.0.0
-                                               SOVERSION 2)
-    CREATE_LIBTOOL_FILE(galilei /lib)
-    INSTALL(TARGETS galilei LIBRARY DESTINATION lib)
-ENDIF(WIN32)
+IF(CMAKE_COMPILER_IS_GNUCC)
+  MESSAGE(STATUS "Using GNU C Compiler, set -fmessage-length to 0 (Eclipse support)")
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fmessage-length=0")
+ENDIF(CMAKE_COMPILER_IS_GNUCC)
+IF(CMAKE_COMPILER_IS_GNUCXX)
+    MESSAGE(STATUS "Using GNU C++ Compiler, set -fmessage-length to 0 (Eclipse support)")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmessage-length=0")
+ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
-IF(rcmake-verbose)
-    PRINT_LIST_WITH_MESSAGE("Will install the following header files for galilei:" galilei_INST_INCLUDES)
-ENDIF(rcmake-verbose)
+OPTION(rcmake-verbose "Enable verbose output during cmake construction" OFF)
 
-INSTALL(FILES ${galilei_INST_INCLUDES} DESTINATION include/r/galilei)
+IF(UNIX)
+    ADD_DEFINITIONS("-fexceptions")
+    MESSAGE(STATUS "C++ exceptions will be re-enabled")
+    ADD_DEFINITIONS("-pedantic")
+    ADD_DEFINITIONS("-Wno-long-long")
+    ADD_DEFINITIONS("-DPIC")
+    ADD_DEFINITIONS("-fvisibility=default")
+ELSE(UNIX)
+    ADD_DEFINITIONS("/D_RCORE_DLLAPI_")
+ENDIF(UNIX)
+
+INCLUDE(rfinder.cmake)
+INCLUDE(prj.cmake)
+
+##keep it for compatibility with auto tools...
+INSTALL(FILES libgalilei.m4 DESTINATION share/aclocal)
