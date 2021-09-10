@@ -1,0 +1,5 @@
+IF(QT4_FOUND)
+    SET(thesaurus_AVAILABLE_FRONTENDS qt)
+    SET(thesaurus_qt_DEPENDENCY rcoreqt ${QT_LIBRARIES})
+    ADD_FRONTEND_SOURCE_FILE(thesaurus_frontend thesaurus qt thesaurus_INCLUDES)
+ENDIF(QT4_FOUND)
