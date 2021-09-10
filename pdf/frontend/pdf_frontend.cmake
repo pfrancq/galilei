@@ -1,0 +1,5 @@
+IF(QT4_FOUND)
+    SET(pdf_AVAILABLE_FRONTENDS qt)
+    SET(pdf_qt_DEPENDENCY rcoreqt ${QT_LIBRARIES})
+    ADD_FRONTEND_SOURCE_FILE(pdf_frontend pdf qt pdf_INCLUDES)
+ENDIF(QT4_FOUND)

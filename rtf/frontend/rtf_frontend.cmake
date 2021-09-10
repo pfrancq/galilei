@@ -1,0 +1,5 @@
+IF(QT4_FOUND)
+    SET(rtf_AVAILABLE_FRONTENDS qt)
+    SET(rtf_qt_DEPENDENCY rcoreqt ${QT_LIBRARIES})
+    ADD_FRONTEND_SOURCE_FILE(rtf_frontend rtf qt rtf_INCLUDES)
+ENDIF(QT4_FOUND)

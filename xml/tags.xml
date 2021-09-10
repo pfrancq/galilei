@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf8"?>
+<tags>
+	<metadata>http://purl.org/dc/elements/1.1:contributor</metadata>
+	<metadata>http://purl.org/dc/elements/1.1:coverage</metadata>
+	<metadata>http://purl.org/dc/elements/1.1:creator</metadata>
+	<metadata>http://purl.org/dc/elements/1.1:date</metadata>
+	<metadata>http://purl.org/dc/elements/1.1:description</metadata>
+	<metadata>http://purl.org/dc/elements/1.1:format</metadata>
+	<metadata>http://purl.org/dc/elements/1.1:identifier</metadata>
+	<metadata>http://purl.org/dc/elements/1.1:language</metadata>
+	<metadata>http://purl.org/dc/elements/1.1:publisher</metadata>
+	<metadata>http://purl.org/dc/elements/1.1:relation</metadata>
+	<metadata>http://purl.org/dc/elements/1.1:rights</metadata>
+	<metadata>http://purl.org/dc/elements/1.1:source</metadata>
+	<metadata>http://purl.org/dc/elements/1.1:subject</metadata>
+	<metadata>http://purl.org/dc/elements/1.1:title</metadata>
+	<metadata>http://purl.org/dc/elements/1.1:type</metadata>
+</tags>

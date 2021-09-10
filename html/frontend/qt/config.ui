@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Config</class>
+ <widget class="QWidget" name="Config">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>267</width>
+    <height>80</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Configure HTML Filter</string>
+  </property>
+  <property name="toolTip">
+   <string/>
+  </property>
+  <property name="whatsThis">
+   <string/>
+  </property>
+  <property name="sizeGripEnabled" stdset="0">
+   <bool>true</bool>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <widget class="QCheckBox" name="DetectDivisions">
+     <property name="toolTip">
+      <string>Detect the HTML document divisions to determine the textual content depth.</string>
+     </property>
+     <property name="whatsThis">
+      <string>When a textual content is extracted from a HTML file, it is associate to a depth. This depth can be:
+1. The normal depth of the HTML tree.
+2. A logicial depth that tries to detect real document division.
+</string>
+     </property>
+     <property name="text">
+      <string>Detect the HTML document divisions.</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
+ <resources/>
+ <connections/>
+ <slots>
+  <slot>toggleStruct(bool)</slot>
+  <slot>toggleFullIndex(bool)</slot>
+ </slots>
+</ui>

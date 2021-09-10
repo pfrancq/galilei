@@ -1,0 +1,19 @@
+PROJECT(ps)
+INCLUDE_DIRECTORIES(.)
+
+SET(SRC ps.cpp bundle.cpp ptotdll.cpp)
+
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+
+IF(WIN32)
+    ADD_LIBRARY(ps SHARED ${SRC})
+    ADD_SOURCE_FILE(ps frontend ps_INCLUDES)
+    ADD_FRONTEND(ps SHARED 2 2 2.0.0 lib "r/galilei" ps_INCLUDES)
+    SET_TARGET_PROPERTIES(ps PROPERTIES LINK_FLAGS "/NODEFAULTLIB:MSVCRTD;MSVCRT;LIBCMT;LIBCMTD")
+    TARGET_LINK_LIBRARIES(ps galilei roptimization rmath rcore)
+ELSE(WIN32)
+    ADD_LIBRARY(ps SHARED ${SRC})
+    ADD_SOURCE_FILE(ps frontend ps_INCLUDES)
+    ADD_FRONTEND(ps SHARED 2 2 2.0.0 lib "r/galilei" ps_INCLUDES)
+    TARGET_LINK_LIBRARIES(ps galilei roptimization rcore rmath dl)
+ENDIF(WIN32)
