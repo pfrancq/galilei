@@ -1,0 +1,5 @@
+IF(QT4_FOUND)
+    SET(kmeans_profiles_AVAILABLE_FRONTENDS qt)
+    SET(kmeans_profiles_qt_DEPENDENCY rcoreqt ${QT_LIBRARIES})
+    ADD_FRONTEND_SOURCE_FILE(kmeans_profiles_frontend kmeans_profiles qt kmeans_profiles_INCLUDES)
+ENDIF(QT4_FOUND)
