@@ -1,0 +1,5 @@
+IF(QT4_FOUND)
+    SET(statfeatures_AVAILABLE_FRONTENDS qt)
+    SET(statfeatures_qt_DEPENDENCY rcoreqt ${QT_LIBRARIES})
+    ADD_FRONTEND_SOURCE_FILE(statfeatures_frontend statfeatures qt statfeatures_INCLUDES)
+ENDIF(QT4_FOUND)
