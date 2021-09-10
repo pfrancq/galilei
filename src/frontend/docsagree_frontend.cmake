@@ -1,0 +1,5 @@
+IF(QT4_FOUND)
+    SET(docsagree_AVAILABLE_FRONTENDS qt)
+    SET(docsagree_qt_DEPENDENCY rcoreqt galileiqt ${QT_LIBRARIES})
+    ADD_FRONTEND_SOURCE_FILE(docsagree_frontend docsagree qt docsagree_INCLUDES)
+ENDIF(QT4_FOUND)

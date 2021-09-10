@@ -1,0 +1,5 @@
+IF(QT4_FOUND)
+    SET(profilesdisagree_AVAILABLE_FRONTENDS qt)
+    SET(profilesdisagree_qt_DEPENDENCY rcoreqt galileiqt ${QT_LIBRARIES})
+    ADD_FRONTEND_SOURCE_FILE(profilesdisagree_frontend profilesdisagree qt profilesdisagree_INCLUDES)
+ENDIF(QT4_FOUND)

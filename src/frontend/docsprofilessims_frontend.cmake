@@ -1,0 +1,5 @@
+IF(QT4_FOUND)
+    SET(docsprofilessims_AVAILABLE_FRONTENDS qt)
+    SET(docsprofilessims_qt_DEPENDENCY rcoreqt galileiqt ${QT_LIBRARIES})
+    ADD_FRONTEND_SOURCE_FILE(docsprofilessims_frontend docsprofilessims qt docsprofilessims_INCLUDES)
+ENDIF(QT4_FOUND)
