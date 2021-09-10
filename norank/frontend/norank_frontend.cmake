@@ -1,0 +1,5 @@
+IF(QT4_FOUND)
+    SET(norank_AVAILABLE_FRONTENDS qt)
+    SET(norank_qt_DEPENDENCY rcoreqt ${QT_LIBRARIES})
+    ADD_FRONTEND_SOURCE_FILE(norank_frontend norank qt norank_INCLUDES)
+ENDIF(QT4_FOUND)
