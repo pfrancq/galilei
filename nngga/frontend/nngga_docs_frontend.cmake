@@ -1,0 +1,5 @@
+IF(QT4_FOUND)
+    SET(nngga_docs_AVAILABLE_FRONTENDS qt)
+    SET(nngga_docs_qt_DEPENDENCY rcoreqt ${QT_LIBRARIES})
+    ADD_FRONTEND_SOURCE_FILE(nngga_docs_frontend nngga_docs qt nngga_docs_INCLUDES)
+ENDIF(QT4_FOUND)
