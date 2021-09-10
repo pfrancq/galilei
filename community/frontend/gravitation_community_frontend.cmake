@@ -1,0 +1,5 @@
+IF(QT4_FOUND)
+    SET(gravitation_community_AVAILABLE_FRONTENDS qt)
+    SET(gravitation_community_qt_DEPENDENCY rcoreqt ${QT_LIBRARIES})
+    ADD_FRONTEND_SOURCE_FILE(gravitation_community_frontend gravitation_community qt gravitation_community_INCLUDES)
+ENDIF(QT4_FOUND)
