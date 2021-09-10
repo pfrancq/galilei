@@ -1,0 +1,5 @@
+IF(QT4_FOUND)
+    SET(xmlengine_AVAILABLE_FRONTENDS qt)
+    SET(xmlengine_qt_DEPENDENCY rcoreqt ${QT_LIBRARIES})
+    ADD_FRONTEND_SOURCE_FILE(xmlengine_frontend xmlengine qt xmlengine_INCLUDES)
+ENDIF(QT4_FOUND)

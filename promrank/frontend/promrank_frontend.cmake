@@ -1,0 +1,5 @@
+IF(QT4_FOUND)
+    SET(promrank_AVAILABLE_FRONTENDS qt)
+    SET(promrank_qt_DEPENDENCY rcoreqt ${QT_LIBRARIES})
+    ADD_FRONTEND_SOURCE_FILE(promrank_frontend promrank qt promrank_INCLUDES)
+ENDIF(QT4_FOUND)
