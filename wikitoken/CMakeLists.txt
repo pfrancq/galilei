@@ -1,0 +1,16 @@
+PROJECT(wikitoken)
+INCLUDE_DIRECTORIES(.)
+
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+
+IF(WIN32)
+    # Static libraries
+    ADD_LIBRARY(wikitoken STATIC wikitoken.cpp)
+    SET_TARGET_PROPERTIES(wikitoken rcore PROPERTIES COMPILE_FLAGS -fPIC)
+
+ELSE(WIN32)
+
+    ADD_LIBRARY(wikitoken SHARED wikitoken.cpp)
+    TARGET_LINK_LIBRARIES(wikitoken rcore dl)
+
+ENDIF(WIN32)

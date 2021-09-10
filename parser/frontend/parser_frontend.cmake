@@ -1,0 +1,5 @@
+IF(QT4_FOUND)
+    SET(parser_AVAILABLE_FRONTENDS qt)
+    SET(parser_qt_DEPENDENCY rcoreqt ${QT_LIBRARIES})
+    ADD_FRONTEND_SOURCE_FILE(parser_frontend parser qt parser_INCLUDES)
+ENDIF(QT4_FOUND)

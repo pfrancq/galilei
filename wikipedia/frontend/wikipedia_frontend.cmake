@@ -1,0 +1,5 @@
+IF(QT4_FOUND)
+    SET(wikipedia_AVAILABLE_FRONTENDS qt)
+    SET(wikipedia_qt_DEPENDENCY rcoreqt ${QT_LIBRARIES})
+    ADD_FRONTEND_SOURCE_FILE(wikipedia_frontend wikipedia qt wikipedia_INCLUDES)
+ENDIF(QT4_FOUND)
