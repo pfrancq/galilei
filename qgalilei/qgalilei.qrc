@@ -1,0 +1,23 @@
+<RCC>
+  <qresource prefix="/">
+    <file>icons/text-troff.png</file>
+    <file>icons/media-playback-start.png</file>
+    <file>icons/system-users.png</file>
+    <file>icons/code-class.png</file>
+    <file>icons/run-build.png</file>
+    <file>icons/utilities-terminal.png</file>
+    <file>icons/preferences-desktop-launch-feedback.png</file>
+    <file>icons/view-statistics.png</file>
+    <file>icons/document-import.png</file>
+    <file>icons/edit-find.png</file>
+    <file>icons/x-office-document.png</file>
+    <file>icons/text-xml.png</file>
+    <file>icons/dialog-ok-apply.png</file>
+    <file>icons/dialog-cancel.png</file>
+    <file>icons/dialog-close.png</file>
+    <file>icons/dialog-ok.png</file>
+    <file>icons/svn-update.png</file>
+    <file>icons/svn-commit.png</file>
+    <file>icons/application-exit.png</file>
+  </qresource>
+</RCC>

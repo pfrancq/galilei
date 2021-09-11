@@ -1,0 +1,526 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QGALILEIWin</class>
+ <widget class="QMainWindow" name="QGALILEIWin">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>qgalileiwin</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="margin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QMdiArea" name="Desktop"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuSession">
+    <property name="title">
+     <string>&amp;Session</string>
+    </property>
+    <addaction name="aConnect"/>
+    <addaction name="aDisconnect"/>
+    <addaction name="separator"/>
+    <addaction name="aComputeSession"/>
+    <addaction name="aConsole"/>
+    <addaction name="aRunScript"/>
+    <addaction name="aStatistics"/>
+    <addaction name="separator"/>
+    <addaction name="aCreateSession"/>
+    <addaction name="aImportDocs"/>
+    <addaction name="aRunTool"/>
+    <addaction name="separator"/>
+    <addaction name="aExit"/>
+   </widget>
+   <widget class="QMenu" name="menuDocuments">
+    <property name="title">
+     <string>&amp;Documents</string>
+    </property>
+    <addaction name="aDicts"/>
+    <addaction name="separator"/>
+    <addaction name="aShowDocs"/>
+    <addaction name="aExportDocDecs"/>
+    <addaction name="aExportDocs"/>
+    <addaction name="separator"/>
+    <addaction name="aClearDocs"/>
+    <addaction name="aAnalyzeDocs"/>
+    <addaction name="aAnalyzeDoc"/>
+    <addaction name="aIndexDocs"/>
+    <addaction name="separator"/>
+    <addaction name="aQuery"/>
+    <addaction name="separator"/>
+    <addaction name="aComputeTrust"/>
+    <addaction name="aComputeSugs"/>
+   </widget>
+   <widget class="QMenu" name="menuTopics">
+    <property name="title">
+     <string>&amp;Topics</string>
+    </property>
+    <addaction name="aShowClasses"/>
+    <addaction name="separator"/>
+    <addaction name="aShowTopics"/>
+    <addaction name="aClearTopics"/>
+    <addaction name="aGroupDocs"/>
+   </widget>
+   <widget class="QMenu" name="menuUsers">
+    <property name="title">
+     <string>&amp;Users</string>
+    </property>
+    <addaction name="aShowUsers"/>
+    <addaction name="separator"/>
+    <addaction name="aClearProfiles"/>
+    <addaction name="aComputeProfiles"/>
+    <addaction name="aComputeProfile"/>
+   </widget>
+   <widget class="QMenu" name="menuCommunities">
+    <property name="title">
+     <string>&amp;Communities</string>
+    </property>
+    <addaction name="aShowCommunities"/>
+    <addaction name="separator"/>
+    <addaction name="aClearCommunities"/>
+    <addaction name="aGroupProfiles"/>
+   </widget>
+   <widget class="QMenu" name="menuSimulation">
+    <property name="title">
+     <string>Si&amp;mulation</string>
+    </property>
+    <addaction name="aRepairSubjects"/>
+    <addaction name="separator"/>
+    <addaction name="aInitSimulation"/>
+    <addaction name="separator"/>
+    <addaction name="aCreateIdealClasses"/>
+    <addaction name="aCreateIdealClassesDocs"/>
+    <addaction name="aCreateIdealTopics"/>
+    <addaction name="aCreateIdealTopicsClasses"/>
+    <addaction name="aCreateIdealCommunities"/>
+    <addaction name="separator"/>
+    <addaction name="aFeedbackCycle"/>
+    <addaction name="aAssessmentCycle"/>
+    <addaction name="separator"/>
+    <addaction name="aCompareIdealClasses"/>
+    <addaction name="aCompareIdealTopics"/>
+    <addaction name="aCompareIdealCommunities"/>
+    <addaction name="separator"/>
+    <addaction name="aModifyDocuments"/>
+   </widget>
+   <widget class="QMenu" name="menuWindow">
+    <property name="title">
+     <string>&amp;Window</string>
+    </property>
+    <addaction name="aCloseAll"/>
+    <addaction name="separator"/>
+    <addaction name="aTile"/>
+    <addaction name="aCascade"/>
+   </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settin&amp;gs</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="aConfigSession"/>
+    <addaction name="separator"/>
+    <addaction name="aConfigQGALILEI"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>He&amp;lp</string>
+    </property>
+    <addaction name="aAbout"/>
+   </widget>
+   <addaction name="menuSession"/>
+   <addaction name="menuDocuments"/>
+   <addaction name="menuTopics"/>
+   <addaction name="menuUsers"/>
+   <addaction name="menuCommunities"/>
+   <addaction name="menuSimulation"/>
+   <addaction name="menuWindow"/>
+   <addaction name="menuSettings"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="aConnect"/>
+   <addaction name="separator"/>
+   <addaction name="aShowDocs"/>
+   <addaction name="separator"/>
+   <addaction name="aExit"/>
+  </widget>
+  <action name="aExit">
+   <property name="icon">
+    <iconset resource="qgalilei.qrc">
+     <normaloff>:/icons/application-exit.png</normaloff>:/icons/application-exit.png</iconset>
+   </property>
+   <property name="text">
+    <string>E&amp;xit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="aConnect">
+   <property name="icon">
+    <iconset resource="qgalilei.qrc">
+     <normaloff>:/icons/svn-commit.png</normaloff>:/icons/svn-commit.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Connect</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="aDisconnect">
+   <property name="icon">
+    <iconset resource="qgalilei.qrc">
+     <normaloff>:/icons/svn-commit.png</normaloff>:/icons/svn-commit.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Disconnect</string>
+   </property>
+  </action>
+  <action name="aDicts">
+   <property name="icon">
+    <iconset resource="qgalilei.qrc">
+     <normaloff>:/icons/text-troff.png</normaloff>:/icons/text-troff.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show D&amp;ictionnaries</string>
+   </property>
+  </action>
+  <action name="aCloseAll">
+   <property name="text">
+    <string>&amp;Close All</string>
+   </property>
+  </action>
+  <action name="aTile">
+   <property name="text">
+    <string>&amp;Tile</string>
+   </property>
+  </action>
+  <action name="aCascade">
+   <property name="text">
+    <string>Ca&amp;scade</string>
+   </property>
+  </action>
+  <action name="aConfigSession">
+   <property name="text">
+    <string>Configure &amp;Session</string>
+   </property>
+  </action>
+  <action name="aConfigQGALILEI">
+   <property name="text">
+    <string>Configure &amp;QGALILEI</string>
+   </property>
+  </action>
+  <action name="aShowDocs">
+   <property name="icon">
+    <iconset resource="qgalilei.qrc">
+     <normaloff>:/icons/text-xml.png</normaloff>:/icons/text-xml.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show &amp;Documents</string>
+   </property>
+  </action>
+  <action name="aExportDocDecs">
+   <property name="text">
+    <string>E&amp;xport Document Descriptions</string>
+   </property>
+  </action>
+  <action name="aIndexDocs">
+   <property name="text">
+    <string>I&amp;ndex Documents</string>
+   </property>
+  </action>
+  <action name="aAnalyzeDocs">
+   <property name="icon">
+    <iconset resource="qgalilei.qrc">
+     <normaloff>:/icons/x-office-document.png</normaloff>:/icons/x-office-document.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Analyze Documents</string>
+   </property>
+  </action>
+  <action name="aExportDocs">
+   <property name="text">
+    <string>&amp;Export Documents</string>
+   </property>
+  </action>
+  <action name="aAnalyzeDoc">
+   <property name="text">
+    <string>&amp;Load and Analyze a Document</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="aQuery">
+   <property name="icon">
+    <iconset resource="qgalilei.qrc">
+     <normaloff>:/icons/edit-find.png</normaloff>:/icons/edit-find.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Search</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="aComputeTrust">
+   <property name="text">
+    <string>C&amp;ompute Trust</string>
+   </property>
+  </action>
+  <action name="aComputeSugs">
+   <property name="text">
+    <string>Co&amp;mpute Suggestions</string>
+   </property>
+  </action>
+  <action name="aComputeSession">
+   <property name="icon">
+    <iconset resource="qgalilei.qrc">
+     <normaloff>:/icons/run-build.png</normaloff>:/icons/run-build.png</iconset>
+   </property>
+   <property name="text">
+    <string>C&amp;ompute Session</string>
+   </property>
+  </action>
+  <action name="aConsole">
+   <property name="icon">
+    <iconset resource="qgalilei.qrc">
+     <normaloff>:/icons/utilities-terminal.png</normaloff>:/icons/utilities-terminal.png</iconset>
+   </property>
+   <property name="text">
+    <string>Co&amp;nsole</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+K</string>
+   </property>
+  </action>
+  <action name="aRunScript">
+   <property name="icon">
+    <iconset resource="qgalilei.qrc">
+     <normaloff>:/icons/preferences-desktop-launch-feedback.png</normaloff>:/icons/preferences-desktop-launch-feedback.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Run Script</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="aStatistics">
+   <property name="icon">
+    <iconset resource="qgalilei.qrc">
+     <normaloff>:/icons/view-statistics.png</normaloff>:/icons/view-statistics.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Statistics</string>
+   </property>
+  </action>
+  <action name="aCreateSession">
+   <property name="text">
+    <string>Cr&amp;eate Session</string>
+   </property>
+  </action>
+  <action name="aImportDocs">
+   <property name="icon">
+    <iconset resource="qgalilei.qrc">
+     <normaloff>:/icons/document-import.png</normaloff>:/icons/document-import.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Import Documents</string>
+   </property>
+  </action>
+  <action name="aRunTool">
+   <property name="text">
+    <string>R&amp;un Tool</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
+   </property>
+  </action>
+  <action name="aClearDocs">
+   <property name="text">
+    <string>&amp;Clear Documents</string>
+   </property>
+  </action>
+  <action name="aShowTopics">
+   <property name="text">
+    <string>Show &amp;Topics</string>
+   </property>
+  </action>
+  <action name="aClearTopics">
+   <property name="text">
+    <string>&amp;Clear Topics</string>
+   </property>
+  </action>
+  <action name="aGroupDocs">
+   <property name="text">
+    <string>&amp;Group Documents</string>
+   </property>
+  </action>
+  <action name="aShowClasses">
+   <property name="icon">
+    <iconset resource="qgalilei.qrc">
+     <normaloff>:/icons/code-class.png</normaloff>:/icons/code-class.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show C&amp;lasses</string>
+   </property>
+  </action>
+  <action name="aShowUsers">
+   <property name="icon">
+    <iconset resource="qgalilei.qrc">
+     <normaloff>:/icons/system-users.png</normaloff>:/icons/system-users.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show &amp;Users</string>
+   </property>
+  </action>
+  <action name="aClearProfiles">
+   <property name="text">
+    <string>&amp;Clear Profiles</string>
+   </property>
+  </action>
+  <action name="aComputeProfiles">
+   <property name="icon">
+    <iconset resource="qgalilei.qrc">
+     <normaloff>:/icons/media-playback-start.png</normaloff>:/icons/media-playback-start.png</iconset>
+   </property>
+   <property name="text">
+    <string>Compute &amp;Profiles</string>
+   </property>
+  </action>
+  <action name="aComputeProfile">
+   <property name="text">
+    <string>C&amp;ompute Profile</string>
+   </property>
+  </action>
+  <action name="aShowCommunities">
+   <property name="text">
+    <string>Show &amp;Communities</string>
+   </property>
+  </action>
+  <action name="aClearCommunities">
+   <property name="text">
+    <string>C&amp;lear Communities</string>
+   </property>
+  </action>
+  <action name="aGroupProfiles">
+   <property name="text">
+    <string>&amp;Group Profiles</string>
+   </property>
+  </action>
+  <action name="aAbout">
+   <property name="text">
+    <string>&amp;About</string>
+   </property>
+  </action>
+  <action name="aRepairSubjects">
+   <property name="text">
+    <string>&amp;Repair Subjects</string>
+   </property>
+  </action>
+  <action name="aInitSimulation">
+   <property name="text">
+    <string>&amp;Initialize Simulation</string>
+   </property>
+  </action>
+  <action name="aCreateIdealCommunities">
+   <property name="text">
+    <string>Create I&amp;deal Communities</string>
+   </property>
+  </action>
+  <action name="aCreateIdealTopics">
+   <property name="text">
+    <string>Create Ideal &amp;Topics</string>
+   </property>
+  </action>
+  <action name="aCreateIdealTopicsClasses">
+   <property name="text">
+    <string>Create Ideal T&amp;opics (using Classes)</string>
+   </property>
+  </action>
+  <action name="aCreateIdealClasses">
+   <property name="text">
+    <string>Create Ideal &amp;Classes</string>
+   </property>
+  </action>
+  <action name="aCreateIdealClassesDocs">
+   <property name="text">
+    <string>Create Ideal C&amp;lasses (using Documents)</string>
+   </property>
+  </action>
+  <action name="aFeedbackCycle">
+   <property name="text">
+    <string>&amp;Feedback Cycle</string>
+   </property>
+  </action>
+  <action name="aAssessmentCycle">
+   <property name="text">
+    <string>&amp;Assessment Cycle</string>
+   </property>
+  </action>
+  <action name="aCompareIdealCommunities">
+   <property name="text">
+    <string>Co&amp;mpare Ideal Communities</string>
+   </property>
+  </action>
+  <action name="aCompareIdealTopics">
+   <property name="text">
+    <string>Com&amp;pare Ideal Topics</string>
+   </property>
+  </action>
+  <action name="aCompareIdealClasses">
+   <property name="text">
+    <string>Compar&amp;e Ideal Classes</string>
+   </property>
+  </action>
+  <action name="aModifyDocuments">
+   <property name="text">
+    <string>Modify Documents</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="qgalilei.qrc"/>
+ </resources>
+ <connections/>
+</ui>

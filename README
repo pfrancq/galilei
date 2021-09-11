@@ -1,0 +1,41 @@
+*********************** README.txt ***********************
+
+ -------------------------------------------------------------------------------
+               I   - Requirements
+               II  - About "galilei.galileiconf" file
+               III - About the plugins
+ -------------------------------------------------------------------------------
+
+
+-------------------------------------------------------------------------------
+
+I - Requirements:
+
+To run 'kgalileicenter', you have to create:
+- one directory 'galilei' in your '/etc/'
+- one configuration file named "galilei.galileiconf" in your '/etc/galilei/'.
+      ( -> see 'Description of "galilei.galileiconf" for details')
+
+You MUST have read and write access to the directories and files your created!
+
+
+-------------------------------------------------------------------------------
+
+II - About "galilei.galileiconf" file:
+
+'galilei.galileiconf' is a XML file containing the value of each parameters.
+The 'kgalileicenter' program enables to modify this configuration file using
+a graphical user interface.
+
+
+-------------------------------------------------------------------------------
+
+III - About the plugins:
+
+To run 'kgalileicenter', the program need to know where to search for plugins.
+Firstly, the program checks the environment variable 'GALILEI_PLUGINS'. If this
+variable exists, it supposes that the plugins are located there.
+If 'GALILEI_PLUGINS' is not defined, the program checks the environment variable
+'GALILEI'. If this variable exists, it supposes that the plugins are located in
+the sub-directory 'plugins' of the one stored in 'GALILEI'.
+If none of these variables are defined, the program cannot run.

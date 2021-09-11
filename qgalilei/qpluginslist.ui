@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QPlugInsList</class>
+ <widget class="QWidget" name="QPlugInsList">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1202</width>
+    <height>918</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="CurrentSelect" stdset="0">
+   <bool>false</bool>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout_3">
+   <item>
+    <widget class="QWidget" name="Main" native="true">
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="CurrentLabel">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Choose current method</string>
+          </property>
+          <property name="text">
+           <string>Current Method</string>
+          </property>
+          <property name="wordWrap">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="Current">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Choose current method</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="spacer4_2_3_2_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Expanding</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QListWidget" name="List">
+        <property name="resizeMode">
+         <enum>QListView::Fixed</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="_37">
+        <item>
+         <widget class="QPushButton" name="Configure">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Configure</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="About">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>About</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="Params">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Params</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="Reset">
+          <property name="text">
+           <string>Reset</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="spacer3_2_3_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Expanding</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>29</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="Up">
+          <property name="text">
+           <string>Up</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="Down">
+          <property name="text">
+           <string>Down</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="spacer3_2_3_3_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Expanding</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="Enable">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Enable Plug-In</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="Second" native="true">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QLabel" name="CurrentLabel_2">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Choose current method</string>
+          </property>
+          <property name="text">
+           <string>Associated Ranking Method</string>
+          </property>
+          <property name="wordWrap">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="Current_2">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="toolTip">
+           <string>Choose current method</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="spacer4_2_3_2_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Expanding</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QListWidget" name="List_2">
+        <property name="resizeMode">
+         <enum>QListView::Fixed</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="_38">
+        <item>
+         <widget class="QPushButton" name="Configure_2">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Configure</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="About_2">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>About</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="Params_2">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Params</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="Reset_2">
+          <property name="text">
+           <string>Reset</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="spacer3_2_3_4">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Expanding</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>29</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <spacer name="spacer3_2_3_3_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Expanding</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="Enable_2">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="text">
+           <string>Enable Plug-In</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>Configure</sender>
+   <signal>pressed()</signal>
+   <receiver>QPlugInsList</receiver>
+   <slot>slotConfigure()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>53</x>
+     <y>904</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>2</x>
+     <y>214</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>About</sender>
+   <signal>pressed()</signal>
+   <receiver>QPlugInsList</receiver>
+   <slot>slotAbout()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>186</x>
+     <y>904</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>0</x>
+     <y>152</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>List</sender>
+   <signal>currentItemChanged(QListWidgetItem*,QListWidgetItem*)</signal>
+   <receiver>QPlugInsList</receiver>
+   <slot>slotChange(QListWidgetItem*,QListWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>193</x>
+     <y>54</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>0</x>
+     <y>50</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Enable</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>QPlugInsList</receiver>
+   <slot>slotEnable(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>680</x>
+     <y>898</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>518</x>
+     <y>0</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Params</sender>
+   <signal>clicked()</signal>
+   <receiver>QPlugInsList</receiver>
+   <slot>slotParams()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>276</x>
+     <y>904</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>261</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Reset</sender>
+   <signal>pressed()</signal>
+   <receiver>QPlugInsList</receiver>
+   <slot>slotReset()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>366</x>
+     <y>904</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>325</x>
+     <y>172</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Configure_2</sender>
+   <signal>clicked()</signal>
+   <receiver>QPlugInsList</receiver>
+   <slot>slotConfigure_2()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>759</x>
+     <y>890</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>693</x>
+     <y>463</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>About_2</sender>
+   <signal>clicked()</signal>
+   <receiver>QPlugInsList</receiver>
+   <slot>slotAbout_2()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>832</x>
+     <y>888</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>693</x>
+     <y>360</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Params_2</sender>
+   <signal>clicked()</signal>
+   <receiver>QPlugInsList</receiver>
+   <slot>slotParams_2()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>929</x>
+     <y>887</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>689</x>
+     <y>194</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Reset_2</sender>
+   <signal>clicked()</signal>
+   <receiver>QPlugInsList</receiver>
+   <slot>slotReset_2()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1036</x>
+     <y>882</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>693</x>
+     <y>50</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Enable_2</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>QPlugInsList</receiver>
+   <slot>slotEnable_2(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1092</x>
+     <y>893</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>693</x>
+     <y>107</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>List_2</sender>
+   <signal>currentItemChanged(QListWidgetItem*,QListWidgetItem*)</signal>
+   <receiver>QPlugInsList</receiver>
+   <slot>slotChange_2(QListWidgetItem*,QListWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1172</x>
+     <y>81</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1201</x>
+     <y>83</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>slotConfigure()</slot>
+  <slot>slotAbout()</slot>
+  <slot>slotChange(QListWidgetItem*,QListWidgetItem*)</slot>
+  <slot>slotEnable(bool)</slot>
+  <slot>slotDown()</slot>
+  <slot>slotUp()</slot>
+  <slot>slotParams()</slot>
+  <slot>slotReset()</slot>
+  <slot>slotConfigure_2()</slot>
+  <slot>slotAbout_2()</slot>
+  <slot>slotChange_2(QListWidgetItem*,QListWidgetItem*)</slot>
+  <slot>slotParams_2()</slot>
+  <slot>slotReset_2()</slot>
+  <slot>slotEnable_2(bool)</slot>
+ </slots>
+</ui>

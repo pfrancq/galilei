@@ -1,0 +1,230 @@
+/*
+
+	GALILEI Research Project
+
+	KViewClasses.cpp
+
+	Window for manipulating the users - Implementation.
+
+	Copyright 2001-2015 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Library General Public
+	License as published by the Free Software Foundation; either
+	version 2.0 of the License, or (at your option) any later version.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	Library General Public License for more details.
+
+	You should have received a copy of the GNU Library General Public
+	License along with this library, as a file COPYING.LIB; if not, write
+	to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+	Boston, MA  02111-1307  USA
+
+*/
+
+
+
+//-----------------------------------------------------------------------------
+// include files for R
+#include <rqt.h>
+#include <rcursor.h>
+#include <rnodecursor.h>
+
+
+//-----------------------------------------------------------------------------
+// include files for GALILEI
+#include <gsession.h>
+#include <ggalileiapp.h>
+#include <guser.h>
+#include <gclass.h>
+#include <gstorage.h>
+using namespace GALILEI;
+using namespace R;
+using namespace std;
+
+
+//-----------------------------------------------------------------------------
+// include files for Qt
+#include <QtGui/QInputDialog>
+#include <QResizeEvent>
+
+
+//-----------------------------------------------------------------------------
+// application specific includes
+#include <kviewclasses.h>
+#include <qgalileiwin.h>
+
+
+//-----------------------------------------------------------------------------
+// static sizes
+static int Width;
+static int Height;
+
+
+
+//------------------------------------------------------------------------------
+//
+// class Object
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class KViewClasses::Item : public QTreeWidgetItem
+{
+public:
+	GClass* Class;
+
+	Item(QTreeWidgetItem* parent,GClass* c,const QString& desc)
+		: QTreeWidgetItem(parent, QStringList()<<desc<<ToQString(c->GetName()+" ("+RString::Number(c->GetId())+")"))
+	{
+		Class=c;
+//		setIcon(0,KIconLoader::global()->loadIcon("text-xml",KIconLoader::Small));
+	}
+
+	Item(QTreeWidget* parent,GClass* c,const QString& desc)
+		: QTreeWidgetItem(parent, QStringList()<<desc<<ToQString(c->GetName()+" ("+RString::Number(c->GetId())+")"))
+	{
+		Class=c;
+//		setIcon(0,KIconLoader::global()->loadIcon("text-xml",KIconLoader::Small));
+	}
+};
+
+
+
+//-----------------------------------------------------------------------------
+//
+// class KViewClasses
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+KViewClasses::KViewClasses(QGALILEIWin* win)
+	: QMdiSubWindow(), Ui_KViewClasses(), Win(win), AllDescriptors(false)
+{
+	QWidget* ptr=new QWidget();
+	setupUi(ptr);
+	setWidget(ptr);
+	setAttribute(Qt::WA_DeleteOnClose);
+	setWindowTitle("Classes");
+	connect(ShowAll,SIGNAL(stateChanged(int)),this,SLOT(changeDetailsLevel(int)));
+	update();
+	resize(Width,Height);
+	connect(List,SIGNAL(Show(GClass*)),win,SLOT(showClass(GClass*)));
+}
+
+
+//------------------------------------------------------------------------------
+void KViewClasses::createOptions(RConfig& config)
+{
+	config.InsertParam(new RParamValue("KViewClasses::Width",200));
+	config.InsertParam(new RParamValue("KViewClasses::Height",200));
+}
+
+
+//------------------------------------------------------------------------------
+void KViewClasses::readOptions(RConfig& config)
+{
+	Width=config.GetInt("KViewClasses::Width");
+	Height=config.GetInt("KViewClasses::Height");
+}
+
+
+//------------------------------------------------------------------------------
+void KViewClasses::saveOptions(RConfig& config)
+{
+	config.SetInt("KViewClasses::Width",Width);
+	config.SetInt("KViewClasses::Height",Height);
+}
+
+
+//------------------------------------------------------------------------------
+void KViewClasses::resizeEvent(QResizeEvent* resizeEvent)
+{
+	QMdiSubWindow::resizeEvent(resizeEvent);
+	Width=resizeEvent->size().width();
+	Height=resizeEvent->size().height();
+}
+
+
+//-----------------------------------------------------------------------------
+QString KViewClasses::buildDesc(GClass* c)
+{
+	QString ret;
+
+	GClass* Parent(c->GetParent());
+	RConstCursor<GVector> Vector(c->GetVectors());
+	for(Vector.Start();!Vector.End();Vector.Next())
+	{
+		QString Str(ToQString(Vector()->GetMetaConcept()->GetName())+"@[");
+		bool Comma(false);
+		const GVector* Vec(0);
+		if(Parent)
+			Vec=Parent->GetVector(Vector()->GetMetaConcept());
+		RConstCursor<GConceptRef> Ref(Vector()->GetRefs());
+		for(Ref.Start();!Ref.End();Ref.Next())
+		{
+			if((!AllDescriptors)&&Vec)
+			{
+				// Look if the parent has the same concept in the same vector
+				if(Vec&&Vec->IsIn(Ref()->GetConcept()))
+					continue;
+			}
+			if(Comma)
+				Str+=",";
+			else
+				Comma=true;
+			Str+=ToQString(Ref()->GetConcept()->GetName());
+		}
+		if(Comma)
+			ret+=Str+"]";
+	}
+	return(ret);
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewClasses::buildClass(GClass* c,Item* parent)
+{
+	Item* item(new Item(parent,c,buildDesc(c)));
+	RNodeCursor<GClasses,GClass> Cur(c);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		buildClass(Cur(),item);
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewClasses::update(void)
+{
+	List->clear();
+	RNodeCursor<GClasses,GClass> Cur(*Win->getSession()->GetClassTree());
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		Item* item(new Item(List,Cur(),buildDesc(Cur())));
+		RNodeCursor<GClasses,GClass> Cur2(Cur());
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
+			buildClass(Cur2(),item);
+	}
+	List->resizeColumnToContents(0);
+	List->resizeColumnToContents(1);
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewClasses::changeDetailsLevel(int state)
+{
+	if(state==Qt::Checked)
+		AllDescriptors=true;
+	else
+		AllDescriptors=false;
+	update();
+}
+
+
+//-----------------------------------------------------------------------------
+KViewClasses::~KViewClasses(void)
+{
+}
