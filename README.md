@@ -17,5 +17,7 @@ By default, the GALILEI platform relies on MySQL. The directory "plugins/gmysql/
 MORE INFORMATION
 ----------------
 More details on the GALILEI platform are available on the following Web pages:
+
 http://www.otlet-institute.org/GALILEI_Platform_en.html
+
 http://www.otlet-institute.org/wikics/GALILEI_Framework.html
